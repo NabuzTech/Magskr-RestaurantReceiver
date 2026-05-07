@@ -1,0 +1,46 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services" // ✅ No version here!
+}
+
+android {
+    namespace "com.food.mandeep.foodApptest"
+    compileSdk 36
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    defaultConfig {
+        applicationId "com.food.mandeep.foodApptest"
+        minSdk flutter.minSdkVersion
+        targetSdk flutter.targetSdkVersion
+        versionCode flutter.versionCode
+        versionName flutter.versionName
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+        }
+    }
+}
+
+flutter {
+    source "../.."
+}
+
+dependencies {
+    // Add this line for core library desugaring
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
+}

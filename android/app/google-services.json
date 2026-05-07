@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "267253688789",
+    "project_id": "recieverapp-d564b",
+    "storage_bucket": "recieverapp-d564b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267253688789:android:b5748c5f9c7ec74da0355c",
+        "android_client_info": {
+          "package_name": "com.food.mandeep.foodApptest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7PA0vE_ZD3B_04ywpQKK03mVKNLtdsPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
