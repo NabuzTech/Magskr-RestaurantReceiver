@@ -30,7 +30,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
       status = '',
       email = '';
   Timer? _orderTimer;
-
+  final TextEditingController _customerMsgController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -205,7 +205,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    acceptDeclineReservation('cancelled');
+                    _showCustomerMessagePopup(actionType: 'cancelled');
                   },
                   child: Container(
                     width: 100,
@@ -227,7 +227,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 const SizedBox(width: 20),
                 GestureDetector(
                   onTap: () {
-                    acceptDeclineReservation('booked');
+                    _showCustomerMessagePopup(actionType: 'booked');
                   },
                   child: Container(
                     width: 110,
@@ -321,7 +321,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
     }
   }
 
-  Future<void> acceptDeclineReservation(String statusToUpdate) async {
+  Future<void> acceptDeclineReservation(String statusToUpdate, {String? customerMessage}) async {
     String id = widget.id;
     try {
       Get.dialog(
@@ -341,7 +341,10 @@ class _ReservationDetailsState extends State<ReservationDetails> {
         }
       });
 
-      var map = {"user_id": 0, "status": statusToUpdate};
+      var map = <String, dynamic>{"user_id": 0, "status": statusToUpdate};
+      if (customerMessage != null && customerMessage.isNotEmpty) {
+        map["customer_message"] = customerMessage;
+      }
 
       print("Status Map: $map");
 
@@ -397,7 +400,8 @@ class _ReservationDetailsState extends State<ReservationDetails> {
   }
 
   Future<void> _editReservationDetail(String name, String phoneNum,
-      String emailText, String guestCount, String reservationDate, String noteText) async {
+      String emailText, String guestCount, String reservationDate, String noteText,
+      {String? customerMessage}) async {
     setState(() {
       isLoading = true;
     });
@@ -414,7 +418,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
         barrierDismissible: false,
       );
 
-      var map = {
+      var map = <String, dynamic>{
         "user_id": 0,
         "guest_count": int.tryParse(guestCount) ?? 2,
         "reserved_for": reservationDate,
@@ -426,6 +430,9 @@ class _ReservationDetailsState extends State<ReservationDetails> {
         "note": noteText,
         "isActive": true
       };
+      if (customerMessage != null && customerMessage.isNotEmpty) {
+        map["customer_message"] = customerMessage;
+      }
 
       print("Edit Reservation Map: $map");
       EditReservationDetailsResponseModel model =
@@ -556,256 +563,64 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                             maxLines: 3),
                         const SizedBox(height: 20),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (BuildContext dialogContext) {
-                                      return Dialog(
-                                        backgroundColor: Colors.transparent,
-                                        child: Stack(
-                                          clipBehavior: Clip.none,
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.all(10),
-                                              margin: const EdgeInsets.symmetric(
-                                                  horizontal: 5),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                BorderRadius.circular(20),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withOpacity(0.1),
-                                                    blurRadius: 10,
-                                                    offset: const Offset(0, 5),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const SizedBox(height: 20),
-                                                  const Icon(
-                                                    Icons.warning_amber_rounded,
-                                                    color: Colors.orange,
-                                                    size: 50,
-                                                  ),
-                                                  const SizedBox(height: 15),
-                                                  Text(
-                                                    'cancel_reservation'.tr,
-                                                    style: const TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                        FontWeight.w800,
-                                                        color: Colors.black,
-                                                        fontFamily: 'Mulish'),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                  const SizedBox(height: 10),
-                                                  Text(
-                                                    'cancel_msg'.tr,
-                                                    style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                        FontWeight.w500,
-                                                        color: Colors.grey[600],
-                                                        fontFamily: 'Mulish'),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                  const SizedBox(height: 30),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                    children: [
-                                                      Expanded(
-                                                        child: ElevatedButton(
-                                                          onPressed: () =>
-                                                              Navigator.of(
-                                                                  dialogContext)
-                                                                  .pop(),
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                            backgroundColor:
-                                                            Colors
-                                                                .grey[300],
-                                                            foregroundColor:
-                                                            Colors.black87,
-                                                            minimumSize:
-                                                            const Size(0, 45),
-                                                            shape:
-                                                            RoundedRectangleBorder(
-                                                              borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                  8),
-                                                            ),
-                                                          ),
-                                                          child: Center(
-                                                            child: Text(
-                                                              'no_'.tr,
-                                                              style: const TextStyle(
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                FontWeight
-                                                                    .w700,
-                                                                fontFamily:
-                                                                'Mulish',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      const SizedBox(width: 15),
-                                                      Expanded(
-                                                        child: ElevatedButton(
-                                                          onPressed: () async {
-                                                            Navigator.of(
-                                                                dialogContext)
-                                                                .pop();
-                                                            Navigator.of(context)
-                                                                .pop();
-                                                            Get.dialog(
-                                                              Center(
-                                                                  child: Lottie
-                                                                      .asset(
-                                                                    'assets/animations/burger.json',
-                                                                    width: 150,
-                                                                    height: 150,
-                                                                    repeat: true,
-                                                                  )),
-                                                              barrierDismissible:
-                                                              false,
-                                                            );
-                                                            await cancelReservation(
-                                                                'cancelled');
-                                                          },
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                            backgroundColor:
-                                                            const Color(
-                                                                0xFFE25454),
-                                                            foregroundColor:
-                                                            Colors.white,
-                                                            minimumSize:
-                                                            const Size(0, 45),
-                                                            shape:
-                                                            RoundedRectangleBorder(
-                                                              borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                  8),
-                                                            ),
-                                                          ),
-                                                          child: Center(
-                                                            child: Text(
-                                                              'yes'.tr,
-                                                              style: const TextStyle(
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                FontWeight
-                                                                    .w700,
-                                                                fontFamily:
-                                                                'Mulish',
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Positioned(
-                                              left: 0,
-                                              right: 0,
-                                              top: -15,
-                                              child: Center(
-                                                child: GestureDetector(
-                                                  onTap: () => Navigator.of(
-                                                      dialogContext)
-                                                      .pop(),
-                                                  child: Container(
-                                                    padding:
-                                                    const EdgeInsets.all(8),
-                                                    decoration:
-                                                    const BoxDecoration(
-                                                      color: Color(0xFFED4C5C),
-                                                      shape: BoxShape.circle,
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: Colors.black12,
-                                                          blurRadius: 6,
-                                                          offset: Offset(0, 2),
-                                                        )
-                                                      ],
-                                                    ),
-                                                    child: const Icon(
-                                                      Icons.close,
-                                                      color: Colors.white,
-                                                      size: 18,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red[400],
-                                  foregroundColor: Colors.white,
-                                  minimumSize: const Size(0, 50),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                                child: Text(
-                                  'cancel_reserv'.tr,
-                                  style: const TextStyle(
-                                    fontFamily: 'Mulish',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                _showCustomerMessagePopup(actionType: 'cancelled');
+                              },
+                              child: Container(
+                                width: 130,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(5)),
+                                child: Center(
+                                  child: Text(
+                                    'cancel_reserv'.tr,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15,
+                                        color: Colors.white),
                                   ),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  _editReservationDetail(
-                                    nameController.text,
-                                    phoneController.text,
-                                    emailController.text,
-                                    guestController.text,
-                                    reservationController.text,
-                                    noteController.text,
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  foregroundColor: Colors.white,
-                                  minimumSize: const Size(0, 50),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(3),
+                            const SizedBox(width: 20),
+                            GestureDetector(
+                              onTap: () {
+                                final name = nameController.text;
+                                final phone = phoneController.text;
+                                final email = emailController.text;
+                                final guest = guestController.text;
+                                final reservDate = reservationController.text;
+                                final noteText = noteController.text;
+                                Navigator.of(context).pop();
+                                _showCustomerMessagePopup(
+                                  actionType: 'save',
+                                  onActionOverride: (msg) {
+                                    _editReservationDetail(
+                                      name, phone, email, guest, reservDate, noteText,
+                                      customerMessage: msg,
+                                    );
+                                  },
+                                );
+                              },
+                              child: Container(
+                                width: 130,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    borderRadius: BorderRadius.circular(5)),
+                                child: Center(
+                                  child: Text(
+                                    'save_reserv'.tr,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15,
+                                        color: Colors.white),
                                   ),
-                                ),
-                                child: Text(
-                                  'save_reserv'.tr,
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish'),
                                 ),
                               ),
                             ),
@@ -1229,6 +1044,170 @@ class _ReservationDetailsState extends State<ReservationDetails> {
       default:
         return '';
     }
+  }
+
+  void _showCustomerMessagePopup({
+    required String actionType,
+    Function(String? customerMessage)? onActionOverride,
+  }) {
+    _customerMsgController.clear();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.symmetric(horizontal: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 10),
+                    const Icon(Icons.message_outlined, color: Colors.blue, size: 45),
+                    const SizedBox(height: 12),
+                    Text(
+                      'customer_message'.tr,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black,
+                        fontFamily: 'Mulish',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'send_msg_to_customer'.tr,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey[600],
+                        fontFamily: 'Mulish',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _customerMsgController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText: 'type_msg_here'.tr,
+                        hintStyle: TextStyle(color: Colors.grey[400], fontFamily: 'Mulish'),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.blue),
+                        ),
+                        contentPadding: const EdgeInsets.all(12),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(dialogContext).pop();
+                              if (onActionOverride != null) {
+                                onActionOverride(null);
+                              } else {
+                                acceptDeclineReservation(actionType);
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[300],
+                              foregroundColor: Colors.black87,
+                              minimumSize: const Size(0, 45),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'skip'.tr,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Mulish',
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              String msg = _customerMsgController.text.trim();
+                              Navigator.of(dialogContext).pop();
+                              if (onActionOverride != null) {
+                                onActionOverride(msg.isEmpty ? null : msg);
+                              } else {
+                                acceptDeclineReservation(actionType,
+                                    customerMessage: msg.isEmpty ? null : msg);
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black87,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(0, 45),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'continue'.tr,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Mulish',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                top: -20,
+                child: GestureDetector(
+                  onTap: () => Navigator.of(dialogContext).pop(),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFED4C5C),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.close, color: Colors.white, size: 20),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> cancelReservation(String statusToUpdate) async {

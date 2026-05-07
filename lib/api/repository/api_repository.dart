@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:food_receiver/models/change_password_model.dart';
 import 'package:food_receiver/models/get_admin_report_response_model.dart' hide PaymentMethods, TaxBreakdown, OrderTypes, ApprovalStatuses;
 import 'package:food_receiver/models/today_report.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
@@ -4354,6 +4355,38 @@ class CallService extends GetConnect {
     }
   }
 
+  Future<ChangePasswordModel> changePassword(dynamic body) async {
+    try {
+      httpClient.baseUrl = Api.baseUrl;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+
+      var res = await post(
+        ApiEndPoints.changePassword,
+        body,
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      print("Change Password Response: ${res.statusCode}");
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return ChangePasswordModel();
+      } else {
+        throw Exception('Server error: ${res.statusCode} - ${res.body}');
+      }
+    } catch (e) {
+      print("Change Password error: $e");
+      if (e is Exception) {
+        rethrow;
+      } else {
+        throw Exception('An unexpected error occurred: $e');
+      }
+    }
+  }
 
 
 }

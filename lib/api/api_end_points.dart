@@ -13,4 +13,5 @@ class ApiEndPoints {
   static const logoutApi = "logout";
   static const getStoreSetting = "store-settings/";
   static const postPrinterSetting = "printers/";
+  static const changePassword = "me/change-password";
 }
