@@ -53,11 +53,6 @@ class _SplashScreenState extends State<SplashScreen> {
       changeLanguage(savedLangCode);
     }
 
-    // Sync FCM token in background when user is auto-logged in (skips LoginController)
-    if (sessionID != null && (Platform.isAndroid || Platform.isIOS)) {
-      NotificationService.syncTokenWithServer();
-    }
-
     Timer(const Duration(seconds: 4), () {
       if (sessionID != null) {
         // Get role_id from SharedPreferences

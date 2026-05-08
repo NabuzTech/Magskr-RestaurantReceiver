@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
 import 'package:food_receiver/models/change_password_model.dart';
 import 'package:food_receiver/models/get_admin_report_response_model.dart' hide PaymentMethods, TaxBreakdown, OrderTypes, ApprovalStatuses;
@@ -60,6 +61,7 @@ import '../../models/edit_store_toppings_response_model.dart';
 import '../../models/edit_tax_response_model.dart';
 import '../../models/edit_topping_group_response_model.dart';
 import '../../models/get_added_tax_response_model.dart';
+import '../../models/get_all_reservation_for_all_store.dart';
 import '../../models/get_all_store_response_model.dart';
 import '../../models/get_allergy_response_model.dart';
 import '../../models/get_collection_time_response_model.dart';
@@ -95,6 +97,7 @@ import '../../models/reservation/get_history_reservation.dart';
 import '../../models/reservation/get_reservation_table_full_details.dart';
 import '../../models/reservation/get_user_reservation_details.dart';
 import '../../models/reservation/today_received_booking_model.dart';
+import '../../models/reset_store_password_by_suyperAdmin_model.dart';
 import '../../models/sync_order_response_model.dart';
 import '../../models/update_holiday_response_model.dart';
 import '../../models/update_store_hour_response_model.dart';
@@ -1816,7 +1819,8 @@ class CallService extends GetConnect {
   }
 
   Future<List<GetStoreProducts>> getProductsbylimit(
-      String storeId, int limit, int offset) async {
+      String storeId, int limit, int offset) async
+  {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
     print("User Access Token Value is : $accessToken");
@@ -1841,9 +1845,7 @@ class CallService extends GetConnect {
   }
 
   //For Add New Products
-  Future<AddNewProductResponseModel> addNewProduct(
-    dynamic body,
-  ) async {
+  Future<AddNewProductResponseModel> addNewProduct(dynamic body,) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1886,8 +1888,7 @@ class CallService extends GetConnect {
   }
 
   //For Editing the Existing Products
-  Future<EditStoreProductResponseModel> editProducts(
-      dynamic body, String productId) async {
+  Future<EditStoreProductResponseModel> editProducts(dynamic body, String productId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2022,8 +2023,7 @@ class CallService extends GetConnect {
   }
 
   //For Editing Existing Toppings
-  Future<EditStoreToppingsResponseModel> editToppings(
-      dynamic body, String toppingsId) async {
+  Future<EditStoreToppingsResponseModel> editToppings(dynamic body, String toppingsId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2091,8 +2091,7 @@ class CallService extends GetConnect {
   }
 
   //For Getting Postcode
-  Future<List<GetStorePostCodesResponseModel>> getPostCode(
-      String storeId) async {
+  Future<List<GetStorePostCodesResponseModel>> getPostCode(String storeId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
     print("User Access Token Value is : $accessToken");
@@ -2116,8 +2115,7 @@ class CallService extends GetConnect {
   }
 
   //For Add New PostCode
-  Future<List<AddStorePostCodesResponseModel>> addNewPostcode(
-      dynamic body) async {
+  Future<List<AddStorePostCodesResponseModel>> addNewPostcode(dynamic body) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2161,8 +2159,7 @@ class CallService extends GetConnect {
   }
 
   //For Editing PostCode
-  Future<List<EditStorePostCodesResponseModel>> editPostcode(
-      dynamic body) async {
+  Future<List<EditStorePostCodesResponseModel>> editPostcode(dynamic body) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2233,8 +2230,7 @@ class CallService extends GetConnect {
   }
 
   //For Getting Toppings Group
-  Future<List<GetToppingsGroupResponseModel>> getToppingGroups(
-      String storeId) async {
+  Future<List<GetToppingsGroupResponseModel>> getToppingGroups(String storeId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
     print("User Access Token Value is : $accessToken");
@@ -2299,8 +2295,7 @@ class CallService extends GetConnect {
   }
 
   // For Editing Topping Group
-  Future<EditToppingsGroupResponseModel> editToppingGroup(
-      dynamic body, String groupId) async {
+  Future<EditToppingsGroupResponseModel> editToppingGroup(dynamic body, String groupId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2431,8 +2426,7 @@ class CallService extends GetConnect {
   }
 
   // For Edit Group Items
-  Future<EditGroupItemResponseModel> editGroupItem(
-      dynamic body, String groupItemId) async {
+  Future<EditGroupItemResponseModel> editGroupItem(dynamic body, String groupItemId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2500,8 +2494,7 @@ class CallService extends GetConnect {
   }
 
   //For Getting Product Groups
-  Future<List<GetProductGroupResponseModel>> getProductGroup(
-      String storeId) async {
+  Future<List<GetProductGroupResponseModel>> getProductGroup(String storeId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
     print("User Access Token Value is : $accessToken");
@@ -2564,8 +2557,7 @@ class CallService extends GetConnect {
   }
 
   //For Editing Product Group
-  Future<EditProductGroupResponseModel> editProductGroup(
-      dynamic body, String productGroupId) async {
+  Future<EditProductGroupResponseModel> editProductGroup(dynamic body, String productGroupId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2707,8 +2699,7 @@ class CallService extends GetConnect {
   }
 
   //For Editing allergy
-  Future<EditAllergyResponseModel> editAllergy(
-      dynamic body, String allergyId) async {
+  Future<EditAllergyResponseModel> editAllergy(dynamic body, String allergyId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2787,9 +2778,7 @@ class CallService extends GetConnect {
   }
 
   // For Getting Item Allergy Link
-  Future<List<get_item_allergy_link_response_model>> getAllergyItemLink(
-    String storeId,
-  ) async {
+  Future<List<get_item_allergy_link_response_model>> getAllergyItemLink(String storeId,) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
     print("User Access Token Value is : $accessToken");
@@ -2814,8 +2803,7 @@ class CallService extends GetConnect {
   }
 
   // For Add New Allergy Item Link
-  Future<AddAllergyLinkResponseModel> addAllergyItemLink(
-      dynamic body, String productId) async {
+  Future<AddAllergyLinkResponseModel> addAllergyItemLink(dynamic body, String productId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2857,8 +2845,7 @@ class CallService extends GetConnect {
   }
 
   //For Editing allergy
-  Future<EditAllergyLinkResponseModel> editAllergyItemLink(
-      dynamic body, String productId) async {
+  Future<EditAllergyLinkResponseModel> editAllergyItemLink(dynamic body, String productId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -3004,8 +2991,7 @@ class CallService extends GetConnect {
   }
 
   // For Getting Category Availability
-  Future<List<GetCategoryAvailabilityResponseModel>> getCategoryAvailability(
-      String storeId) async {
+  Future<List<GetCategoryAvailabilityResponseModel>> getCategoryAvailability(String storeId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
     print("User Access Token Value is : $accessToken");
@@ -3030,8 +3016,7 @@ class CallService extends GetConnect {
   }
 
   // For Add Category Availability
-  Future<AddNewCategoryAvailabilityResponseModel> addCategoryAvailability(
-      dynamic body) async {
+  Future<AddNewCategoryAvailabilityResponseModel> addCategoryAvailability(dynamic body) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -3074,8 +3059,7 @@ class CallService extends GetConnect {
   }
 
   //For Editing Category Availability
-  Future<EditCategoryAvailabilityResponseModel> editCategoryAvailability(
-      dynamic body, String availabilityId) async {
+  Future<EditCategoryAvailabilityResponseModel> editCategoryAvailability(dynamic body, String availabilityId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -3220,8 +3204,7 @@ class CallService extends GetConnect {
   }
 
   //for Editing Ip Address
-  Future<EditIpAddressResponseModel> editIpAddress(
-      dynamic body, String printerId) async {
+  Future<EditIpAddressResponseModel> editIpAddress(dynamic body, String printerId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -3322,19 +3305,28 @@ class CallService extends GetConnect {
   }
 
   //For Get All Admin Order
-  Future<List<AllOrderAdminResponseModel>> getAllAdminOrder(
-      {int limit = 20, int offset = 0}) async {
+  Future<List<AllOrderAdminResponseModel>> getAllAdminOrder({
+    int limit = 20,
+    int offset = 0,
+    String? startDate,
+    String? endDate,
+    bool includePast = false,}) async
+  {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? Token = prefs.getString(valueShared_BEARER_KEY);
       print("User Access Token Value is : $Token");
       print("Fetching orders with limit=$limit, offset=$offset");
 
+      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final sd = startDate ?? today;
+      final ed = endDate ?? today;
+
       httpClient.baseUrl = Api.baseUrl;
       httpClient.timeout = const Duration(seconds: 30);
-
+      print('Api Calling Url is ${Api.baseUrl}orders/admin/list?limit=$limit&offset=$offset&include_past=$includePast&start_date=$sd&end_date=$ed');
       var res =
-          await get('orders/admin/list?limit=$limit&offset=$offset', headers: {
+          await get('orders/admin/list?limit=$limit&offset=$offset&include_past=$includePast&start_date=$sd&end_date=$ed', headers: {
         'accept': 'application/json',
         'Authorization': "Bearer $Token",
       }).timeout(
@@ -3405,8 +3397,7 @@ class CallService extends GetConnect {
   }
 
   //For get daily admin report
-  Future<List<DailySalesReport>> reportGetApiAdmin(
-      String bearer, String storeId) async {
+  Future<List<DailySalesReport>> reportGetApiAdmin(String bearer, String storeId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? Token = prefs.getString(valueShared_BEARER_KEY);
     print("User Access Token Value is : $Token");
@@ -3682,8 +3673,7 @@ class CallService extends GetConnect {
   }
 
   //For Updating Holiday
-  Future<UpdateHolidayResponseModel> editHoliday(
-      dynamic body, String holidayId) async {
+  Future<UpdateHolidayResponseModel> editHoliday(dynamic body, String holidayId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -3753,9 +3743,7 @@ class CallService extends GetConnect {
   }
 
   //For manual override store open close
-  Future<ManualOverrideResponseModel> addManualOverride(
-      dynamic body, String storeId) async
-  {
+  Future<ManualOverrideResponseModel> addManualOverride(dynamic body, String storeId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -3809,8 +3797,7 @@ class CallService extends GetConnect {
     }
   }
 
-  Future<GetSpecificStoreDeviceStatus> getDeviceStatusSpecificStore(
-      String storeId) async {
+  Future<GetSpecificStoreDeviceStatus> getDeviceStatusSpecificStore(String storeId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? Token = prefs.getString(valueShared_BEARER_KEY);
     print("User Access Token Value is : $Token");
@@ -3879,8 +3866,7 @@ class CallService extends GetConnect {
   }
 
   //For Adding Delivery Time
-  Future<AddDeliveryTimeStore> addDeliveryTime(
-      dynamic body, String storeId) async {
+  Future<AddDeliveryTimeStore> addDeliveryTime(dynamic body, String storeId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -3918,8 +3904,7 @@ class CallService extends GetConnect {
   }
 
   //For Adding Collection Time
-  Future<AddCollectionTimeStore> addCollectionTime(
-      dynamic body, String storeId) async {
+  Future<AddCollectionTimeStore> addCollectionTime(dynamic body, String storeId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -3957,8 +3942,7 @@ class CallService extends GetConnect {
   }
 
   //For Updating Collection time
-  Future<EditCollectionTimeStore> editCollectionTime(
-      dynamic body, String collectionId) async {
+  Future<EditCollectionTimeStore> editCollectionTime(dynamic body, String collectionId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -3995,8 +3979,7 @@ class CallService extends GetConnect {
   }
 
   //For Updating Delivery Time
-  Future<EditDeliveryTimeStore> editDeliveryTime(
-      dynamic body, String deliveryId) async {
+  Future<EditDeliveryTimeStore> editDeliveryTime(dynamic body, String deliveryId) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -4355,6 +4338,7 @@ class CallService extends GetConnect {
     }
   }
 
+  //For Changing Store Password
   Future<ChangePasswordModel> changePassword(dynamic body) async {
     try {
       httpClient.baseUrl = Api.baseUrl;
@@ -4388,5 +4372,56 @@ class CallService extends GetConnect {
     }
   }
 
+  //For Getting All Store Reservation For Store
+  Future<GetAllReservationForAllStoreInSuperAdmin> getAllReservationForStore(String date) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('superadmin/reservations/count?date=$date', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
 
+    if (res.statusCode == 200) {
+      print("Getting Reservation For Admin response is :${res.statusCode.toString()}");
+      print("Getting Reservation For Admin response body is :${res.body}");
+      return GetAllReservationForAllStoreInSuperAdmin.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load Reservation For Admin: ${res.statusCode}');
+    }
+  }
+
+  //For Resetting Store password by SuperAdmin
+  Future<ResetStorePasswordBySuperAdminModel> resetPassword(dynamic body,String storeId) async {
+    try {
+      httpClient.baseUrl = Api.baseUrl;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+
+      var res = await post('superadmin/stores/$storeId/reset-owner-password',
+        body, headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      print("Reset Password Response: ${res.statusCode}");
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return ResetStorePasswordBySuperAdminModel();
+      } else {
+        throw Exception('Server error: ${res.statusCode} - ${res.body}');
+      }
+    } catch (e) {
+      print("Reset Password error: $e");
+      if (e is Exception) {
+        rethrow;
+      } else {
+        throw Exception('An unexpected error occurred: $e');
+      }
+    }
+  }
 }

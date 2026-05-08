@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:food_receiver/ui/SuperAdmin/all_store_reservation.dart';
+import 'package:food_receiver/ui/SuperAdmin/settings.dart';
 import 'package:food_receiver/ui/SuperAdmin/superAdminOrderDetail.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,6 +41,10 @@ class _SuperAdminState extends State<SuperAdmin> {
   DateTime? _lastScrollTime;
   bool isRefreshing = false;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+
+  DateTime _startDate = DateTime.now();
+  DateTime _endDate = DateTime.now();
+  bool _isHistoryMode = false;
 
   @override
   void initState() {
@@ -156,7 +163,13 @@ class _SuperAdminState extends State<SuperAdmin> {
       if (previousOffset < 0) previousOffset = 0;
 
       List<AllOrderAdminResponseModel> previousOrders =
-      await CallService().getAllAdminOrder(limit: limit, offset: previousOffset);
+      await CallService().getAllAdminOrder(
+        limit: limit,
+        offset: previousOffset,
+        startDate: DateFormat('yyyy-MM-dd').format(_startDate),
+        endDate: DateFormat('yyyy-MM-dd').format(_endDate),
+        includePast: _isHistoryMode,
+      );
 
       if (previousOrders.isEmpty) {
         setState(() {
@@ -209,7 +222,13 @@ class _SuperAdminState extends State<SuperAdmin> {
       int nextOffset = currentOffset + limit;
 
       List<AllOrderAdminResponseModel> newOrders =
-      await CallService().getAllAdminOrder(limit: limit, offset: nextOffset);
+      await CallService().getAllAdminOrder(
+        limit: limit,
+        offset: nextOffset,
+        startDate: DateFormat('yyyy-MM-dd').format(_startDate),
+        endDate: DateFormat('yyyy-MM-dd').format(_endDate),
+        includePast: _isHistoryMode,
+      );
 
       setState(() {
         if (newOrders.isEmpty) {
@@ -254,6 +273,64 @@ class _SuperAdminState extends State<SuperAdmin> {
     final locale = Get.locale?.languageCode ?? 'en';
     String localeToUse = locale == 'de' ? 'de_DE' : 'en_US';
     return NumberFormat('#,##0.0#', localeToUse).format(amount);
+  }
+
+  Future<void> _pickDateRange() async {
+    final today = DateTime.now();
+    final start = await showDatePicker(
+      context: context,
+      initialDate: _startDate,
+      firstDate: DateTime(2020),
+      lastDate: today,
+      helpText: 'Select Start Date',
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(colorScheme: const ColorScheme.light(primary: Colors.green)),
+        child: child!,
+      ),
+    );
+    if (start == null) return;
+
+    final end = await showDatePicker(
+      context: context,
+      initialDate: start,
+      firstDate: start,
+      lastDate: today,
+      helpText: 'Select End Date',
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(colorScheme: const ColorScheme.light(primary: Colors.green)),
+        child: child!,
+      ),
+    );
+    if (end == null) return;
+
+    final today0 = DateTime(today.year, today.month, today.day);
+    final start0 = DateTime(start.year, start.month, start.day);
+    final end0 = DateTime(end.year, end.month, end.day);
+
+    setState(() {
+      _startDate = start;
+      _endDate = end;
+      _isHistoryMode = start0.isBefore(today0) || end0.isBefore(today0);
+      orderList.clear();
+      filteredOrderList.clear();
+      currentOffset = 0;
+      hasMoreOrders = true;
+    });
+    await getAllOrderAdmin();
+  }
+
+  Future<void> _resetToToday() async {
+    final today = DateTime.now();
+    setState(() {
+      _startDate = today;
+      _endDate = today;
+      _isHistoryMode = false;
+      orderList.clear();
+      filteredOrderList.clear();
+      currentOffset = 0;
+      hasMoreOrders = true;
+    });
+    await getAllOrderAdmin();
   }
 
   @override
@@ -352,17 +429,37 @@ class _SuperAdminState extends State<SuperAdmin> {
           'nameColor': const Color(0xff029447),
         };
       case 20:
-        return {
-          'border': const Color(0xffE31E22),
-          'background': const Color(0xffFFDCDD),
-          'nameColor': const Color(0xffE31E22),
-        };
+        return {'border': const Color(0xffE31E22), 'background': const Color(0xffFFDCDD), 'nameColor': const Color(0xffE31E22)};
+      case 21:
+        return {'border': const Color(0xff0D9488), 'background': const Color(0xffF0FDFA), 'nameColor': const Color(0xff0D9488)};
+      case 22:
+        return {'border': const Color(0xffEA580C), 'background': const Color(0xffFFF7ED), 'nameColor': const Color(0xffEA580C)};
+      case 23:
+        return {'border': const Color(0xff4338CA), 'background': const Color(0xffEEF2FF), 'nameColor': const Color(0xff4338CA)};
+      case 24:
+        return {'border': const Color(0xffDB2777), 'background': const Color(0xffFDF2F8), 'nameColor': const Color(0xffDB2777)};
+      case 25:
+        return {'border': const Color(0xff4D7C0F), 'background': const Color(0xffF7FEE7), 'nameColor': const Color(0xff4D7C0F)};
+      case 26:
+        return {'border': const Color(0xff0E7490), 'background': const Color(0xffECFEFF), 'nameColor': const Color(0xff0E7490)};
+      case 27:
+        return {'border': const Color(0xffBE123C), 'background': const Color(0xffFFF1F2), 'nameColor': const Color(0xffBE123C)};
+      case 28:
+        return {'border': const Color(0xffB45309), 'background': const Color(0xffFEF3C7), 'nameColor': const Color(0xffB45309)};
+      case 29:
+        return {'border': const Color(0xff047857), 'background': const Color(0xffECFDF5), 'nameColor': const Color(0xff047857)};
+      case 30:
+        return {'border': const Color(0xff6D28D9), 'background': const Color(0xffF5F3FF), 'nameColor': const Color(0xff6D28D9)};
+      case 31:
+        return {'border': const Color(0xff0369A1), 'background': const Color(0xffF0F9FF), 'nameColor': const Color(0xff0369A1)};
+      case 32:
+        return {'border': const Color(0xffA21CAF), 'background': const Color(0xffFDF4FF), 'nameColor': const Color(0xffA21CAF)};
+      case 33:
+        return {'border': const Color(0xff78350F), 'background': const Color(0xffFDF6EC), 'nameColor': const Color(0xff78350F)};
+      case 34:
+        return {'border': const Color(0xff475569), 'background': const Color(0xffF8FAFC), 'nameColor': const Color(0xff475569)};
       default:
-        return {
-          'border': const Color(0xffE0D2AA),
-          'background': Colors.white,
-          'nameColor': const Color(0xffE64425),
-        };
+        return {'border': const Color(0xffE0D2AA), 'background': Colors.white, 'nameColor': const Color(0xffE64425)};
     }
   }
 
@@ -383,44 +480,64 @@ class _SuperAdminState extends State<SuperAdmin> {
                   padding: const EdgeInsets.all(12.0),
                   child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        height: 45,
-                        width: 300,
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: TextField(
-                          controller: searchController,
-                          decoration: InputDecoration(
-                            hintText: 'Search stores, orders, names, phones...',
-                            hintStyle: const TextStyle(
-                                color: Color(0xffAEAEAE),
-                                fontSize: 12,
-                                fontFamily: 'Mulish-Italic-VariableFont_wght',
-                                fontWeight: FontWeight.w300),
-                            prefixIcon: Image.asset('assets/images/search.png'),
-                            suffixIcon: searchController.text.isNotEmpty
-                                ? IconButton(
-                              icon: const Icon(Icons.clear, size: 18),
-                              onPressed: () {
-                                searchController.clear();
-                              },
-                            )
-                                : null,
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                      Expanded(
+                        child: Container(
+                          height: 45,
+                          padding: const EdgeInsets.all(12),
+                          margin: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: TextField(
+                            controller: searchController,
+                            decoration: InputDecoration(
+                              hintText: 'Search stores, orders, names, phones...',
+                              hintStyle: const TextStyle(
+                                  color: Color(0xffAEAEAE),
+                                  fontSize: 12,
+                                  fontFamily: 'Mulish-Italic-VariableFont_wght',
+                                  fontWeight: FontWeight.w300),
+                              prefixIcon: Image.asset('assets/images/search.png'),
+                              suffixIcon: searchController.text.isNotEmpty
+                                  ? IconButton(
+                                icon: const Icon(Icons.clear, size: 18),
+                                onPressed: () {
+                                  searchController.clear();
+                                },
+                              )
+                                  : null,
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                            ),
                           ),
                         ),
                       ),
+                      SizedBox(width: 5,),
+                      GestureDetector(
+                        onTap: (){
+                          Get.to(()=>Settings());
+                        },
+                        child: Container(padding: EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.lightGreen,width: 1),
+                            borderRadius: BorderRadius.circular(8)
+                          ),
+                            child: Icon(Icons.settings_outlined,color: Colors.green,)),
+                      ), SizedBox(width: 5,),
                       GestureDetector(
                           onTap: () {
                             showLogoutConfirmation(context);
                           },
-                          child: const Icon(Icons.logout, color: Colors.green))
+                          child: Container(padding: EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(color: Colors.lightGreen,width: 1),
+                                  borderRadius: BorderRadius.circular(8)
+                              ),
+                              child: const Icon(Icons.logout, color: Colors.green)))
                     ],
                   ),
                 ),
@@ -429,13 +546,6 @@ class _SuperAdminState extends State<SuperAdmin> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Restaurant',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontFamily: 'Mulish',
-                            fontSize: 18),
-                      ),
                       Row(
                         children: [
                           InkWell(
@@ -453,6 +563,26 @@ class _SuperAdminState extends State<SuperAdmin> {
                                   Icon(Icons.print_outlined,color: Colors.green,size: 20,),
                                   SizedBox(width: 5,),
                                   Text('Status',),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10,),
+                          InkWell(
+                            onTap: (){
+                              Get.to(()=>AllStoreReservation());
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black,width: 1),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child:  Row(
+                                children: [
+                                 Image.asset('assets/images/reservationIcon.png',height: 15,width: 15,),
+                                  SizedBox(width: 5,),
+                                  Text('Reservation',),
                                 ],
                               ),
                             ),
@@ -581,7 +711,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                       ),
                                     ),
                                     SizedBox(
-                                      width: MediaQuery.of(context).size.width*0.26,
+                                      width: MediaQuery.of(context).size.width*0.28,
                                       child: Text('${store.storeName}',
                                         style: TextStyle(
                                             fontSize: 13,
@@ -634,6 +764,63 @@ class _SuperAdminState extends State<SuperAdmin> {
                       ],
                     ),
                   ),
+                // ── History / Today row ───────────────────────────
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: _pickDateRange,
+                        child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.black38,width: 2)
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                _isHistoryMode
+                                    ? '${DateFormat('dd MMM').format(_startDate)} – ${DateFormat('dd MMM yy').format(_endDate)}'
+                                    : 'History',
+                                style: TextStyle(
+                                  fontFamily: 'Mulish',
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 16,
+                                  color: _isHistoryMode ? Colors.orange.shade700 : const Color(0xff1F1E1E),
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              SvgPicture.asset('assets/images/dropdown.svg', height: 5, width: 11),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (_isHistoryMode)
+                        GestureDetector(
+                          onTap: _resetToToday,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'Today',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Mulish',
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -974,8 +1161,13 @@ class _SuperAdminState extends State<SuperAdmin> {
     });
 
     try {
-      List<AllOrderAdminResponseModel> order =
-      await CallService().getAllAdminOrder(limit: limit, offset: 0);
+      List<AllOrderAdminResponseModel> order = await CallService().getAllAdminOrder(
+        limit: limit,
+        offset: 0,
+        startDate: DateFormat('yyyy-MM-dd').format(_startDate),
+        endDate: DateFormat('yyyy-MM-dd').format(_endDate),
+        includePast: _isHistoryMode,
+      );
 
       setState(() {
         orderList = order;

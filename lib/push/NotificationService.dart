@@ -132,22 +132,6 @@ class NotificationService {
     print('✅ Notification Service initialized successfully');
   }
 
-  // Called on app startup (auto-login path) to ensure the server has the current FCM token.
-  static Future<void> syncTokenWithServer() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      if (prefs.getString(valueShared_BEARER_KEY) == null) return;
-
-      String? currentToken = await FirebaseMessaging.instance.getToken();
-      if (currentToken != null) {
-        print('🔄 Syncing FCM token on startup...');
-        await _updateServerDeviceToken(currentToken);
-      }
-    } catch (e) {
-      print('❌ Error syncing FCM token on startup: $e');
-    }
-  }
-
   // Re-logs in silently with saved credentials to push the new device token to the server.
   // This is needed because there is no dedicated "update device token" endpoint — the login
   // API is the only call that accepts device_token.
