@@ -79,7 +79,18 @@ class _SuperAdminOrderDetailState extends State<SuperAdminOrderDetail> {
         return "Unknown";
     }
   }
-
+  bool _isVorbestellen(String? deliveryTime) {
+    if (deliveryTime == null || deliveryTime.isEmpty) return false;
+    try {
+      final deliveryDate = DateTime.parse(deliveryTime);
+      final now = DateTime.now();
+      return deliveryDate.year != now.year ||
+          deliveryDate.month != now.month ||
+          deliveryDate.day != now.day;
+    } catch (_) {
+      return false;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     var amount = updatedOrder.payment?.amount ?? 0.0;
@@ -214,6 +225,28 @@ class _SuperAdminOrderDetailState extends State<SuperAdminOrderDetail> {
                         child: Text(
                           '${'delivery_time'.tr}: ${formatDateTime(updatedOrder.deliveryTime)}',
                           style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                        ),
+                      ),
+                    if (_isVorbestellen(updatedOrder.deliveryTime))
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.orange,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'Vorbestellen',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Mulish',
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     const SizedBox(height: 5),

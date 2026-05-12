@@ -3,6 +3,7 @@ class orderHistoryResponseModel {
   int? discountId;
   String? couponCode;
   String? voucherCode;
+  String? source;
   String? note;
   int? orderType;
   int? orderStatus;
@@ -29,6 +30,7 @@ class orderHistoryResponseModel {
     this.discountId,
     this.couponCode,
     this.voucherCode,
+    this.source,
     this.note,
     this.orderType,
     this.orderStatus,
@@ -56,6 +58,7 @@ class orderHistoryResponseModel {
     discountId = json['discount_id'] as int?;
     couponCode = json['coupon_code'] as String?;
     voucherCode = json['voucher_code'] as String?;
+    source = json['source'] as String?;
     note = json['note'] as String?;
     orderType = json['order_type'] as int?;
     orderStatus = json['order_status'] as int?;

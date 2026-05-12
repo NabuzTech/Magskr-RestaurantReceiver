@@ -109,7 +109,18 @@ class _OrderScreenState extends State<OrderScreenNew>
   int _autoSyncInterval = 60;
   bool _syncTimeLoaded = false;
   double? _stripeServiceFee;
-
+  bool _isVorbestellen(String? deliveryTime) {
+    if (deliveryTime == null || deliveryTime.isEmpty) return false;
+    try {
+      final deliveryDate = DateTime.parse(deliveryTime);
+      final now = DateTime.now();
+      return deliveryDate.year != now.year ||
+          deliveryDate.month != now.month ||
+          deliveryDate.day != now.day;
+    } catch (_) {
+      return false;
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -1966,31 +1977,6 @@ class _OrderScreenState extends State<OrderScreenNew>
                             ..._localOrders,
                             ...app.appController.searchResultOrder,
                           ];
-                          // if (app.appController.searchResultOrder.isEmpty) {
-                          //   return ListView(
-                          //     padding: EdgeInsets.zero,
-                          //     physics: const AlwaysScrollableScrollPhysics(),
-                          //     children: [
-                          //       const SizedBox(height: 100),
-                          //       Column(mainAxisAlignment: MainAxisAlignment.center,
-                          //         children: [
-                          //           Lottie.asset('assets/animations/empty.json',
-                          //             width: 150,
-                          //             height: 150,
-                          //           ),
-                          //           Text(
-                          //             'no_order'.tr,
-                          //             style: const TextStyle(
-                          //               fontSize: 16,
-                          //               fontWeight: FontWeight.w500,
-                          //               color: Colors.grey,
-                          //             ),
-                          //           ),
-                          //         ],
-                          //       ),
-                          //     ],
-                          //   );
-                          // }
                           if (allOrders.isEmpty) {
                             return ListView(
                               padding: EdgeInsets.zero,
@@ -2024,9 +2010,6 @@ class _OrderScreenState extends State<OrderScreenNew>
                             itemBuilder: (context, index) {
                               final order = allOrders[index];
                               final isLocalOrder = _localOrders.contains(order);
-                              // itemCount: app.appController.searchResultOrder.length,
-                              // itemBuilder: (context, index) {
-                              //   final order = app.appController.searchResultOrder[index];
                               DateTime dateTime;
                               if (order.isLocalOrder == true) {
                                 // ✅ Handle both milliseconds (int) and ISO string formats
@@ -2039,7 +2022,6 @@ class _OrderScreenState extends State<OrderScreenNew>
                                   dateTime = DateTime.parse(order.createdAt.toString());
                                 }
                               } else {
-                                // For server orders, parse ISO string normally
                                 dateTime = DateTime.parse(order.createdAt.toString());
                               }
                               String time = DateFormat('hh:mm a').format(dateTime);
@@ -2131,15 +2113,17 @@ class _OrderScreenState extends State<OrderScreenNew>
                                                       ),
                                                       const SizedBox(width: 6),
                                                       Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         children: [
                                                           Container(
-                                                            width: MediaQuery.of(context).size.width * 0.4,
+                                                            width: MediaQuery.of(context).size.width * 0.43,
                                                             child:
                                                             Row(crossAxisAlignment: CrossAxisAlignment.start,
+                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                               children: [
-                                                                SizedBox(
+                                                                Container(
                                                                   width: MediaQuery.of(context).size.width * (_storeType == '2' ? 0.35 :
-                                                                  (order.orderType == 2 ? 0.18 : 0.18)),
+                                                                  (order.orderType == 2 ? 0.2 : 0.2)),
                                                                   child: Text(order.orderType == 2 ? 'pickup'.tr : (_storeType == '2'
                                                                       ? _getFullAddress(
                                                                       order.shipping_address ?? order.guestShippingJson,
@@ -2294,33 +2278,23 @@ class _OrderScreenState extends State<OrderScreenNew>
                                                         "Mulish",
                                                         fontSize: 16),
                                                   ),
-                                                  // Row(
-                                                  //   children: [
-                                                  //     Text(
-                                                  //       getApprovalStatusText(order.approvalStatus),
-                                                  //       style: const TextStyle(
-                                                  //           fontWeight:
-                                                  //           FontWeight
-                                                  //               .w800,
-                                                  //           fontFamily:
-                                                  //           "Mulish-Regular",
-                                                  //           fontSize: 13),
-                                                  //     ),
-                                                  //     const SizedBox(
-                                                  //         width: 6),
-                                                  //     CircleAvatar(
-                                                  //       radius: 14,
-                                                  //       backgroundColor:
-                                                  //       getStatusColor(order.approvalStatus ?? 0),
-                                                  //       child: Icon(
-                                                  //         getStatusIcon(order.approvalStatus ?? 0),
-                                                  //         color: Colors.white,
-                                                  //         size: 16,
-                                                  //       ),
-                                                  //     ),
-                                                  //   ],
-                                                  // ),
-                                                  // In your itemBuilder, update the status icon section:
+                                                  if (_isVorbestellen(order.deliveryTime))
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.orange,
+                                                        borderRadius: BorderRadius.circular(6),
+                                                      ),
+                                                      child: const Text(
+                                                        'Vorbestellen',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.w700,
+                                                          fontFamily: "Mulish",
+                                                          fontSize: 11,
+                                                        ),
+                                                      ),
+                                                    ),
                                                   Row(
                                                     children: [
                                                       Text(

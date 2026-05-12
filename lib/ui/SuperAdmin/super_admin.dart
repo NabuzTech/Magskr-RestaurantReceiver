@@ -8,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:table_calendar/table_calendar.dart';
 import '../../Database/databse_helper.dart';
 import '../../api/repository/api_repository.dart';
 import '../../constants/constant.dart';
@@ -41,11 +42,21 @@ class _SuperAdminState extends State<SuperAdmin> {
   DateTime? _lastScrollTime;
   bool isRefreshing = false;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
-
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
   bool _isHistoryMode = false;
-
+  bool _isVorbestellen(String? deliveryTime) {
+    if (deliveryTime == null || deliveryTime.isEmpty) return false;
+    try {
+      final deliveryDate = DateTime.parse(deliveryTime);
+      final now = DateTime.now();
+      return deliveryDate.year != now.year ||
+          deliveryDate.month != now.month ||
+          deliveryDate.day != now.day;
+    } catch (_) {
+      return false;
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -98,45 +109,20 @@ class _SuperAdminState extends State<SuperAdmin> {
     });
 
     try {
-      print('ðŸ"„ Manual refresh triggered');
-
-      // Reset pagination
       currentOffset = 0;
       hasMoreOrders = true;
       hasPreviousOrders = true;
 
-      // Clear existing data
-      orderList.clear();
-      filteredOrderList.clear();
-
-      // Fetch fresh data
       await Future.wait([
         getAllOrderAdmin(),
-       getAllStoreReport()
+        getAllStoreReport(showLoader: false).catchError((e) {
+          print('Report refresh failed (non-critical): $e');
+        }),
       ]);
 
-      print('âœ… Refresh completed');
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Orders refreshed successfully'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
+      print('✅ Refresh completed');
     } catch (e) {
-      print('âŒ Refresh error: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to refresh orders'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
+      print('❌ Refresh error: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -276,33 +262,17 @@ class _SuperAdminState extends State<SuperAdmin> {
   }
 
   Future<void> _pickDateRange() async {
+    final result = await showDialog<Map<String, DateTime>>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => const _DateRangePickerDialog(),
+    );
+
+    if (result == null) return;
+
+    final start = result['start']!;
+    final end = result['end']!;
     final today = DateTime.now();
-    final start = await showDatePicker(
-      context: context,
-      initialDate: _startDate,
-      firstDate: DateTime(2020),
-      lastDate: today,
-      helpText: 'Select Start Date',
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(colorScheme: const ColorScheme.light(primary: Colors.green)),
-        child: child!,
-      ),
-    );
-    if (start == null) return;
-
-    final end = await showDatePicker(
-      context: context,
-      initialDate: start,
-      firstDate: start,
-      lastDate: today,
-      helpText: 'Select End Date',
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(colorScheme: const ColorScheme.light(primary: Colors.green)),
-        child: child!,
-      ),
-    );
-    if (end == null) return;
-
     final today0 = DateTime(today.year, today.month, today.day);
     final start0 = DateTime(start.year, start.month, start.day);
     final end0 = DateTime(end.year, end.month, end.day);
@@ -596,32 +566,31 @@ class _SuperAdminState extends State<SuperAdmin> {
                                 color: isRefreshing ? Colors.grey : Colors.green,
                                 borderRadius: BorderRadius.circular(5),
                               ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (isRefreshing)
-                                    const SizedBox(
-                                      width: 14,
-                                      height: 14,
+                              child: isRefreshing
+                                  ? const SizedBox(
+                                      width: 16,
+                                      height: 16,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                       ),
                                     )
-                                  else
-                                    const Icon(Icons.refresh, color: Colors.white, size: 16),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    isRefreshing ? 'Refreshing...' : 'Refresh',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish',
+                                  : const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.refresh, color: Colors.white, size: 16),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          'Refresh',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w700,
+                                            fontFamily: 'Mulish',
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ],
-                              ),
                             ),
                           ),
                         ],
@@ -897,6 +866,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                       '';
                   String guestPhone =
                       order.guestShippingJson?.phone?.toString() ?? '';
+                  final String source = order.source.toString();
 
                   Color getContainerColor() {
                     switch (order.approvalStatus) {
@@ -966,8 +936,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       SizedBox(
-                                        width: MediaQuery.of(context).size.width *
-                                            0.6,
+                                        width: MediaQuery.of(context).size.width * 0.4,
                                         child: Text(
                                           order.storeName.toString(),
                                           style: const TextStyle(
@@ -980,6 +949,40 @@ class _SuperAdminState extends State<SuperAdmin> {
                                   )
                                 ],
                               ),
+                              if (source == "Mobile User App")
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF2E7D32),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Text(
+                                    "Magskr",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: "Mulish",
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                )
+                              else if (source == "online")
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFFC107),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Text(
+                                    "Website",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: "Mulish",
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
                               Row(
                                 children: [
                                   const Icon(Icons.access_time, size: 20),
@@ -1029,6 +1032,25 @@ class _SuperAdminState extends State<SuperAdmin> {
                               ),
                             ],
                           ),
+                          if (order.deliveryTime != null && order.deliveryTime!.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.schedule, size: 13, color: Colors.grey),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${'delivery_time'.tr}: ${DateFormat('dd-MM-yyyy  HH:mm').format(DateTime.parse(order.deliveryTime!))}',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'Mulish',
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1042,6 +1064,28 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     fontFamily: "Mulish",
                                     fontSize: 16),
                               ),
+                              if (_isVorbestellen(order.deliveryTime))
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 6),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange,
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: const Text(
+                                        'Vorbestellen',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: 'Mulish',
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               Row(
                                 children: [
                                   Text(
@@ -1066,6 +1110,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                               ),
                             ],
                           ),
+
                         ],
                       ),
                     ),
@@ -1118,22 +1163,24 @@ class _SuperAdminState extends State<SuperAdmin> {
     }
   }
 
-  Future<void> getAllStoreReport() async {
+  Future<void> getAllStoreReport({bool showLoader = true}) async {
     setState(() {
       isLoading = true;
     });
 
     try {
-      Get.dialog(
-        Center(
-            child: Lottie.asset(
-              'assets/animations/burger.json',
-              width: 150,
-              height: 150,
-              repeat: true,
-            )),
-        barrierDismissible: false,
-      );
+      if (showLoader && !(Get.isDialogOpen ?? false)) {
+        Get.dialog(
+          Center(
+              child: Lottie.asset(
+                'assets/animations/burger.json',
+                width: 150,
+                height: 150,
+                repeat: true,
+              )),
+          barrierDismissible: false,
+        );
+      }
 
       GetAdminReportResponseModel REPORT = await CallService().getAdminReportAllStore();
 
@@ -1143,13 +1190,13 @@ class _SuperAdminState extends State<SuperAdmin> {
        print('AdminReport length is ${reports!.length}');
       });
 
-      Get.back();
+      if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
     } catch (e) {
       print('Error getting report : $e');
       setState(() {
         isLoading = false;
       });
-      Get.back();
+      if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
     }
   }
 
@@ -1391,6 +1438,7 @@ class _SuperAdminState extends State<SuperAdmin> {
       ),
     );
   }
+
 }
 
 class SuperAdminController extends GetxController {
@@ -1405,5 +1453,149 @@ class SuperAdminController extends GetxController {
     if (refreshCallback != null) {
       await refreshCallback!();
     }
+  }
+}
+
+class _DateRangePickerDialog extends StatefulWidget {
+  const _DateRangePickerDialog();
+
+  @override
+  State<_DateRangePickerDialog> createState() => _DateRangePickerDialogState();
+}
+
+class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _startDate;
+  DateTime? _endDate;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _startDate == null
+                  ? 'Select Start Date'
+                  : _endDate == null
+                      ? 'Select End Date'
+                      : 'Date Range Selected',
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                fontFamily: 'Mulish',
+              ),
+            ),
+            const SizedBox(height: 6),
+            if (_startDate != null)
+              Text(
+                _endDate != null
+                    ? '${DateFormat('dd MMM yyyy').format(_startDate!)}  →  ${DateFormat('dd MMM yyyy').format(_endDate!)}'
+                    : 'Start: ${DateFormat('dd MMM yyyy').format(_startDate!)}',
+                style: TextStyle(
+                  color: Colors.green.shade700,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Mulish',
+                  fontSize: 13,
+                ),
+              ),
+            const SizedBox(height: 8),
+            TableCalendar(
+              firstDay: DateTime(2020),
+              lastDay: DateTime.now(),
+              focusedDay: _focusedDay,
+              rangeStartDay: _startDate,
+              rangeEndDay: _endDate,
+              rangeSelectionMode: RangeSelectionMode.toggledOn,
+              onRangeSelected: (start, end, focusedDay) {
+                setState(() {
+                  _startDate = start;
+                  _endDate = end;
+                  _focusedDay = focusedDay;
+                });
+              },
+              onPageChanged: (focusedDay) {
+                setState(() {
+                  _focusedDay = focusedDay;
+                });
+              },
+              headerStyle: const HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+                titleTextStyle: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  fontFamily: 'Mulish',
+                ),
+              ),
+              calendarStyle: CalendarStyle(
+                rangeStartDecoration: const BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+                rangeEndDecoration: const BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+                rangeStartTextStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+                rangeEndTextStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+                withinRangeDecoration: BoxDecoration(
+                  color: Colors.green.shade100,
+                  shape: BoxShape.rectangle,
+                ),
+                rangeHighlightColor: Colors.green.shade100,
+                todayDecoration: BoxDecoration(
+                  color: Colors.green.shade200,
+                  shape: BoxShape.circle,
+                ),
+                todayTextStyle: const TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            if (_endDate != null)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop({
+                      'start': _startDate!,
+                      'end': _endDate!,
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: const Text(
+                    'Continue',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Mulish',
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }

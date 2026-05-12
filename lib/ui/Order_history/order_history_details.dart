@@ -6,11 +6,11 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../api/repository/api_repository.dart';
-import '../constants/constant.dart';
-import '../models/order_history_response_model.dart';
-import '../models/print_order_without_ip.dart';
-import '../utils/printer_helper_english.dart';
+import '../../api/repository/api_repository.dart';
+import '../../constants/constant.dart';
+import '../../models/order_history_response_model.dart';
+import '../../models/print_order_without_ip.dart';
+import '../../utils/printer_helper_english.dart';
 
 class OrderHistoryDetails extends StatefulWidget {
   final orderHistoryResponseModel historyOrder;
