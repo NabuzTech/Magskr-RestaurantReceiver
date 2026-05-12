@@ -315,6 +315,18 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
     }
   }
 
+  bool _isVorbestellen(String? deliveryTime) {
+    if (deliveryTime == null || deliveryTime.isEmpty) return false;
+    try {
+      final deliveryDate = DateTime.parse(deliveryTime);
+      final now = DateTime.now();
+      return deliveryDate.year != now.year ||
+          deliveryDate.month != now.month ||
+          deliveryDate.day != now.day;
+    } catch (_) {
+      return false;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     var amount = (updatedOrder.invoice?.totalAmount ?? 0.0).toStringAsFixed(1);
@@ -455,6 +467,31 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                               fontWeight: FontWeight.w500, fontSize: 13),
                         ),
                       ),
+                    if (_isVorbestellen(updatedOrder.deliveryTime))
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: GestureDetector(
+                            onTap: () => _showDeliveryTimeDialog(),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: Colors.orange,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text(
+                                'Vorbestellen',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Mulish',
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     const SizedBox(height: 2),
                     Container(height: 0.5, color: Colors.grey),
                     const SizedBox(height: 2),
@@ -489,29 +526,6 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     const SizedBox(height: 2),
                     Container(height: 0.5, color: Colors.grey),
                     const SizedBox(height: 2),
-                    // ListView.builder(
-                    //   shrinkWrap: true,
-                    //   physics: const NeverScrollableScrollPhysics(),
-                    //   padding: const EdgeInsets.all(1),
-                    //   itemCount: updatedOrder.items?.length ?? 0,
-                    //   itemBuilder: (context, index) {
-                    //     final item = updatedOrder.items?[index];
-                    //     if (item == null) return const SizedBox.shrink();
-                    //
-                    //     final toppingsTotal = item.toppings?.fold<double>(
-                    //       0,
-                    //           (sum, topping) => sum + ((topping.price ?? 0) * (topping.quantity ?? 0)),
-                    //     ) ?? 0;
-                    //     final itemTotal = ((item.unitPrice ?? 0) + toppingsTotal) * (item.quantity ?? 0);
-                    //
-                    //     return _orderItem(
-                    //       item.productName ?? "Unknown",
-                    //       itemTotal.toString(),
-                    //       item,
-                    //       note: item.note ?? "",
-                    //     );
-                    //   },
-                    // ),
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -867,7 +881,9 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
               )
           ],
         );
-      } else if (approvalStatus == 2) {
+      }
+
+      else if (approvalStatus == 2) {
         setState(() {
           isPrint = true;
         });
@@ -889,7 +905,9 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
             const SizedBox(height: 10),
           ],
         );
-      } else if (approvalStatus == 3) {
+      }
+
+      else if (approvalStatus == 3) {
         setState(() {
           isPrint = true;
         });
@@ -911,6 +929,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
           ],
         );
       }
+
     } else {
       if (orderType == 1) {  // Manual Accept
         setState(() {
@@ -981,87 +1000,6 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
         return Colors.grey;
     }
   }
-
-  // Widget _orderItem(String title, String price, OrderItem item, {String? note}) {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(bottom: 12),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         // Product title and price row
-  //         Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           children: [
-  //             Expanded(
-  //               child: Text(
-  //                 '${item.quantity ?? 0}X $title'
-  //                     '${((item.toppings?.isNotEmpty ?? false) && item.variant == null) ? ' [${formatAmount(item.unitPrice)}]' : ''}',
-  //                 style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
-  //                 overflow: TextOverflow.ellipsis,
-  //                 maxLines: 3,
-  //               ),
-  //             ),
-  //             Text(
-  //               '${'currency'.tr} ${formatAmount(double.parse(price))}',
-  //               style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
-  //             ),
-  //           ],
-  //         ),
-  //
-  //         // Variant info
-  //         if (item.variant != null)
-  //           Padding(
-  //             padding: const EdgeInsets.only(left: 10, top: 2),
-  //             child: Text("${item.quantity} × ${item.variant!.name ?? ''} [${formatAmount(item.variant!.price ?? 0)} ${'currency'.tr}]",
-  //                 style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 13)
-  //             ),
-  //           ),
-  //
-  //         // Toppings info
-  //         if ((item.toppings?.isNotEmpty ?? false))
-  //           Padding(
-  //             padding: const EdgeInsets.only(left: 10, top: 2),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: item.toppings!.map((topping) {
-  //                 final totalPrice = (topping.price ?? 0) * (topping.quantity ?? 0);
-  //                 return Text("${topping.quantity} × ${topping.name} [${formatAmount(totalPrice)}]",
-  //                   style: const TextStyle(color: Colors.black, fontSize: 12),
-  //                 );
-  //               }).toList(),
-  //             ),
-  //           ),
-  //         item.note!.isNotEmpty ?
-  //         Row(mainAxisAlignment: MainAxisAlignment.start,
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             Text(
-  //               '${'note'.tr} :',
-  //               style: const TextStyle(
-  //                 fontWeight: FontWeight.bold,
-  //                 fontSize: 13,
-  //                 color: Colors.green,
-  //               ),
-  //             ),
-  //             Container(
-  //               width: MediaQuery.of(context).size.width*0.75,
-  //               child: Text(
-  //                 '${item.note}',
-  //                 style: const TextStyle(
-  //                   fontWeight: FontWeight.w300,
-  //                   fontSize: 13,
-  //                 ),
-  //                 overflow: TextOverflow.ellipsis,
-  //                 maxLines: 3,
-  //               ),
-  //             ),
-  //           ],
-  //         )
-  //             : const SizedBox.shrink(),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _orderItem(String title, String price,String coupon,OrderItem item, {String? note}) {
     return Padding(

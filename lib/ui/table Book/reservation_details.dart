@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../api/repository/api_repository.dart';
+import '../../constants/constant.dart';
 import '../../models/reservation/accept_decline_reservation_response_model.dart';
 import '../../models/reservation/edit_reservation_details_response_model.dart';
 import '../../models/reservation/get_reservation_table_full_details.dart';
@@ -20,6 +22,7 @@ class ReservationDetails extends StatefulWidget {
 
 class _ReservationDetailsState extends State<ReservationDetails> {
   bool isLoading = false;
+  bool _isSuperAdmin = false;
   String orderId = '',
       date = '',
       customerName = '',
@@ -35,8 +38,19 @@ class _ReservationDetailsState extends State<ReservationDetails> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkRole();
       getFullReservationDetails();
     });
+  }
+
+  Future<void> _checkRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    final roleId = prefs.getInt(valueShared_ROLE_ID);
+    if (mounted) {
+      setState(() {
+        _isSuperAdmin = roleId == 1;
+      });
+    }
   }
 
   @override
@@ -199,7 +213,26 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                   fontWeight: FontWeight.w600),
             ),
             const Spacer(),
-            status.toLowerCase() == 'pending' || status.isEmpty
+            _isSuperAdmin
+                ? Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                decoration: BoxDecoration(
+                  color: getStatusColor(status),
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Text(
+                  'Status: ${status.toUpperCase()}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    fontFamily: 'Mulish',
+                  ),
+                ),
+              ),
+            )
+                : status.toLowerCase() == 'pending' || status.isEmpty
                 ? Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

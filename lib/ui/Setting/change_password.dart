@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../api/repository/api_repository.dart';
-import '../../customView/custom_button.dart';
-import '../../customView/custom_text_form_prefiex.dart';
-import '../../models/change_password_model.dart';
-import '../../utils/validators.dart';
+import '../../../api/repository/api_repository.dart';
+import '../../../customView/custom_button.dart';
+import '../../../customView/custom_text_form_prefiex.dart';
+import '../../../models/change_password_model.dart';
+import '../../../utils/validators.dart';
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({super.key});

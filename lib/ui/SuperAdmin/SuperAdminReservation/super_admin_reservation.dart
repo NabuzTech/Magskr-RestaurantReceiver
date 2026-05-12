@@ -10,6 +10,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../../api/repository/api_repository.dart';
 import '../../../constants/constant.dart';
 import '../../../models/reservation/get_history_reservation.dart';
+import '../../../models/reservation/get_user_reservation_details.dart';
+import '../../../models/reservation/today_received_booking_model.dart';
 import '../../../utils/my_application.dart';
 import '../../Login/LoginScreen.dart';
 import '../../table Book/reservation_details.dart';
@@ -31,8 +33,9 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
   SharedPreferences? sharedPreferences;
   bool isLoading = false;
 
-  // Store history reservations
-  List<GetHistoryReservationResponseModel> historyReservations = [];
+  int _selectedTab = 0;
+  List<GetUserReservationDetailsResponseModel> allReservations = [];
+  List<TodayReceivedBookingResponseModel> receivedBooking = [];
 
   Color getStatusColor(String? status) {
     if (status == null) return Colors.grey;
@@ -293,8 +296,78 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
     super.dispose();
   }
 
+  // Same filter logic as AppController.getFilteredReservations
+  List<GetUserReservationDetailsResponseModel> _getFilteredReservations() {
+    final today = DateTime.now();
+    final todayStr = DateFormat('yyyy-MM-dd').format(today);
+    final targetDate = dateSeleted.isNotEmpty
+        ? (convertDisplayDateToApiFormat(dateSeleted) ?? todayStr)
+        : todayStr;
+
+    return allReservations.where((r) {
+      final status = r.status?.toLowerCase() ?? '';
+      if (status == 'pending') return true;
+      if (status == 'cancelled' || status == 'booked') {
+        final dateToCheck = r.reservedFor ?? r.createdAt;
+        if (dateToCheck != null) {
+          try {
+            final d = DateTime.parse(dateToCheck);
+            return DateFormat('yyyy-MM-dd').format(d) == targetDate;
+          } catch (_) { return false; }
+        }
+        return false;
+      }
+      return true;
+    }).toList();
+  }
+
   Future<void> loadReservationHistory() async {
-    await getReservationHistory();
+    await getReservationDetails();
+    await getTodayReceivedReservation(showLoader: false);
+  }
+
+  Future<void> getReservationDetails() async {
+    if (!(Get.isDialogOpen ?? false)) {
+      Get.dialog(
+        Center(child: Lottie.asset('assets/animations/burger.json', width: 150, height: 150, repeat: true)),
+        barrierDismissible: false,
+      );
+    }
+    _reservationTimer = Timer(const Duration(seconds: 7), () {
+      if (Get.isDialogOpen ?? false) {
+        Navigator.of(Get.overlayContext!).pop();
+        showSnackbar('Timeout', 'Request timed out. Please try again.');
+      }
+    });
+    try {
+      List<GetUserReservationDetailsResponseModel> reservations =
+          await CallService().getReservationDetailsList();
+      _reservationTimer?.cancel();
+      if (Get.isDialogOpen == true) Navigator.of(Get.overlayContext!).pop();
+      if (mounted) setState(() => allReservations = reservations);
+    } catch (e) {
+      _reservationTimer?.cancel();
+      if (Get.isDialogOpen == true) Navigator.of(Get.overlayContext!).pop();
+      if (mounted) setState(() => isLoading = false);
+      print('Error getting reservations: $e');
+    }
+  }
+
+  Future<void> getTodayReceivedReservation({bool showLoader = true}) async {
+    if (showLoader && mounted && !(Get.isDialogOpen ?? false)) {
+      Get.dialog(
+        Center(child: Lottie.asset('assets/animations/burger.json', width: 150, height: 150, repeat: true)),
+        barrierDismissible: false,
+      );
+    }
+    try {
+      List<TodayReceivedBookingResponseModel> model = await CallService().todayReceivedBooking();
+      if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
+      if (mounted) setState(() => receivedBooking = model);
+    } catch (e) {
+      if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
+      print('Error getting received booking: $e');
+    }
   }
 
   @override
@@ -403,7 +476,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                       Row(
                         children: [
                           Text(
-                            '${'total_reserv'.tr}: ${historyReservations.length}',
+                            '${'total_reserv'.tr}: ${_selectedTab == 0 ? _getFilteredReservations().length : receivedBooking.length}',
                             style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,
@@ -422,176 +495,106 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                   ),
                 ],
               ),
-              historyReservations.isEmpty
-                  ? Center(
-                child: Column(
-                  children: [
-                    Lottie.asset('assets/animations/empty.json',
-                        height: 150, width: 150),
-                    Text('no_reservation'.tr)
-                  ],
-                ),
-              )
-                  : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: historyReservations.length,
-                  itemBuilder: (context, index) {
-                    var reserv = historyReservations[index];
-
-                    return GestureDetector(
-                      onTap: () async {
-                        await Get.to(
-                              () => ReservationDetails(reserv.id.toString()),
-                        )?.then((result) async {
-                          print("Returned from ReservationDetails, refreshing reservations");
-                          await getReservationHistory();
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        margin: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(7),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                spreadRadius: 0,
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Image.asset(
-                                      'assets/images/reservation.png',
-                                      height: 25,
-                                      width: 25,
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                      formatDateTime(reserv.reservedFor.toString()),
-                                      style: const TextStyle(
-                                          fontSize: 13,
-                                          fontFamily: 'Mulish',
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.access_time, size: 20),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      reserv.createdAt != null
-                                          ? DateFormat('HH:mm').format(
-                                          DateTime.parse(
-                                              reserv.createdAt!))
-                                          : '--:--',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: "Mulish",
-                                        fontSize: 10,
-                                      ),
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width *
-                                      0.5,
-                                  child: Text(
-                                    '${reserv.customerName.toString()}/${reserv.customerPhone.toString()}',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 13,
-                                        fontFamily: "Mulish"),
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      '${'order_id'.tr} :',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 13,
-                                          fontFamily: "Mulish"),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      reserv.id.toString(),
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 11,
-                                          fontFamily: "Mulish"),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Image.asset(
-                                      'assets/images/person.png',
-                                      height: 18,
-                                      width: 14,
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                      reserv.guestCount.toString(),
-                                      style: const TextStyle(
-                                          fontFamily: 'Mulish',
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w800),
-                                    )
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      reserv.status.toString(),
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                          fontFamily: "Mulish-Regular",
-                                          fontSize: 13),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    CircleAvatar(
-                                        radius: 14,
-                                        backgroundColor:
-                                        getStatusColor(reserv.status),
-                                        child: Icon(
-                                          getStatusIcon(reserv.status),
-                                          color: Colors.white,
-                                          size: 16,
-                                        )),
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
+              // ── Tabs ──────────────────────────────────────────────
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => setState(() => _selectedTab = 0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border(bottom: BorderSide(
+                          color: _selectedTab == 0 ? Colors.black : Colors.transparent,
+                          width: 2,
+                        )),
                       ),
-                    );
-                  }),
+                      child: Text('today_booking'.tr,
+                          style: TextStyle(
+                            fontWeight: _selectedTab == 0 ? FontWeight.w800 : FontWeight.w500,
+                          )),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() => _selectedTab = 1);
+                      getTodayReceivedReservation(showLoader: false);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border(bottom: BorderSide(
+                          color: _selectedTab == 1 ? Colors.black : Colors.transparent,
+                          width: 2,
+                        )),
+                      ),
+                      child: Text('today_received_booking'.tr,
+                          style: TextStyle(
+                            fontWeight: _selectedTab == 1 ? FontWeight.w800 : FontWeight.w500,
+                          )),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              // ── Tab 0: Today Booking (same filter as normal reservation.dart) ──
+              if (_selectedTab == 0)
+                Builder(builder: (_) {
+                  final filtered = _getFilteredReservations();
+                  return filtered.isEmpty
+                      ? Center(
+                    child: Column(
+                      children: [
+                        Lottie.asset('assets/animations/empty.json', height: 150, width: 150),
+                        Text('no_reservation'.tr)
+                      ],
+                    ),
+                  )
+                      : ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: filtered.length,
+                      itemBuilder: (context, index) {
+                        var reserv = filtered[index];
+                        return _buildReservationCard(
+                          id: reserv.id.toString(),
+                          reservedFor: reserv.reservedFor?.toString() ?? '',
+                          createdAt: reserv.createdAt,
+                          customerName: reserv.customerName?.toString() ?? '',
+                          customerPhone: reserv.customerPhone?.toString() ?? '',
+                          guestCount: reserv.guestCount?.toString() ?? '0',
+                          status: reserv.status,
+                          onRefresh: () => getReservationDetails(),
+                        );
+                      });
+                })
+              // ── Tab 1: Today Received Booking ─────────────────────
+              else
+                receivedBooking.isEmpty
+                    ? Center(
+                  child: Column(
+                    children: [
+                      Lottie.asset('assets/animations/empty.json', height: 150, width: 150),
+                      Text('no_reservation'.tr)
+                    ],
+                  ),
+                )
+                    : ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: receivedBooking.length,
+                    itemBuilder: (context, index) {
+                      var reserv = receivedBooking[index];
+                      return _buildReservationCard(
+                        id: reserv.id.toString(),
+                        reservedFor: reserv.reservedFor?.toString() ?? '',
+                        createdAt: reserv.createdAt,
+                        customerName: reserv.customerName?.toString() ?? '',
+                        customerPhone: reserv.customerPhone?.toString() ?? '',
+                        guestCount: reserv.guestCount?.toString() ?? '0',
+                        status: reserv.status,
+                        onRefresh: () => getReservationDetails(),
+                      );
+                    }),
             ],
           ),
         ),
@@ -599,126 +602,110 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
     );
   }
 
-  Future<void> getReservationHistory() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    if (!(Get.isDialogOpen ?? false)) {
-      Get.dialog(
-        Center(
-            child: Lottie.asset(
-              'assets/animations/burger.json',
-              width: 150,
-              height: 150,
-              repeat: true,
-            )),
-        barrierDismissible: false,
-      );
-    }
-
-    _reservationTimer = Timer(const Duration(seconds: 7), () {
-      if (Get.isDialogOpen ?? false) {
-        Navigator.of(Get.overlayContext!).pop();
-        showSnackbar("Timeout", "Request timed out. Please try again.");
-      }
-    });
-
-    try {
-      final connectivityResult = await Connectivity().checkConnectivity();
-      if (connectivityResult == ConnectivityResult.none) {
-        if (Get.isDialogOpen == true) {
-          Navigator.of(Get.overlayContext!).pop();
-        }
-
-        setState(() {
-          isLoading = false;
-          hasInternet = false;
-        });
-
-        Future.delayed(const Duration(milliseconds: 500), () {
-          _showLogoutDialog();
-        });
-        return;
-      }
-
-      // Get target date
-      String targetDate;
-      if (dateSeleted.isNotEmpty) {
-        targetDate = convertDisplayDateToApiFormat(dateSeleted) ??
-            DateFormat('yyyy-MM-dd').format(DateTime.now());
-      } else {
-        targetDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-      }
-
-      // Get store ID
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? storeIdString = prefs.getString(valueShared_STORE_KEY);
-      int storeIdInt;
-
-      if (storeIdString != null && storeIdString.isNotEmpty) {
-        storeIdInt = int.tryParse(storeIdString) ?? 13;
-
-      } else {
-        storeIdInt = 13;
-        print("Warning: Store ID not found, using default: 13");
-      }
-
-      var map = {
-        "store_id": storeIdInt,
-        "target_date": targetDate,
-        "offset": 0
-      };
-
-      print("📋 Getting Reservation History: $map");
-
-      List<GetHistoryReservationResponseModel> reservations = await CallService().reservationHistory(map);
-
-      _reservationTimer?.cancel();
-      if (Get.isDialogOpen == true) {
-        Navigator.of(Get.overlayContext!).pop();
-      }
-
-      setState(() {
-        hasInternet = true;
-        isLoading = false;
-        historyReservations = reservations;
-      });
-
-      print('✅ Loaded ${reservations.length} reservations from history');
-    } catch (e) {
-      _reservationTimer?.cancel();
-      if (Get.isDialogOpen == true) {
-        Navigator.of(Get.overlayContext!).pop();
-      }
-
-      setState(() {
-        isLoading = false;
-      });
-
-      if (e.toString().contains('SocketException') ||
-          e.toString().contains('Failed host lookup')) {
-        setState(() {
-          hasInternet = false;
-        });
-
-        Future.delayed(const Duration(milliseconds: 500), () {
-          _showLogoutDialog();
-        });
-      } else {
-        print('❌ Error getting reservation history: $e');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${'error'.tr} - ${'load'.tr}'),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 2),
+  Widget _buildReservationCard({
+    required String id,
+    required String reservedFor,
+    required String? createdAt,
+    required String customerName,
+    required String customerPhone,
+    required String guestCount,
+    required String? status,
+    required Future<void> Function() onRefresh,
+  }) {
+    return GestureDetector(
+      onTap: () async {
+        await Get.to(() => ReservationDetails(id))?.then((_) => onRefresh());
+      },
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(7),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 0,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ]),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Image.asset('assets/images/reservation.png', height: 25, width: 25),
+                    const SizedBox(width: 10),
+                    Text(
+                      formatDateTime(reservedFor),
+                      style: const TextStyle(fontSize: 13, fontFamily: 'Mulish', fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.access_time, size: 20),
+                    const SizedBox(width: 5),
+                    Text(
+                      createdAt != null ? DateFormat('HH:mm').format(DateTime.parse(createdAt)) : '--:--',
+                      style: const TextStyle(fontWeight: FontWeight.w500, fontFamily: "Mulish", fontSize: 10),
+                    )
+                  ],
+                )
+              ],
             ),
-          );
-        }
-      }
-    }
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  child: Text(
+                    '$customerName/$customerPhone',
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: "Mulish"),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text('${'order_id'.tr} :', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: "Mulish")),
+                    const SizedBox(width: 5),
+                    Text(id, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11, fontFamily: "Mulish")),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Image.asset('assets/images/person.png', height: 18, width: 14),
+                    const SizedBox(width: 10),
+                    Text(guestCount, style: const TextStyle(fontFamily: 'Mulish', fontSize: 16, fontWeight: FontWeight.w800)),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(status ?? '', style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: "Mulish-Regular", fontSize: 13)),
+                    const SizedBox(width: 6),
+                    CircleAvatar(
+                        radius: 14,
+                        backgroundColor: getStatusColor(status),
+                        child: Icon(getStatusIcon(status), color: Colors.white, size: 16)),
+                  ],
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
+
 
   void openCalendarScreen() async {
     final result = await showModalBottomSheet<String>(
@@ -755,7 +742,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
 
     if (result != null) {
       setState(() => dateSeleted = result);
-      await getReservationHistory();
+      await getReservationDetails();
       print("Selected date: $result");
     }
   }

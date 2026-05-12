@@ -77,10 +77,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
   }
 
   double _getScaleFactor(BuildContext context) {
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width;
+    double width = MediaQuery.of(context).size.width;
     // Base width: 1024px (standard iPad landscape)
     // Scale factor ranges from 0.7 (small) to 1.5 (very large)
     if (width < 900) return 0.75;
@@ -363,18 +360,13 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
               }
 
               return ScrollablePositionedList.builder(
-                itemScrollController: controller
-                    .landscapeProductScrollController,
-                itemPositionsListener: controller
-                    .landscapeProductPositionsListener,
+                itemScrollController: controller.landscapeProductScrollController,
+                itemPositionsListener: controller.landscapeProductPositionsListener,
                 addAutomaticKeepAlives: true,
                 addRepaintBoundaries: true,
                 addSemanticIndexes: false,
                 padding: EdgeInsets.only(
-                  bottom: MediaQuery
-                      .of(context)
-                      .size
-                      .height * 0.1,
+                  bottom: MediaQuery.of(context).size.height * 0.1,
                   top: _responsive(context, 8),
                   left: _responsive(context, 4),
                   right: _responsive(context, 4),
@@ -387,10 +379,8 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                   }
 
                   var category = controller.productCategoryList[categoryIndex];
-                  var categoryProducts = controller.productList
-                      .where((p) =>
-                  p.categoryId == category.id && (p.isActive ?? false))
-                      .toList();
+                  var categoryProducts = controller.productList.where((p) =>
+                  p.categoryId == category.id && (p.isActive ?? false)).toList();
 
                   if (categoryProducts.isEmpty) return const SizedBox.shrink();
 
@@ -419,9 +409,9 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                           addAutomaticKeepAlives: true,
                           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: _getCrossAxisCount(context),
-                            crossAxisSpacing: _responsive(context, 5),
-                            mainAxisSpacing: _responsive(context, 5),
-                            childAspectRatio: 0.93,
+                            crossAxisSpacing: _responsive(context, 10),
+                            mainAxisSpacing: _responsive(context, 10),
+                            childAspectRatio: 1.3,
                           ),
                           itemCount: categoryProducts.length,
                           itemBuilder: (context, index) {
@@ -481,9 +471,9 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
         padding: EdgeInsets.all(_responsive(context, 8)),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: _getCrossAxisCount(context),
-          crossAxisSpacing: _responsive(context, 5),
-          mainAxisSpacing: _responsive(context, 5),
-          childAspectRatio: 0.93,
+          crossAxisSpacing: _responsive(context, 10),
+          mainAxisSpacing: _responsive(context, 10),
+          childAspectRatio: 1.4,
         ),
         itemCount: controller.filteredProducts.length,
         itemBuilder: (context, index) {
@@ -518,7 +508,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
               border: Border.all(
                 color: isInCart
                     ? AppColor.borderGreen
-                    : Colors.transparent,
+                    : Color(0xff9B92AAFF),
                 width: 1,
               ),
               boxShadow: [
@@ -642,15 +632,28 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                 fontStyle: FontStyle.italic,
                               ),
                               border: InputBorder.none,
-                              suffixIcon: Padding(
-                                padding: EdgeInsets.all(
-                                    _responsive(context, 8)),
-                                child: Image.asset(
-                                  'assets/images/search.png',
-                                  height: _responsive(context, 8),
-                                  width: _responsive(context, 8),
-                                  color: Colors.black,
-                                ),
+                              suffixIcon: Obx(() =>
+                                controller.searchQuery.value.isNotEmpty
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          controller.searchController.clear();
+                                          controller.filterProducts('');
+                                        },
+                                        child: Icon(
+                                          Icons.close,
+                                          size: _responsive(context, 16),
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      )
+                                    : Padding(
+                                        padding: EdgeInsets.all(_responsive(context, 8)),
+                                        child: Image.asset(
+                                          'assets/images/search.png',
+                                          height: _responsive(context, 8),
+                                          width: _responsive(context, 8),
+                                          color: Colors.black,
+                                        ),
+                                      ),
                               ),
                             ),
                             style: TextStyle(
@@ -708,30 +711,27 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             ],
                           ),
                         ),
-                        SizedBox(width: MediaQuery
-                            .of(context)
-                            .size
-                            .width * 0.07,),
-                        Row(
-                          children: [
-                            Image.asset(
-                              'assets/images/german.png',
-                              height: _responsive(context, 25),
-                              width: _responsive(context, 25),
-                            ),
-                            SizedBox(width: _responsive(context, 5)),
-                            Text(
-                              'GER',
-                              style: TextStyle(
-                                fontSize: _responsive(context, 12),
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'Mulish',
-                                color: const Color(0xff232121),
-                              ),
-                            ),
-                            const Icon(Icons.arrow_drop_down)
-                          ],
-                        ),
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.07,),
+                        // Row(
+                        //   children: [
+                        //     Image.asset(
+                        //       'assets/images/german.png',
+                        //       height: _responsive(context, 25),
+                        //       width: _responsive(context, 25),
+                        //     ),
+                        //     SizedBox(width: _responsive(context, 5)),
+                        //     Text(
+                        //       'GER',
+                        //       style: TextStyle(
+                        //         fontSize: _responsive(context, 12),
+                        //         fontWeight: FontWeight.w700,
+                        //         fontFamily: 'Mulish',
+                        //         color: const Color(0xff232121),
+                        //       ),
+                        //     ),
+                        //     const Icon(Icons.arrow_drop_down)
+                        //   ],
+                        // ),
                       ]
                   ),
                 ),
@@ -791,10 +791,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
             ),
           ),
           Positioned(
-            right: MediaQuery
-                .of(context)
-                .size
-                .width * 0.18,
+            right: MediaQuery.of(context).size.width * 0.18,
             top: 10,
             child: Container(
               height: _responsive(context, 71),
@@ -969,21 +966,76 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             color: const Color(0xff797878),
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () => controller.onAddCustomerPressed(),
-                          child: Container(
-                            padding: EdgeInsets.all(_responsive(context, 8)),
-                            decoration: BoxDecoration(
-                              color: const Color(0xffB8ABD1),
-                              borderRadius: BorderRadius.circular(
-                                  _responsive(context, 6)),
+                        Row(
+                          children: [
+                            Obx(() => GestureDetector(
+                              onTap: () => controller.toggleDraftPanel(),
+                              child: Container(
+                                padding: EdgeInsets.all(_responsive(context, 8)),
+                                decoration: BoxDecoration(
+                                  color: controller.showDraftPanel.value
+                                      ? const Color(0xff6C4AB6)
+                                      : controller.drafts.isNotEmpty
+                                          ? const Color(0xff6C4AB6).withOpacity(0.15)
+                                          : const Color(0xffEDE4FF),
+                                  borderRadius: BorderRadius.circular(_responsive(context, 6)),
+                                ),
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Icon(
+                                      Icons.bookmark_outline_rounded,
+                                      size: _responsive(context, 18),
+                                      color: controller.showDraftPanel.value
+                                          ? Colors.white
+                                          : const Color(0xff6C4AB6),
+                                    ),
+                                    if (controller.drafts.isNotEmpty)
+                                      Positioned(
+                                        top: -4,
+                                        right: -4,
+                                        child: Container(
+                                          width: _responsive(context, 14),
+                                          height: _responsive(context, 14),
+                                          decoration: const BoxDecoration(
+                                            color: Color(0xff6C4AB6),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '${controller.drafts.length}',
+                                              style: TextStyle(
+                                                fontSize: _responsive(context, 8),
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w700,
+                                                fontFamily: 'Mulish',
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            )),
+                            SizedBox(width: _responsive(context, 6)),
+                            GestureDetector(
+                              onTap: () => controller.onAddCustomerPressed(),
+                              child: Container(
+                                padding: EdgeInsets.all(_responsive(context, 8)),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffB8ABD1),
+                                  borderRadius: BorderRadius.circular(
+                                      _responsive(context, 6)),
+                                ),
+                                child: SvgPicture.asset(
+                                  'assets/images/add-user.svg',
+                                  height: _responsive(context, 18),
+                                  width: _responsive(context, 18),
+                                ),
+                              ),
                             ),
-                            child: SvgPicture.asset(
-                              'assets/images/add-user.svg',
-                              height: _responsive(context, 18),
-                              width: _responsive(context, 18),
-                            ),
-                          ),
+                          ],
                         ),
                       ],
                     ),
@@ -1221,7 +1273,158 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
           ),
           _buildTimeBottomSheet(controller, context),
           _buildCalendarBottomSheet(controller, context),
+          _buildDraftPanel(controller, context),
         ]);
+  }
+
+  Widget _buildDraftPanel(PosController controller, BuildContext context) {
+    return Obx(() {
+      if (!controller.showDraftPanel.value) return const SizedBox.shrink();
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(_responsive(context, 5)),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: _responsive(context, 12),
+                vertical: _responsive(context, 10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Saved Drafts',
+                    style: TextStyle(
+                      fontFamily: 'Mulish',
+                      fontWeight: FontWeight.w700,
+                      fontSize: _responsive(context, 15),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => controller.showDraftPanel.value = false,
+                    child: Icon(Icons.close, size: _responsive(context, 20), color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1, color: Color(0xffEDE4FF)),
+            Expanded(
+              child: Obx(() {
+                if (controller.drafts.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.bookmark_border, size: _responsive(context, 36), color: const Color(0xffB8ABD1)),
+                        SizedBox(height: _responsive(context, 8)),
+                        Text(
+                          'No saved drafts',
+                          style: TextStyle(
+                            fontFamily: 'Mulish',
+                            fontSize: _responsive(context, 13),
+                            color: const Color(0xff797878),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return ListView.separated(
+                  padding: EdgeInsets.all(_responsive(context, 10)),
+                  itemCount: controller.drafts.length,
+                  separatorBuilder: (_, __) => SizedBox(height: _responsive(context, 6)),
+                  itemBuilder: (context, index) {
+                    final draft = controller.drafts[index];
+                    final List items = draft['cartItems'] as List;
+                    final Map details = draft['customerDetails'] as Map;
+                    final String name = details['name']?.toString().isNotEmpty == true
+                        ? details['name'].toString()
+                        : details['phone']?.toString().isNotEmpty == true
+                            ? details['phone'].toString()
+                            : 'Draft ${index + 1}';
+                    final DateTime savedAt = DateTime.parse(draft['savedAt']);
+                    final String timeStr =
+                        '${savedAt.hour.toString().padLeft(2, '0')}:${savedAt.minute.toString().padLeft(2, '0')}';
+
+                    return GestureDetector(
+                      onTap: () => controller.loadDraft(index),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: _responsive(context, 10),
+                          vertical: _responsive(context, 8),
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: const Color(0xffEDE4FF)),
+                          borderRadius: BorderRadius.circular(_responsive(context, 6)),
+                          color: const Color(0xffFBF9FF),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(_responsive(context, 6)),
+                              decoration: BoxDecoration(
+                                color: const Color(0xff6C4AB6).withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.bookmark_rounded,
+                                size: _responsive(context, 14),
+                                color: const Color(0xff6C4AB6),
+                              ),
+                            ),
+                            SizedBox(width: _responsive(context, 8)),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: TextStyle(
+                                      fontFamily: 'Mulish',
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: _responsive(context, 13),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  SizedBox(height: _responsive(context, 2)),
+                                  Text(
+                                    '${items.length} item${items.length == 1 ? '' : 's'}  •  $timeStr',
+                                    style: TextStyle(
+                                      fontFamily: 'Mulish',
+                                      fontSize: _responsive(context, 11),
+                                      color: const Color(0xff797878),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () => controller.deleteDraft(index),
+                              child: Padding(
+                                padding: EdgeInsets.all(_responsive(context, 4)),
+                                child: Icon(
+                                  Icons.delete_outline,
+                                  size: _responsive(context, 18),
+                                  color: Colors.red.shade300,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildVariantDialog(PosController controller, BuildContext context) {
@@ -2214,13 +2417,13 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
             }
           },
           style: TextStyle(
-            fontSize: _responsive(context, 11),
+            fontSize: _responsive(context, 18),
             fontFamily: 'Mulish',
           ),
           decoration: InputDecoration(
             hintText: label.split('*')[0].trim(),
             hintStyle: TextStyle(
-              fontSize: _responsive(context, 11),
+              fontSize: _responsive(context, 15),
               fontFamily: 'Mulish',
               fontWeight: FontWeight.w500,
               color: Colors.grey.shade400,
@@ -2697,36 +2900,86 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
   }
 
   Widget _buildWeiterButton(PosController controller, BuildContext context) {
-    return Obx(() =>
-        GestureDetector(
-          onTap: controller.onWeiterPressed,
-          child: Container(
-            padding: EdgeInsets.fromLTRB(
-              _responsive(context, 8),
-              _responsive(context, 12),
-              _responsive(context, 8),
-              _responsive(context, 12),
-            ),
-            decoration: BoxDecoration(
-              color: const Color(0xff0C831F),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(_responsive(context, 5)),
-                bottomRight: Radius.circular(_responsive(context, 5)),
-              ),
-            ),
-            child: Center(
-              child: Text(
-                controller.customerDetails.isEmpty ? 'Weiter' : 'Place Order',
-                style: TextStyle(
-                  fontFamily: 'Mulish',
-                  fontWeight: FontWeight.w700,
-                  fontSize: _responsive(context, 14),
-                  color: Colors.white,
+    final radius = _responsive(context, 5);
+    return Obx(() {
+      final bool hasItems = controller.cartItems.isNotEmpty;
+      return Container(
+        padding: EdgeInsets.only(left: 15,right: 15),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Save as Draft button
+            Expanded(
+              child: GestureDetector(
+                onTap: hasItems ? () => controller.saveAsDraft() : null,
+                child: Container(
+                  width: 100,
+                  padding: EdgeInsets.all(8.5),
+                  decoration: BoxDecoration(
+                    color: hasItems
+                        ? const Color(0xff6C4AB6)
+                        : const Color(0xffB8ABD1),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(radius),
+                    ),
+                  ),
+                  child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.bookmark_outline_rounded,
+                        size: _responsive(context, 14),
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: _responsive(context, 4)),
+                      Text(
+                        'Draft',
+                        style: TextStyle(
+                          fontFamily: 'Mulish',
+                          fontWeight: FontWeight.w700,
+                          fontSize: _responsive(context, 13),
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ));
+            // Weiter / Place Order button
+            Expanded(
+              child: GestureDetector(
+                onTap: controller.onWeiterPressed,
+                child: Container(
+                  // padding: EdgeInsets.symmetric(
+                  //   vertical: _responsive(context, 12),
+                  // ),
+                  width: 100,
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xff0C831F),
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(radius),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      controller.customerDetails.isEmpty ? 'Weiter' : 'Place Order',
+                      style: TextStyle(
+                        fontFamily: 'Mulish',
+                        fontWeight: FontWeight.w700,
+                        fontSize: _responsive(context, 14),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildTimeBottomSheet(PosController controller, BuildContext context) {

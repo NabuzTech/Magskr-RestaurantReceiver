@@ -10,7 +10,7 @@ import '../../../api/repository/api_repository.dart';
 import '../../../constants/constant.dart';
 import '../../../models/order_history_response_model.dart';
 import '../../../utils/my_application.dart';
-import '../../order_history_details.dart';
+import '../../Order_history/order_history_details.dart';
 
 class AdminOrder extends StatefulWidget {
   const AdminOrder({super.key});
@@ -227,6 +227,19 @@ class _AdminOrderState extends State<AdminOrder>
     }
   }
 
+  bool _isVorbestellen(String? deliveryTime) {
+    if (deliveryTime == null || deliveryTime.isEmpty) return false;
+    try {
+      final deliveryDate = DateTime.parse(deliveryTime);
+      final now = DateTime.now();
+      return deliveryDate.year != now.year ||
+          deliveryDate.month != now.month ||
+          deliveryDate.day != now.day;
+    } catch (_) {
+      return false;
+    }
+  }
+
   String formatAmount(double amount) {
     final locale = Get.locale?.languageCode ?? 'en';
     String localeToUse = locale == 'de' ? 'de_DE' : 'en_US';
@@ -432,6 +445,7 @@ class _AdminOrderState extends State<AdminOrder>
                         String guestAddress = order.guestShippingJson?.zip?.toString() ?? '';
                         String guestName = order.guestShippingJson?.customerName?.toString() ?? '';
                         String guestPhone = order.guestShippingJson?.phone?.toString() ?? '';
+                        final String source = order.source.toString();
 
                         return AnimatedBuilder(
                           animation: _opacityAnimation,
@@ -511,15 +525,13 @@ class _AdminOrderState extends State<AdminOrder>
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     SizedBox(
-                                                      width: MediaQuery.of(context).size.width * 0.6,
+                                                      width: MediaQuery.of(context).size.width * 0.43,
                                                       child: Row(
                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                           SizedBox(
-                                                            width: MediaQuery.of(context).size.width *
-                                                                (_storeType == '2'
-                                                                    ? 0.5
-                                                                    : (order.orderType == 2 ? 0.18 : 0.3)),
+                                                            width: MediaQuery.of(context).size.width * (_storeType == '2' ? 0.35 :
+                                                            (order.orderType == 2 ? 0.2 : 0.2)),
                                                             child: Text(
                                                               order.orderType == 2
                                                                   ? 'pickup'.tr
@@ -536,7 +548,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                           ),
                                                           if (order.deliveryTime != null && order.deliveryTime!.isNotEmpty)
                                                             SizedBox(
-                                                              width: MediaQuery.of(context).size.width * 0.3,
+                                                              width: MediaQuery.of(context).size.width * 0.22,
                                                               child: Text(
                                                                 '${'time'.tr}: ${_extractTime(order.deliveryTime!)}',
                                                                 style: const TextStyle(
@@ -552,7 +564,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                       visible: (_storeType != '2') &&
                                                           (order.shippingAddress != null || order.guestShippingJson != null),
                                                       child: SizedBox(
-                                                        width: MediaQuery.of(context).size.width * 0.5,
+                                                        width: MediaQuery.of(context).size.width * 0.4,
                                                         child: Text(
                                                           order.orderType == 1
                                                               ? (order.shippingAddress != null
@@ -572,9 +584,43 @@ class _AdminOrderState extends State<AdminOrder>
                                                 )
                                               ],
                                             ),
+                                            if (source == "Mobile User App")
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFF2E7D32),
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: const Text(
+                                                  "Magskr",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily: "Mulish",
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                              )
+                                            else if (source == "online")
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFFFFC107),
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: const Text(
+                                                  "Website",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily: "Mulish",
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                              ),
                                             Row(
                                               children: [
-                                                const Icon(Icons.access_time, size: 20),
+                                                const Icon(Icons.access_time, size: 15),
                                                 Text(
                                                   time,
                                                   style: const TextStyle(
@@ -657,6 +703,28 @@ class _AdminOrderState extends State<AdminOrder>
                                             ),
                                           ],
                                         ),
+                                        if (_isVorbestellen(order.deliveryTime))
+                                          Center(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(top: 6),
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.orange,
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: const Text(
+                                                  'Vorbestellen',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w700,
+                                                    fontFamily: 'Mulish',
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
                                   ),

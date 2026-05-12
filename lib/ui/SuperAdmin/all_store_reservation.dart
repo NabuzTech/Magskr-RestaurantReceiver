@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../../api/repository/api_repository.dart';
 import '../../models/get_all_reservation_for_all_store.dart';
+import '../table Book/reservation_details.dart';
 
 class AllStoreReservation extends StatefulWidget {
   const AllStoreReservation({super.key});
@@ -30,26 +32,34 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
 
   String get _formattedApiDate => DateFormat('yyyy-MM-dd').format(selectedDate);
 
+  bool get _isToday {
+    final now = DateTime.now();
+    return selectedDate.year == now.year &&
+        selectedDate.month == now.month &&
+        selectedDate.day == now.day;
+  }
+
   Future<void> _pickDate() async {
-    final picked = await showDatePicker(
+    final picked = await showDialog<DateTime>(
       context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(primary: Colors.green),
-        ),
-        child: child!,
-      ),
+      barrierDismissible: true,
+      builder: (context) => _SingleDatePickerDialog(initialDate: selectedDate),
     );
-    if (picked != null && picked != selectedDate) {
+    if (picked != null) {
       setState(() {
         selectedDate = picked;
         selectedStore = null;
       });
       getReservation();
     }
+  }
+
+  void _goToToday() {
+    setState(() {
+      selectedDate = DateTime.now();
+      selectedStore = null;
+    });
+    getReservation();
   }
 
   Map<String, Color> _storeColors(int? storeId) {
@@ -99,6 +109,14 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
       default:
         return Colors.grey;
     }
+  }
+
+  bool _isVorbestellen(DateTime? date) {
+    if (date == null) return false;
+    final now = DateTime.now();
+    return date.year != now.year ||
+        date.month != now.month ||
+        date.day != now.day;
   }
 
   List<MapEntry<Reservations, String>> get _currentReservations {
@@ -205,6 +223,28 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
                               ),
                             ),
                           ),
+                          if (!_isToday) ...[
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: _goToToday,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Text(
+                                  'Today',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: 'Mulish',
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ],
@@ -406,7 +446,10 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
     }
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () async {
+        await Get.to(() => ReservationDetails(res.id.toString()));
+        getReservation();
+      },
       child: Container(
         margin: const EdgeInsets.all(8),
         padding: const EdgeInsets.all(8),
@@ -533,6 +576,28 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
                 ),
               ],
             ),
+            if (_isVorbestellen(reservedFor))
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.orange,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'Vorbestellen',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Mulish',
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             // Note
             if (res.note != null && res.note!.trim().isNotEmpty) ...[
               const SizedBox(height: 6),
@@ -590,5 +655,91 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
             backgroundColor: Colors.red, colorText: Colors.white, snackPosition: SnackPosition.BOTTOM);
       }
     }
+  }
+}
+
+class _SingleDatePickerDialog extends StatefulWidget {
+  final DateTime initialDate;
+  const _SingleDatePickerDialog({required this.initialDate});
+
+  @override
+  State<_SingleDatePickerDialog> createState() => _SingleDatePickerDialogState();
+}
+
+class _SingleDatePickerDialogState extends State<_SingleDatePickerDialog> {
+  late DateTime _focusedDay;
+  late DateTime _selectedDay;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusedDay = widget.initialDate;
+    _selectedDay = widget.initialDate;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Select Date',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                fontFamily: 'Mulish',
+              ),
+            ),
+            const SizedBox(height: 8),
+            TableCalendar(
+              firstDay: DateTime(2020),
+              lastDay: DateTime(2030),
+              focusedDay: _focusedDay,
+              selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+              onDaySelected: (selectedDay, focusedDay) {
+                Navigator.of(context).pop(selectedDay);
+              },
+              onPageChanged: (focusedDay) {
+                setState(() {
+                  _focusedDay = focusedDay;
+                });
+              },
+              headerStyle: const HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+                titleTextStyle: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  fontFamily: 'Mulish',
+                ),
+              ),
+              calendarStyle: CalendarStyle(
+                selectedDecoration: const BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+                selectedTextStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+                todayDecoration: BoxDecoration(
+                  color: Colors.green.shade200,
+                  shape: BoxShape.circle,
+                ),
+                todayTextStyle: const TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -39,6 +39,8 @@ class PosController extends GetxController {
   final isCustomerFormVisible = true.obs;
   final isRefreshing = false.obs;
   final showOrderOverlay = false.obs;
+  final showDraftPanel = false.obs;
+  final drafts = <Map<String, dynamic>>[].obs;
 // Cart management - Landscape
   final cartItems = <Map<String, dynamic>>[].obs;
   final customerDetails = <String, String>{}.obs;
@@ -2099,6 +2101,106 @@ class PosController extends GetxController {
 
   void hideOrderOverlay() {
     showOrderOverlay.value = false;
+  }
+
+  /// Draft methods
+  void toggleDraftPanel() {
+    showDraftPanel.value = !showDraftPanel.value;
+  }
+
+  void saveAsDraft() {
+    if (cartItems.isEmpty) return;
+
+    // Capture confirmed details from map
+    final confirmedDetails = Map<String, String>.from(customerDetails);
+
+    // Also capture whatever is typed in form fields (even if form not submitted)
+    final pendingForm = {
+      'name': nameController.text.trim(),
+      'phone': phoneController.text.trim(),
+      'email': emailController.text.trim(),
+      'address': addressController.text.trim(),
+      'region': regionController.text.trim(),
+    };
+
+    // Merge: pending form values fill gaps, confirmed map takes priority
+    final mergedDetails = <String, String>{};
+    pendingForm.forEach((key, value) {
+      if (value.isNotEmpty) mergedDetails[key] = value;
+    });
+    confirmedDetails.forEach((key, value) {
+      if (value.isNotEmpty) mergedDetails[key] = value;
+    });
+
+    final draft = {
+      'cartItems': cartItems.map((item) => Map<String, dynamic>.from(item)).toList(),
+      'customerDetails': mergedDetails,
+      'detailsConfirmed': confirmedDetails.isNotEmpty,
+      'orderNote': orderNote.value,
+      'selectedOrderType': selectedOrderType.value,
+      'savedAt': DateTime.now().toIso8601String(),
+      'id': DateTime.now().millisecondsSinceEpoch,
+    };
+
+    drafts.add(draft);
+
+    cartItems.clear();
+    orderNote.value = '';
+    noteController.clear();
+    showCustomerDetails.value = false;
+    isCartExpanded.value = true;
+    customerDetails.clear();
+    nameController.clear();
+    phoneController.clear();
+    emailController.clear();
+    addressController.clear();
+    regionController.clear();
+  }
+
+  void loadDraft(int index) {
+    final draft = drafts[index];
+
+    cartItems.clear();
+    customerDetails.clear();
+
+    final List<Map<String, dynamic>> savedItems =
+        List<Map<String, dynamic>>.from(
+          (draft['cartItems'] as List).map((item) => Map<String, dynamic>.from(item)),
+        );
+    cartItems.addAll(savedItems);
+
+    final Map<String, String> savedDetails =
+        Map<String, String>.from(draft['customerDetails'] as Map);
+    final bool detailsConfirmed = draft['detailsConfirmed'] as bool? ?? false;
+
+    orderNote.value = draft['orderNote'] ?? '';
+    noteController.text = orderNote.value;
+    selectedOrderType.value = draft['selectedOrderType'] ?? 'Lieferzeit';
+
+    if (savedDetails.isNotEmpty) {
+      nameController.text = savedDetails['name'] ?? '';
+      phoneController.text = savedDetails['phone'] ?? '';
+      emailController.text = savedDetails['email'] ?? '';
+      addressController.text = savedDetails['address'] ?? '';
+      regionController.text = savedDetails['region'] ?? '';
+      showCustomerDetails.value = true;
+
+      if (detailsConfirmed) {
+        // Details were confirmed — restore map and show display card
+        customerDetails.addAll(savedDetails);
+        isCustomerFormVisible.value = false;
+      } else {
+        // Details were only in form (not submitted) — show pre-filled form
+        isCustomerFormVisible.value = true;
+      }
+    }
+
+    drafts.removeAt(index);
+    showDraftPanel.value = false;
+  }
+
+  void deleteDraft(int index) {
+    drafts.removeAt(index);
   }
 
   Future<void> loadOrders() async {

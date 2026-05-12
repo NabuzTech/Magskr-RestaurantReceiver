@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../api/repository/api_repository.dart';
-import '../constants/constant.dart';
-import '../customView/CustomAppBar.dart';
-import '../customView/CustomDrawer.dart';
-import '../models/Store.dart';
-import '../models/get_printer_ip_response_model.dart';
-import '../models/manual_override_response_model.dart';
+import '../../api/repository/api_repository.dart';
+import '../../constants/constant.dart';
+import '../../customView/CustomAppBar.dart';
+import '../../customView/CustomDrawer.dart';
+import '../../models/Store.dart';
+import '../../models/get_printer_ip_response_model.dart';
+import '../../models/manual_override_response_model.dart';
 
 class PrinterSettingsScreen extends StatefulWidget {
   const PrinterSettingsScreen({super.key});

@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../constants/constant.dart';
-import '../models/order_history_response_model.dart';
+import '../../constants/constant.dart';
+import '../../models/order_history_response_model.dart';
 import 'order_history_details.dart';
 
 class OrderHistory extends StatefulWidget {

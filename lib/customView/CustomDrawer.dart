@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:food_receiver/models/Store.dart';
 import 'package:food_receiver/ui/PostCode/postcode.dart';
-import 'package:food_receiver/ui/PrinterSettingsScreen.dart';
-import 'package:food_receiver/ui/change_password.dart';
+import 'package:food_receiver/ui/Setting/PrinterSettingsScreen.dart';
+import 'package:food_receiver/ui/Setting/change_password.dart';
 import 'package:food_receiver/ui/home_screen.dart';
 
 import 'package:get/get.dart';
@@ -294,10 +294,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     Get.to(() => const ChangePassword(),
                        );
                   }),
-                  // _drawerItem('POS'.tr,'assets/images/pos.svg', onTap: () {
-                  //   Navigator.pop(context);
-                  //   widget.onSelectTab(3);
-                  // }),
+                  _drawerItem('POS'.tr,'assets/images/pos.svg', onTap: () {
+                    Navigator.pop(context);
+                   widget.onSelectTab(3);
+                  }),
                   //
                   // _drawerItem('POS PORTRAIT'.tr,'assets/images/coupon.svg',
                   //     iconHeight: 30,
