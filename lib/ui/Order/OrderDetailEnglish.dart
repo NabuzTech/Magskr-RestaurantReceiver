@@ -327,6 +327,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
       return false;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     var amount = (updatedOrder.invoice?.totalAmount ?? 0.0).toStringAsFixed(1);
@@ -462,7 +463,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     if (updatedOrder.deliveryTime != null && updatedOrder.deliveryTime!.isNotEmpty)
                       Center(
                         child: Text(
-                          '${'delivery_time'.tr}: ${formatDateTime(updatedOrder.deliveryTime)}',
+                          '${(updatedOrder.orderType == 2 ? 'collection' : 'delivery_time').tr}: ${formatDateTime(updatedOrder.deliveryTime)}',
                           style: const TextStyle(
                               fontWeight: FontWeight.w500, fontSize: 13),
                         ),
@@ -812,9 +813,9 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
           currentDeliveryTime = DateTime.now().add(const Duration(minutes: 30));
         }
 
-        // ✅ Check Stripe payment method
+        // Hide Accept/Decline buttons for all online payments (show only for cash)
         String paymentMethod = updatedOrder.payment?.paymentMethod?.toLowerCase() ?? '';
-        bool isStripePayment = paymentMethod == 'stripe';
+        bool isCashPayment = paymentMethod == 'cash';
         bool localOrder = updatedOrder.isLocalOrder==true;
         return Column(
           children: [
@@ -831,7 +832,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${'delivery_time'.tr}:',
+                    '${(updatedOrder.orderType == 2 ? 'collection' : 'delivery_time').tr}:',
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
@@ -871,7 +872,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
               ),
             ),
 
-            if (!isStripePayment && !localOrder)
+            if (isCashPayment && !localOrder)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -902,6 +903,22 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.green[400])),
             ),
+            const SizedBox(height: 15),
+            GestureDetector(
+              onTap: _showCancelConfirmation,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red),
+                ),
+                child: Text('cancel_order'.tr,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.redAccent)),
+              ),
+            ),
             const SizedBox(height: 10),
           ],
         );
@@ -925,6 +942,29 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.red[400]!)),
             ),
+            if (updatedOrder.cancelReason != null && updatedOrder.cancelReason!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.redAccent),
+                ),
+                child: Row(
+                  children: [
+                    Text('cancel_reason'.tr,
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red[400])),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(': ${updatedOrder.cancelReason}',
+                          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.red[400])),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 3),
           ],
         );
@@ -1304,6 +1344,166 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
     }
   }
 
+  // ── Cancel Order ────────────────────────────────────────────────
+
+  void _showCancelConfirmation() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('cancel_order'.tr),
+        content: Text('cancel_order_confirm'.tr),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('no_'.tr),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              Navigator.pop(context);
+              _showCancelReasonDialog();
+            },
+            child: Text('yes'.tr, style: const TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCancelReasonDialog() {
+    final reasonController = TextEditingController();
+    int wordCount = 0;
+
+    bool enoughWords(String text) =>
+        text.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length >= 5;
+
+    showDialog(
+      context: context,
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          return AlertDialog(
+            title: Text('cancel_reason'.tr),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextField(
+                  controller: reasonController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: 'cancel_reason_hint'.tr,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  ),
+                  onChanged: (v) => setDialogState(() => wordCount =
+                      v.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length),
+                ),
+                if (wordCount > 0 && wordCount < 5)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text('min_5_words'.tr,
+                        style: const TextStyle(color: Colors.red, fontSize: 12)),
+                  ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('cancel'.tr),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: enoughWords(reasonController.text)
+                      ? Colors.red
+                      : Colors.grey[400],
+                ),
+                onPressed: enoughWords(reasonController.text)
+                    ? () {
+                        Navigator.pop(context);
+                        _cancelOrder(reasonController.text.trim());
+                      }
+                    : null,
+                child: Text('continue'.tr,
+                    style: const TextStyle(color: Colors.white)),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _cancelOrder(String reason) async {
+    if (bearerKey == null) return;
+    final Map<String, dynamic> jsonData = {
+      "order_status": 2,
+      "approval_status": 3,
+      "cancel_reason": reason,
+    };
+    try {
+      Get.dialog(
+        WillPopScope(
+          onWillPop: () async => false,
+          child: Center(
+            child: Lottie.asset('assets/animations/burger.json',
+                width: 150, height: 150, repeat: true),
+          ),
+        ),
+        barrierDismissible: false,
+      );
+      final result = await Future.any([
+        ApiRepo().orderAcceptDecline(bearerKey!, jsonData, updatedOrder.id ?? 0),
+        Future.delayed(const Duration(seconds: 10)).then((_) => null),
+      ]);
+      if (mounted && (Get.isDialogOpen == true)) {
+        try { Navigator.of(Get.overlayContext!).pop(); } catch (_) {}
+      }
+      if (result == null) {
+        if (mounted) {
+          Get.snackbar('timeout'.tr, 'request'.tr,
+              backgroundColor: Colors.orange,
+              colorText: Colors.white,
+              snackPosition: SnackPosition.BOTTOM);
+        }
+        return;
+      }
+      // Fetch fresh order so cancel_reason is included in response
+      try {
+        final refreshed = await ApiRepo().getNewOrderData(bearerKey!, updatedOrder.id!);
+        if (mounted) {
+          setState(() {
+            updatedOrder = refreshed;
+            app.appController.updateOrder(refreshed);
+            orderType = 0;
+            isPrint = true;
+          });
+        }
+      } catch (_) {
+        if (mounted) {
+          setState(() {
+            updatedOrder = result;
+            if (updatedOrder.cancelReason == null || updatedOrder.cancelReason!.isEmpty) {
+              updatedOrder.cancelReason = reason;
+            }
+            app.appController.updateOrder(updatedOrder);
+            orderType = 0;
+            isPrint = true;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted && (Get.isDialogOpen == true)) {
+        try { Navigator.of(Get.overlayContext!).pop(); } catch (_) {}
+      }
+      if (mounted) {
+        Get.snackbar('error'.tr, e.toString(),
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM);
+      }
+    }
+  }
+
   void _showDeliveryTimeDialog() {
     if (updatedOrder.approvalStatus != 2) return;
 
@@ -1324,7 +1524,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: Text('update_delivery_time'.tr),
+              title: Text((updatedOrder.orderType == 2 ? 'update_collection_time' : 'update_delivery_time').tr),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

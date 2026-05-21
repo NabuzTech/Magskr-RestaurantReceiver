@@ -294,10 +294,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     Get.to(() => const ChangePassword(),
                        );
                   }),
-                  _drawerItem('POS'.tr,'assets/images/pos.svg', onTap: () {
-                    Navigator.pop(context);
-                   widget.onSelectTab(3);
-                  }),
+                  // _drawerItem('POS'.tr,'assets/images/pos.svg', onTap: () {
+                  //   Navigator.pop(context);
+                  //  widget.onSelectTab(3);
+                  // }),
                   //
                   // _drawerItem('POS PORTRAIT'.tr,'assets/images/coupon.svg',
                   //     iconHeight: 30,
@@ -324,7 +324,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ),
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0),
-                  child: Text('${'version'.tr}:3.0.1', style: const TextStyle(
+                  child: Text('${'version'.tr}:4.0.1', style: const TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 15
                   ),),

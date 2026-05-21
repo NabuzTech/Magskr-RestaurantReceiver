@@ -554,6 +554,12 @@ class AppTranslations extends Translations {
           'type_msg_here': 'Type your message here...',
           'skip': 'Skip',
           'continue': 'Continue',
+          'cancel_order': 'Cancel Order',
+          'cancel_reason': 'Cancel Reason',
+          'cancel_order_confirm': 'Are you sure you want to cancel this order?',
+          'cancel_reason_hint': 'Enter cancel reason (minimum 5 words)',
+          'min_5_words': 'Please enter at least 5 words',
+          'update_collection_time': 'Update Collection Time',
           },
 
         'de': {
@@ -1111,6 +1117,12 @@ class AppTranslations extends Translations {
           'type_msg_here': 'Nachricht hier eingeben...',
           'skip': 'Überspringen',
           'continue': 'Weiter',
+          'cancel_order': 'Stornieren',
+          'cancel_reason': 'Grund',
+          'cancel_order_confirm': 'Bestellung wirklich stornieren?',
+          'cancel_reason_hint': 'Stornierungsgrund eingeben (mind. 5 Wörter)',
+          'min_5_words': 'Bitte mindestens 5 Wörter eingeben',
+          'update_collection_time': 'Abholzeit aktualisieren',
         },
 
         'ch': {
@@ -1171,6 +1183,12 @@ class AppTranslations extends Translations {
           'history': 'Verlauf',
           'liveSale': 'Live-Verkauf',
           'view_full': 'Alle Details anzeigen',
+          'cancel_order': 'Stornieren',
+          'cancel_reason': 'Grund',
+          'cancel_order_confirm': 'Bestellung wirklich stornieren?',
+          'cancel_reason_hint': 'Stornierungsgrund eingeben (mind. 5 Wörter)',
+          'min_5_words': 'Bitte mindestens 5 Wörter eingeben',
+          'update_collection_time': 'Abholzeit aktualisieren',
         }
       };
 }

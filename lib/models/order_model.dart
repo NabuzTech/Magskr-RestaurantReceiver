@@ -21,6 +21,7 @@ class Order {
   int? orderType;
   int? orderStatus;
   int? approvalStatus;
+  String? cancelReason;
   String? deliveryTime;
   int? storeId;
   bool? isActive;
@@ -52,6 +53,7 @@ class Order {
     this.orderType,
     this.orderStatus,
     this.approvalStatus,
+    this.cancelReason,
     this.deliveryTime,
     this.storeId,
     this.isActive,
@@ -90,6 +92,7 @@ class Order {
       orderType: json["order_type"],
       orderStatus: json["order_status"],
       approvalStatus: json["approval_status"],
+      cancelReason: json["cancel_reason"],
       deliveryTime: json["delivery_time"],
       storeId: json["store_id"],
       isActive: json["isActive"],
@@ -136,6 +139,7 @@ class Order {
         "order_type": orderType,
         "order_status": orderStatus,
         "approval_status": approvalStatus,
+        "cancel_reason": cancelReason,
         "delivery_time": deliveryTime,
         "store_id": storeId,
         "isActive": isActive,

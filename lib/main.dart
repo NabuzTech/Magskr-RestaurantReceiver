@@ -938,26 +938,7 @@ Future<void> main() async {
   await initApp();
   runApp(const AppLifecycleObserver(child: MyApp()));
 }
-//
-// Future<void> _requestIOSPermissions() async {
-//   // if (Platform.isIOS) {
-//   //   await _fcm.requestPermission(
-//   //     alert: true,
-//   //     badge: true,
-//   //     sound: true,
-//   //     provisional: false,
-//   //   );
-//   // }
-//   if (Platform.isIOS) {
-//     print('🍎 Requesting iOS notifications permissions...');
-//     NotificationSettings iosSettings = await _fcm.requestPermission(
-//       alert: true,
-//       badge: true,
-//       sound: true,
-//     );
-//     print('🛡️ iOS permission status: ${iosSettings.authorizationStatus}');
-//   }
-// }
+
 Future<void> _requestIOSPermissions() async {
   if (Platform.isIOS) {
     print('🎯 Requesting iOS notifications permissions...');
@@ -977,119 +958,6 @@ Future<void> _requestIOSPermissions() async {
   }
 }
 
-// void _registerForegroundListeners() {
-//   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-//     print("🔥 Raw message received: ${message.toMap()}");
-//
-//     String title = message.notification?.title ?? message.data['title'] ?? '';
-//     String body = message.notification?.body ?? message.data['body'] ?? '';
-//
-//     // ✅ Show notification regardless of app state
-//     if ((title.contains('New Order') || title.contains('Reservation')) && body.isNotEmpty) {
-//       await _showOrderNotification(title, body);
-//
-//       // ✅ CRITICAL: Refresh orders immediately when new order arrives
-//       if (title.contains('New Order')) {
-//         print("🔄 New order received - Triggering refresh");
-//         await getOrdersInBackground();
-//       }
-//     }
-//   });
-//
-//   // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-//   //   String title = message.notification?.title ?? message.data['title'] ?? '';
-//   //
-//   //   SharedPreferences.getInstance().then((prefs) {
-//   //     final sessionID = prefs.getString(valueShared_BEARER_KEY);
-//   //
-//   //     if (sessionID != null) {
-//   //       if (title.contains('New Order')) {
-//   //         Get.offAllNamed('/home', arguments: {'initialTab': 0});
-//   //       } else if (title.contains('Reservation')) {
-//   //         Get.offAllNamed('/home', arguments: {'initialTab': 1});
-//   //       }
-//   //
-//   //       // ✅ Refresh orders after navigation
-//   //       Future.delayed(const Duration(milliseconds: 500), () {
-//   //         callOrderApiFromNotification();
-//   //       });
-//   //     } else {
-//   //       Get.offAllNamed('/splash');
-//   //     }
-//   //   });
-//   // });
-//   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-//     String title = message.notification?.title ?? message.data['title'] ?? '';
-//
-//     SharedPreferences.getInstance().then((prefs) {
-//       final sessionID = prefs.getString(valueShared_BEARER_KEY);
-//
-//       if (sessionID != null) {
-//         int targetTab = 0;
-//         if (title.contains('New Order')) {
-//           targetTab = 0;
-//         } else if (title.contains('Reservation')) {
-//           targetTab = 1;
-//         }
-//
-//         // ✅ Use offAllNamed with proper arguments
-//         Get.offAllNamed('/home', arguments: {'initialTab': targetTab});
-//
-//         // ✅ Refresh orders after navigation
-//         Future.delayed(const Duration(milliseconds: 500), () {
-//           callOrderApiFromNotification();
-//         });
-//       } else {
-//         Get.offAllNamed('/splash');
-//       }
-//     });
-//   });
-//
-//   // _fcm.getInitialMessage().then((message) async {
-//   //   if (message != null) {
-//   //     String title = message.notification?.title ?? message.data['title'] ?? '';
-//   //
-//   //     SharedPreferences prefs = await SharedPreferences.getInstance();
-//   //     final sessionID = prefs.getString(valueShared_BEARER_KEY);
-//   //
-//   //     if (sessionID != null) {
-//   //       if (title.contains('New Order')) {
-//   //         await prefs.setString('notification_initial_tab', '0');
-//   //       } else if (title.contains('Reservation')) {
-//   //         await prefs.setString('notification_initial_tab', '1');
-//   //       }
-//   //
-//   //       // ✅ Refresh orders
-//   //       callOrderApiFromNotification();
-//   //     }
-//   //   }
-//   // });
-//   _fcm.getInitialMessage().then((message) async {
-//     if (message != null) {
-//       String title = message.notification?.title ?? message.data['title'] ?? '';
-//
-//       SharedPreferences prefs = await SharedPreferences.getInstance();
-//       final sessionID = prefs.getString(valueShared_BEARER_KEY);
-//
-//       if (sessionID != null) {
-//         int targetTab = 0;
-//         if (title.contains('New Order')) {
-//           targetTab = 0;
-//         } else if (title.contains('Reservation')) {
-//           targetTab = 1;
-//         }
-//
-//         // ✅ Navigate with arguments
-//         Get.offAllNamed('/home', arguments: {'initialTab': targetTab});
-//
-//         // ✅ Refresh orders
-//         Future.delayed(const Duration(milliseconds: 500), () {
-//           callOrderApiFromNotification();
-//         });
-//       }
-//     }
-//   });
-// }
 void _registerForegroundListeners() {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
     print("🔥 Raw message received: ${message.toMap()}");
@@ -1335,55 +1203,6 @@ const String orderChannelId = 'order_channel_v2';
 
 const String silentChannelId = 'order_channel_silent';
 
-// Future<void> _showOrderNotification(String title, String body) async {
-//   print("Showing notification");
-//   String payload = title.contains('New Order') ? '0' : '1';
-//
-//
-//   final androidDetails = AndroidNotificationDetails(
-//     'order_channel',
-//     'Order Notifications',
-//     channelDescription: 'Order alerts with sound',
-//     importance: Importance.max,
-//     priority: Priority.max,
-//     playSound: true,
-//     sound: const RawResourceAndroidNotificationSound('alarm'),
-//     enableVibration: true,
-//     vibrationPattern: Int64List.fromList([0, 1000, 500, 1000]),
-//     autoCancel: true,
-//     ongoing: false,
-//     onlyAlertOnce: true,
-//     when: DateTime.now().millisecondsSinceEpoch,
-//   );
-//   final iosDetails = DarwinNotificationDetails(
-//     presentAlert: true,
-//     presentBadge: true,
-//     presentSound: true,
-//     sound: 'alarm.caf',
-//     badgeNumber: badgeCount,
-//   );
-//
-//   final platformDetails = NotificationDetails(
-//     android: androidDetails,
-//     iOS: iosDetails,
-//   );
-//
-//   int id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-//
-//   try {
-//     await flutterLocalNotificationsPlugin.show(
-//       id,
-//       title,
-//       body,
-//       platformDetails,
-//       payload: payload,
-//     );
-//     // REMOVE the silent channel update - it's causing the slide sound issue
-//     print("Notification shown with onlyAlertOnce");
-//   } catch (e) {
-//     print("Error: $e");
-//   }
-// }
 Future<void> _showOrderNotification(String title, String body) async {
   print("📢 Showing notification");
   String payload = title.contains('New Order') ? '0' : '1';
