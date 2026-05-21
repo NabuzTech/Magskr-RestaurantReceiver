@@ -952,7 +952,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.redAccent),
                 ),
-                child: Row(
+                child: Row(crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('cancel_reason'.tr,
                         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red[400])),

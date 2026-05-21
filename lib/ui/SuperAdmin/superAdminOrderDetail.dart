@@ -489,36 +489,67 @@ class _SuperAdminOrderDetailState extends State<SuperAdminOrderDetail> {
   }
 
   Widget _buildStatusDisplay(BuildContext context, int approvalStatus) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: BoxDecoration(
-        color: getStatusColor(approvalStatus).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: getStatusColor(approvalStatus)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            approvalStatus == 1
-                ? Icons.pending
-                : approvalStatus == 2
-                ? Icons.check_circle
-                : Icons.cancel,
-            color: getStatusColor(approvalStatus),
-            size: 24,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          decoration: BoxDecoration(
+            color: getStatusColor(approvalStatus).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: getStatusColor(approvalStatus)),
           ),
-          const SizedBox(width: 8),
-          Text(
-            getApprovalStatusText(approvalStatus),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: getStatusColor(approvalStatus),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                approvalStatus == 1
+                    ? Icons.pending
+                    : approvalStatus == 2
+                    ? Icons.check_circle
+                    : Icons.cancel,
+                color: getStatusColor(approvalStatus),
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                getApprovalStatusText(approvalStatus),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: getStatusColor(approvalStatus),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (approvalStatus == 3 &&
+            updatedOrder.cancelReason != null &&
+            updatedOrder.cancelReason!.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.red.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.redAccent),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('cancel_reason'.tr,
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red[400])),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(': ${updatedOrder.cancelReason}',
+                      style: TextStyle(fontWeight: FontWeight.w600, color: Colors.red[400])),
+                ),
+              ],
             ),
           ),
         ],
-      ),
+      ],
     );
   }
 

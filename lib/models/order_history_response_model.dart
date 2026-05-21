@@ -24,6 +24,7 @@ class orderHistoryResponseModel {
   List<TaxSummary>? taxSummary;
   List<BruttoNettoSummary>? bruttoNettoSummary;
   GuestShippingJson? guestShippingJson;
+  String? cancelReason;
 
   orderHistoryResponseModel({
     this.userId,
@@ -51,6 +52,7 @@ class orderHistoryResponseModel {
     this.taxSummary,
     this.bruttoNettoSummary,
     this.guestShippingJson,
+    this.cancelReason,
   });
 
   orderHistoryResponseModel.fromJson(Map<String, dynamic> json) {
@@ -98,6 +100,7 @@ class orderHistoryResponseModel {
     guestShippingJson = json['guest_shipping_json'] != null
         ? GuestShippingJson.fromJson(json['guest_shipping_json'] as Map<String, dynamic>)
         : null;
+    cancelReason = json['cancel_reason'] as String?;
   }
 
   Map<String, dynamic> toJson() {
@@ -126,6 +129,7 @@ class orderHistoryResponseModel {
     data['tax_summary'] = taxSummary?.map((v) => v.toJson()).toList();
     data['brutto_netto_summary'] = bruttoNettoSummary?.map((v) => v.toJson()).toList();
     data['guest_shipping_json'] = guestShippingJson?.toJson();
+    data['cancel_reason'] = cancelReason;
     return data;
   }
 }

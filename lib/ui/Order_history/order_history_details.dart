@@ -580,11 +580,42 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Center(
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.red),
+              ),
               child: Text("status_decline".tr,
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.red[400]!)),
             ),
+            if (widget.historyOrder.cancelReason != null &&
+                widget.historyOrder.cancelReason!.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.redAccent),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('cancel_reason'.tr,
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red[400])),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(': ${widget.historyOrder.cancelReason}',
+                          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.red[400])),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 3),
           ],
         );

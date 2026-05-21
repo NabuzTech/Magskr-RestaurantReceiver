@@ -25,6 +25,7 @@ class AllOrderAdminResponseModel {
   List<TaxSummary>? taxSummary;
   List<BruttoNettoSummary>? bruttoNettoSummary;
   GuestShippingJson? guestShippingJson;
+  String? cancelReason;
 
   AllOrderAdminResponseModel(
       {this.source,
@@ -52,7 +53,8 @@ class AllOrderAdminResponseModel {
         this.billingAddress,
         this.taxSummary,
         this.bruttoNettoSummary,
-        this.guestShippingJson});
+        this.guestShippingJson,
+        this.cancelReason});
 
   AllOrderAdminResponseModel.fromJson(Map<String, dynamic> json) {
     try {
@@ -131,6 +133,8 @@ class AllOrderAdminResponseModel {
           ? GuestShippingJson.fromJson(json['guest_shipping_json'])
           : null;
 
+      cancelReason = json['cancel_reason'] as String?;
+
     } catch (e) {
       print("Error in AllOrderAdminResponseModel.fromJson: $e");
       rethrow;
@@ -186,6 +190,7 @@ class AllOrderAdminResponseModel {
     if (guestShippingJson != null) {
       data['guest_shipping_json'] = guestShippingJson!.toJson();
     }
+    data['cancel_reason'] = cancelReason;
     return data;
   }
 }
