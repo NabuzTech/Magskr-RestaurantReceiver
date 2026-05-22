@@ -17,6 +17,7 @@ import '../../models/DailySalesReport.dart'
     hide PaymentMethods, ApprovalStatuses, TaxBreakdown;
 import '../../models/Logout.dart';
 import '../../models/PrinterSetting.dart';
+import '../../models/Store Owners/owners_store_today_report_model.dart' hide OrderTypes, ApprovalStatuses;
 import '../../models/Store.dart';
 import '../../models/StoreDetail.dart';
 import '../../models/StoreSetting.dart';
@@ -98,6 +99,7 @@ import '../../models/reservation/get_reservation_table_full_details.dart';
 import '../../models/reservation/get_user_reservation_details.dart';
 import '../../models/reservation/today_received_booking_model.dart';
 import '../../models/reset_store_password_by_suyperAdmin_model.dart';
+import '../../models/store_owners_store_model.dart';
 import '../../models/sync_order_response_model.dart';
 import '../../models/update_holiday_response_model.dart';
 import '../../models/update_store_hour_response_model.dart';
@@ -4424,4 +4426,49 @@ class CallService extends GetConnect {
       }
     }
   }
+
+  //For Getting StoreOwners Stores
+  Future<List<StoreOwnersStoreResponseModel>> getStoreOwnersStores() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    print("🔵 API URL: ${Api.baseUrl}stores/my-stores");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('stores/my-stores', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting StoreOwners Store response is :${res.statusCode.toString()}");
+      print("Getting StoreOwners Store response body is :${res.body}");
+      List<dynamic> jsonList = res.body;
+      return jsonList.map((json) => StoreOwnersStoreResponseModel.fromJson(json)).toList();
+    } else {
+      throw Exception(
+          'Failed to load  StoreOwners Store: ${res.statusCode}');
+    }
+  }
+
+  //For getting Store Owners Report
+  Future<GetAdminReportResponseModel> getStoreOwnersReport() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('reports/today', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Store Owner Report response is :${res.statusCode.toString()}");
+      print("Getting Store Owner Report response body is :${res.body}");
+      return GetAdminReportResponseModel.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load Getting Store Owner Report: ${res.statusCode}');
+    }
+  }
+
 }

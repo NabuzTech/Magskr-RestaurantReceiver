@@ -483,6 +483,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:food_receiver/ui/Store%20Owners/store_owner_stores.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -857,9 +858,18 @@ class LoginController extends GetxController {
     }
   }
 
+  // void _navigateToHome(int? roleId) {
+  //   if (roleId == 1) {
+  //     Get.offAll(() => const SuperAdmin());
+  //   } else {
+  //     Get.offAll(() => const HomeScreen());
+  //   }
+  // }
   void _navigateToHome(int? roleId) {
     if (roleId == 1) {
       Get.offAll(() => const SuperAdmin());
+    } else if (roleId == 5) {
+      Get.offAll(() => const StoreOwnerStores());
     } else {
       Get.offAll(() => const HomeScreen());
     }

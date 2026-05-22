@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api/repository/api_repository.dart';
 import '../constants/constant.dart';
 import '../ui/SuperAdmin/super_admin.dart';
+import '../ui/Store Owners/store_owner_stores.dart';
 import '../utils/global.dart';
 
 class NotificationService {
@@ -84,6 +85,17 @@ class NotificationService {
           }
         } catch (e) {
           print('â„¹ï¸ Super Admin not active: $e');
+        }
+
+        // Refresh Store Owner screen if controller exists
+        try {
+          if (Get.isRegistered<StoreOwnerController>()) {
+            final controller = Get.find<StoreOwnerController>();
+            await controller.triggerRefresh();
+            print('Store Owner refreshed from notification');
+          }
+        } catch (e) {
+          print('Store Owner not active: $e');
         }
       }});
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:food_receiver/ui/Login/LoginScreen.dart';
+import 'package:food_receiver/ui/Store%20Owners/store_owner_stores.dart';
 import 'package:food_receiver/ui/SuperAdmin/super_admin.dart';
 import 'package:food_receiver/ui/home_screen.dart';
 import 'package:lottie/lottie.dart';
@@ -73,6 +74,8 @@ class _SplashScreenState extends State<SplashScreen> {
             if (roleId == 1) {
               // Super Admin
               Get.off(() => const SuperAdmin());
+            }  else if (roleId == 5) {
+              Get.offAll(() => const StoreOwnerStores());
             } else {
               // Regular users (role_id 2 or others)
               Get.off(() => const HomeScreen());

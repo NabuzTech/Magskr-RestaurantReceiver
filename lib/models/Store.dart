@@ -1,47 +1,4 @@
-//
-// class Store {
-//   String? name;
-//   String? address;
-//   String? country;
-//   bool? isManualOverride;
-//   String? manualStatus;
-//   int? code;
-//   String? mess;
-//
-//
-//   Store({
-//     this.name,
-//     this.address,
-//     this.country,
-//     this.isManualOverride,
-//     this.manualStatus,
-//   });
-//
-//
-//   Store.withError({
-//     int? code,
-//     String? mess,
-//   })  : code = code,
-//         mess = mess;
-//
-//   factory Store.fromJson(Map<String, dynamic> json) => Store(
-//     name: json["name"],
-//     address: json["address"],
-//     country: json["country"],
-//     isManualOverride : json['is_manual_override'],
-//     manualStatus : json['manual_status'],
-//   );
-//   Map<String, dynamic> toJson() => {
-//     "name": name,
-//     "address": address,
-//     "country": country,
-//     "is_manual_override":isManualOverride,
-//     "manual_status":manualStatus,
-//
-//   };
-//
-//
-// }
+
 class Store {
   String? name;
   String? address;
