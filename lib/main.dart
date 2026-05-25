@@ -19,6 +19,7 @@ import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'Database/databse_helper.dart';
 import 'api/api.dart';
 import 'api/repository/api_repository.dart';
 import 'constants/constant.dart';
@@ -151,6 +152,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     title = message.data['title'] ?? message.data['Title'] ?? '';
     body = message.data['body'] ?? message.data['Body'] ?? message.data['message'] ?? '';
   }
+
+  // Save only Windows App status notifications to history
+  // (New Order & Reservation are intentionally excluded)
+  final String? notifStoreId = message.data['store_id']?.toString();
+  if (title.isNotEmpty && body.isNotEmpty &&
+      !title.contains('New Order') && !title.contains('Reservation')) {
+    try {
+      await DatabaseHelper().saveNotification(title, body, storeId: notifStoreId);
+    } catch (e) {
+      print('❌ Error saving background notification to DB: $e');
+    }
+  }
+
   if (title.contains('Reservation')) {
     RegExp regExp = RegExp(r'#(\d+)');
     Match? match = regExp.firstMatch(body);
@@ -966,11 +980,9 @@ void _registerForegroundListeners() {
     String title = message.notification?.title ?? message.data['title'] ?? '';
     String body = message.notification?.body ?? message.data['body'] ?? '';
 
-    // ✅ Show notification regardless of app state
-    if ((title.contains('New Order') || title.contains('Reservation')) && body.isNotEmpty) {
+    if (title.isNotEmpty && body.isNotEmpty) {
       await _showOrderNotification(title, body);
 
-      // ✅ CRITICAL: Refresh orders immediately when new order arrives
       if (title.contains('New Order')) {
         print("📄 New order received - Triggering refresh");
         await getOrdersInBackground();

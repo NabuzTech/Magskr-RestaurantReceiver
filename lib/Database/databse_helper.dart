@@ -40,7 +40,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 11,
+      version: 13,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -216,6 +216,16 @@ class DatabaseHelper {
     store_id TEXT,
     name TEXT,
     last_updated INTEGER
+  )
+''');
+
+    await db.execute('''
+  CREATE TABLE notifications(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    body TEXT,
+    received_at INTEGER,
+    store_id TEXT
   )
 ''');
 
@@ -462,6 +472,25 @@ class DatabaseHelper {
       last_updated INTEGER
     )
   ''');
+    }
+
+    if (oldVersion < 12) {
+      await db.execute('''
+    CREATE TABLE IF NOT EXISTS notifications(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT,
+      body TEXT,
+      received_at INTEGER
+    )
+  ''');
+    }
+
+    if (oldVersion < 13) {
+      final cols = await db.rawQuery('PRAGMA table_info(notifications)');
+      final hasStoreId = cols.any((col) => col['name'] == 'store_id');
+      if (!hasStoreId) {
+        await db.execute('ALTER TABLE notifications ADD COLUMN store_id TEXT');
+      }
     }
   }
 
@@ -1281,7 +1310,7 @@ class DatabaseHelper {
 
   Future<void> clearAllData() async {
     final db = await database;
-    await db.delete('product_variants'); // ✅ ADDED
+    await db.delete('product_variants');
     await db.delete('categories');
     await db.delete('products');
     await db.delete('stores');
@@ -1290,7 +1319,50 @@ class DatabaseHelper {
     await db.delete('order_items');
     await db.delete('order_payment');
     await db.delete('postcodes');
+    await db.delete('notifications');
     print('🗑️ Cleared entire database');
+  }
+
+  // ==================== NOTIFICATION METHODS ====================
+
+  Future<void> saveNotification(String title, String body, {String? storeId}) async {
+    final db = await database;
+    await db.insert('notifications', {
+      'title': title,
+      'body': body,
+      'received_at': DateTime.now().millisecondsSinceEpoch,
+      'store_id': storeId,
+    });
+    await _deleteOldNotifications(db);
+  }
+
+  Future<List<Map<String, dynamic>>> getNotifications({String? storeId}) async {
+    final db = await database;
+    await _deleteOldNotifications(db);
+    if (storeId != null && storeId.isNotEmpty) {
+      return await db.query(
+        'notifications',
+        where: 'store_id = ?',
+        whereArgs: [storeId],
+        orderBy: 'received_at DESC',
+      );
+    }
+    return await db.query('notifications', orderBy: 'received_at DESC');
+  }
+
+  Future<void> _deleteOldNotifications(Database db) async {
+    final cutoff = DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch;
+    await db.delete('notifications', where: 'received_at < ?', whereArgs: [cutoff]);
+  }
+
+  Future<void> clearAllNotifications({String? storeId}) async {
+    final db = await database;
+    if (storeId != null && storeId.isNotEmpty) {
+      await db.delete('notifications', where: 'store_id = ?', whereArgs: [storeId]);
+    } else {
+      await db.delete('notifications');
+    }
+    print('🗑️ Cleared notifications (storeId: $storeId)');
   }
 
   Future<Map<String, int>> getDataCount(String storeId) async {

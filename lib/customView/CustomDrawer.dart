@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:food_receiver/models/Store.dart';
+import 'package:food_receiver/ui/Notification/notification.dart';
 import 'package:food_receiver/ui/PostCode/postcode.dart';
 import 'package:food_receiver/ui/Setting/PrinterSettingsScreen.dart';
 import 'package:food_receiver/ui/Setting/change_password.dart';
@@ -284,6 +285,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     Navigator.of(context).pop();
                     Get.to(() => const DeviceStatusScreen());
                   }),
+                  _drawerItem('windows'.tr,'assets/images/device.svg', onTap: () {
+                    Navigator.of(context).pop();
+                    final sid = sharedPreferences.getString(valueShared_STORE_KEY);
+                    Get.to(() => NotificationScreen(storeId: sid?.isNotEmpty == true ? sid : null));
+                  }),
                   _drawerItem('customer'.tr,'assets/images/customer.svg', onTap: () {
                     Navigator.of(context).pop();
                     Get.to(() => const StoreCustomer(),
@@ -382,6 +388,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
       // ✅ Clear SQLite database
       await DatabaseHelper().clearAllStores();
+      await DatabaseHelper().clearAllNotifications();
 
       // ✅ Reset flag
       setState(() {

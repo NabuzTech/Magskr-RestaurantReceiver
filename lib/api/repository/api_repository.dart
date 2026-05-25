@@ -103,6 +103,7 @@ import '../../models/store_owners_store_model.dart';
 import '../../models/sync_order_response_model.dart';
 import '../../models/update_holiday_response_model.dart';
 import '../../models/update_store_hour_response_model.dart';
+import '../../models/windows_device_status.dart';
 import '../api.dart';
 import '../api_end_points.dart';
 import '../api_params.dart';
@@ -4468,6 +4469,26 @@ class CallService extends GetConnect {
     } else {
       throw Exception(
           'Failed to load Getting Store Owner Report: ${res.statusCode}');
+    }
+  }
+
+  Future<WindowsDeviceStatus> getWindowsDeviceStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('stores/online/windows/all', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print(" Windows Device Status response is :${res.statusCode.toString()}");
+      print(" Windows Device Status  response body is :${res.body}");
+      return WindowsDeviceStatus.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load  Windows Device Status : ${res.statusCode}');
     }
   }
 

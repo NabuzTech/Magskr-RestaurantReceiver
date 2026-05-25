@@ -6,8 +6,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Database/databse_helper.dart';
 import '../api/repository/api_repository.dart';
 import '../constants/constant.dart';
+import '../ui/Notification/notification.dart';
 import '../ui/SuperAdmin/super_admin.dart';
 import '../ui/Store Owners/store_owner_stores.dart';
 import '../utils/global.dart';
@@ -44,17 +46,30 @@ class NotificationService {
 
       String title = message.notification?.title ?? message.data['title'] ?? '';
       String body = message.notification?.body ?? message.data['body'] ?? '';
+      String? storeId = message.data['store_id']?.toString();
 
       print('🔊 Foreground notification received');
       print('📢 Title: $title');
       print('📄 Body: $body');
+      print('🏪 Store ID: $storeId');
 
-      // ✅ PLAY ALARM SOUND FOR NEW ORDERS
-      if ((title.contains('New Order') || title.contains('Reservation')) && body.isNotEmpty) {
+      // ✅ PLAY ALARM SOUND FOR ALL NOTIFICATIONS
+      if (title.isNotEmpty && body.isNotEmpty) {
         await _playAlarmSound();
-
-        // Show local notification with sound
         await _showLocalNotification(title, body);
+
+        // Save only Windows App status notifications to history
+        // (New Order & Reservation are intentionally excluded)
+        if (!title.contains('New Order') && !title.contains('Reservation')) {
+          try {
+            await DatabaseHelper().saveNotification(title, body, storeId: storeId);
+            if (Get.isRegistered<NotificationController>()) {
+              Get.find<NotificationController>().load();
+            }
+          } catch (e) {
+            print('❌ Error saving notification to DB: $e');
+          }
+        }
       }
 
       // ✅ HANDLE RESERVATION NOTIFICATIONS
