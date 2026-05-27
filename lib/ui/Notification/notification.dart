@@ -51,12 +51,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
     super.dispose();
   }
 
-  String _timeAgo(int timestamp) {
-    final diff = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(timestamp));
-    if (diff.inMinutes < 1) return 'Just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    return '${diff.inDays}d ago';
+  String _formatTime(int timestamp) {
+    if (timestamp == 0) return '';
+    final dt = DateTime.fromMillisecondsSinceEpoch(timestamp).toLocal();
+    final now = DateTime.now();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    final time = '${dt.hour.toString().padLeft(2,'0')}:${dt.minute.toString().padLeft(2,'0')}';
+    if (dt.year == now.year && dt.month == now.month && dt.day == now.day) {
+      return time;
+    }
+    return '${dt.day} ${months[dt.month - 1]}  $time';
   }
 
   IconData _iconForTitle(String title) {
@@ -163,7 +167,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               fontSize: 13, color: Colors.black87)),
                       const SizedBox(height: 5),
                       Text(
-                        _timeAgo(receivedAt),
+                        _formatTime(receivedAt),
                         style: TextStyle(
                             fontSize: 11, color: Colors.grey.shade500),
                       ),

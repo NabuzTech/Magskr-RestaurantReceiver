@@ -229,7 +229,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   _drawerItem('order'.tr,'assets/images/order.svg', onTap: () {
                     _navigateToHomeScreenTab(0);
                   }),
-                  if (_roleId == 1 || _storeType == '0')
+                  if (_roleId == 1 || _roleId == 5 || _storeType == '0' || _storeType == null)
                     _drawerItem('reserv'.tr,'assets/images/reserv.svg',
                         iconHeight: 14,
                         iconWidth: 20,
@@ -242,49 +242,42 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   }),
 
                   _drawerItem('setting'.tr, 'assets/images/settings.svg', onTap: () {
-                    Navigator.of(context).pop(); // Drawer close karo
-
-                    // ✅ Directly PrinterSettingsScreen pe jao, tab system se bilkul alag
+                    Navigator.of(context).pop();
                     Get.to(() => const PrinterSettingsScreen());
                   }),
 
-                   _expandableProductItem(),
-                  //
-                  // _drawerItem('discount'.tr,'assets/images/discount.svg', onTap: () {
-                  //   Navigator.of(context).pop();
-                  //   Get.to(() => const Discount());
-                  // }),
-                  // if (_roleId == 1 || _storeType == '0')
-                  //   _drawerItem('availability'.tr,'assets/images/discount.svg', onTap: () {
-                  //   Navigator.of(context).pop();
-                  //   Get.to(() => const CategoryManagement());
-                  // }),
-                  if (_storeType != '2')
-                _drawerItem('store'.tr,'assets/images/store.svg', onTap: () {
-                    Navigator.of(context).pop();
-                    Get.to(() => const StoreTiming());
-                  }),
-                  // _drawerItem('manage'.tr,'assets/images/tax.svg', onTap: () {
-                  //   Navigator.of(context).pop();
-                  //   Get.to(() => const Taxmanagement());
-                  // }),
-                  _drawerItem('postcode'.tr,'assets/images/postcode.svg', onTap: () {
-                    Navigator.of(context).pop();
-                    Get.to(() => const Postcode());
-                  }),
+                  if (_roleId != 5) _expandableProductItem(),
 
-                  _drawerItem('delivery_zone'.tr,'assets/images/postcode.svg', onTap: () {
-                    Navigator.of(context).pop();
-                    Get.to(() => const DeliveryZone());
-                  }),
-                  _drawerItem('time_plans'.tr,'assets/images/delivery_time.svg', onTap: () {
-                    Navigator.of(context).pop();
-                    Get.to(() => const DeliveryPickupTiming());
-                  }),
-                  _drawerItem('device_status'.tr,'assets/images/device.svg', onTap: () {
-                    Navigator.of(context).pop();
-                    Get.to(() => const DeviceStatusScreen());
-                  }),
+                  if (_roleId != 5 && _storeType != '2')
+                    _drawerItem('store'.tr,'assets/images/store.svg', onTap: () {
+                      Navigator.of(context).pop();
+                      Get.to(() => const StoreTiming());
+                    }),
+
+                  if (_roleId != 5)
+                    _drawerItem('postcode'.tr,'assets/images/postcode.svg', onTap: () {
+                      Navigator.of(context).pop();
+                      Get.to(() => const Postcode());
+                    }),
+
+                  if (_roleId != 5)
+                    _drawerItem('delivery_zone'.tr,'assets/images/postcode.svg', onTap: () {
+                      Navigator.of(context).pop();
+                      Get.to(() => const DeliveryZone());
+                    }),
+
+                  if (_roleId != 5)
+                    _drawerItem('time_plans'.tr,'assets/images/delivery_time.svg', onTap: () {
+                      Navigator.of(context).pop();
+                      Get.to(() => const DeliveryPickupTiming());
+                    }),
+
+                  if (_roleId != 5)
+                    _drawerItem('device_status'.tr,'assets/images/device.svg', onTap: () {
+                      Navigator.of(context).pop();
+                      Get.to(() => const DeviceStatusScreen());
+                    }),
+
                   _drawerItem('windows'.tr,'assets/images/device.svg', onTap: () {
                     Navigator.of(context).pop();
                     final sid = sharedPreferences.getString(valueShared_STORE_KEY);
@@ -295,11 +288,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     Get.to(() => const StoreCustomer(),
                         routeName: '/StoreCustomer');
                   }),
-                  _drawerItem('change_password'.tr,'assets/images/password.svg', onTap: () {
-                    Navigator.of(context).pop();
-                    Get.to(() => const ChangePassword(),
-                       );
-                  }),
+                  if (_roleId != 5)
+                    _drawerItem('change_password'.tr,'assets/images/password.svg', onTap: () {
+                      Navigator.of(context).pop();
+                      Get.to(() => const ChangePassword());
+                    }),
                   // _drawerItem('POS'.tr,'assets/images/pos.svg', onTap: () {
                   //   Navigator.pop(context);
                   //  widget.onSelectTab(3);

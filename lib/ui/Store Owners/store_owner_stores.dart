@@ -629,12 +629,10 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                     await prefs.setString(
                                         valueShared_STORE_KEY,
                                         store.storeId.toString());
-                                    await Future.delayed(
-                                        const Duration(milliseconds: 50));
+                                    await Future.delayed(const Duration(milliseconds: 50));
                                     Get.to(() => const HomeScreen(),
                                         arguments: {
-                                          'storeId':
-                                              store.storeId.toString(),
+                                          'storeId': store.storeId.toString(),
                                           'roleId': 5,
                                         });
                                   },

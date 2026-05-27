@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:food_receiver/ui/Store%20Owners/store_owner_stores.dart';
 import 'package:food_receiver/ui/SuperAdmin/super_admin.dart';
 
 import 'package:get/get.dart';
@@ -248,10 +249,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
             }),
             const SizedBox(width: 12),
 
-            if (widget.roleId == 1)
+            if (widget.roleId == 1 || widget.roleId == 5)
               GestureDetector(
                 onTap: (){
-                  Get.offAll(()=>const SuperAdmin());
+                  if (widget.roleId == 1) {
+                    Get.offAll(() => const SuperAdmin());
+                  }else{
+                    Get.offAll(()=>StoreOwnerStores());
+                  }
                 },
                 child: Container(
                     padding: const EdgeInsets.all(5),

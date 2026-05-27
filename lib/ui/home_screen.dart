@@ -377,8 +377,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     _openTab(0);
                   },
                 ),
-                // Only show reservation for storeType '0'
-                if (_roleId == 1 || _storeType == '0')
+                // Show reservation for super admin, dine-in stores, or role 5 with no store type
+                if (_roleId == 1 || _storeType == '0' || (_roleId == 5 && (_storeType == null || _storeType!.isEmpty)))
                   ItemBottomBar(
                     selected: app.appController.selectedTabIndex == 1,
                     icon: "assets/images/reserv.svg",
