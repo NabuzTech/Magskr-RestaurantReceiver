@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(flutter analyze *)",
-      "Bash(flutter run *)"
+      "Bash(flutter run *)",
+      "Bash(head -n 4033 \"D:/Project_flutter/Magskr Restaurant Receiver/lib/ui/Pos/pos.dart\")",
+      "Bash(cp \"/tmp/pos_trimmed.dart\" \"D:/Project_flutter/Magskr Restaurant Receiver/lib/ui/Pos/pos.dart\")",
+      "Bash(Get-ChildItem -Path D:\\\\Project_flutter -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(xargs grep -l \"topping\\\\|variant\")",
+      "Bash(grep -n \"^\\\\s*\\\\]\\\\s*$\\\\|^\\\\s*}\\\\s*$\" \"D:/Project_flutter/Magskr Restaurant Receiver/lib/ui/Pos/pos_portrait.dart\")"
     ]
   }
 }

@@ -19,6 +19,7 @@ import '../utils/keep_alive_page.dart';
 import '../utils/my_application.dart';
 import 'Order/OrderScreen.dart';
 import 'Pos/pos.dart';
+import 'Pos/pos_portrait.dart' show PosPortrait;
 import 'Report/ReportScreen.dart';
 import 'SuperAdmin/SuperAdmin Report/super_admin_report.dart';
 import 'SuperAdmin/SuperAdminReservation/super_admin_reservation.dart';
@@ -48,12 +49,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+    // SystemChrome.setPreferredOrientations([
+    //   DeviceOrientation.portraitUp,
+    //   DeviceOrientation.portraitDown,
+    //   DeviceOrientation.landscapeLeft,
+    //   DeviceOrientation.landscapeRight,
+    // ]);
 
     _pageController = PageController(initialPage: 0);
 
@@ -286,9 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return const SizedBox.shrink();
     }
 
-    final isLandscape = MediaQuery
-        .of(context)
-        .orientation == Orientation.landscape;
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     final fabSize = isLandscape ? 50.0 : 55.0;
 
     return Container(
@@ -401,16 +400,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     _openTab(2);
                   },
                 ),
-                // ItemBottomBar(
-                //   selected: app.appController.selectedTabIndex == 3,
-                //   icon: "assets/images/pos.svg",
-                //   iconHeight: 20,
-                //   iconWidth: 20,
-                //   name: 'POS'.tr,
-                //   onPressed: () {
-                //     _openTab(3);
-                //   },
-                // ),
+                ItemBottomBar(
+                  selected: app.appController.selectedTabIndex == 3,
+                  icon: "assets/images/pos.svg",
+                  iconHeight: 20,
+                  iconWidth: 20,
+                  name: 'POS'.tr,
+                  onPressed: () {
+                    _openTab(3);
+                  },
+                ),
               ],
             )),
       ),
@@ -429,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
         KeepAlivePage(child: isAdmin ? const AdminOrder() : const OrderScreenNew()),
         KeepAlivePage(child: isAdmin ? const SuperAdminReservation() : const Reservation()),
         KeepAlivePage(child: isAdmin ? const SuperAdminReport() : const ReportScreen()),
-       // KeepAlivePage(child: ResponsivePos(onNavigateToTab: _openTab)),
+        KeepAlivePage(child: PosPortrait(onNavigateToTab: _openTab)),
       ],
     );
   }
@@ -440,10 +439,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // ✅ ALWAYS set orientation FIRST, regardless of current page
     if (index == 3) {
-      // POS tab - force landscape
+      // POS tab - force portrait only (landscape disabled for now)
       SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
       ]);
     } else {
       // Other tabs - force portrait

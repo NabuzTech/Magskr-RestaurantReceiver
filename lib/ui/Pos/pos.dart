@@ -15,6 +15,7 @@ import '../../utils/my_application.dart';
 import '../Order/OrderDetailEnglish.dart';
 import '../home_screen.dart';
 import 'pos_controller.dart';
+import 'pos_portrait.dart' show PosPortrait;
 
 class ResponsivePos extends StatelessWidget {
   final Function(int)? onNavigateToTab;
@@ -23,11 +24,8 @@ class ResponsivePos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OrientationBuilder(
-        builder: (context, orientation) {
-          return PosLandscape(onNavigateToTab: onNavigateToTab);
-        }
-    );
+    // Landscape disabled for now — always portrait
+    return PosPortrait(onNavigateToTab: onNavigateToTab);
   }
 }
 

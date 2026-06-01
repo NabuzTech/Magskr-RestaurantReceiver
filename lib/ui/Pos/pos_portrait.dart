@@ -3,69 +3,89 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../../models/get_store_products_response_model.dart';
+import '../../models/order_model.dart';
+import '../../utils/my_application.dart';
+import '../Order/OrderDetailEnglish.dart';
 import 'pos_portrait_controller.dart';
 
 class PosPortrait extends StatelessWidget {
-  const PosPortrait({super.key});
+  final Function(int)? onNavigateToTab;
+
+  const PosPortrait({super.key, this.onNavigateToTab});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(PosPortraitController());
 
-    return Scaffold(
-      backgroundColor: const Color(0xffFAFCFF),
-      body: Stack(
-        children: [
-          Column(
+    return WillPopScope(
+      onWillPop: () async {
+        if (controller.showOrderOverlay.value) {
+          controller.hideOrderOverlay();
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xffFAFCFF),
+        body: Obx(() {
+          if (controller.showOrderOverlay.value) {
+            return _buildOrdersSection(controller, context);
+          }
+          return Stack(
             children: [
-              const SizedBox(height: 40),
-              _buildPortraitHeader(controller),
-              Expanded(
-                child: Row(
-                  children: [
-                    Obx(() {
-                      if (!controller.isSearching.value) {
-                        return _buildPortraitSidebar(controller);
-                      }
-                      return const SizedBox.shrink();
-                    }),
-                    Expanded(
-                      child: _buildPortraitContent(controller, context),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Obx(() {
-            if (controller.totalItems.value > 0) {
-              return _buildCartBar(controller);
-            }
-            return const SizedBox.shrink();
-          }),
-          VariantDialog(controller: controller),
-          PostcodeDialog(controller: controller),
-          Obx(() {
-            if (controller.showTimeBottomSheet.value) {
-              return GestureDetector(
-                onTap: () => controller.showTimeBottomSheet.value = false,
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: GestureDetector(
-                      onTap: () {}, // Prevent closing when tapping inside
-                      child: TimeSelectionBottomSheet(controller: controller),
+              Column(
+                children: [
+                  const SizedBox(height: 40),
+                  _buildPortraitHeader(controller),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Obx(() {
+                          if (!controller.isSearching.value) {
+                            return _buildPortraitSidebar(controller);
+                          }
+                          return const SizedBox.shrink();
+                        }),
+                        Expanded(
+                          child: _buildPortraitContent(controller, context),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          }),
-        ],
+                ],
+              ),
+              Obx(() {
+                if (controller.totalItems.value > 0) {
+                  return _buildCartBar(controller);
+                }
+                return const SizedBox.shrink();
+              }),
+              VariantDialog(controller: controller),
+              PostcodeDialog(controller: controller),
+              Obx(() {
+                if (controller.showTimeBottomSheet.value) {
+                  return GestureDetector(
+                    onTap: () => controller.showTimeBottomSheet.value = false,
+                    child: Container(
+                      color: Colors.black.withOpacity(0.5),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: TimeSelectionBottomSheet(controller: controller),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -76,7 +96,7 @@ class PosPortrait extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset('assets/images/drawer.png', height: 25, width: 25),
+          Image.asset('assets/images/mirch.png', height: 25, width: 25),
           Container(
             width: 250,
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -147,20 +167,33 @@ class PosPortrait extends StatelessWidget {
               ),
             ),
           )),
-          Row(
-            children: [
-              Image.asset('assets/images/german.png', height: 20, width: 20),
-              const Text(
-                'GER',
-                style: TextStyle(
-                  fontSize: 8,
-                  fontWeight: FontWeight.w300,
-                  fontFamily: 'Mulish',
-                  fontStyle: FontStyle.italic,
+          // Orders icon with badge
+          InkWell(
+            onTap: () => controller.showOrdersOverlay(),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                SvgPicture.asset('assets/images/order-icon.svg', height: 22, width: 22),
+                Positioned(
+                  top: -6,
+                  right: -6,
+                  child: Obx(() => controller.pendingOrdersCount.value > 0
+                      ? Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: const BoxDecoration(
+                              color: Color(0xffE31E24), shape: BoxShape.circle),
+                          constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                          child: Center(
+                            child: Text('${controller.pendingOrdersCount.value}',
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 9,
+                                    fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+                          ),
+                        )
+                      : const SizedBox.shrink()),
                 ),
-              ),
-              const Icon(Icons.arrow_drop_down, size: 10),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -200,7 +233,7 @@ class PosPortrait extends StatelessWidget {
                   child: Container(
                     height: 80,
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xffFFF5F5) : Colors.white,
+                      color: isSelected ? const Color(0xffE9F6EF) : Colors.white,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -243,7 +276,7 @@ class PosPortrait extends StatelessWidget {
                               fontSize: 9,
                               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                               fontFamily: 'Mulish',
-                              color: isSelected ? const Color(0xffE31E24) : Colors.black,
+                              color: isSelected ? const Color(0xff0C831F) : Colors.black,
                             ),
                           ),
                         ),
@@ -271,6 +304,281 @@ class PosPortrait extends StatelessWidget {
         ),
       );
     });
+  }
+
+  // ─── ORDERS SECTION ────────────────────────────────────────────────────
+
+  Widget _buildOrdersSection(PosPortraitController controller, BuildContext context) {
+    return SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => controller.hideOrderOverlay(),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffFBF9FF),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Icon(Icons.arrow_back, size: 20),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Image.asset('assets/images/mirch.png', height: 22, width: 22),
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Orders',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Mulish')),
+                        Text(DateFormat('d MMMM, y').format(DateTime.now()),
+                            style: const TextStyle(fontSize: 12, fontFamily: 'Mulish')),
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Obx(() => Text('Total: ${controller.orderStats['totalOrders']}',
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, fontFamily: 'Mulish'))),
+                    const SizedBox(width: 6),
+                    GestureDetector(
+                      onTap: () => controller.loadOrders(),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        child: const Icon(Icons.refresh, color: Color(0xffE31E24), size: 20),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => controller.syncLocalOrders(),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        child: const Icon(Icons.sync, color: Color(0xffE31E24), size: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // Stats row
+          Obx(() => SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: Row(
+              children: [
+                _orderStatChip('Accepted ${controller.orderStats['accepted']}', Colors.green.withOpacity(0.1)),
+                const SizedBox(width: 8),
+                _orderStatChip('Declined ${controller.orderStats['declined']}', Colors.red.withOpacity(0.1)),
+                const SizedBox(width: 8),
+                _orderStatChip('Pickup ${controller.orderStats['pickup']}', Colors.blue.withOpacity(0.1)),
+                const SizedBox(width: 8),
+                _orderStatChip('Delivery ${controller.orderStats['delivery']}', Colors.purple.withOpacity(0.1)),
+              ],
+            ),
+          )),
+          // Orders list
+          Expanded(child: _buildOrdersList(controller, context)),
+        ],
+      ),
+    );
+  }
+
+  Widget _orderStatChip(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+      ),
+      child: Text(text,
+          style: const TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 12, color: Colors.black87)),
+    );
+  }
+
+  Widget _buildOrdersList(PosPortraitController controller, BuildContext context) {
+    return Obx(() {
+      if (controller.isLoadingOrders.value) {
+        return Center(
+          child: Lottie.asset('assets/animations/burger.json', width: 120, height: 120),
+        );
+      }
+      final allOrders = [
+        ...controller.localOrdersList,
+        ...app.appController.searchResultOrder,
+      ];
+      if (allOrders.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Lottie.asset('assets/animations/empty.json', width: 120, height: 120),
+              const Text('No Orders',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey, fontFamily: 'Mulish')),
+            ],
+          ),
+        );
+      }
+      return ListView.builder(
+        padding: const EdgeInsets.all(10),
+        itemCount: allOrders.length,
+        itemBuilder: (context, index) {
+          final order = allOrders[index];
+          final isLocal = controller.localOrdersList.contains(order);
+          return _buildOrderCard(controller, order, isLocal);
+        },
+      );
+    });
+  }
+
+  Widget _buildOrderCard(PosPortraitController controller, Order order, bool isLocalOrder) {
+    DateTime dateTime;
+    try {
+      dateTime = order.isLocalOrder == true
+          ? DateTime.fromMillisecondsSinceEpoch(int.parse(order.createdAt.toString()))
+          : DateTime.parse(order.createdAt.toString());
+    } catch (_) {
+      dateTime = DateTime.now();
+    }
+
+    String time = DateFormat('hh:mm a').format(dateTime);
+    String guestName = order.guestShippingJson?.customerName?.toString() ?? '';
+    String guestPhone = order.guestShippingJson?.phone?.toString() ?? '';
+    String guestZip = order.guestShippingJson?.zip?.toString() ?? '';
+
+    Color containerColor() {
+      if (order.source == 'pos') return const Color(0xffF7F3FF);
+      switch (order.approvalStatus) {
+        case 2: return const Color(0xffEBFFF4);
+        case 3: return const Color(0xffFFEFEF);
+        default: return Colors.white;
+      }
+    }
+
+    Color borderColor() {
+      if (order.source == 'pos') return const Color(0xffB8ABD1);
+      switch (order.approvalStatus) {
+        case 2: return const Color(0xffC3F2D9);
+        case 3: return const Color(0xffFFD0D0);
+        default: return Colors.grey.withOpacity(0.2);
+      }
+    }
+
+    return GestureDetector(
+      onTap: () => Get.to(() => OrderDetailEnglish(order)),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: containerColor(),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: borderColor(), width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 14,
+                      backgroundColor: Colors.green,
+                      child: SvgPicture.asset(
+                        order.orderType == 1
+                            ? 'assets/images/ic_delivery.svg'
+                            : order.orderType == 2
+                                ? 'assets/images/ic_pickup.svg'
+                                : 'assets/images/table.svg',
+                        height: 12,
+                        width: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          order.orderType == 2
+                              ? 'Pickup'
+                              : (order.shipping_address?.zip?.toString() ?? guestZip),
+                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Mulish'),
+                        ),
+                        if (order.deliveryTime != null && order.deliveryTime!.isNotEmpty)
+                          Text('Time: ${controller.extractTime(order.deliveryTime!)}',
+                              style: const TextStyle(fontSize: 11, fontFamily: 'Mulish')),
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.access_time, size: 14),
+                    const SizedBox(width: 3),
+                    Text(time, style: const TextStyle(fontSize: 12, fontFamily: 'Mulish')),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    '${order.shipping_address?.customer_name ?? guestName} / ${order.shipping_address?.phone ?? guestPhone}',
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, fontFamily: 'Mulish'),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text('Order #${order.orderNumber ?? order.id ?? 'N/A'}',
+                    style: const TextStyle(fontSize: 11, fontFamily: 'Mulish')),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('€ ${controller.formatAmount(order.payment?.amount ?? 0)}',
+                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, fontFamily: 'Mulish')),
+                Row(
+                  children: [
+                    Text(
+                      isLocalOrder ? 'Syncing' : controller.getApprovalStatusText(order.approvalStatus),
+                      style: const TextStyle(fontSize: 12, fontFamily: 'Mulish'),
+                    ),
+                    const SizedBox(width: 4),
+                    isLocalOrder
+                        ? const _SyncIcon()
+                        : CircleAvatar(
+                            radius: 10,
+                            backgroundColor: controller.getStatusColor(order.approvalStatus ?? 0),
+                            child: Icon(
+                              controller.getStatusIcon(order.approvalStatus ?? 0),
+                              color: Colors.white,
+                              size: 12,
+                            ),
+                          ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildPortraitContent(PosPortraitController controller, BuildContext context) {
@@ -570,8 +878,10 @@ class CheckoutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
           children: [
             // Header
             Padding(
@@ -582,7 +892,7 @@ class CheckoutScreen extends StatelessWidget {
                     onTap: () => Get.back(),
                     child: const Icon(Icons.arrow_back, size: 24),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -592,31 +902,171 @@ class CheckoutScreen extends StatelessWidget {
                       ),
                       child: const Text(
                         'Phone Number / Name',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: 'Mulish',
-                          color: Colors.grey,
-                        ),
+                        style: TextStyle(fontSize: 14, fontFamily: 'Mulish', color: Colors.grey),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffB8ABD1),
-                      borderRadius: BorderRadius.circular(8),
+                  const SizedBox(width: 8),
+                  // Draft button
+                  Obx(() => GestureDetector(
+                    onTap: () => controller.toggleDraftPanel(),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: controller.showDraftPanel.value
+                            ? const Color(0xff6C4AB6)
+                            : controller.drafts.isNotEmpty
+                                ? const Color(0xff6C4AB6).withOpacity(0.15)
+                                : const Color(0xffEDE4FF),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Icon(Icons.bookmark_outline_rounded, size: 20,
+                              color: controller.showDraftPanel.value ? Colors.white : const Color(0xff6C4AB6)),
+                          if (controller.drafts.isNotEmpty)
+                            Positioned(
+                              top: -4, right: -4,
+                              child: Container(
+                                width: 14, height: 14,
+                                decoration: const BoxDecoration(color: Color(0xff6C4AB6), shape: BoxShape.circle),
+                                child: Center(
+                                  child: Text('${controller.drafts.length}',
+                                      style: const TextStyle(fontSize: 8, color: Colors.white,
+                                          fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                    child: SvgPicture.asset(
-                      'assets/images/add-user.svg',
-                      height: 20,
-                      width: 20,
-                      color: Colors.white,
+                  )),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () => controller.onAddCustomerPressed(),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffB8ABD1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: SvgPicture.asset(
+                        'assets/images/add-user.svg',
+                        height: 20, width: 20, color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
+            // Draft panel
+            Obx(() {
+              if (!controller.showDraftPanel.value) return const SizedBox.shrink();
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xffEDE4FF)),
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 6)],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Saved Drafts',
+                              style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 14)),
+                          GestureDetector(
+                            onTap: () => controller.showDraftPanel.value = false,
+                            child: const Icon(Icons.close, size: 18, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(height: 1, color: Color(0xffEDE4FF)),
+                    Obx(() {
+                      if (controller.drafts.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Text('No saved drafts',
+                              style: TextStyle(fontFamily: 'Mulish', fontSize: 13, color: Colors.grey)),
+                        );
+                      }
+                      return ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 220),
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.all(10),
+                          itemCount: controller.drafts.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: 6),
+                          itemBuilder: (context, index) {
+                            final draft = controller.drafts[index];
+                            final List items = draft['cartItems'] as List;
+                            final Map details = draft['customerDetails'] as Map;
+                            final String name = details['name']?.toString().isNotEmpty == true
+                                ? details['name'].toString()
+                                : details['phone']?.toString().isNotEmpty == true
+                                    ? details['phone'].toString()
+                                    : 'Draft ${index + 1}';
+                            final DateTime savedAt = DateTime.parse(draft['savedAt']);
+                            final String timeStr =
+                                '${savedAt.hour.toString().padLeft(2, '0')}:${savedAt.minute.toString().padLeft(2, '0')}';
+                            return GestureDetector(
+                              onTap: () => controller.loadDraft(index),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: const Color(0xffEDE4FF)),
+                                  borderRadius: BorderRadius.circular(6),
+                                  color: const Color(0xffFBF9FF),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xff6C4AB6).withOpacity(0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(Icons.bookmark_rounded, size: 14, color: Color(0xff6C4AB6)),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(name,
+                                              style: const TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w600, fontSize: 13),
+                                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                                          Text('${items.length} item${items.length == 1 ? '' : 's'}  •  $timeStr',
+                                              style: const TextStyle(fontFamily: 'Mulish', fontSize: 11, color: Color(0xff797878))),
+                                        ],
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => controller.deleteDraft(index),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade300),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              );
+            }),
 
             // Order Type Buttons
             Padding(
@@ -681,33 +1131,65 @@ class CheckoutScreen extends StatelessWidget {
               ),
             ),
 
-            // Bottom Weiter Button
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
-                onPressed: () => controller.placeOrder(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff0C831F),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+            // Bottom Draft + Weiter Buttons
+            Obx(() {
+              final bool hasItems = controller.cartItems.isNotEmpty;
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: hasItems ? () => controller.saveAsDraft() : null,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: hasItems ? const Color(0xff6C4AB6) : const Color(0xffB8ABD1),
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8), bottomLeft: Radius.circular(8)),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.bookmark_outline_rounded, size: 16, color: Colors.white),
+                              SizedBox(width: 6),
+                              Text('Draft',
+                                  style: TextStyle(color: Colors.white, fontSize: 14,
+                                      fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => controller.placeOrder(),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: const BoxDecoration(
+                            color: Color(0xff0C831F),
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
+                          ),
+                          child: const Center(
+                            child: Text('Place Order',
+                                style: TextStyle(color: Colors.white, fontSize: 14,
+                                    fontWeight: FontWeight.bold, fontFamily: 'Mulish')),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                child: const Text(
-                  'Weiter',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Mulish',
-                  ),
-                ),
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),
+      // Postcode dialog overlay — visible on top of CheckoutScreen
+      PostcodeDialog(controller: controller),
+    ],
+  ),
     );
   }
 
@@ -1132,7 +1614,7 @@ class CheckoutScreen extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xffE31E24)),
+              borderSide: const BorderSide(color: Color(0xff0C831F)),
             ),
           ),
         ),
@@ -1373,6 +1855,27 @@ class VariantDialog extends StatelessWidget {
 
   const VariantDialog({super.key, required this.controller});
 
+  static const _green = Color(0xff0C831F);
+  static const _lightGreen = Color(0xffE9F6EF);
+  static const _border = Color(0xffE1E8F1);
+
+  double _calculateTotal() {
+    if (controller.selectedProduct.value == null) return 0.0;
+    double base = double.tryParse(controller.selectedProduct.value!.price?.toString() ?? '0') ?? 0.0;
+    double variant = (controller.selectedVariant.value?.price ?? 0).toDouble();
+    double toppings = 0.0;
+    final variantId = controller.selectedVariant.value?.id;
+    if (variantId != null) {
+      final ids = controller.selectedToppingsMap[variantId] ?? [];
+      controller.selectedVariant.value?.enrichedToppingGroups?.forEach((g) {
+        g.toppings?.forEach((t) {
+          if (t.id != null && ids.contains(t.id)) toppings += t.price ?? 0.0;
+        });
+      });
+    }
+    return base + variant + toppings;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -1383,12 +1886,16 @@ class VariantDialog extends StatelessWidget {
       final product = controller.selectedProduct.value!;
 
       return GestureDetector(
-        onTap: () => controller.showVariantDialog.value = false,
+        onTap: () {
+          controller.showVariantDialog.value = false;
+          controller.variantNoteController.clear();
+          controller.variantGroupErrors.clear();
+        },
         child: Container(
           color: Colors.black.withOpacity(0.5),
           child: Center(
             child: GestureDetector(
-              onTap: () {}, // Prevent dialog from closing when tapping inside
+              onTap: () {},
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.9,
                 constraints: BoxConstraints(
@@ -1422,231 +1929,308 @@ class VariantDialog extends StatelessWidget {
                               ),
                             ),
                           ),
-                          IconButton(
-                            onPressed: () => controller.showVariantDialog.value = false,
-                            icon: const Icon(Icons.close),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
+                          GestureDetector(
+                            onTap: () {
+                              controller.showVariantDialog.value = false;
+                              controller.variantNoteController.clear();
+                              controller.variantGroupErrors.clear();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: const Color(0xffE1E8F1)),
+                              ),
+                              child: const Icon(Icons.close, size: 22),
+                            ),
                           ),
                         ],
                       ),
                     ),
 
-                    // Variants List
+                    // Scrollable content
                     Flexible(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: product.variants?.length ?? 0,
-                        itemBuilder: (context, index) {
-                          final variant = product.variants![index];
-                          final isSelected = controller.selectedVariant.value?.id == variant.id;
-                          final isExpanded = controller.expandedVariantId.value == variant.id;
-
-                          return Column(
-                            children: [
-                              GestureDetector(
-                                onTap: () => controller.selectVariant(variant),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 14,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? const Color(0xffFFF5F5)
-                                        : Colors.white,
-                                    border: const Border(
-                                      bottom: BorderSide(
-                                        color: Colors.grey,
-                                        width: 0.3,
-                                      ),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          variant.name ?? '',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: isSelected
-                                                ? FontWeight.w700
-                                                : FontWeight.w500,
-                                            fontFamily: 'Mulish',
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // ── Variants grid ─────────────────────────────
+                            if ((product.variants?.isNotEmpty ?? false)) ...[
+                              const Text('Choose Variant',
+                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700,
+                                      fontFamily: 'Mulish', color: Color(0xff475569))),
+                              const SizedBox(height: 10),
+                              GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                  childAspectRatio: 2.4,
+                                ),
+                                itemCount: product.variants!.length,
+                                itemBuilder: (context, i) {
+                                  final variant = product.variants![i];
+                                  return Obx(() {
+                                    final isSelected = controller.selectedVariant.value?.id == variant.id;
+                                    return GestureDetector(
+                                      onTap: () => controller.selectVariant(variant),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: isSelected ? _green : _border,
+                                            width: isSelected ? 2 : 1,
                                           ),
+                                          borderRadius: BorderRadius.circular(10),
+                                          color: isSelected ? _lightGreen : Colors.white,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Expanded(
+                                                  child: Text(variant.name ?? '',
+                                                      style: TextStyle(fontSize: 13,
+                                                          fontWeight: FontWeight.w600,
+                                                          fontFamily: 'Mulish',
+                                                          color: isSelected ? _green : const Color(0xff475569)),
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis),
+                                                ),
+                                                if (isSelected)
+                                                  const Icon(Icons.check_circle, color: _green, size: 16),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text('€${(variant.price ?? 0).toStringAsFixed(2)}',
+                                                style: TextStyle(fontSize: 13,
+                                                    fontWeight: FontWeight.w700,
+                                                    fontFamily: 'Mulish',
+                                                    color: isSelected ? _green : const Color(0xff475569))),
+                                          ],
                                         ),
                                       ),
+                                    );
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+
+                            // ── Toppings for selected variant ─────────────
+                            Obx(() {
+                              final selVariant = controller.selectedVariant.value;
+                              if (selVariant == null) return const SizedBox.shrink();
+                              final isExpanded = controller.expandedVariantId.value == selVariant.id;
+                              if (!isExpanded) return const SizedBox.shrink();
+                              final groups = selVariant.enrichedToppingGroups ?? [];
+                              if (groups.isEmpty) return const SizedBox.shrink();
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: groups.map((group) {
+                                  final bool isRequired = group.isRequired == true;
+                                  final int minSel = group.minSelect ?? 0;
+                                  final int maxSel = group.maxSelect ?? 0;
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // Group header
                                       Row(
                                         children: [
-                                          Text(
-                                            '€${(variant.price ?? 0).toStringAsFixed(2)}',
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w600,
-                                              fontFamily: 'Mulish',
-                                              color: isSelected
-                                                  ? const Color(0xffE31E24)
-                                                  : Colors.black,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          if (variant.enrichedToppingGroups != null &&
-                                              variant.enrichedToppingGroups!.isNotEmpty)
-                                            GestureDetector(
-                                              onTap: () => controller.toggleVariantExpansion(variant.id!),
-                                              child: Icon(
-                                                isExpanded
-                                                    ? Icons.keyboard_arrow_up
-                                                    : Icons.keyboard_arrow_down,
-                                                color: Colors.grey,
+                                          Text(group.name?.toUpperCase() ?? 'TOPPINGS',
+                                              style: const TextStyle(fontSize: 12,
+                                                  fontWeight: FontWeight.w700,
+                                                  fontFamily: 'Mulish',
+                                                  color: Color(0xff475569),
+                                                  letterSpacing: 0.5)),
+                                          if (isRequired)
+                                            Container(
+                                              margin: const EdgeInsets.only(left: 8),
+                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: _green.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(4),
                                               ),
-                                            ),
-                                          if (isSelected)
-                                            const Icon(
-                                              Icons.check_circle,
-                                              color: Color(0xffE31E24),
-                                              size: 20,
+                                              child: const Text('Required',
+                                                  style: TextStyle(fontSize: 10,
+                                                      color: _green,
+                                                      fontWeight: FontWeight.w700,
+                                                      fontFamily: 'Mulish')),
                                             ),
                                         ],
                                       ),
+                                      if (isRequired && minSel > 0) ...[
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Select $minSel${maxSel > minSel ? ' - $maxSel' : ''} item(s)',
+                                          style: TextStyle(fontSize: 11,
+                                              color: Colors.orange.shade700,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'Mulish'),
+                                        ),
+                                      ],
+                                      // Group error
+                                      Obx(() {
+                                        final err = controller.variantGroupErrors[group.id ?? 0];
+                                        if (err == null) return const SizedBox.shrink();
+                                        return Container(
+                                          width: double.infinity,
+                                          margin: const EdgeInsets.only(top: 6),
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.shade50,
+                                            borderRadius: BorderRadius.circular(6),
+                                            border: Border.all(color: Colors.red.shade200),
+                                          ),
+                                          child: Text(err,
+                                              style: TextStyle(color: Colors.red.shade700,
+                                                  fontSize: 12, fontFamily: 'Mulish')),
+                                        );
+                                      }),
+                                      const SizedBox(height: 10),
+                                      // Topping items
+                                      ...(group.toppings ?? []).map((topping) {
+                                        return Obx(() {
+                                          final isToppingSelected = controller
+                                              .selectedToppingsMap[selVariant.id]
+                                              ?.contains(topping.id) ?? false;
+                                          return GestureDetector(
+                                            onTap: () => controller.toggleVariantTopping(
+                                              selVariant.id!,
+                                              topping.id!,
+                                              groupId: group.id,
+                                              maxSelect: maxSel > 0 ? maxSel : null,
+                                            ),
+                                            child: Container(
+                                              margin: const EdgeInsets.only(bottom: 10),
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 14, vertical: 12),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: isToppingSelected ? _green : _border,
+                                                  width: isToppingSelected ? 1.5 : 1,
+                                                ),
+                                                borderRadius: BorderRadius.circular(8),
+                                                color: isToppingSelected ? _lightGreen : Colors.white,
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(topping.name ?? '',
+                                                        style: TextStyle(fontSize: 14,
+                                                            fontFamily: 'Mulish',
+                                                            fontWeight: isToppingSelected
+                                                                ? FontWeight.w600
+                                                                : FontWeight.w500,
+                                                            color: const Color(0xff475569))),
+                                                  ),
+                                                  const SizedBox(width: 12),
+                                                  Text('€${(topping.price ?? 0).toStringAsFixed(2)}',
+                                                      style: TextStyle(fontSize: 14,
+                                                          fontFamily: 'Mulish',
+                                                          fontWeight: FontWeight.w600,
+                                                          color: isToppingSelected
+                                                              ? _green
+                                                              : const Color(0xff475569))),
+                                                  const SizedBox(width: 10),
+                                                  Container(
+                                                    width: 20, height: 20,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      color: isToppingSelected ? _green : Colors.transparent,
+                                                      border: Border.all(
+                                                          color: isToppingSelected ? _green : Colors.grey.shade400,
+                                                          width: 1.5),
+                                                    ),
+                                                    child: isToppingSelected
+                                                        ? const Icon(Icons.check, color: Colors.white, size: 13)
+                                                        : null,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        });
+                                      }),
+                                      const SizedBox(height: 12),
                                     ],
-                                  ),
+                                  );
+                                }).toList(),
+                              );
+                            }),
+
+                            // ── Item note field ───────────────────────────
+                            const Text('Special Request',
+                                style: TextStyle(fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: 'Mulish',
+                                    color: Color(0xff475569))),
+                            const SizedBox(height: 8),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xffF5F7FA),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: _border),
+                              ),
+                              child: TextField(
+                                controller: controller.variantNoteController,
+                                textInputAction: TextInputAction.done,
+                                onSubmitted: (_) => FocusScope.of(context).unfocus(),
+                                maxLines: 2,
+                                style: const TextStyle(fontSize: 13, fontFamily: 'Mulish'),
+                                decoration: InputDecoration(
+                                  hintText: 'e.g. no onions, extra sauce...',
+                                  hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.all(12),
                                 ),
                               ),
-
-                              // Toppings Section
-                              if (isExpanded &&
-                                  variant.enrichedToppingGroups != null &&
-                                  variant.enrichedToppingGroups!.isNotEmpty)
-                                Container(
-                                  color: const Color(0xffF7F3FF),
-                                  padding: const EdgeInsets.all(12),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: variant.enrichedToppingGroups!.map((group) {
-                                      return Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            group.name ?? 'Toppings',
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'Mulish',
-                                            ),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          ...?group.toppings?.map((topping) {
-                                            final isSelected = controller
-                                                .selectedToppingsMap[variant.id]
-                                                ?.contains(topping.id) ??
-                                                false;
-
-                                            return GestureDetector(
-                                              onTap: () => controller.toggleVariantTopping(
-                                                  variant.id!, topping.id!),
-                                              child: Container(
-                                                margin: const EdgeInsets.only(bottom: 8),
-                                                padding: const EdgeInsets.all(10),
-                                                decoration: BoxDecoration(
-                                                  color: isSelected
-                                                      ? Colors.white
-                                                      : const Color(0xffFFF5F5),
-                                                  borderRadius: BorderRadius.circular(8),
-                                                  border: Border.all(
-                                                    color: isSelected
-                                                        ? const Color(0xffE31E24)
-                                                        : Colors.grey.shade300,
-                                                  ),
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      topping.name ?? '',
-                                                      style: TextStyle(
-                                                        fontSize: 13,
-                                                        fontFamily: 'Mulish',
-                                                        fontWeight: isSelected
-                                                            ? FontWeight.w600
-                                                            : FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          '€${(topping.price ?? 0).toStringAsFixed(2)}',
-                                                          style: TextStyle(
-                                                            fontSize: 13,
-                                                            fontFamily: 'Mulish',
-                                                            fontWeight: FontWeight.w600,
-                                                            color: isSelected
-                                                                ? const Color(0xffE31E24)
-                                                                : Colors.black,
-                                                          ),
-                                                        ),
-                                                        if (isSelected)
-                                                          const Icon(
-                                                            Icons.check_circle,
-                                                            color: Color(0xffE31E24),
-                                                            size: 18,
-                                                          ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          }),
-                                          const SizedBox(height: 8),
-                                        ],
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                            ],
-                          );
-                        },
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                        ),
                       ),
                     ),
 
-                    // Add to Cart Button
+                    // ── Add to Cart Button ─────────────────────────────────
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
                       decoration: BoxDecoration(
-                        border: Border(
-                          top: BorderSide(color: Colors.grey.shade300),
-                        ),
-                      ),
-                      child: SafeArea(
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: controller.selectedVariant.value != null
-                                ? () => controller.addToCartWithVariant()
-                                : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xffE31E24),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              disabledBackgroundColor: Colors.grey,
+                          border: Border(top: BorderSide(color: Colors.grey.shade200))),
+                      child: Obx(() {
+                        final hasVariant = controller.selectedVariant.value != null;
+                        final total = _calculateTotal();
+                        return GestureDetector(
+                          onTap: () => controller.addToCartWithVariant(),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: hasVariant ? _green : Colors.grey.shade400,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Text(
-                              'In den Warenkorb',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Mulish',
-                                color: Colors.white,
+                            child: Center(
+                              child: Text(
+                                hasVariant
+                                    ? 'In den Warenkorb  •  €${total.toStringAsFixed(2)}'
+                                    : 'Bitte Variante wählen',
+                                style: const TextStyle(fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Mulish',
+                                    color: Colors.white),
                               ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      }),
                     ),
                   ],
                 ),
@@ -1749,7 +2333,7 @@ class PostcodeDialog extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? const Color(0xffFFF5F5)
+                                    ? const Color(0xffE9F6EF)
                                     : Colors.white,
                                 border: const Border(
                                   bottom: BorderSide(
@@ -1767,13 +2351,13 @@ class PostcodeDialog extends StatelessWidget {
                                       fontSize: 15,
                                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                                       fontFamily: 'Mulish',
-                                      color: isSelected ? const Color(0xffE31E24) : Colors.black,
+                                      color: isSelected ? const Color(0xff0C831F) : Colors.black,
                                     ),
                                   ),
                                   if (isSelected)
                                     const Icon(
                                       Icons.check_circle,
-                                      color: Color(0xffE31E24),
+                                      color: Color(0xff0C831F),
                                       size: 20,
                                     ),
                                 ],
@@ -1857,12 +2441,12 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: controller.isHeuteSelected.value
-                            ? const Color(0xffE31E24)
+                            ? const Color(0xff0C831F)
                             : Colors.white,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: controller.isHeuteSelected.value
-                              ? const Color(0xffE31E24)
+                              ? const Color(0xff0C831F)
                               : Colors.grey.shade300,
                         ),
                       ),
@@ -1889,12 +2473,12 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: controller.isVorbestellenSelected.value
-                            ? const Color(0xffE31E24)
+                            ? const Color(0xff0C831F)
                             : Colors.white,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: controller.isVorbestellenSelected.value
-                              ? const Color(0xffE31E24)
+                              ? const Color(0xff0C831F)
                               : Colors.grey.shade300,
                         ),
                       ),
@@ -1961,11 +2545,11 @@ class TimeSelectionBottomSheet extends StatelessWidget {
             onTap: () => controller.selectTimeSlot(time, 'heute'),
             child: Container(
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xffE31E24) : Colors.white,
+                color: isSelected ? const Color(0xff0C831F) : Colors.white,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: isSelected
-                      ? const Color(0xffE31E24)
+                      ? const Color(0xff0C831F)
                       : Colors.grey.shade300,
                 ),
               ),
@@ -2024,6 +2608,38 @@ class TimeSelectionBottomSheet extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// Spinning sync icon for local (unsynced) orders
+class _SyncIcon extends StatefulWidget {
+  const _SyncIcon();
+
+  @override
+  State<_SyncIcon> createState() => _SyncIconState();
+}
+
+class _SyncIconState extends State<_SyncIcon> with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..repeat();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RotationTransition(
+      turns: _ctrl,
+      child: const Icon(Icons.sync, size: 16, color: Colors.orange),
     );
   }
 }

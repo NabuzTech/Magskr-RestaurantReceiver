@@ -7,11 +7,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Database/databse_helper.dart';
 import '../../api/repository/api_repository.dart';
 import '../../constants/constant.dart';
+import '../../models/Payment.dart';
+import '../../models/ShippingAddress.dart';
 import '../../models/get_product_category_list_response_model.dart';
 import '../../models/get_store_products_response_model.dart';
 
 import '../../models/get_store_postcode_response_model.dart';
 import '../../models/get_store_timing_response_model.dart';
+import '../../models/order_model.dart';
+import '../../models/sync_order_response_model.dart';
+import '../../utils/my_application.dart';
 
 class PosPortraitController extends GetxController {
   // Search
@@ -51,7 +56,7 @@ class PosPortraitController extends GetxController {
   // Auto Scrolling Flag
   final isAutoScrolling = false.obs;
 // Order management
-  final selectedOrderType = 'Lieferung'.obs; // Lieferung, Abholung, Dine-in
+  final selectedOrderType = 'Lieferzeit'.obs;
   final selectedTimeSlot = 'sofort'.obs;
   final showTimeBottomSheet = false.obs;
   final isHeuteSelected = true.obs;
@@ -105,6 +110,26 @@ class PosPortraitController extends GetxController {
   final invoiceNumber = 1.obs;
   final pendingOrdersCount = 0.obs;
 
+  // Variant dialog note & errors
+  final variantNoteController = TextEditingController();
+  final variantGroupErrors = <int, String>{}.obs;
+
+  // Drafts
+  final drafts = <Map<String, dynamic>>[].obs;
+  final showDraftPanel = false.obs;
+
+  // Orders overlay
+  final showOrderOverlay = false.obs;
+  final isLoadingOrders = false.obs;
+  final localOrdersList = <Order>[].obs;
+  final orderStats = <String, int>{
+    'totalOrders': 0,
+    'accepted': 0,
+    'declined': 0,
+    'pickup': 0,
+    'delivery': 0,
+  }.obs;
+
   String? bearerKey;
 
   // Database Helper
@@ -139,6 +164,7 @@ class PosPortraitController extends GetxController {
     emailFocusNode.dispose();
     addressFocusNode.dispose();
     regionFocusNode.dispose();
+    variantNoteController.dispose();
     showVariantDialog.value = false;
     showPostcodeDialog.value = false;
     showTimeBottomSheet.value = false;
@@ -387,7 +413,32 @@ class PosPortraitController extends GetxController {
   }
 
   void addToCartWithVariant() {
-    if (selectedProduct.value == null || selectedVariant.value == null) return;
+    if (selectedProduct.value == null || selectedVariant.value == null) {
+      Get.snackbar('Error', 'Please select a variant',
+          backgroundColor: Colors.red, colorText: Colors.white,
+          duration: const Duration(seconds: 2));
+      return;
+    }
+
+    // Required topping validation
+    final variant = selectedVariant.value!;
+    final selectedIds = selectedToppingsMap[variant.id] ?? [];
+    bool hasError = false;
+
+    for (var group in variant.enrichedToppingGroups ?? []) {
+      if (group.isRequired == true && (group.minSelect ?? 0) > 0) {
+        final selectedCount = group.toppings?.where((t) => selectedIds.contains(t.id)).length ?? 0;
+        if (selectedCount < (group.minSelect ?? 0)) {
+          variantGroupErrors[group.id ?? 0] =
+              'Please select at least ${group.minSelect} item(s) from "${group.name}"';
+          hasError = true;
+        }
+      }
+    }
+    if (hasError) {
+      variantGroupErrors.refresh();
+      return;
+    }
 
     double basePrice = double.tryParse(selectedProduct.value!.price?.toString() ?? '0') ?? 0.0;
     double variantPrice = (selectedVariant.value!.price ?? 0).toDouble();
@@ -436,19 +487,19 @@ class PosPortraitController extends GetxController {
         'product_id': selectedProduct.value!.id,
         'topping_details': toppingDetails,
         'topping_data': toppingDataList,
-        'item_note': '',
+        'item_note': variantNoteController.text.trim(),
       });
     }
 
-    // ✅ Calculate total after adding
     calculateTotal();
 
-    // ✅ Close dialog and reset selections
     showVariantDialog.value = false;
     selectedProduct.value = null;
     selectedVariant.value = null;
     selectedToppingsMap.clear();
     expandedVariantId.value = null;
+    variantGroupErrors.clear();
+    variantNoteController.clear();
   }
   void addSimpleProductToCart(GetStoreProducts product) {
     double basePrice = double.tryParse(product.price?.toString() ?? '0') ?? 0.0;
@@ -599,8 +650,11 @@ class PosPortraitController extends GetxController {
   }
 
   void selectVariant(Variants variant) {
+    selectedToppingsMap.clear();
+    variantGroupErrors.clear();
+    variantNoteController.clear();
+    expandedVariantId.value = null; // close previous dropdown first
     selectedVariant.value = variant;
-    // Automatically expand if variant has toppings
     if (variant.enrichedToppingGroups != null && variant.enrichedToppingGroups!.isNotEmpty) {
       expandedVariantId.value = variant.id;
     }
@@ -622,14 +676,30 @@ class PosPortraitController extends GetxController {
     }
   }
 
-  void toggleVariantTopping(int variantId, int toppingId) {
+  void toggleVariantTopping(int variantId, int toppingId, {int? groupId, int? maxSelect}) {
     if (!selectedToppingsMap.containsKey(variantId)) {
       selectedToppingsMap[variantId] = [];
     }
-
     if (selectedToppingsMap[variantId]!.contains(toppingId)) {
       selectedToppingsMap[variantId]!.remove(toppingId);
+      if (groupId != null) {
+        variantGroupErrors.remove(groupId);
+        variantGroupErrors.refresh();
+      }
     } else {
+      // maxSelect check per group
+      if (groupId != null && maxSelect != null && maxSelect > 0) {
+        final currentGroupSelected = selectedVariant.value?.enrichedToppingGroups
+            ?.firstWhere((g) => g.id == groupId, orElse: () => EnrichedToppingGroups())
+            .toppings
+            ?.where((t) => selectedToppingsMap[variantId]?.contains(t.id) == true)
+            .length ?? 0;
+        if (currentGroupSelected >= maxSelect) {
+          variantGroupErrors[groupId] = 'Max $maxSelect selection(s) allowed';
+          variantGroupErrors.refresh();
+          return;
+        }
+      }
       selectedToppingsMap[variantId]!.add(toppingId);
     }
     selectedToppingsMap.refresh();
@@ -1358,6 +1428,341 @@ class PosPortraitController extends GetxController {
       colorText: Colors.white,
       duration: const Duration(seconds: 3),
     );
+  }
+
+  // ─── DRAFT ──────────────────────────────────────────────────────────────
+
+  void toggleDraftPanel() => showDraftPanel.value = !showDraftPanel.value;
+
+  void saveAsDraft() {
+    if (cartItems.isEmpty) return;
+    drafts.add({
+      'cartItems': List<Map<String, dynamic>>.from(cartItems),
+      'customerDetails': Map<String, String>.from(customerDetails),
+      'orderNote': orderNote.value,
+      'orderType': selectedOrderType.value,
+      'savedAt': DateTime.now().toIso8601String(),
+    });
+    cartItems.clear();
+    customerDetails.clear();
+    nameController.clear();
+    phoneController.clear();
+    emailController.clear();
+    addressController.clear();
+    regionController.clear();
+    orderNote.value = '';
+    showCustomerDetails.value = false;
+    isCustomerFormVisible.value = true;
+    selectedPostcode.value = null;
+    showDraftPanel.value = false;
+    calculateTotal();
+    Get.snackbar('Draft saved', 'Order saved as draft',
+        backgroundColor: const Color(0xff6C4AB6),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        snackPosition: SnackPosition.BOTTOM);
+  }
+
+  void loadDraft(int index) {
+    if (index < 0 || index >= drafts.length) return;
+    final draft = drafts[index];
+    cartItems.value = List<Map<String, dynamic>>.from(draft['cartItems'] as List);
+    final details = Map<String, String>.from(draft['customerDetails'] as Map);
+    customerDetails.value = details;
+    orderNote.value = draft['orderNote'] as String? ?? '';
+    selectedOrderType.value = draft['orderType'] as String? ?? 'Lieferzeit';
+    if (details.isNotEmpty) {
+      nameController.text = details['name'] ?? '';
+      phoneController.text = details['phone'] ?? '';
+      emailController.text = details['email'] ?? '';
+      addressController.text = details['address'] ?? '';
+      regionController.text = details['region'] ?? '';
+      showCustomerDetails.value = true;
+      isCustomerFormVisible.value = false;
+    }
+    drafts.removeAt(index);
+    calculateTotal();
+    showDraftPanel.value = false;
+  }
+
+  void deleteDraft(int index) {
+    if (index >= 0 && index < drafts.length) {
+      drafts.removeAt(index);
+    }
+  }
+
+  // ─── ORDERS OVERLAY ─────────────────────────────────────────────────────
+
+  void showOrdersOverlay() {
+    showOrderOverlay.value = true;
+    loadOrders();
+  }
+
+  void hideOrderOverlay() => showOrderOverlay.value = false;
+
+  Future<void> loadOrders() async {
+    if (storeId == null) return;
+    isLoadingOrders.value = true;
+    try {
+      final unsyncedRaw = await dbHelper.getUnsyncedOrders(storeId!);
+      List<Order> localOrders = [];
+
+      for (var dbOrder in unsyncedRaw) {
+        final orderDetails = await dbHelper.getOrderDetails(dbOrder['id'] as int);
+        if (orderDetails != null) {
+          localOrders.add(await _buildOrderFromDetails(orderDetails));
+        }
+      }
+      localOrdersList.value = localOrders;
+
+      final allOrders = [...localOrdersList, ...app.appController.searchResultOrder];
+
+      orderStats.value = {
+        'totalOrders': allOrders.length,
+        'accepted': allOrders.where((o) => o.approvalStatus == 2).length,
+        'declined': allOrders.where((o) => o.approvalStatus == 3).length,
+        'pickup': allOrders.where((o) => o.orderType == 2).length,
+        'delivery': allOrders.where((o) => o.orderType == 1).length,
+      };
+    } catch (e) {
+      print('❌ Error loading orders (portrait): $e');
+    } finally {
+      isLoadingOrders.value = false;
+    }
+  }
+
+  Future<Order> _buildOrderFromDetails(Map<String, dynamic> orderDetails) async {
+    final orderData = orderDetails['order'] as Map<String, dynamic>;
+    final addressData = orderDetails['shipping_address'] as Map<String, dynamic>?;
+    final paymentData = orderDetails['payment'] as Map<String, dynamic>?;
+
+    ShippingAddress? shippingAddress;
+    if (addressData != null) {
+      shippingAddress = ShippingAddress(
+        customer_name: addressData['customer_name'] as String?,
+        phone: addressData['phone'] as String?,
+        line1: addressData['line1'] as String?,
+        city: addressData['city'] as String?,
+        zip: addressData['zip'] as String?,
+        country: addressData['country'] as String?,
+        type: addressData['type'] as String?,
+      );
+    }
+
+    Payment? payment;
+    if (paymentData != null) {
+      payment = Payment(
+        amount: (paymentData['amount'] as num?)?.toDouble(),
+        paymentMethod: paymentData['payment_method'] as String?,
+        status: paymentData['status'] as String?,
+      );
+    }
+
+    return Order(
+      id: orderData['id'] as int?,
+      orderNumber: orderData['id'] as int?,
+      orderType: orderData['order_type'] as int?,
+      approvalStatus: orderData['approval_status'] as int?,
+      note: orderData['note'] as String? ?? '',
+      deliveryTime: orderData['delivery_time'] as String?,
+      storeId: orderData['store_id'] != null ? int.tryParse(orderData['store_id'].toString()) : null,
+      createdAt: DateTime.fromMillisecondsSinceEpoch(orderData['created_at'] as int).toIso8601String(),
+      shipping_address: shippingAddress,
+      payment: payment,
+      items: [],
+      isLocalOrder: true,
+    );
+  }
+
+  Future<void> syncLocalOrders() async {
+    if (storeId == null) return;
+    try {
+      final unsyncedOrders = await dbHelper.getUnsyncedOrders(storeId!);
+      if (unsyncedOrders.isEmpty) {
+        Get.snackbar('Sync', 'No pending orders to sync',
+            backgroundColor: const Color(0xff0C831F),
+            colorText: Colors.white,
+            duration: const Duration(seconds: 2));
+        return;
+      }
+
+      List<int> localOrderIds = unsyncedOrders.map((o) => o['id'] as int).toList();
+      List<Map<String, dynamic>> ordersToSync = [];
+
+      for (var dbOrder in unsyncedOrders) {
+        final orderDetails = await dbHelper.getOrderDetails(dbOrder['id'] as int);
+        if (orderDetails != null) {
+          ordersToSync.add(_buildSyncOrderMap(orderDetails));
+        }
+      }
+
+      SyncLocalOrder model = await CallService().syncLocalOrder(ordersToSync);
+
+      if (model.status == 'ok') {
+        for (int localOrderId in localOrderIds) {
+          await dbHelper.markOrderAsSynced(localOrderId);
+        }
+        pendingOrdersCount.value = 0;
+        await loadOrders();
+        Get.snackbar('Sync Complete', 'Orders synced successfully',
+            backgroundColor: const Color(0xff0C831F),
+            colorText: Colors.white,
+            duration: const Duration(seconds: 2));
+      }
+    } catch (e) {
+      print('❌ Error syncing orders (portrait): $e');
+    }
+  }
+
+  Map<String, dynamic> _buildSyncOrderMap(Map<String, dynamic> orderDetails) {
+    final orderData = orderDetails['order'] as Map<String, dynamic>;
+    final itemsData = orderDetails['items'] as List<dynamic>;
+    final paymentData = orderDetails['payment'] as Map<String, dynamic>?;
+    final addressData = orderDetails['shipping_address'] as Map<String, dynamic>?;
+
+    int storedMillis = orderData['created_at'] as int;
+    String isoTimestamp = DateTime.fromMillisecondsSinceEpoch(storedMillis, isUtc: true).toIso8601String();
+
+    List<Map<String, dynamic>> items = [];
+    for (var item in itemsData) {
+      List<Map<String, dynamic>> toppings = [];
+      if (item['toppings'] != null && item['toppings'] is List) {
+        for (var t in item['toppings']) {
+          toppings.add({'topping_id': t['id'] ?? 0, 'quantity': t['topping_quantity'] ?? 1});
+        }
+      }
+      items.add({
+        'product_id': item['product_id'],
+        'quantity': item['quantity'],
+        'unit_price': (item['unit_price'] as num?)?.toDouble() ?? 0.0,
+        'note': item['note'] ?? '',
+        'variant_id': item['variant_id'] ?? 0,
+        'toppings': toppings,
+      });
+    }
+
+    return {
+      'client_uuid': orderData['client_uuid'],
+      'store_id': int.tryParse(orderData['store_id'].toString()) ?? 0,
+      'order_type': orderData['order_type'] ?? 3,
+      'created_at': isoTimestamp,
+      'note': orderData['note'] ?? '',
+      'items': items,
+      'delivery_time': orderData['delivery_time'],
+      'payment': {
+        'payment_method': 'cash',
+        'status': 'paid',
+        'amount': (paymentData?['amount'] as num?)?.toDouble() ?? 0.0,
+        'order_id': 0,
+      },
+      'customer': {
+        'customer_name': addressData?['customer_name'] ?? 'Walk-in Customer',
+        'phone': addressData?['phone'],
+        'email': orderData['email'],
+        'line1': addressData?['line1'],
+        'city': addressData?['city'],
+        'zip': addressData?['zip'],
+        'country': addressData?['country'],
+      },
+    };
+  }
+
+  // ─── CUSTOMER HELPERS ───────────────────────────────────────────────────
+
+  void onAddCustomerPressed() {
+    showCustomerDetails.value = true;
+    isCustomerFormVisible.value = true;
+  }
+
+  void toggleCustomerDetails() {
+    isCartExpanded.value = !isCartExpanded.value;
+  }
+
+  void showPostcodeSelector(BuildContext context) {
+    showPostcodeDialog.value = true;
+  }
+
+  void showItemNoteDialog(BuildContext context, int index) {
+    final ctrl = TextEditingController(
+        text: cartItems[index]['item_note']?.toString() ?? '');
+    Get.dialog(AlertDialog(
+      title: const Text('Item Note',
+          style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700)),
+      content: TextField(
+        controller: ctrl,
+        maxLines: 3,
+        autofocus: true,
+        decoration: InputDecoration(
+          hintText: 'Enter note...',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xffE31E24))),
+        ),
+        style: const TextStyle(fontFamily: 'Mulish'),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel',
+                style: TextStyle(fontFamily: 'Mulish', color: Colors.grey))),
+        ElevatedButton(
+            onPressed: () {
+              updateItemNote(index, ctrl.text);
+              Get.back();
+            },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xff0C831F)),
+            child: const Text('Save',
+                style: TextStyle(
+                    fontFamily: 'Mulish', color: Colors.white))),
+      ],
+    ));
+  }
+
+  // ─── ORDER DISPLAY HELPERS ──────────────────────────────────────────────
+
+  String extractTime(String deliveryTime) {
+    try {
+      DateTime dt = DateTime.parse(deliveryTime);
+      return DateFormat('HH:mm').format(dt);
+    } catch (_) {
+      return deliveryTime;
+    }
+  }
+
+  String getApprovalStatusText(int? status) {
+    switch (status) {
+      case 1: return 'Pending';
+      case 2: return 'Accepted';
+      case 3: return 'Declined';
+      default: return 'Unknown';
+    }
+  }
+
+  Color getStatusColor(int status) {
+    switch (status) {
+      case 2: return const Color(0xff0C831F);
+      case 3: return const Color(0xffE31E24);
+      default: return Colors.orange;
+    }
+  }
+
+  IconData getStatusIcon(int status) {
+    switch (status) {
+      case 2: return Icons.check;
+      case 3: return Icons.close;
+      default: return Icons.access_time;
+    }
+  }
+
+  String formatAmount(dynamic amount) {
+    try {
+      double val = double.tryParse(amount.toString()) ?? 0.0;
+      return val.toStringAsFixed(2);
+    } catch (_) {
+      return '0.00';
+    }
   }
 
 }
