@@ -75,6 +75,7 @@ import '../../models/get_discount_percentage_response_model.dart';
 import '../../models/get_group_item_response_model.dart';
 import '../../models/get_holidays_response_model.dart';
 import '../../models/get_item_allergy_link_response_model.dart';
+import '../../models/get_notification_windows_history.dart';
 import '../../models/get_printer_ip_response_model.dart';
 import '../../models/get_product_category_list_response_model.dart';
 import '../../models/get_product_group_response_model.dart';
@@ -87,6 +88,7 @@ import '../../models/get_store_timing_response_model.dart';
 import '../../models/get_toppings_groups_response_model.dart';
 import '../../models/get_toppings_response_model.dart';
 import '../../models/iamge_upload_response_model.dart';
+import '../../models/logout_store_by_superAdmin.dart';
 import '../../models/manual_override_response_model.dart';
 import '../../models/order_history_response_model.dart';
 import '../../models/order_model.dart';
@@ -4472,6 +4474,7 @@ class CallService extends GetConnect {
     }
   }
 
+  //For getting Windows Device Status
   Future<WindowsDeviceStatus> getWindowsDeviceStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? Token = prefs.getString(valueShared_BEARER_KEY);
@@ -4492,4 +4495,56 @@ class CallService extends GetConnect {
     }
   }
 
+  //For Logout Store By SuperAdmin
+  Future<LogoutStoreBySuperAdmin> logOutStoreBySuperAdmin(dynamic body,String storeId) async {
+    try {
+      httpClient.baseUrl = Api.baseUrl;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+
+      var res = await post('logout/store/$storeId',
+        body, headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      print("Logout Store Response: ${res.statusCode}");
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return LogoutStoreBySuperAdmin();
+      } else {
+        throw Exception('Server error: ${res.statusCode} - ${res.body}');
+      }
+    } catch (e) {
+      print("Logout Store error: $e");
+      if (e is Exception) {
+        rethrow;
+      } else {
+        throw Exception('An unexpected error occurred: $e');
+      }
+    }
+  }
+
+  //For Windows Notification History
+  Future<GetWindowsNotificationHistory> getWindowsNotificationHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('stores/windows/history/all', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Windows Notification History response is :${res.statusCode.toString()}");
+      print("Getting  Windows Notification History response body is :${res.body}");
+      return GetWindowsNotificationHistory.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load Getting  Windows Notification History: ${res.statusCode}');
+    }
+  }
 }

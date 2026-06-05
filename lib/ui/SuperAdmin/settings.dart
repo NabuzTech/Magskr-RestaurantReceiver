@@ -193,6 +193,109 @@ class _SettingsState extends State<Settings> {
     );
   }
 
+  void _showLogoutDialog(Reports store) {
+    final passwordController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool obscure = true;
+
+    Get.dialog(
+      StatefulBuilder(
+        builder: (context, setDialogState) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 12, offset: const Offset(0, 4))],
+                  ),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title
+                        const Text(
+                          'Log Out',
+                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17, fontFamily: 'Mulish', color: Colors.black),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          store.storeName ?? '',
+                          style: const TextStyle(fontSize: 12, fontFamily: 'Mulish', color: Colors.black54, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 18),
+                        Text('Are You Sure You Want To LogOut \n Store ${store.storeName}',
+                          style: const TextStyle(fontSize: 12, fontFamily: 'Mulish', color: Colors.black54, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 24),
+                        // Buttons
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            // Cancel
+                            TextButton(
+                              onPressed: () => Get.back(),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.grey.shade700,
+                                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                  side: BorderSide(color: Colors.grey.shade300),
+                                ),
+                              ),
+                              child: const Text('Cancel', style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 13)),
+                            ),
+                            const SizedBox(width: 10),
+                            // Save
+                            ElevatedButton(
+                              onPressed: () async {
+                                if (!formKey.currentState!.validate()) return;
+                                Get.back();
+                                await logoutStore(store,store.storeId.toString());
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                elevation: 0,
+                              ),
+                              child: const Text('Logout', style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 13)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Close icon
+                Positioned(
+                  top: -14,
+                  right: 0,
+                  left: 0,
+                  child: GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: const BoxDecoration(color: Color(0xFFED4C5C), shape: BoxShape.circle),
+                      child: const Icon(Icons.close, color: Colors.white, size: 16),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Future<void> _resetPassword(Reports store, String newPassword) async {
     try {
       Get.dialog(
@@ -217,6 +320,37 @@ class _SettingsState extends State<Settings> {
       Get.snackbar(
         'Error',
         'Failed to reset password',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  Future<void> logoutStore(Reports store, String storeId) async {
+    try {
+      Get.dialog(
+        Center(child: Lottie.asset('assets/animations/burger.json', width: 150, height: 150, repeat: true)),
+        barrierDismissible: false,
+      );
+
+      await CallService().logOutStoreBySuperAdmin({},store.storeId.toString());
+
+      if (Get.isDialogOpen ?? false) Get.back();
+
+      Get.snackbar(
+        'Success',
+        'Store ${store.storeName} Logged Out Successfully',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 3),
+      );
+    } catch (e) {
+      if (Get.isDialogOpen ?? false) Get.back();
+      Get.snackbar(
+        'Error',
+        'Failed to Close Store',
         backgroundColor: Colors.red,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
@@ -281,51 +415,76 @@ class _SettingsState extends State<Settings> {
                         itemBuilder: (context, index) {
                           final store = stores[index];
                           final colors = _storeColors(store.storeId);
-                          return GestureDetector(
-                            onTap: () => _showResetPasswordDialog(store),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                              margin: const EdgeInsets.only(bottom: 10),
-                              decoration: BoxDecoration(
-                                color: colors['background'],
-                                border: Border.all(color: colors['border']!, width: 1.2),
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2)),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'ID : ${store.storeId}',
-                                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, fontFamily: 'Mulish', color: Colors.black54),
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            margin: const EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              color: colors['background'],
+                              border: Border.all(color: colors['border']!, width: 1.2),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2)),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'ID : ${store.storeId}',
+                                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, fontFamily: 'Mulish', color: Colors.black54),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width*0.4,
+                                      child: Text(
+                                        store.storeName ?? '',
+                                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, fontFamily: 'Mulish', color: colors['nameColor']),
                                       ),
-                                      const SizedBox(height: 2),
-                                      SizedBox(
-                                        width: MediaQuery.of(context).size.width*0.4,
-                                        child: Text(
-                                          store.storeName ?? '',
-                                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, fontFamily: 'Mulish', color: colors['nameColor']),
+                                    ),
+                                  ],
+                                ),
+                                Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: InkWell(
+                                        onTap: () => _showResetPasswordDialog(store),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              'Reset Password',
+                                              style: TextStyle(fontSize: 13, fontFamily: 'Mulish', fontWeight: FontWeight.w600, color: colors['nameColor']),
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Icon(Icons.lock_reset_outlined, color: colors['nameColor'], size: 18),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Reset Password',
-                                        style: TextStyle(fontSize: 11, fontFamily: 'Mulish', fontWeight: FontWeight.w600, color: colors['nameColor']),
+                                    ),
+
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: InkWell(
+                                        onTap: () => _showLogoutDialog(store),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              'LogOut',
+                                              style: TextStyle(fontSize: 13, fontFamily: 'Mulish', fontWeight: FontWeight.w600, color: colors['nameColor']),
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Icon(Icons.logout_outlined, color: colors['nameColor'], size: 18),
+                                          ],
+                                        ),
                                       ),
-                                      const SizedBox(width: 6),
-                                      Icon(Icons.lock_reset_outlined, color: colors['nameColor'], size: 18),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           );
                         },

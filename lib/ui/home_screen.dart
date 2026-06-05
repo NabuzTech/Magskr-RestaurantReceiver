@@ -253,12 +253,13 @@ class _HomeScreenState extends State<HomeScreen> {
           Scaffold(
               drawer: CustomDrawer(onSelectTab: _openTab),
               // ✅ Hide AppBar when on POS tab (index 3)
-              appBar: app.appController.selectedTabIndex == 3
+              appBar:
+              app.appController.selectedTabIndex == 3
                   ? null
-                  : CustomAppBar(roleId: _roleId),
+                  :
+              CustomAppBar(roleId: _roleId),
               resizeToAvoidBottomInset: true,
-              floatingActionButtonLocation: FloatingActionButtonLocation
-                  .centerDocked,
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               floatingActionButton: !_isDataLoaded
                   ? const SizedBox.shrink()
                   : Obx(() {
@@ -268,9 +269,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 return const SizedBox.shrink();
               }),
               // ✅ Hide BottomBar when on POS tab (index 3)
-              bottomNavigationBar: app.appController.selectedTabIndex == 3
-                  ? null
-                  : _buildBottomBar(),
+              bottomNavigationBar:
+              // app.appController.selectedTabIndex == 3
+              //     ? null :
+              _buildBottomBar(),
               body: _isDataLoaded ? _buildBody() : Center(
                   child: Lottie.asset(
                     'assets/animations/burger.json',
@@ -339,12 +341,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!_isDataLoaded) {
       return const SizedBox.shrink();
     }
-    final isLandscape = MediaQuery
-        .of(context)
-        .orientation == Orientation.landscape;
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     double bottomBarHeight = isLandscape
-        ? (Platform.isIOS ? 100 : 100) // Shorter in landscape
-        : (Platform.isIOS ? 100 : 100);
+        ? (Platform.isIOS ? 100 : 80)
+        : (Platform.isIOS ? 100 : 70);
     return Container(
       height: bottomBarHeight,
       decoration: BoxDecoration(
@@ -376,8 +376,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     _openTab(0);
                   },
                 ),
-                // Show reservation for super admin, dine-in stores, or role 5 with no store type
-                if (_roleId == 1 || _storeType == '0' || (_roleId == 5 && (_storeType == null || _storeType!.isEmpty)))
                   ItemBottomBar(
                     selected: app.appController.selectedTabIndex == 1,
                     icon: "assets/images/reserv.svg",
@@ -428,7 +426,7 @@ class _HomeScreenState extends State<HomeScreen> {
         KeepAlivePage(child: isAdmin ? const AdminOrder() : const OrderScreenNew()),
         KeepAlivePage(child: isAdmin ? const SuperAdminReservation() : const Reservation()),
         KeepAlivePage(child: isAdmin ? const SuperAdminReport() : const ReportScreen()),
-        KeepAlivePage(child: PosPortrait(onNavigateToTab: _openTab)),
+        KeepAlivePage(child: PosPortrait()),
       ],
     );
   }
@@ -461,12 +459,6 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       return;
     }
-    //
-    // // ✅ If already on the same page, just return (orientation already set above)
-    // if (_pageController.page == index.toDouble()) {
-    //   print("Already on tab $index - orientation updated.");
-    //   return;
-    // }
 
     print("Switching to Tab : $index");
     _pageController.jumpToPage(index);

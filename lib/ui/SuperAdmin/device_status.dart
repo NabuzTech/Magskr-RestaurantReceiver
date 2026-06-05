@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/repository/api_repository.dart';
 import '../../constants/constant.dart';
 import '../../models/device_status_response_model.dart';
+import '../../models/get_notification_windows_history.dart';
 import '../../models/get_specific_store_device_status_response_model.dart';
 import '../../models/windows_device_status.dart';
 import '../Notification/notification.dart';
@@ -17,8 +19,7 @@ class DeviceStatusScreen extends StatefulWidget {
   State<DeviceStatusScreen> createState() => _DeviceStatusScreenState();
 }
 
-class _DeviceStatusScreenState extends State<DeviceStatusScreen>
-    with TickerProviderStateMixin {
+class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProviderStateMixin {
   bool isLoading = false;
   List<DeviceStatus>? allDevices = [];
   List<DeviceStatus>? aliveDevices = [];
@@ -37,12 +38,13 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen>
   late AnimationController _rippleController;
   late Animation<double> _rippleAnimation;
   late TabController _tabController;
-
+  GetWindowsNotificationHistory? windowsHistory;
+  String selectedHistoryTab = 'all';
   @override
   void initState() {
     super.initState();
 
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
 
     _rippleController = AnimationController(
       duration: const Duration(milliseconds: 1500),
@@ -72,6 +74,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen>
       } else {
         getAllDeviceStatus();
         _fetchWindowsDeviceStatus();
+        getWindowsHistory(showLoader: false);
       }
     });
   }
@@ -132,6 +135,9 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen>
                           getAllDeviceStatus();
                         }
                       }
+                      if (_tabController.index == 3) {
+                        getWindowsHistory();
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.all(7),
@@ -164,6 +170,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen>
                 Tab(text: 'Windows'),
                 Tab(text: 'Devices'),
                 Tab(text: 'Notifications'),
+                Tab(text: 'History'),
               ],
             ),
 
@@ -175,6 +182,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen>
                   _buildWindowsTab(),
                   _buildDevicesTab(),
                   _buildNotificationsTab(),
+                  _buildHistoryTab(),
                 ],
               ),
             ),
@@ -739,6 +747,123 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen>
     return '${dt.day} ${months[dt.month - 1]}  $time';
   }
 
+  // ─── History Tab ──────────────────────────────────────────────────────────────
+  Widget _buildHistoryTab() {
+    if (windowsHistory == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    List<Map<String, dynamic>> historyItems = [];
+
+    for (final store in windowsHistory!.stores ?? []) {
+      for (final event in store.events ?? []) {
+        historyItems.add({
+          'storeName': store.storeName,
+          'status': event.state,
+          'occurredAt': event.occurredAt,
+        });
+      }
+    }
+
+    if (historyItems.isEmpty) {
+      return const Center(
+        child: Text('No History Found'),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(12),
+      itemCount: historyItems.length,
+      itemBuilder: (context, index) {
+        final item = historyItems[index];
+
+        final bool isOnline =
+            (item['status'] ?? '').toString().toLowerCase() == 'online';
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(.05),
+                blurRadius: 4,
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor:
+                isOnline ? Colors.green.shade50 : Colors.red.shade50,
+                child: Icon(
+                  isOnline ? Icons.check_circle : Icons.cancel,
+                  color: isOnline ? Colors.green : Colors.red,
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['storeName'] ?? '',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        fontFamily: 'Mulish',
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    Text(
+                      item['status'] ?? '',
+                      style: TextStyle(
+                        color: isOnline ? Colors.green : Colors.red,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    Text(
+                      _formatHistoryDate(item['occurredAt']),
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatHistoryDate(String? value) {
+    if (value == null || value.isEmpty) return '';
+
+    try {
+      final dt = DateTime.parse(value).toLocal();
+
+      return DateFormat(
+        'dd MMM yyyy • hh:mm a',
+      ).format(dt);
+    } catch (e) {
+      return value;
+    }
+  }
   // ─── Device Card ──────────────────────────────────────────────────────────────
 
   Widget _buildDeviceCard(DeviceStatus device) {
@@ -993,4 +1118,32 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen>
       });
     }
   }
+
+  Future<void> getWindowsHistory({bool showLoader = true}) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      if (showLoader && !(Get.isDialogOpen ?? false)) {
+        Get.dialog(
+          Center(child: Lottie.asset('assets/animations/burger.json', width: 150, height: 150, repeat: true)),
+          barrierDismissible: false,
+        );
+      }
+      GetWindowsNotificationHistory history = await CallService().getWindowsNotificationHistory();
+
+      setState(() {
+        windowsHistory = history;
+        isLoading = false;
+      });
+      if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
+    } catch (e) {
+      print('Error getting WindowsHistory: $e');
+      setState(() {
+        isLoading = false;
+      });
+      if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
+    }
+  }
+
 }

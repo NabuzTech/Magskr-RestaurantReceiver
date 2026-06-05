@@ -1190,26 +1190,6 @@ Future<void> _initializeLocalNotifications() async {
 
   print('✅ Local notifications initialized');
 
-  // // Android notification channel (high importance) ----------------------
-  // const channel = AndroidNotificationChannel(
-  //   //'order_channel',
-  //   'order_notifications_v1',
-  //   'Order Notifications',
-  //   description: 'This channel is used for order alerts',
-  //   importance: Importance.high,
-  //   sound: RawResourceAndroidNotificationSound('alarm'),
-  //   playSound: true,
-  // );
-  //
-  // await flutterLocalNotificationsPlugin
-  //     .resolvePlatformSpecificImplementation<
-  //     AndroidFlutterLocalNotificationsPlugin>()
-  //     ?.createNotificationChannel(channel);
-  //
-  // // Runtime permission (Android 13+) ------------------------------------
-  // if (Platform.isAndroid && await Permission.notification.isDenied) {
-  //   await Permission.notification.request();
-  // }
 }
 
 const String orderChannelId = 'order_channel_v2';

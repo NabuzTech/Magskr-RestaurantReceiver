@@ -11,7 +11,8 @@ import '../../models/Payment.dart';
 import '../../models/ShippingAddress.dart';
 import '../../models/get_product_category_list_response_model.dart';
 import '../../models/get_store_products_response_model.dart';
-
+import '../../api/Socket/socket_service.dart';
+import '../../api/Socket/reservation_socket_service.dart';
 import '../../models/get_store_postcode_response_model.dart';
 import '../../models/get_store_timing_response_model.dart';
 import '../../models/order_model.dart';
@@ -55,8 +56,10 @@ class PosPortraitController extends GetxController {
   final selectedToppingsMap = <int, List<int>>{}.obs;
   // Auto Scrolling Flag
   final isAutoScrolling = false.obs;
+  final visibleCategories = <int>[].obs;
 // Order management
   final selectedOrderType = 'Lieferzeit'.obs;
+  final showOrderTypeSelection = true.obs;
   final selectedTimeSlot = 'sofort'.obs;
   final showTimeBottomSheet = false.obs;
   final isHeuteSelected = true.obs;
@@ -91,8 +94,8 @@ class PosPortraitController extends GetxController {
   final showPostcodeDialog = false.obs;
 
   // Timing
-  final List<Map<String, String>> sofortTimeSlots = <Map<String, String>>[].obs;
-  final storeOpeningTime = Rx<DateTime?>(null);
+  final List<Map<String, String>> _availableSlots = [];   // raw slots from socket today_hours
+  final List<Map<String, String>> sofortTimeSlots = <Map<String, String>>[].obs;  // filtered for selected date
   List<GetStoreTimingResponseModel> storeTimingList = [];
 
   // Discount
@@ -138,7 +141,11 @@ class PosPortraitController extends GetxController {
 
   // Store ID
   String? storeId;
+  final SocketService _socketService = SocketService();
+  final SocketServices _orderSocketService = SocketServices();
   SharedPreferences? sharedPreferences;
+  final showCheckout = false.obs;
+
 
   @override
   void onInit() {
@@ -147,6 +154,8 @@ class PosPortraitController extends GetxController {
     _setupScrollListener();
     _loadNextInvoiceNumber();
     _loadPendingOrdersCount();
+    _initializeSocketConnection();
+    _listenToNewOrders();
   }
 
 
@@ -168,11 +177,135 @@ class PosPortraitController extends GetxController {
     showVariantDialog.value = false;
     showPostcodeDialog.value = false;
     showTimeBottomSheet.value = false;
+    _socketService.disconnect();
     super.onClose();
   }
 
   void _setupScrollListener() {
     mainPositionsListener.itemPositions.addListener(_onMainScroll);
+  }
+
+  Future<void> _initializeSocketConnection() async {
+    try {
+      await _socketService.connect();
+      await Future.delayed(const Duration(milliseconds: 2000));
+      if (storeId != null) {
+        _listenToStoreStatus();
+      }
+    } catch (e) {
+      print('❌ Error initializing socket (portrait): $e');
+    }
+  }
+
+  void _listenToStoreStatus() {
+    if (storeId == null) return;
+    _socketService.listenToStoreStatus(storeId!);
+    _socketService.storeStatusStream.listen((data) {
+      isStoreOpen.value = data['is_open'] ?? false;
+      _availableSlots
+        ..clear()
+        ..addAll(_parseTimeSlots(data['today_hours']));
+      if (!isStoreOpen.value) {
+        // Store Closed
+        isHeuteSelected.value = false;
+        isVorbestellenSelected.value = true;
+      } else {
+        // Store Open
+        isHeuteSelected.value = true;
+        isVorbestellenSelected.value = false;
+        selectedDate.value = null;
+      }
+      _filterSlotsForSelectedDate();
+    });
+  }
+
+  List<Map<String, String>> _parseTimeSlots(List<dynamic>? todayHours) {
+    if (todayHours == null || todayHours.isEmpty) return _generateDefaultTimeSlots();
+    final slots = <Map<String, String>>[];
+    for (final ts in todayHours) {
+      final open = ts['open_time'], close = ts['close_time'];
+      if (open == null || close == null) continue;
+      _generateSlots(open, close, slots);
+    }
+    return slots.isNotEmpty ? slots : _generateDefaultTimeSlots();
+  }
+
+  void _generateSlots(String open, String close, List<Map<String, String>> slots) {
+    DateTime cur = _parseSlotTime(open);
+    final DateTime end = _parseSlotTime(close);
+    while (!cur.isAfter(end.subtract(const Duration(minutes: 30)))) {
+      slots.add({
+        'time': '${cur.hour.toString().padLeft(2, '0')}:${cur.minute.toString().padLeft(2, '0')}',
+        'date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      });
+      cur = cur.add(const Duration(minutes: 30));
+    }
+  }
+
+  DateTime _parseSlotTime(String t) {
+    final p = t.split(':');
+    return DateTime(2023, 1, 1, int.parse(p[0]), int.parse(p[1]));
+  }
+
+  List<Map<String, String>> _generateDefaultTimeSlots() {
+    final slots = <Map<String, String>>[];
+    _generateSlots('10:00', '22:00', slots);
+    return slots;
+  }
+
+  void _filterSlotsForSelectedDate() {
+    final DateTime nowUtc = DateTime.now().toUtc();
+    final DateTime nowGermany = nowUtc.add(Duration(hours: _isDaylightSavingTime(nowUtc) ? 2 : 1));
+
+    final all = _availableSlots.isNotEmpty ? _availableSlots : _generateDefaultTimeSlots();
+
+    // Check if selected date is today (Heute) or future (Vorbestellen)
+    final bool isToday = isHeuteSelected.value ||
+        (selectedDate.value != null &&
+            selectedDate.value!.year == nowGermany.year &&
+            selectedDate.value!.month == nowGermany.month &&
+            selectedDate.value!.day == nowGermany.day);
+
+    if (isToday) {
+      final int curMinutes = nowGermany.hour * 60 + nowGermany.minute;
+      sofortTimeSlots.clear();
+      sofortTimeSlots.addAll(all.where((s) {
+        final p = s['time']!.split(':');
+        return int.parse(p[0]) * 60 + int.parse(p[1]) > curMinutes;
+      }).toList());
+    } else {
+      sofortTimeSlots.clear();
+      sofortTimeSlots.addAll(List.from(all));
+    }
+    print('✅ Filtered ${sofortTimeSlots.length} slots (isToday: $isToday, Germany: ${nowGermany.hour}:${nowGermany.minute})');
+  }
+
+  void _listenToNewOrders() {
+    if (storeId == null) return;
+    _orderSocketService.onNewOrder = (data) {
+      if (data['store_id'] != null &&
+          data['store_id'].toString() == storeId.toString()) {
+        _loadLocalOrders();
+        _loadPendingOrdersCount();
+      }
+    };
+  }
+
+  Future<void> _loadLocalOrders() async {
+    if (storeId == null) return;
+    try {
+      final unsyncedRaw = await dbHelper.getUnsyncedOrders(storeId!);
+      List<Order> localOrders = [];
+      for (var dbOrder in unsyncedRaw) {
+        final orderDetails = await dbHelper.getOrderDetails(dbOrder['id'] as int);
+        if (orderDetails != null) {
+          localOrders.add(await _buildOrderFromDetails(orderDetails));
+        }
+      }
+      localOrdersList.value = localOrders;
+    } catch (e) {
+      print('❌ Error loading local orders (portrait): $e');
+    }
   }
 
   void _onMainScroll() {
@@ -181,19 +314,25 @@ class PosPortraitController extends GetxController {
     final positions = mainPositionsListener.itemPositions.value;
     if (positions.isEmpty) return;
 
-    // Find the first visible category
-    final visiblePositions = positions
-        .where((position) => position.itemLeadingEdge >= -0.3)
-        .toList();
+    final visibleItems = positions
+        .where((p) => p.itemLeadingEdge < 1 && p.itemTrailingEdge > 0)
+        .toList()
+      ..sort((a, b) => a.index.compareTo(b.index));
 
-    if (visiblePositions.isEmpty) return;
+    if (visibleItems.isEmpty) return;
 
-    final firstVisible = visiblePositions
-        .reduce((a, b) => a.itemLeadingEdge < b.itemLeadingEdge ? a : b);
+    final firstItem = visibleItems.first;
+    // restaurant_details se: only track when item has scrolled past top
+    if (firstItem.itemLeadingEdge >= 0) return;
 
-    int visibleIndex = firstVisible.index;
+    int visibleIndex = firstItem.index;
+    final displayLen = isSearching.value
+        ? getFilteredCategories().length
+        : categories.length;
 
-    if (visibleIndex != selectedCategoryIndex.value && visibleIndex < categories.length) {
+    if (visibleIndex != selectedCategoryIndex.value &&
+        visibleIndex >= 0 &&
+        visibleIndex < displayLen) {
       selectedCategoryIndex.value = visibleIndex;
       _scrollSidebarToCategory(visibleIndex);
     }
@@ -215,7 +354,10 @@ class PosPortraitController extends GetxController {
   }
 
   Future<void> scrollToCategory(int index) async {
-    if (isAutoScrolling.value || index >= categories.length) return;
+    final displayLen = isSearching.value
+        ? getFilteredCategories().length
+        : categories.length;
+    if (isAutoScrolling.value || index >= displayLen) return;
 
     isAutoScrolling.value = true;
     selectedCategoryIndex.value = index;
@@ -350,6 +492,9 @@ class PosPortraitController extends GetxController {
     })
         .where((cat) => cat.products.isNotEmpty)
         .toList();
+    visibleCategories.value = List.generate(categories.length, (i) => i);
+
+    selectedCategoryIndex.value = 0;
   }
 
   Future<void> refreshData() async {
@@ -501,6 +646,7 @@ class PosPortraitController extends GetxController {
     variantGroupErrors.clear();
     variantNoteController.clear();
   }
+
   void addSimpleProductToCart(GetStoreProducts product) {
     double basePrice = double.tryParse(product.price?.toString() ?? '0') ?? 0.0;
     String itemKey = '${product.name}_no_variant';
@@ -530,29 +676,17 @@ class PosPortraitController extends GetxController {
 
   void onWeiterPressed() {
     if (cartItems.isEmpty) {
-      Get.snackbar(
-        'Warenkorb leer',
-        'Bitte fügen Sie Artikel hinzu',
-        backgroundColor: const Color(0xffE31E24),
-        colorText: Colors.white,
-      );
+      Get.snackbar('Warenkorb leer', 'Bitte fügen Sie Artikel hinzu',
+          backgroundColor: const Color(0xffE31E24), colorText: Colors.white);
       return;
     }
-
     if (!showCustomerDetails.value) {
-      // ✅ Show customer details form
       showCustomerDetails.value = true;
       isCustomerFormVisible.value = true;
     } else if (isCustomerFormVisible.value) {
-      // ✅ Currently editing - do nothing or show message
-      Get.snackbar(
-        'Hinweis',
-        'Bitte speichern Sie die Kundendetails',
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-      );
+      Get.snackbar('Hinweis', 'Bitte speichern Sie die Kundendetails',
+          backgroundColor: Colors.orange, colorText: Colors.white);
     } else {
-      // ✅ Place order
       placeOrder();
     }
   }
@@ -758,51 +892,34 @@ class PosPortraitController extends GetxController {
     if (storeId == null) return;
     try {
       storeTimingList = await CallService().getStoreTiming(storeId!);
-      if (storeTimingList.isNotEmpty) {
-        _generateTimeSlots();
+      // Only use API timing as fallback if socket hasn't provided slots yet
+      if (_availableSlots.isEmpty && storeTimingList.isNotEmpty) {
+        _buildSlotsFromApiTiming();
       }
     } catch (e) {
-      print('❌ Error getting store timing: $e');
+      print('❌ Error getting store timing (portrait): $e');
     }
   }
 
-  void _generateTimeSlots() {
-    sofortTimeSlots.clear();
-    DateTime now = DateTime.now();
-    String currentDay = _getDayOfWeek(now.weekday);
+  void _buildSlotsFromApiTiming() {
+    final DateTime nowUtc = DateTime.now().toUtc();
+    final DateTime nowGermany = nowUtc.add(Duration(hours: _isDaylightSavingTime(nowUtc) ? 2 : 1));
+    final String currentDay = _getDayOfWeek(nowGermany.weekday);
 
-    var todayTiming = storeTimingList.firstWhere(
-          (timing) => timing.dayOfWeek?.toString() == currentDay.toLowerCase(),
+    final todayTiming = storeTimingList.firstWhere(
+          (t) => t.dayOfWeek?.toString() == currentDay,
       orElse: () => GetStoreTimingResponseModel(),
     );
 
-    if (todayTiming.openingTime == null || todayTiming.closingTime == null) {
-      print('⚠️ Store is closed today');
-      return;
+    if (todayTiming.openingTime != null && todayTiming.closingTime != null) {
+      _availableSlots.clear();
+      _generateSlots(
+        todayTiming.openingTime!.substring(0, 5),  // "HH:mm:ss" → "HH:mm"
+        todayTiming.closingTime!.substring(0, 5),
+        _availableSlots,
+      );
     }
-
-    try {
-      DateTime openingTime = DateFormat('HH:mm:ss').parse(todayTiming.openingTime!);
-      DateTime closingTime = DateFormat('HH:mm:ss').parse(todayTiming.closingTime!);
-
-      DateTime storeOpen = DateTime(now.year, now.month, now.day, openingTime.hour, openingTime.minute);
-      DateTime storeClose = DateTime(now.year, now.month, now.day, closingTime.hour, closingTime.minute);
-
-      DateTime startTime = now.isAfter(storeOpen) ? now.add(const Duration(minutes: 30)) : storeOpen;
-      startTime = DateTime(startTime.year, startTime.month, startTime.day, startTime.hour, (startTime.minute ~/ 15) * 15);
-
-      while (startTime.isBefore(storeClose)) {
-        sofortTimeSlots.add({
-          'time': DateFormat('HH:mm').format(startTime),
-          'date': DateFormat('yyyy-MM-dd').format(startTime),
-        });
-        startTime = startTime.add(const Duration(minutes: 15));
-      }
-
-      print('✅ Generated ${sofortTimeSlots.length} time slots');
-    } catch (e) {
-      print('❌ Error generating time slots: $e');
-    }
+    _filterSlotsForSelectedDate();
   }
 
   String _getDayOfWeek(int weekday) {
@@ -817,6 +934,7 @@ class PosPortraitController extends GetxController {
       default: return 'monday';
     }
   }
+
 
   void setOrderType(String type) {
     selectedOrderType.value = type;
@@ -849,24 +967,34 @@ class PosPortraitController extends GetxController {
     if (tab == 'heute') {
       isHeuteSelected.value = true;
       isVorbestellenSelected.value = false;
+
+      selectedDate.value = null;
+      selectedTimeSlot.value = 'sofort';
     } else {
       isHeuteSelected.value = false;
       isVorbestellenSelected.value = true;
+
+      selectedTimeSlot.value = '';
     }
+
+    _filterSlotsForSelectedDate();
   }
 
   void selectTimeSlot(String time, String type) {
     selectedTimeSlot.value = time;
 
+    final DateTime nowGermany = _getGermanyTime();
+    final List<String> timeParts = time.split(':');
+
     if (type == 'heute') {
-      DateTime now = DateTime.now();
-      List<String> timeParts = time.split(':');
       selectedVorbestellenDate.value = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        int.parse(timeParts[0]),
-        int.parse(timeParts[1]),
+        nowGermany.year, nowGermany.month, nowGermany.day,
+        int.parse(timeParts[0]), int.parse(timeParts[1]),
+      );
+    } else if (type == 'vorbestellen' && selectedDate.value != null) {
+      selectedVorbestellenDate.value = DateTime(
+        selectedDate.value!.year, selectedDate.value!.month, selectedDate.value!.day,
+        int.parse(timeParts[0]), int.parse(timeParts[1]),
       );
     }
 
@@ -882,59 +1010,121 @@ class PosPortraitController extends GetxController {
     );
 
     if (pickedDate != null) {
-      TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-
-      if (pickedTime != null) {
-        selectedVorbestellenDate.value = DateTime(
-          pickedDate.year,
-          pickedDate.month,
-          pickedDate.day,
-          pickedTime.hour,
-          pickedTime.minute,
-        );
-        selectedTimeSlot.value = 'vorbestellen';
-        showTimeBottomSheet.value = false;
-      }
+      selectedDate.value = pickedDate;
+      _filterSlotsForSelectedDate();   // ← picked date ke hisaab se slots filter
+      showTimeBottomSheet.value = false;
     }
   }
 
   void editItemNote({required int index, required String initial, required Function(String) onSave}) {
     TextEditingController noteEditController = TextEditingController(text: initial);
 
-    Get.dialog(
-      AlertDialog(
-        title: const Text(
-          'Notiz bearbeiten',
-          style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.bold),
-        ),
-        content: TextField(
-          controller: noteEditController,
-          maxLines: 3,
-          decoration: const InputDecoration(
-            hintText: 'Notiz eingeben...',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Abbrechen', style: TextStyle(fontFamily: 'Mulish')),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              onSave(noteEditController.text);
-              Get.back();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xffE31E24),
+    showDialog(
+      context: Get.context!,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: SingleChildScrollView(
+            child: Container(
+              width: 400,
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Notiz bearbeiten',
+                        style: TextStyle(
+                          fontFamily: 'Mulish',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                          color: Color(0xff0B1928),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.close),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  TextField(
+                    controller: noteEditController,
+                    maxLines: 4,
+                    autofocus: true,
+                    textInputAction: TextInputAction.done,
+                    decoration: InputDecoration(
+                      hintText: 'Notiz eingeben...',
+                      hintStyle: const TextStyle(
+                        fontFamily: 'Mulish',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xffE31E24)),
+                      ),
+                      contentPadding: const EdgeInsets.all(12),
+                    ),
+                    style: const TextStyle(fontFamily: 'Mulish', fontSize: 14),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'Abbrechen',
+                          style: TextStyle(
+                            fontFamily: 'Mulish',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          onSave(noteEditController.text);
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xffE31E24),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                        ),
+                        child: const Text(
+                          'Speichern',
+                          style: TextStyle(
+                            fontFamily: 'Mulish',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            child: const Text('Speichern', style: TextStyle(fontFamily: 'Mulish', color: Colors.white)),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -972,6 +1162,9 @@ class PosPortraitController extends GetxController {
   }
 
   Future<void> placeOrder() async {
+    print("customerDetails => $customerDetails");
+    print("name => ${nameController.text}");
+    print("phone => ${phoneController.text}");
     if (cartItems.isEmpty) {
       if (Get.context != null && Get.context!.mounted) {
         ScaffoldMessenger.of(Get.context!).showSnackBar(
@@ -990,6 +1183,12 @@ class PosPortraitController extends GetxController {
           ),
         );
       }
+      return;
+    }
+
+    if (customerDetails.isEmpty) {
+      Get.snackbar('Kundendaten fehlen', 'Bitte zuerst Kundendaten speichern',
+          backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
@@ -1118,10 +1317,14 @@ class PosPortraitController extends GetxController {
       invoiceNumber.value++;
 
       cartItems.clear();
+      calculateTotal();
+
       orderNote.value = '';
       noteController.clear();
+
       showCustomerDetails.value = false;
       isCartExpanded.value = true;
+
       customerDetails.clear();
       nameController.clear();
       phoneController.clear();
@@ -1129,10 +1332,18 @@ class PosPortraitController extends GetxController {
       addressController.clear();
       regionController.clear();
 
+// ✅ Return to product screen
+      showCheckout.value = false;
+
+// Optional reset
+      selectedPostcode.value = null;
+      showDraftPanel.value = false;
+
     } catch (e) {
       print('❌ Error placing order: $e');
     }
   }
+
   DateTime _getGermanyTime() {
     DateTime utcNow = DateTime.now().toUtc();
 
@@ -1309,125 +1520,34 @@ class PosPortraitController extends GetxController {
   }
 
   void editCustomerDetails() {
-    isCustomerFormVisible.value = true;
+    // Controllers me pehle se data fill karo
     nameController.text = customerDetails['name'] ?? '';
     phoneController.text = customerDetails['phone'] ?? '';
     addressController.text = customerDetails['address'] ?? '';
     emailController.text = customerDetails['email'] ?? '';
     regionController.text = customerDetails['region'] ?? '';
+    // Ab customerDetails clear karo taaki form wali condition trigger ho
+    customerDetails.clear();
+    isCustomerFormVisible.value = true;
   }
 
   void selectHeute() {
+    if (!isStoreOpen.value) return;
+
     isHeuteSelected.value = true;
     isVorbestellenSelected.value = false;
-    selectedDate.value = null;
-    showCalendar.value = false;
-    showTimeSelector.value = false;
-    //
-    // // ✅ ADD THIS - Regenerate slots to check if store is open
-    // _generateSofortTimeSlots();
 
-    // ✅ OPTIONAL: Show message if store is closed
-    if (!isStoreOpen.value && Get.context != null) {
-      ScaffoldMessenger.of(Get.context!).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Store is currently closed. Please select "Vorbestellen" to schedule for later.',
-            style: TextStyle(
-              fontFamily: 'Mulish',
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-          backgroundColor: Color(0xffE31E24),
-          duration: Duration(seconds: 3),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
+    selectedDate.value = null;
+    selectedTimeSlot.value = 'sofort';
+
+    _filterSlotsForSelectedDate();
   }
+
   void selectVorbestellen() {
     isHeuteSelected.value = false;
     isVorbestellenSelected.value = true;
-  }
 
-  void _showSuccessDialog() {
-    Get.back(); // Close checkout modal
-
-    Get.dialog(
-      AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Lottie.asset(
-              'assets/lottie/success.json',
-              width: 150,
-              height: 150,
-              repeat: false,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Bestellung erfolgreich!',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Mulish',
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Ihre Bestellung wurde erfolgreich aufgegeben',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontFamily: 'Mulish',
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text(
-              'OK',
-              style: TextStyle(
-                fontFamily: 'Mulish',
-                color: Color(0xffE31E24),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-      barrierDismissible: false,
-    );
-  }
-
-  void _clearOrderForm() {
-    cartItems.clear();
-    nameController.clear();
-    phoneController.clear();
-    emailController.clear();
-    addressController.clear();
-    regionController.clear();
-    noteController.clear();
-    selectedPostcode.value = null;
-    selectedTimeSlot.value = 'sofort';
-    selectedVorbestellenDate.value = null;
-    selectedPaymentMethod.value = 'cash';
-    calculateTotal();
-  }
-
-  void _showErrorSnackbar(String message) {
-    Get.snackbar(
-      'Fehler',
-      message,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 3),
-    );
+    selectedTimeSlot.value = '';
   }
 
   // ─── DRAFT ──────────────────────────────────────────────────────────────
@@ -1436,14 +1556,25 @@ class PosPortraitController extends GetxController {
 
   void saveAsDraft() {
     if (cartItems.isEmpty) return;
+    // Agar customerDetails empty hai toh controllers se data le lo
+    final detailsToSave = customerDetails.isNotEmpty
+        ? Map<String, String>.from(customerDetails)
+        : {
+      'name': nameController.text.trim(),
+      'phone': phoneController.text.trim(),
+      'email': emailController.text.trim(),
+      'address': addressController.text.trim(),
+      'region': regionController.text.trim(),
+    };
     drafts.add({
       'cartItems': List<Map<String, dynamic>>.from(cartItems),
-      'customerDetails': Map<String, String>.from(customerDetails),
+      'customerDetails': detailsToSave,
       'orderNote': orderNote.value,
       'orderType': selectedOrderType.value,
       'savedAt': DateTime.now().toIso8601String(),
     });
     cartItems.clear();
+    calculateTotal();
     customerDetails.clear();
     nameController.clear();
     phoneController.clear();
@@ -1461,6 +1592,7 @@ class PosPortraitController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
         snackPosition: SnackPosition.BOTTOM);
+    showCheckout.value = false;
   }
 
   void loadDraft(int index) {
@@ -1471,15 +1603,15 @@ class PosPortraitController extends GetxController {
     customerDetails.value = details;
     orderNote.value = draft['orderNote'] as String? ?? '';
     selectedOrderType.value = draft['orderType'] as String? ?? 'Lieferzeit';
-    if (details.isNotEmpty) {
-      nameController.text = details['name'] ?? '';
-      phoneController.text = details['phone'] ?? '';
-      emailController.text = details['email'] ?? '';
-      addressController.text = details['address'] ?? '';
-      regionController.text = details['region'] ?? '';
-      showCustomerDetails.value = true;
-      isCustomerFormVisible.value = false;
-    }
+    nameController.text = details['name'] ?? '';
+    phoneController.text = details['phone'] ?? '';
+    emailController.text = details['email'] ?? '';
+    addressController.text = details['address'] ?? '';
+    regionController.text = details['region'] ?? '';
+    // customerDetails clear rakho taaki form show ho (UI condition: isEmpty = form)
+    customerDetails.clear();
+    showCustomerDetails.value = false;
+    isCustomerFormVisible.value = true;
     drafts.removeAt(index);
     calculateTotal();
     showDraftPanel.value = false;
@@ -1592,7 +1724,7 @@ class PosPortraitController extends GetxController {
       for (var dbOrder in unsyncedOrders) {
         final orderDetails = await dbHelper.getOrderDetails(dbOrder['id'] as int);
         if (orderDetails != null) {
-          ordersToSync.add(_buildSyncOrderMap(orderDetails));
+          ordersToSync.add(await _buildSyncOrderMap(orderDetails));
         }
       }
 
@@ -1614,7 +1746,7 @@ class PosPortraitController extends GetxController {
     }
   }
 
-  Map<String, dynamic> _buildSyncOrderMap(Map<String, dynamic> orderDetails) {
+  Future<Map<String, dynamic>> _buildSyncOrderMap(Map<String, dynamic> orderDetails) async {
     final orderData = orderDetails['order'] as Map<String, dynamic>;
     final itemsData = orderDetails['items'] as List<dynamic>;
     final paymentData = orderDetails['payment'] as Map<String, dynamic>?;
@@ -1672,6 +1804,18 @@ class PosPortraitController extends GetxController {
   void onAddCustomerPressed() {
     showCustomerDetails.value = true;
     isCustomerFormVisible.value = true;
+  }
+
+  void saveCustomerDetails() {
+    customerDetails.value = {
+      'name': nameController.text.trim(),
+      'phone': phoneController.text.trim(),
+      'address': addressController.text.trim(),
+      'region': regionController.text.trim(),
+      'email': emailController.text.trim(),
+    };
+    isCustomerFormVisible.value = false;
+    showCustomerDetails.value = true;
   }
 
   void toggleCustomerDetails() {

@@ -5,16 +5,35 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import '../../customView/CustomDrawer.dart';
 import '../../models/get_store_products_response_model.dart';
 import '../../models/order_model.dart';
 import '../../utils/my_application.dart';
 import '../Order/OrderDetailEnglish.dart';
 import 'pos_portrait_controller.dart';
 
-class PosPortrait extends StatelessWidget {
+class PosPortrait extends StatefulWidget {
   final Function(int)? onNavigateToTab;
 
   const PosPortrait({super.key, this.onNavigateToTab});
+
+  @override
+  State<PosPortrait> createState() => _PosPortraitState();
+}
+
+class _PosPortraitState extends State<PosPortrait> {
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void _openTab(int index) {
+    print("🎯 POS: Navigating to tab $index");
+
+    // ✅ Close drawer if open
+    if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+      Navigator.of(context).pop();
+
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,32 +45,70 @@ class PosPortrait extends StatelessWidget {
           controller.hideOrderOverlay();
           return false;
         }
+        if (controller.showCheckout.value) {
+          controller.showCheckout.value = false;
+          return false;
+        }
         return true;
       },
       child: Scaffold(
+        key: _scaffoldKey,
+        drawer: CustomDrawer(onSelectTab: _openTab),
         backgroundColor: const Color(0xffFAFCFF),
         body: Obx(() {
           if (controller.showOrderOverlay.value) {
             return _buildOrdersSection(controller, context);
           }
-          return Stack(
-            children: [
+          return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 350),
+              transitionBuilder: (child, animation) {
+                final offset = controller.showOrderTypeSelection.value
+                    ? const Offset(0, -1)   // selection screen: upar se aata hai
+                    : const Offset(0, 1);   // product screen: niche se aata hai
+                return SlideTransition(
+                  position: Tween<Offset>(begin: offset, end: Offset.zero)
+                      .animate(animation),
+                  child: child,
+                );
+              },
+              child: controller.showOrderTypeSelection.value
+                  ? KeyedSubtree(
+                key: const ValueKey('selection'),
+                child: _buildOrderTypeSelectionScreen(controller),
+              )
+                  : controller.showCheckout.value
+                  ? KeyedSubtree(
+                key: const ValueKey('checkout'),
+                child: CheckoutScreen(controller: controller),
+              )
+                  : KeyedSubtree(
+                  key: const ValueKey('main'),
+                  child: Stack(
+                    children: [
               Column(
                 children: [
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   _buildPortraitHeader(controller),
+                  _buildSelectedOrderTypeBar(controller),
                   Expanded(
-                    child: Row(
+                    child: Column(
                       children: [
-                        Obx(() {
-                          if (!controller.isSearching.value) {
-                            return _buildPortraitSidebar(controller);
-                          }
-                          return const SizedBox.shrink();
-                        }),
                         Expanded(
-                          child: _buildPortraitContent(controller, context),
+                          child: Row(
+                            children: [
+                              Obx(() {
+                                if (!controller.isSearching.value) {
+                                  return _buildPortraitSidebar(controller);
+                                }
+                                return const SizedBox.shrink();
+                              }),
+                              Expanded(
+                                child: _buildPortraitContent(controller, context),
+                              ),
+                            ],
+                          ),
                         ),
+                        _buildOpenOrdersBar(controller),
                       ],
                     ),
                   ),
@@ -84,68 +141,389 @@ class PosPortrait extends StatelessWidget {
                 return const SizedBox.shrink();
               }),
             ],
-          );
+          )));
         }),
       ),
     );
   }
 
+  // ── 1. Order Type Selection Screen (entry screen) ──────────────────
+  Widget _buildOrderTypeSelectionScreen(PosPortraitController controller) {
+    return SafeArea(
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Bestellart wählen',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        fontFamily: 'Mulish',
+                        color: Color(0xff0B1928),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    // Lieferung button
+                    _buildOrderTypeSelectionBtn(
+                      controller,
+                      label: 'Lieferung',
+                      icon: 'assets/images/delivery-icon.svg',
+                      value: 'Lieferzeit',
+                      enabled: true,
+                    ),
+                    const SizedBox(height: 16),
+                    // Abholung button
+                    _buildOrderTypeSelectionBtn(
+                      controller,
+                      label: 'Abholung',
+                      icon: 'assets/images/pickup-icon.svg',
+                      value: 'Abholzeit',
+                      enabled: true,
+                    ),
+                    const SizedBox(height: 16),
+                    // Table ordering — disabled
+                    _buildOrderTypeSelectionBtn(
+                      controller,
+                      label: 'Table Ordering',
+                      icon: 'assets/images/pickup-icon.svg', // ya koi table icon
+                      value: 'Table',
+                      enabled: false,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderTypeSelectionBtn(
+      PosPortraitController controller, {
+        required String label,
+        required String icon,
+        required String value,
+        required bool enabled,
+      }) {
+    return GestureDetector(
+      onTap: enabled
+          ? () {
+        controller.selectedOrderType.value = value;
+        // Slide animation ke saath screen switch
+        controller.showOrderTypeSelection.value = false;
+      }
+          : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+        decoration: BoxDecoration(
+          color: enabled ? Colors.white : const Color(0xffF5F5F5),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: enabled ? const Color(0xff0C831F) : Colors.grey.shade300,
+            width: enabled ? 1.5 : 1,
+          ),
+          boxShadow: enabled
+              ? [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 6, offset: const Offset(0, 2))]
+              : [],
+        ),
+        child: Row(
+          children: [
+            SvgPicture.asset(
+              icon,
+              height: 24,
+              width: 24,
+              color: enabled ? const Color(0xff0C831F) : Colors.grey.shade400,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Mulish',
+                  color: enabled ? const Color(0xff0B1928) : Colors.grey.shade400,
+                ),
+              ),
+            ),
+            if (!enabled)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text(
+                  'Bald verfügbar',
+                  style: TextStyle(fontSize: 10, color: Colors.grey, fontFamily: 'Mulish'),
+                ),
+              ),
+            if (enabled)
+              const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xff0C831F)),
+          ],
+        ),
+      ),
+    );
+  }
+
+// ── 2. Selected order type bar (product screen ke top pe) ──────────────
+  Widget _buildSelectedOrderTypeBar(PosPortraitController controller) {
+    return Obx(() {
+      final selected = controller.selectedOrderType.value;
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => controller.setOrderType('Lieferzeit'),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: selected == 'Lieferzeit'
+                        ? const Color(0xff0C831F)
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: selected == 'Lieferzeit'
+                          ? const Color(0xff0C831F)
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/delivery-icon.svg',
+                        height: 14, width: 14,
+                        color: selected == 'Lieferzeit' ? Colors.white : Colors.black,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Lieferung',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Mulish',
+                          color: selected == 'Lieferzeit' ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => controller.setOrderType('Abholzeit'),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: selected == 'Abholzeit'
+                        ? const Color(0xff0C831F)
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: selected == 'Abholzeit'
+                          ? const Color(0xff0C831F)
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/pickup-icon.svg',
+                        height: 14, width: 14,
+                        color: selected == 'Abholzeit' ? Colors.white : Colors.black,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Abholung',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Mulish',
+                          color: selected == 'Abholzeit' ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+// ── 3. Bottom open drafts bar ──────────────────────────────────────────
+  Widget _buildOpenOrdersBar(PosPortraitController controller) {
+    return Obx(() {
+      if (controller.drafts.isEmpty) return const SizedBox.shrink();
+      return Container(
+        height: 80,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.grey.shade200)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 6, 12, 2),
+              child: Text(
+                'Offene Bestellungen (${controller.drafts.length})',
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Mulish',
+                  color: Color(0xff6C4AB6),
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: controller.drafts.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final draft = controller.drafts[index];
+                  final List items = draft['cartItems'] as List;
+                  final Map details = draft['customerDetails'] as Map;
+                  final String name = details['name']?.toString().isNotEmpty == true
+                      ? details['name'].toString()
+                      : details['phone']?.toString().isNotEmpty == true
+                      ? details['phone'].toString()
+                      : 'Draft ${index + 1}';
+                  return GestureDetector(
+                    onTap: () => controller.loadDraft(index),
+                    child: Container(
+                      width: 130,
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffFBF9FF),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xffEDE4FF)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.bookmark_rounded, size: 14, color: Color(0xff6C4AB6)),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                        fontSize: 11, fontWeight: FontWeight.w700,
+                                        fontFamily: 'Mulish', color: Color(0xff0B1928))),
+                                Text('${items.length} item${items.length == 1 ? '' : 's'}',
+                                    style: const TextStyle(
+                                        fontSize: 10, fontFamily: 'Mulish', color: Colors.grey)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
   Widget _buildPortraitHeader(PosPortraitController controller) {
     return Padding(
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset('assets/images/mirch.png', height: 25, width: 25),
-          Container(
-            width: 250,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xffDDEAFF), width: 1),
+          InkWell(
+            onTap: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset('assets/images/mirch.png', height: 25, width: 25),
             ),
-            child: Row(
-              children: [
-                const Icon(Icons.search, size: 15, color: Colors.black),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    controller: controller.searchController,
-                    onChanged: controller.onSearchChanged,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Mulish',
-                    ),
-                    decoration: const InputDecoration(
-                      hintText: 'Search item',
-                      hintStyle: TextStyle(
+          ),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xffDDEAFF), width: 1),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.search, size: 15, color: Colors.black),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: controller.searchController,
+                      onChanged: controller.onSearchChanged,
+                      style: const TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.w400,
                         fontFamily: 'Mulish',
-                        fontStyle: FontStyle.italic,
                       ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
+                      decoration: const InputDecoration(
+                        hintText: 'Search item',
+                        hintStyle: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w300,
+                          fontFamily: 'Mulish',
+                          fontStyle: FontStyle.italic,
+                        ),
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
                   ),
-                ),
-                Obx(() {
-                  if (controller.searchQuery.value.isNotEmpty) {
-                    return GestureDetector(
-                      onTap: controller.clearSearch,
-                      child: const Icon(Icons.clear, size: 15, color: Colors.grey),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }),
-              ],
+                  Obx(() {
+                    if (controller.searchQuery.value.isNotEmpty) {
+                      return GestureDetector(
+                        onTap: controller.clearSearch,
+                        child: const Icon(Icons.clear, size: 15, color: Colors.grey),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  }),
+                ],
+              ),
             ),
           ),
           Obx(() => GestureDetector(
             onTap: controller.isRefreshing.value ? null : controller.refreshData,
             child: Container(
-              padding: const EdgeInsets.all(4),
+              padding: const EdgeInsets.all(6),
+              margin: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(4),
@@ -168,33 +546,33 @@ class PosPortrait extends StatelessWidget {
             ),
           )),
           // Orders icon with badge
-          InkWell(
-            onTap: () => controller.showOrdersOverlay(),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                SvgPicture.asset('assets/images/order-icon.svg', height: 22, width: 22),
-                Positioned(
-                  top: -6,
-                  right: -6,
-                  child: Obx(() => controller.pendingOrdersCount.value > 0
-                      ? Container(
-                          padding: const EdgeInsets.all(3),
-                          decoration: const BoxDecoration(
-                              color: Color(0xffE31E24), shape: BoxShape.circle),
-                          constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                          child: Center(
-                            child: Text('${controller.pendingOrdersCount.value}',
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 9,
-                                    fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
-                          ),
-                        )
-                      : const SizedBox.shrink()),
-                ),
-              ],
-            ),
-          ),
+          // InkWell(
+          //   onTap: () => controller.showOrdersOverlay(),
+          //   child: Stack(
+          //     clipBehavior: Clip.none,
+          //     children: [
+          //       SvgPicture.asset('assets/images/order-icon.svg', height: 22, width: 22),
+          //       Positioned(
+          //         top: -6,
+          //         right: -6,
+          //         child: Obx(() => controller.pendingOrdersCount.value > 0
+          //             ? Container(
+          //                 padding: const EdgeInsets.all(3),
+          //                 decoration: const BoxDecoration(
+          //                     color: Color(0xffE31E24), shape: BoxShape.circle),
+          //                 constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+          //                 child: Center(
+          //                   child: Text('${controller.pendingOrdersCount.value}',
+          //                       style: const TextStyle(
+          //                           color: Colors.white, fontSize: 9,
+          //                           fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+          //                 ),
+          //               )
+          //             : const SizedBox.shrink()),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );
@@ -223,10 +601,10 @@ class PosPortrait extends StatelessWidget {
             ScrollablePositionedList.builder(
               itemScrollController: controller.sidebarScrollController,
               itemPositionsListener: controller.sidebarPositionsListener,
-              itemCount: controller.productCategoryList.length,
+              itemCount: controller.categories.length,   // ✅ filtered list
               itemBuilder: (context, index) {
                 bool isSelected = controller.selectedCategoryIndex.value == index;
-                var category = controller.productCategoryList[index];
+                var category = controller.categories[index];  // ✅ CategoryData
 
                 return GestureDetector(
                   onTap: () => controller.scrollToCategory(index),
@@ -286,20 +664,34 @@ class PosPortrait extends StatelessWidget {
                 );
               },
             ),
-            if (controller.selectedCategoryIndex.value > 0)
-              Positioned(
+            // if (controller.selectedCategoryIndex.value > 0)
+            //   Positioned(
+            //     right: 0,
+            //     top: 0,
+            //     bottom: 0,
+            //     child: Container(
+            //       width: 3,
+            //       color: const Color(0xffE31E24),
+            //       margin: EdgeInsets.only(
+            //         top: controller.selectedCategoryIndex.value * 80.0,
+            //       ),
+            //       height: 80,
+            //     ),
+            //   ),
+            Obx(() {
+              final idx = controller.selectedCategoryIndex.value;
+              final maxIdx = controller.categories.length - 1;
+              final safeIdx = idx.clamp(0, maxIdx < 0 ? 0 : maxIdx);
+              return Positioned(
                 right: 0,
-                top: 0,
-                bottom: 0,
+                top: safeIdx * 80.0,
                 child: Container(
                   width: 3,
-                  color: const Color(0xffE31E24),
-                  margin: EdgeInsets.only(
-                    top: controller.selectedCategoryIndex.value * 80.0,
-                  ),
                   height: 80,
+                  color: const Color(0xffE31E24),
                 ),
-              ),
+              );
+            }),
           ],
         ),
       );
@@ -307,7 +699,6 @@ class PosPortrait extends StatelessWidget {
   }
 
   // ─── ORDERS SECTION ────────────────────────────────────────────────────
-
   Widget _buildOrdersSection(PosPortraitController controller, BuildContext context) {
     return SafeArea(
       child: Column(
@@ -583,6 +974,7 @@ class PosPortrait extends StatelessWidget {
 
   Widget _buildPortraitContent(PosPortraitController controller, BuildContext context) {
     return Obx(() {
+      final filtered = controller.getFilteredCategories();
       if (controller.isLoading.value) {
         return const Center(
           child: CircularProgressIndicator(
@@ -620,6 +1012,7 @@ class PosPortrait extends StatelessWidget {
       return ScrollablePositionedList.builder(
         itemScrollController: controller.mainScrollController,
         itemPositionsListener: controller.mainPositionsListener,
+        padding: const EdgeInsets.only(bottom: 80), // ✅ ADD: cart bar ke liye space
         itemCount: displayCategories.length,
         itemBuilder: (context, categoryIndex) {
           final category = displayCategories[categoryIndex];
@@ -631,7 +1024,7 @@ class PosPortrait extends StatelessWidget {
 
   Widget _buildCategorySection(PosPortraitController controller, CategoryData category) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -644,15 +1037,16 @@ class PosPortrait extends StatelessWidget {
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           GridView.builder(
             shrinkWrap: true,
+            padding: EdgeInsets.zero,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               childAspectRatio: 1.5,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 5,
             ),
             itemCount: category.products.length,
             itemBuilder: (context, index) {
@@ -709,7 +1103,7 @@ class PosPortrait extends StatelessWidget {
             children: [
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(6),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -779,21 +1173,17 @@ class PosPortrait extends StatelessWidget {
       right: 0,
       child: GestureDetector(
         onTap: () {
-          // ✅ Navigate to full screen checkout instead of bottom sheet
-          Get.to(
-                () => CheckoutScreen(controller: controller),
-            transition: Transition.rightToLeft,
-          );
+          controller.showCheckout.value = true;
         },
         child: Container(
           height: 60,
-          margin: const EdgeInsets.all(16),
+          margin: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: const Color(0xff0C831F),
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xffE31E24).withOpacity(0.4),
+                color:  Colors.white,
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
@@ -866,7 +1256,6 @@ class PosPortrait extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class CheckoutScreen extends StatelessWidget {
@@ -889,7 +1278,7 @@ class CheckoutScreen extends StatelessWidget {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () => Get.back(),
+                    onTap: () => controller.showCheckout.value = false,
                     child: const Icon(Icons.arrow_back, size: 24),
                   ),
                   const SizedBox(width: 12),
@@ -1102,7 +1491,7 @@ class CheckoutScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     // ✅ Fixed Summary Box with Dropdown
-                    _buildCollapsibleSummary(controller),
+                    _buildCollapsibleSummary(context,controller),
 
                     const SizedBox(height: 16),
 
@@ -1134,10 +1523,12 @@ class CheckoutScreen extends StatelessWidget {
             // Bottom Draft + Weiter Buttons
             Obx(() {
               final bool hasItems = controller.cartItems.isNotEmpty;
+              final bool detailsSaved = controller.customerDetails.isNotEmpty;
               return Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
+                    // Draft button
                     Expanded(
                       child: GestureDetector(
                         onTap: hasItems ? () => controller.saveAsDraft() : null,
@@ -1161,9 +1552,16 @@ class CheckoutScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    // Continue / Place Order button
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => controller.placeOrder(),
+                        onTap: () {
+                          if (!detailsSaved) {
+                            controller.saveCustomerDetails(); // Continue tap
+                          } else {
+                            controller.placeOrder();           // Place Order tap
+                          }
+                        },
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           decoration: const BoxDecoration(
@@ -1171,10 +1569,12 @@ class CheckoutScreen extends StatelessWidget {
                             borderRadius: BorderRadius.only(
                                 topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
                           ),
-                          child: const Center(
-                            child: Text('Place Order',
-                                style: TextStyle(color: Colors.white, fontSize: 14,
-                                    fontWeight: FontWeight.bold, fontFamily: 'Mulish')),
+                          child: Center(
+                            child: Text(
+                              detailsSaved ? 'Place Order' : 'Continue',
+                              style: const TextStyle(color: Colors.white, fontSize: 14,
+                                  fontWeight: FontWeight.bold, fontFamily: 'Mulish'),
+                            ),
                           ),
                         ),
                       ),
@@ -1236,7 +1636,7 @@ class CheckoutScreen extends StatelessWidget {
   }
 
   // ✅ Collapsible Summary Box
-  Widget _buildCollapsibleSummary(PosPortraitController controller) {
+  Widget _buildCollapsibleSummary(BuildContext context,PosPortraitController controller) {
     return Obx(() {
       double subtotal = controller.calculateSubtotal();
       double discount = controller.calculateDiscount();
@@ -1246,7 +1646,7 @@ class CheckoutScreen extends StatelessWidget {
           : controller.pickupDiscount.value;
 
       return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -1355,7 +1755,7 @@ class CheckoutScreen extends StatelessWidget {
             // Cart Items (Collapsible)
             if (controller.isCartExpanded.value)
               Container(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                padding: const EdgeInsets.fromLTRB(4, 0, 4, 16),
                 decoration: const BoxDecoration(
                   border: Border(top: BorderSide(color: Color(0xffE0E0E0))),
                 ),
@@ -1366,7 +1766,7 @@ class CheckoutScreen extends StatelessWidget {
                     ...controller.cartItems.asMap().entries.map((entry) {
                       int index = entry.key;
                       var item = entry.value;
-                      return _buildCartItemRow(controller, item, index);
+                      return _buildCartItemRow(context,controller, item, index);
                     }),
                   ],
                 ),
@@ -1377,73 +1777,107 @@ class CheckoutScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildCartItemRow(PosPortraitController controller, Map<String, dynamic> item, int index) {
+  Widget _buildCartItemRow(BuildContext context,PosPortraitController controller, Map<String, dynamic> item, int index) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Row(
+      child:Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Remove button
           GestureDetector(
             onTap: () => controller.removeCartItem(index),
-            child: const Icon(Icons.close, size: 20, color: Color(0xffE31E24)),
+            child: const Icon(
+              Icons.close,
+              size: 20,
+              color: Color(0xffE31E24),
+            ),
           ),
+
           const SizedBox(width: 8),
 
-          // Item details
+          // Item Details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        item['name'],
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => controller.editItemNote(
-                        index: index,
-                        initial: item['item_note'] ?? '',
-                        onSave: (v) => controller.updateItemNote(index, v),
-                      ),
-                      child: Image.asset(
-                        'assets/images/note.png',
-                        height: 14,
-                        width: 14,
-                        color: item['item_note'] != null && item['item_note'].toString().isNotEmpty
-                            ? const Color(0xff0C831F)
-                            : Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${item["size"]} • €${(item["price"] as num).toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontFamily: 'Mulish',
-                    color: Colors.grey,
-                  ),
-                ),
-                if (item['extras'] != null && item['extras'].toString().isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      item['extras'],
+                    Text('${item["quantity"]} ×',
                       style: const TextStyle(
-                        fontSize: 10,
-                        fontFamily: 'Mulish',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
                         color: Colors.grey,
                       ),
                     ),
+                    SizedBox(width: 5,),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width*0.25,
+                      child: Text('${item['name']}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '[€${(item["price"] as num).toStringAsFixed(2)}]',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    SizedBox(width: 10,),
+                    GestureDetector(
+                onTap: () => controller.editItemNote(
+                  index: index,
+                  initial: item['item_note'] ?? '',
+                  onSave: (v) => controller.updateItemNote(index, v),
+                ),
+                child: Image.asset(
+                  'assets/images/note.png',
+                  height: 14,
+                  width: 14,
+                  color: item['item_note'] != null && item['item_note'].toString().isNotEmpty
+                      ? const Color(0xff0C831F)
+                      : Colors.grey,
+                ),
+              ),
+                  ],
+                ),
+               // Variant
+                if (item['extras'] != null && item['extras'].toString().isNotEmpty)
+                  Text(
+                    '● ${item["size"]}    [€${(item["price"] as num).toStringAsFixed(2)}]',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey,
+                    ),
                   ),
+
+                // // Toppings
+                if (item['extras'] != null && item['extras'].toString().isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                       Padding(
+                            padding: const EdgeInsets.only(bottom: 2),
+                            child: Text(
+                              '${item['extras']}',
+                                  // '${(topping.price ?? 0) > 0 ? ' [${(topping.price as double).toStringAsFixed(2)} €]' : ''}',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey,
+                              ),
+                            ),)
+                      ],
+                    ),
+                  ),
+
+                // Note
                 if (item['item_note'] != null && item['item_note'].toString().isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
@@ -1451,7 +1885,6 @@ class CheckoutScreen extends StatelessWidget {
                       'Note: ${item["item_note"]}',
                       style: const TextStyle(
                         fontSize: 10,
-                        fontFamily: 'Mulish',
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -1462,58 +1895,56 @@ class CheckoutScreen extends StatelessWidget {
 
           const SizedBox(width: 12),
 
-          // Quantity controls
-          Row(
+          // Quantity Controls
+          Row(crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
                 onTap: () => controller.decrementQuantity(index),
                 child: Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Icon(Icons.remove, size: 16),
+                  child: const Icon(Icons.remove, size: 12),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.fromLTRB(4.0,0,4,4),
                 child: Text(
                   '${item["quantity"]}',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'Mulish',
                   ),
                 ),
               ),
               GestureDetector(
                 onTap: () => controller.incrementQuantity(index),
                 child: Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Icon(Icons.add, size: 16),
+                  child: const Icon(Icons.add, size: 12),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(width: 12),
+          const SizedBox(width: 6),
 
-          // Total price
+          // Total Price
           Text(
             '€ ${((item["quantity"] as int) * (item["price"] as num)).toStringAsFixed(2)}',
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              fontFamily: 'Mulish',
             ),
           ),
         ],
-      ),
+      )
     );
   }
 
@@ -1544,11 +1975,48 @@ class CheckoutScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _buildTextField(controller.nameController, 'Ihre Name *', context),
+          // _buildTextField(controller.nameController, 'Ihre Name *', context),
+          _buildTextField(
+            controller.nameController,
+            'Ihre Name *',
+            context,
+            focusNode: controller.nameFocusNode,
+            nextFocusNode: controller.phoneFocusNode,
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.next,
+          ),
           const SizedBox(height: 12),
-          _buildTextField(controller.phoneController, 'Ihre Telefonnummer *', context),
+         // _buildTextField(controller.phoneController, 'Ihre Telefonnummer *', context),
+          _buildTextField(
+            controller.phoneController,
+            'Ihre Telefonnummer *',
+            context,
+            focusNode: controller.phoneFocusNode,
+            nextFocusNode: controller.addressFocusNode,
+            keyboardType: TextInputType.phone,
+            textInputAction: TextInputAction.next,
+          ),
+
           const SizedBox(height: 12),
-          _buildTextField(controller.addressController, 'Straße und Hausnummer *', context),
+          // _buildTextField(controller.addressController, 'Straße und Hausnummer *', context),
+          _buildTextField(
+            controller.addressController,
+            'Straße und Hausnummer *',
+            context,
+            focusNode: controller.addressFocusNode,
+            nextFocusNode: null,
+            keyboardType: TextInputType.streetAddress,
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) {
+              if (controller.selectedOrderType.value == 'Lieferzeit') {
+                FocusScope.of(context).unfocus();
+                controller.showPostcodeDialog.value = true;
+              } else {
+                FocusScope.of(context).requestFocus(controller.regionFocusNode);
+              }
+            },
+          ),
+
           const SizedBox(height: 12),
           GestureDetector(
             onTap: controller.selectedOrderType.value == 'Lieferzeit'
@@ -1569,7 +2037,15 @@ class CheckoutScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          _buildTextField(controller.emailController, 'Ihre E-Mail', context),
+        //  _buildTextField(controller.emailController, 'Ihre E-Mail', context),
+          _buildTextField(
+            controller.emailController,
+            'Ihre E-Mail',
+            context,
+            focusNode: controller.emailFocusNode,
+            keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.done,
+          ),
         ],
       ),
     );
@@ -1580,6 +2056,12 @@ class CheckoutScreen extends StatelessWidget {
       String label,
       BuildContext context, {
         Widget? suffixIcon,
+        FocusNode? focusNode,
+        FocusNode? nextFocusNode,
+        TextInputType? keyboardType,
+        TextInputAction? textInputAction,
+        bool readOnly = false,
+        Function(String)? onFieldSubmitted,
       }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1595,6 +2077,19 @@ class CheckoutScreen extends StatelessWidget {
         const SizedBox(height: 6),
         TextField(
           controller: controller,
+          focusNode: focusNode,
+          readOnly: readOnly,
+          keyboardType: keyboardType ?? TextInputType.text,
+          textInputAction: textInputAction ?? TextInputAction.next,
+          onSubmitted: (value) {
+            if (onFieldSubmitted != null) {
+              onFieldSubmitted(value);
+            } else if (nextFocusNode != null) {
+              FocusScope.of(context).requestFocus(nextFocusNode);
+            } else {
+              FocusScope.of(context).unfocus();
+            }
+          },
           decoration: InputDecoration(
             hintText: label.replaceAll('*', '').trim(),
             hintStyle: TextStyle(
@@ -1651,8 +2146,9 @@ class CheckoutScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              GestureDetector(
+              InkWell(
                 onTap: controller.editCustomerDetails,
+                borderRadius: BorderRadius.circular(4),
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
@@ -1703,149 +2199,219 @@ class CheckoutScreen extends StatelessWidget {
   }
 
   Widget _buildTimeSelectionSection(PosPortraitController controller, BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Column(
-        children: [
-          // Heute
-          Obx(() => GestureDetector(
-            onTap: () => controller.selectHeute(),
-            child: Row(
-              children: [
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 2),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: controller.isHeuteSelected.value
-                      ? Container(
-                    margin: const EdgeInsets.all(2),
+    return Obx(() {
+      // Only show after customer details saved
+      if (controller.customerDetails.isEmpty) return const SizedBox.shrink();
+
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            // ── Heute ───────────────────────────────────────────────
+            if (controller.isStoreOpen.value) ...[
+          GestureDetector(
+          onTap: () => controller.selectHeute(),
+      child: Row(
+                children: [
+                  Container(
+                    width: 24, height: 24,
                     decoration: BoxDecoration(
-                      color: const Color(0xff0C831F),
-                      borderRadius: BorderRadius.circular(2),
+                      border: Border.all(color: Colors.black, width: 2),
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                  )
-                      : null,
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Heute',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Mulish',
-                  ),
-                ),
-              ],
-            ),
-          )),
-
-          if (controller.isHeuteSelected.value) ...[
-            const SizedBox(height: 12),
-            GestureDetector(
-              onTap: () => controller.showTimeBottomSheet.value = true,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                decoration: BoxDecoration(
-                  color: const Color(0xffFBF9FF),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Obx(() => Text(
-                      controller.selectedTimeSlot.value,
-                      style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
-                    )),
-                    const Icon(Icons.access_time, size: 20),
-                  ],
-                ),
-              ),
-            ),
-          ],
-
-          const SizedBox(height: 16),
-
-          // Vorbestellen
-          Obx(() => GestureDetector(
-            onTap: () => controller.selectVorbestellen(),
-            child: Row(
-              children: [
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 2),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: controller.isVorbestellenSelected.value
-                      ? Container(
-                    margin: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: const Color(0xff0C831F),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  )
-                      : null,
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Vorbestellen',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Mulish',
-                  ),
-                ),
-              ],
-            ),
-          )),
-
-          if (controller.isVorbestellenSelected.value) ...[
-            const SizedBox(height: 12),
-            GestureDetector(
-              onTap: () => controller.selectVorbestellenDate(context),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                decoration: BoxDecoration(
-                  color: const Color(0xffFBF9FF),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Obx(() => Text(
-                      controller.selectedVorbestellenDate.value != null
-                          ? DateFormat('dd.MM.yyyy').format(controller.selectedVorbestellenDate.value!)
-                          : 'Select Date',
-                      style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
-                    )),
-                    Container(
-                      padding: const EdgeInsets.all(6),
+                    child: controller.isHeuteSelected.value
+                        ? Container(
+                      margin: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
-                        color: const Color(0xffE31E24),
-                        borderRadius: BorderRadius.circular(4),
+                        color: const Color(0xff0C831F),
+                        borderRadius: BorderRadius.circular(2),
                       ),
-                      child: const Icon(Icons.calendar_today, color: Colors.white, size: 16),
-                    ),
-                  ],
-                ),
+                    )
+                        : null,
+                  ),
+                  const SizedBox(width: 12),
+                  const Text('Heute',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+                ],
               ),
             ),
+
+            // Heute timeslots — sofort + all future slots
+            if (controller.isHeuteSelected.value) ...[
+              const SizedBox(height: 12),
+              // Sofort chip
+              GestureDetector(
+                onTap: () => controller.selectedTimeSlot.value = 'sofort',
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: controller.selectedTimeSlot.value == 'sofort'
+                        ? const Color(0xff0C831F)
+                        : const Color(0xffF5F5F5),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: controller.selectedTimeSlot.value == 'sofort'
+                          ? const Color(0xff0C831F)
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                  child: Text(
+                    'Sofort',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Mulish',
+                      color: controller.selectedTimeSlot.value == 'sofort'
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+              // Time slot chips
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: controller.sofortTimeSlots.map((slot) {
+                  final time = slot['time']!;
+                  final isSelected = controller.selectedTimeSlot.value == time;
+                  return GestureDetector(
+                    onTap: () => controller.selectTimeSlot(time, 'heute'),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: isSelected ? const Color(0xff0C831F) : const Color(0xffF5F5F5),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected ? const Color(0xff0C831F) : Colors.grey.shade300,
+                        ),
+                      ),
+                      child: Text(
+                        time,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Mulish',
+                          color: isSelected ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+
+            const SizedBox(height: 16),
+],
+            // ── Vorbestellen ─────────────────────────────────────────
+            GestureDetector(
+              onTap: () => controller.selectVorbestellen(),
+              child: Row(
+                children: [
+                  Container(
+                    width: 24, height: 24,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 2),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: controller.isVorbestellenSelected.value
+                        ? Container(
+                      margin: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xff0C831F),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    )
+                        : null,
+                  ),
+                  const SizedBox(width: 12),
+                  const Text('Vorbestellen',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+                ],
+              ),
+            ),
+
+            if (controller.isVorbestellenSelected.value) ...[
+              const SizedBox(height: 12),
+              // Date picker
+              GestureDetector(
+                onTap: () => controller.selectVorbestellenDate(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffFBF9FF),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        controller.selectedDate.value != null
+                            ? DateFormat('dd.MM.yyyy').format(controller.selectedDate.value!)
+                            : 'Datum wählen',
+                        style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffE31E24),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Icon(Icons.calendar_today, color: Colors.white, size: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Time slots — only show after date selected
+              if (controller.selectedDate.value != null) ...[
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: controller.sofortTimeSlots.map((slot) {
+                    final time = slot['time']!;
+                    final isSelected = controller.selectedTimeSlot.value == time;
+                    return GestureDetector(
+                      onTap: () => controller.selectTimeSlot(time, 'vorbestellen'),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isSelected ? const Color(0xff0C831F) : const Color(0xffF5F5F5),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isSelected ? const Color(0xff0C831F) : Colors.grey.shade300,
+                          ),
+                        ),
+                        child: Text(
+                          time,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Mulish',
+                            color: isSelected ? Colors.white : Colors.black,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ],
           ],
-        ],
-      ),
-    );
+        ),
+      );
+    });
   }
 
 }
@@ -1963,6 +2529,7 @@ class VariantDialog extends StatelessWidget {
                               const SizedBox(height: 10),
                               GridView.builder(
                                 shrinkWrap: true,
+                                padding: EdgeInsets.zero,
                                 physics: const NeverScrollableScrollPhysics(),
                                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
@@ -1978,7 +2545,7 @@ class VariantDialog extends StatelessWidget {
                                     return GestureDetector(
                                       onTap: () => controller.selectVariant(variant),
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                         decoration: BoxDecoration(
                                           border: Border.all(
                                             color: isSelected ? _green : _border,
@@ -2434,38 +3001,39 @@ class TimeSelectionBottomSheet extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => controller.selectDateTab('heute'),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: controller.isHeuteSelected.value
-                            ? const Color(0xff0C831F)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
+                if (controller.isStoreOpen.value)
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => controller.selectDateTab('heute'),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
                           color: controller.isHeuteSelected.value
                               ? const Color(0xff0C831F)
-                              : Colors.grey.shade300,
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: controller.isHeuteSelected.value
+                                ? const Color(0xff0C831F)
+                                : Colors.grey.shade300,
+                          ),
                         ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Heute',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Mulish',
-                          color: controller.isHeuteSelected.value
-                              ? Colors.white
-                              : Colors.black,
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Heute',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Mulish',
+                            color: controller.isHeuteSelected.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
+                if (controller.isStoreOpen.value) const SizedBox(width: 8),
                 Expanded(
                   child: GestureDetector(
                     onTap: () => controller.selectDateTab('vorbestellen'),
@@ -2514,6 +3082,29 @@ class TimeSelectionBottomSheet extends StatelessWidget {
 
   Widget _buildTodayTimeSlots() {
     return Obx(() {
+      if (!controller.isStoreOpen.value) {
+        return Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.store_mall_directory_outlined,
+                  size: 50, color: Colors.grey),
+              const SizedBox(height: 12),
+              const Text('Store is Currently Closed',
+                  style: TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+              const SizedBox(height: 8),
+              const Text(
+                'Please use "Vorbestellen" to schedule your order',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, fontFamily: 'Mulish', color: Colors.grey),
+              ),
+            ],
+          ),
+        );
+      }
+
       if (controller.sofortTimeSlots.isEmpty) {
         return const Center(
           child: Text(

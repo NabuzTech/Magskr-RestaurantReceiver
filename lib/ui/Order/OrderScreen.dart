@@ -1868,35 +1868,35 @@ class _OrderScreenState extends State<OrderScreenNew>
                           icon: const Icon(Icons.refresh),
                           onPressed: _manualRefresh,
                         ),
-                        // GestureDetector(
-                        //   onTap: () async{
-                        //     await syncLocalPosOrder();
-                        //   },
-                        //   child: Container(
-                        //     child: Column(
-                        //       mainAxisSize: MainAxisSize.min,
-                        //       children: [
-                        //         Container(
-                        //           height: 25,
-                        //           padding: EdgeInsets.zero,
-                        //           child: IconButton(
-                        //             iconSize: 20,
-                        //             padding: EdgeInsets.zero,
-                        //             constraints: BoxConstraints(
-                        //                 maxHeight: 0
-                        //             ),
-                        //             icon: const Icon(Icons.sync),
-                        //             onPressed: () async{
-                        //               print('🔄 Manual sync button tapped');
-                        //               await syncLocalPosOrder();
-                        //             }
-                        //           ),
-                        //         ),
-                        //         Text('sync', style: TextStyle(fontSize: 9)),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
+                        GestureDetector(
+                          onTap: () async{
+                            await syncLocalPosOrder();
+                          },
+                          child: Container(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  height: 25,
+                                  padding: EdgeInsets.zero,
+                                  child: IconButton(
+                                    iconSize: 20,
+                                    padding: EdgeInsets.zero,
+                                    constraints: BoxConstraints(
+                                        maxHeight: 0
+                                    ),
+                                    icon: const Icon(Icons.sync),
+                                    onPressed: () async{
+                                      print('🔄 Manual sync button tapped');
+                                      await syncLocalPosOrder();
+                                    }
+                                  ),
+                                ),
+                                Text('sync', style: TextStyle(fontSize: 9)),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -2173,7 +2173,7 @@ class _OrderScreenState extends State<OrderScreenNew>
                                                     Container(
                                                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                                                       decoration: BoxDecoration(
-                                                        color: const Color(0xFF2E7D32), // green
+                                                        color: const Color(0xFF2E7D32),
                                                         borderRadius: BorderRadius.circular(6),
                                                       ),
                                                       child: const Text(
@@ -2190,7 +2190,7 @@ class _OrderScreenState extends State<OrderScreenNew>
                                                     Container(
                                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                                                       decoration: BoxDecoration(
-                                                        color: const Color(0xFFFFC107), // amber/yellow
+                                                        color: const Color(0xFFFFC107),
                                                         borderRadius: BorderRadius.circular(6),
                                                       ),
                                                       child: const Text(
@@ -2202,7 +2202,24 @@ class _OrderScreenState extends State<OrderScreenNew>
                                                           fontSize: 13,
                                                         ),
                                                       ),
-                                                    ),
+                                                    )
+                                                  else if (source.toLowerCase() == "pos")
+                                                      Container(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                                        decoration: BoxDecoration(
+                                                          color: const Color(0xFF1976D2), // Blue
+                                                          borderRadius: BorderRadius.circular(6),
+                                                        ),
+                                                        child: const Text(
+                                                          "POS",
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontFamily: "Mulish",
+                                                            fontSize: 13,
+                                                          ),
+                                                        ),
+                                                      ),
                                                   Row(
                                                     children: [
                                                       const Icon(Icons.access_time, size: 15,),
