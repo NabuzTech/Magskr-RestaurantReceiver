@@ -398,16 +398,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     _openTab(2);
                   },
                 ),
-                ItemBottomBar(
-                  selected: app.appController.selectedTabIndex == 3,
-                  icon: "assets/images/pos.svg",
-                  iconHeight: 20,
-                  iconWidth: 20,
-                  name: 'POS'.tr,
-                  onPressed: () {
-                    _openTab(3);
-                  },
-                ),
+                // ItemBottomBar(
+                //   selected: app.appController.selectedTabIndex == 3,
+                //   icon: "assets/images/pos.svg",
+                //   iconHeight: 20,
+                //   iconWidth: 20,
+                //   name: 'POS'.tr,
+                //   onPressed: () {
+                //     _openTab(3);
+                //   },
+                // ),
               ],
             )),
       ),
@@ -426,7 +426,7 @@ class _HomeScreenState extends State<HomeScreen> {
         KeepAlivePage(child: isAdmin ? const AdminOrder() : const OrderScreenNew()),
         KeepAlivePage(child: isAdmin ? const SuperAdminReservation() : const Reservation()),
         KeepAlivePage(child: isAdmin ? const SuperAdminReport() : const ReportScreen()),
-        KeepAlivePage(child: PosPortrait()),
+       // KeepAlivePage(child: PosPortrait()),
       ],
     );
   }
