@@ -878,7 +878,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
         return;
       }
       final result = await Future.any([
-        ApiRepo().storeSettingPost(bearerToken, jsonData),
+        ApiRepo().storeSettingPost(bearerToken, jsonData,storeID!),
         Future.delayed(const Duration(seconds: 6)).then((_) => null)
       ]);
       if (showDialog && Get.isDialogOpen == true) {

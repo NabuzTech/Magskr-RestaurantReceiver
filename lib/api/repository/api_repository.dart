@@ -515,11 +515,10 @@ class ApiRepo {
     }
   }
 
-  Future<StoreSetting> storeSettingPost(
-      String bearer, Map<String, dynamic> jsonData) async {
-    String url = Api.baseUrl + ApiEndPoints.getStoreSetting;
+  Future<StoreSetting> storeSettingPost(String bearer, Map<String, dynamic> jsonData,String storeID) async {
+    String url = Api.baseUrl + ApiEndPoints.getStoreSetting + storeID;
     try {
-      final response = await Dio().post(
+      final response = await Dio().put(
         url,
         data: jsonData,
         options: Options(
