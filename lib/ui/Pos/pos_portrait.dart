@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -1812,7 +1813,7 @@ class CheckoutScreen extends StatelessWidget {
                     ),
                     SizedBox(width: 5,),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width*0.25,
+                      width: MediaQuery.of(context).size.width*0.34,
                       child: Text('${item['name']}',
                         style: const TextStyle(
                           fontSize: 14,
@@ -1896,38 +1897,59 @@ class CheckoutScreen extends StatelessWidget {
           const SizedBox(width: 12),
 
           // Quantity Controls
-          Row(crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
             children: [
-              GestureDetector(
-                onTap: () => controller.decrementQuantity(index),
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Icon(Icons.remove, size: 12),
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color:Colors.grey,width: 1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  //crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () => controller.decrementQuantity(index),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          //border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Center(child: const Icon(Icons.remove, size: 16)),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Center(
+                        child: Text(
+                          '${item["quantity"]}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => controller.incrementQuantity(index),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          //border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Center(child: const Icon(Icons.add, size: 16)),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(4.0,0,4,4),
-                child: Text(
-                  '${item["quantity"]}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => controller.incrementQuantity(index),
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Icon(Icons.add, size: 12),
+              SizedBox(height: 5,),
+              Text(
+                '€ ${((item["quantity"] as int) * (item["price"] as num)).toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
@@ -1936,13 +1958,7 @@ class CheckoutScreen extends StatelessWidget {
           const SizedBox(width: 6),
 
           // Total Price
-          Text(
-            '€ ${((item["quantity"] as int) * (item["price"] as num)).toStringAsFixed(2)}',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+
         ],
       )
     );
@@ -1978,7 +1994,7 @@ class CheckoutScreen extends StatelessWidget {
           // _buildTextField(controller.nameController, 'Ihre Name *', context),
           _buildTextField(
             controller.nameController,
-            'Ihre Name *',
+            'Ihre Name',
             context,
             focusNode: controller.nameFocusNode,
             nextFocusNode: controller.phoneFocusNode,
@@ -1989,7 +2005,7 @@ class CheckoutScreen extends StatelessWidget {
          // _buildTextField(controller.phoneController, 'Ihre Telefonnummer *', context),
           _buildTextField(
             controller.phoneController,
-            'Ihre Telefonnummer *',
+            'Ihre Telefonnummer',
             context,
             focusNode: controller.phoneFocusNode,
             nextFocusNode: controller.addressFocusNode,
@@ -2001,7 +2017,7 @@ class CheckoutScreen extends StatelessWidget {
           // _buildTextField(controller.addressController, 'Straße und Hausnummer *', context),
           _buildTextField(
             controller.addressController,
-            'Straße und Hausnummer *',
+            'Straße und Hausnummer',
             context,
             focusNode: controller.addressFocusNode,
             nextFocusNode: null,
@@ -2027,7 +2043,7 @@ class CheckoutScreen extends StatelessWidget {
               child: _buildTextField(
                 controller.regionController,
                 controller.selectedOrderType.value == 'Lieferzeit'
-                    ? 'Wählen Sie Ihre Region *'
+                    ? 'Wählen Sie Ihre Region'
                     : 'Region *',
                 context,
                 suffixIcon: controller.selectedOrderType.value == 'Lieferzeit'

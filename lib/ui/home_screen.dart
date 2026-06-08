@@ -253,8 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Scaffold(
               drawer: CustomDrawer(onSelectTab: _openTab),
               // ✅ Hide AppBar when on POS tab (index 3)
-              appBar:
-              app.appController.selectedTabIndex == 3
+              appBar: app.appController.selectedTabIndex == 3
                   ? null
                   :
               CustomAppBar(roleId: _roleId),
@@ -398,16 +397,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     _openTab(2);
                   },
                 ),
-                // ItemBottomBar(
-                //   selected: app.appController.selectedTabIndex == 3,
-                //   icon: "assets/images/pos.svg",
-                //   iconHeight: 20,
-                //   iconWidth: 20,
-                //   name: 'POS'.tr,
-                //   onPressed: () {
-                //     _openTab(3);
-                //   },
-                // ),
+                ItemBottomBar(
+                  selected: app.appController.selectedTabIndex == 3,
+                  icon: "assets/images/pos.svg",
+                  iconHeight: 20,
+                  iconWidth: 20,
+                  name: 'POS'.tr,
+                  onPressed: () {
+                    _openTab(3);
+                  },
+                ),
               ],
             )),
       ),
@@ -426,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
         KeepAlivePage(child: isAdmin ? const AdminOrder() : const OrderScreenNew()),
         KeepAlivePage(child: isAdmin ? const SuperAdminReservation() : const Reservation()),
         KeepAlivePage(child: isAdmin ? const SuperAdminReport() : const ReportScreen()),
-       // KeepAlivePage(child: PosPortrait()),
+        KeepAlivePage(child: PosPortrait()),
       ],
     );
   }
