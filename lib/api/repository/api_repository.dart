@@ -577,7 +577,8 @@ class ApiRepo {
   }
 
   Future<PrinterSetting> printerSettingPost(
-      String bearer, Map<String, dynamic> jsonData) async {
+      String bearer, Map<String, dynamic> jsonData) async
+  {
     String url = Api.baseUrl + ApiEndPoints.postPrinterSetting;
     try {
       final response = await Dio().post(
