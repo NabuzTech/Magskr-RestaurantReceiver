@@ -1868,35 +1868,39 @@ class _OrderScreenState extends State<OrderScreenNew>
                           icon: const Icon(Icons.refresh),
                           onPressed: _manualRefresh,
                         ),
-                        GestureDetector(
-                          onTap: () async{
-                            await syncLocalPosOrder();
-                          },
-                          child: Container(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  height: 25,
-                                  padding: EdgeInsets.zero,
-                                  child: IconButton(
-                                    iconSize: 20,
+                        if (_storeType == '1')
+                          GestureDetector(
+                            onTap: () async {
+                              await syncLocalPosOrder();
+                            },
+                            child: Container(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    height: 25,
                                     padding: EdgeInsets.zero,
-                                    constraints: BoxConstraints(
-                                        maxHeight: 0
+                                    child: IconButton(
+                                      iconSize: 20,
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(
+                                        maxHeight: 0,
+                                      ),
+                                      icon: const Icon(Icons.sync),
+                                      onPressed: () async {
+                                        print('🔄 Manual sync button tapped');
+                                        await syncLocalPosOrder();
+                                      },
                                     ),
-                                    icon: const Icon(Icons.sync),
-                                    onPressed: () async{
-                                      print('🔄 Manual sync button tapped');
-                                      await syncLocalPosOrder();
-                                    }
                                   ),
-                                ),
-                                Text('sync', style: TextStyle(fontSize: 9)),
-                              ],
+                                  const Text(
+                                    'sync',
+                                    style: TextStyle(fontSize: 9),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                   ],

@@ -110,7 +110,7 @@ import '../api.dart';
 import '../api_end_points.dart';
 import '../api_params.dart';
 import '../api_utils.dart';
-import '../responses/userLogin_h.dart';
+import '../../models/userLogin_h.dart';
 import 'package:http_parser/http_parser.dart';
 
 const title = "ApiRepo";

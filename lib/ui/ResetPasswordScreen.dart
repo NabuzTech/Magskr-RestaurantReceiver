@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/repository/api_repository.dart';
-import '../api/responses/userLogin_h.dart';
+import '../models/userLogin_h.dart';
 import '../constants/constant.dart';
 import '../customView/custom_button.dart';
 import '../customView/custom_text_form_prefiex.dart';
