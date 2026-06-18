@@ -1356,7 +1356,8 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
   }
 
   Widget _buildAddReservationField(String label, TextEditingController controller,
-      IconData icon, {int maxLines = 1, bool isDateField = false}) {
+      IconData icon, {int maxLines = 1, bool isDateField = false})
+  {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       child: Column(

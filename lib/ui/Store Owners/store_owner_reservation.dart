@@ -8,14 +8,14 @@ import '../../api/repository/api_repository.dart';
 import '../../models/get_all_reservation_for_all_store.dart';
 import '../table Book/reservation_details.dart';
 
-class AllStoreReservation extends StatefulWidget {
-  const AllStoreReservation({super.key});
+class StoreOwnerReservation extends StatefulWidget {
+  const StoreOwnerReservation({super.key});
 
   @override
-  State<AllStoreReservation> createState() => _AllStoreReservationState();
+  State<StoreOwnerReservation> createState() => _StoreOwnerReservationState();
 }
 
-class _AllStoreReservationState extends State<AllStoreReservation> {
+class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
   bool isLoading = false;
   List<Stores> stores = [];
   int? total;
@@ -78,21 +78,36 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
         return {'border': const Color(0xffE0D2AA), 'background': const Color(0xffFAF3E0), 'nameColor': const Color(0xffE64425)};
       case 19:
         return {'border': const Color(0xffF9CC46), 'background': const Color(0xffFDFAF1), 'nameColor': const Color(0xff029447)};
-      case 20: return {'border': const Color(0xffE31E22), 'background': const Color(0xffFFDCDD), 'nameColor': const Color(0xffE31E22)};
-      case 21: return {'border': const Color(0xff0D9488), 'background': const Color(0xffF0FDFA), 'nameColor': const Color(0xff0D9488)};
-      case 22: return {'border': const Color(0xffEA580C), 'background': const Color(0xffFFF7ED), 'nameColor': const Color(0xffEA580C)};
-      case 23: return {'border': const Color(0xff4338CA), 'background': const Color(0xffEEF2FF), 'nameColor': const Color(0xff4338CA)};
-      case 24: return {'border': const Color(0xffDB2777), 'background': const Color(0xffFDF2F8), 'nameColor': const Color(0xffDB2777)};
-      case 25: return {'border': const Color(0xff4D7C0F), 'background': const Color(0xffF7FEE7), 'nameColor': const Color(0xff4D7C0F)};
-      case 26: return {'border': const Color(0xff0E7490), 'background': const Color(0xffECFEFF), 'nameColor': const Color(0xff0E7490)};
-      case 27: return {'border': const Color(0xffBE123C), 'background': const Color(0xffFFF1F2), 'nameColor': const Color(0xffBE123C)};
-      case 28: return {'border': const Color(0xffB45309), 'background': const Color(0xffFEF3C7), 'nameColor': const Color(0xffB45309)};
-      case 29: return {'border': const Color(0xff047857), 'background': const Color(0xffECFDF5), 'nameColor': const Color(0xff047857)};
-      case 30: return {'border': const Color(0xff6D28D9), 'background': const Color(0xffF5F3FF), 'nameColor': const Color(0xff6D28D9)};
-      case 31: return {'border': const Color(0xff0369A1), 'background': const Color(0xffF0F9FF), 'nameColor': const Color(0xff0369A1)};
-      case 32: return {'border': const Color(0xffA21CAF), 'background': const Color(0xffFDF4FF), 'nameColor': const Color(0xffA21CAF)};
-      case 33: return {'border': const Color(0xff78350F), 'background': const Color(0xffFDF6EC), 'nameColor': const Color(0xff78350F)};
-      case 34: return {'border': const Color(0xff475569), 'background': const Color(0xffF8FAFC), 'nameColor': const Color(0xff475569)};
+      case 20:
+        return {'border': const Color(0xffE31E22), 'background': const Color(0xffFFDCDD), 'nameColor': const Color(0xffE31E22)};
+      case 21:
+        return {'border': const Color(0xff0D9488), 'background': const Color(0xffF0FDFA), 'nameColor': const Color(0xff0D9488)};
+      case 22:
+        return {'border': const Color(0xffEA580C), 'background': const Color(0xffFFF7ED), 'nameColor': const Color(0xffEA580C)};
+      case 23:
+        return {'border': const Color(0xff4338CA), 'background': const Color(0xffEEF2FF), 'nameColor': const Color(0xff4338CA)};
+      case 24:
+        return {'border': const Color(0xffDB2777), 'background': const Color(0xffFDF2F8), 'nameColor': const Color(0xffDB2777)};
+      case 25:
+        return {'border': const Color(0xff4D7C0F), 'background': const Color(0xffF7FEE7), 'nameColor': const Color(0xff4D7C0F)};
+      case 26:
+        return {'border': const Color(0xff0E7490), 'background': const Color(0xffECFEFF), 'nameColor': const Color(0xff0E7490)};
+      case 27:
+        return {'border': const Color(0xffBE123C), 'background': const Color(0xffFFF1F2), 'nameColor': const Color(0xffBE123C)};
+      case 28:
+        return {'border': const Color(0xffB45309), 'background': const Color(0xffFEF3C7), 'nameColor': const Color(0xffB45309)};
+      case 29:
+        return {'border': const Color(0xff047857), 'background': const Color(0xffECFDF5), 'nameColor': const Color(0xff047857)};
+      case 30:
+        return {'border': const Color(0xff6D28D9), 'background': const Color(0xffF5F3FF), 'nameColor': const Color(0xff6D28D9)};
+      case 31:
+        return {'border': const Color(0xff0369A1), 'background': const Color(0xffF0F9FF), 'nameColor': const Color(0xff0369A1)};
+      case 32:
+        return {'border': const Color(0xffA21CAF), 'background': const Color(0xffFDF4FF), 'nameColor': const Color(0xffA21CAF)};
+      case 33:
+        return {'border': const Color(0xff78350F), 'background': const Color(0xffFDF6EC), 'nameColor': const Color(0xff78350F)};
+      case 34:
+        return {'border': const Color(0xff475569), 'background': const Color(0xffF8FAFC), 'nameColor': const Color(0xff475569)};
       default:
         return {'border': const Color(0xffE0D2AA), 'background': Colors.white, 'nameColor': const Color(0xffE64425)};
     }
@@ -136,14 +151,12 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // ── Sticky Header ──────────────────────────────────────────
           Container(
-
             color: Colors.white,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 40),
-                // Title row
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   child: Column(
@@ -152,20 +165,22 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
                       Row(
                         children: [
                           GestureDetector(
-                            onTap: (){
-                             Get.back();
+                            onTap: () {
+                              Get.back();
                             },
                             child: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                  border: Border.all(color: Colors.grey, width: 1),
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey, width: 1),
+                              ),
+                              child: const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 5.0),
+                                  child: Icon(Icons.arrow_back_ios, size: 16),
                                 ),
-                                child: Center(child: Padding(
-                                  padding: const EdgeInsets.only(left: 5.0),
-                                  child: const Icon(Icons.arrow_back_ios, size: 16,),
-                                ))
+                              ),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -175,7 +190,7 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10,),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           if (total != null)
@@ -250,14 +265,12 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
                     ],
                   ),
                 ),
-                // ── Horizontal Store Cards ─────────────────────────
                 SizedBox(
                   height: 165,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
-                    padding: EdgeInsets.only(left: 5),
-                    //padding: EdgeInsets.zero,
+                    padding: const EdgeInsets.only(left: 5),
                     itemCount: stores.length,
                     itemBuilder: (context, index) {
                       final store = stores[index];
@@ -334,20 +347,16 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
                     },
                   ),
                 ),
-                // Filter label + Show All button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      SizedBox(
-                        //width: MediaQuery.of(context).size.width*0.6,
-                        child: Text(
-                          selectedStore != null
-                              ? '${selectedStore!.storeName}  •  \n${_currentReservations.length} reservation'
-                              : 'All stores  •  ${_currentReservations.length} reservation',
-                          style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontFamily: 'Mulish', fontWeight: FontWeight.w600),
-                        ),
+                      Text(
+                        selectedStore != null
+                            ? '${selectedStore!.storeName}  •  \n${_currentReservations.length} reservation'
+                            : 'All stores  •  ${_currentReservations.length} reservation',
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontFamily: 'Mulish', fontWeight: FontWeight.w600),
                       ),
                       if (selectedStore != null)
                         GestureDetector(
@@ -370,8 +379,6 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
               ],
             ),
           ),
-
-          // ── Reservation List ───────────────────────────────────────
           Expanded(
             child: isLoading
                 ? Center(
@@ -472,7 +479,6 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
         ),
         child: Column(
           children: [
-            // Row 1: icon + name + time
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -518,7 +524,6 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
               ],
             ),
             const SizedBox(height: 8),
-            // Row 2: phone + ID
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -538,7 +543,6 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
               ],
             ),
             const SizedBox(height: 8),
-            // Row 3: guests + status badge
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -569,7 +573,6 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
               ],
             ),
             const SizedBox(height: 6),
-            // Row 4: reserved for
             Row(
               children: [
                 const Icon(Icons.event_outlined, size: 13, color: Colors.grey),
@@ -602,7 +605,6 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
                   ),
                 ),
               ),
-            // Note
             if (res.note != null && res.note!.trim().isNotEmpty) ...[
               const SizedBox(height: 6),
               Row(
@@ -642,12 +644,12 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
         isLoading = false;
       });
     } catch (e) {
-      print('Error getting Store Reservation: $e');
+      print('Error getting Store Owner Reservation: $e');
       if (!mounted) return;
       setState(() {
         isLoading = false;
       });
-      Get.snackbar('Error', 'Failed to load Store Reservations',
+      Get.snackbar('Error', 'Failed to load Reservations',
           backgroundColor: Colors.red, colorText: Colors.white, snackPosition: SnackPosition.BOTTOM);
     }
   }

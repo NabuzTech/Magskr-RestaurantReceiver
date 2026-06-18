@@ -1240,7 +1240,7 @@ class PosPortraitController extends GetxController {
       } else if (selectedOrderType.value == 'Abholzeit') {
         discountId = pickupDiscountId;
       }
-
+      double discount = calculateDiscount();
       // ✅ NEW: Get Germany time instead of UTC
       final germanyTime = _getGermanyTime();
 
@@ -1274,6 +1274,7 @@ class PosPortraitController extends GetxController {
         email: customerDetails['email'] ?? '',
         address: customerDetails['address'] ?? '',
         zip: customerDetails['region'] ?? '',
+        discountAmount:discount,
         items: orderItems,
         amount: calculateGrandTotal(),
         discountId: discountId,
@@ -1775,6 +1776,8 @@ class PosPortraitController extends GetxController {
 
     return {
       'client_uuid': orderData['client_uuid'],
+      'discount_id': orderData['discount_id'],
+      'discount_amount': (orderData['discountAmount'] as num?)?.toDouble() ?? 0.0,
       'store_id': int.tryParse(orderData['store_id'].toString()) ?? 0,
       'order_type': orderData['order_type'] ?? 3,
       'created_at': isoTimestamp,

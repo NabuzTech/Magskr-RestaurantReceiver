@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
 import 'package:food_receiver/models/change_password_model.dart';
@@ -878,12 +879,12 @@ class CallService extends GetConnect {
   }
 
   //For Changing Discount Percentage
-  Future<ChangeDiscountPercentageResponseModel> changeDiscount(
-      dynamic body, String id) async
+  Future<ChangeDiscountPercentageResponseModel> changeDiscount(dynamic body, String id) async
   {
     httpClient.baseUrl = Api.baseUrl;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    debugPrint('api call in save discount is ${Api.baseUrl}discounts/$id');
     print("User Access Token Value is : $accessToken");
     var res = await put(
       'discounts/$id',
@@ -1486,10 +1487,16 @@ class CallService extends GetConnect {
   Future<List<GetUserReservationDetailsResponseModel>> getReservationDetailsList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    String? storeId = prefs.getString(valueShared_STORE_KEY);
     print("User Access Token Value is : $accessToken");
+    print("Store ID for reservation: $storeId");
 
     httpClient.baseUrl = Api.baseUrl;
-    var res = await get('reservations/', headers: {
+    String url = 'reservations/';
+    if (storeId != null && storeId.isNotEmpty) {
+      url = 'reservations/?store_id=$storeId';
+    }
+    var res = await get(url, headers: {
       'accept': 'application/json',
       'Authorization': "Bearer $accessToken",
     });
@@ -1807,15 +1814,19 @@ class CallService extends GetConnect {
     print("User Access Token Value is : $accessToken");
 
     httpClient.baseUrl = Api.baseUrl;
+    debugPrint('product url is ${Api.baseUrl}products/?store_id=$storeId');
     var res = await get('products/?store_id=$storeId', headers: {
       'accept': 'application/json',
       'Authorization': "Bearer $accessToken",
     });
 
     if (res.statusCode == 200) {
-      print(
-          "Getting Product of Store response is :${res.statusCode.toString()}");
+      print("Getting Product of Store response is :${res.statusCode.toString()}");
       print("Product body of Store response is :${res.body}");
+      debugPrint(
+        const JsonEncoder.withIndent('  ').convert(res.body),
+        wrapWidth: 1024,
+      );
       List<dynamic> jsonList = res.body;
       return jsonList.map((json) => GetStoreProducts.fromJson(json)).toList();
     } else {
@@ -4326,10 +4337,16 @@ class CallService extends GetConnect {
   Future<List<TodayReceivedBookingResponseModel>> todayReceivedBooking() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    String? storeId = prefs.getString(valueShared_STORE_KEY);
     print("User Access Token Value is : $accessToken");
+    print("Store ID for today received booking: $storeId");
 
     httpClient.baseUrl = Api.baseUrl;
-    var res = await get('reservations/store/today', headers: {
+    String url = 'reservations/store/today';
+    if (storeId != null && storeId.isNotEmpty) {
+      url = 'reservations/store/today?store_id=$storeId';
+    }
+    var res = await get(url, headers: {
       'accept': 'application/json',
       'Authorization': "Bearer $accessToken",
     });

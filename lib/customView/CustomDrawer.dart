@@ -388,6 +388,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
       // ✅ Clear SQLite database
       await DatabaseHelper().clearAllStores();
       await DatabaseHelper().clearAllNotifications();
+      await DatabaseHelper().clearAllData();
 
       // ✅ Reset flag
       setState(() {

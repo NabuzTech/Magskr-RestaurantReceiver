@@ -216,8 +216,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<bool> _onWillPop() async {
-    // Check if roleId is 1 (super admin)
-    if (_roleId == 1) {
+    // Check if roleId is 1 (super admin) or 5 (store owner)
+    if (_roleId == 1 || _roleId == 5) {
       // Clear store ID from SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove(valueShared_STORE_KEY);
@@ -225,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // ✅ Give time for cleanup
       await Future.delayed(const Duration(milliseconds: 100));
 
-      // Navigate back to SuperAdmin screen
+      // Navigate back to SuperAdmin/StoreOwner screen
       Get.back();
       return false;
     }

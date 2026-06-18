@@ -2898,6 +2898,8 @@ class _OrderScreenState extends State<OrderScreenNew>
 
     final orderMap = {
       'client_uuid': orderData['client_uuid'],
+      'discount_id': orderData['discount_id'],
+      "discount_amount": orderData['discountAmount'],
       'store_id': int.tryParse(orderData['store_id'].toString()) ?? 0,
       'order_type': orderData['order_type'] ?? 3,
       'created_at': isoTimestamp, // ✅ Send UTC time

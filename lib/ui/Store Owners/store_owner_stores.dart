@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:food_receiver/api/repository/api_repository.dart';
 import 'package:food_receiver/models/all_admin_order_response_model.dart';
 import 'package:food_receiver/models/get_admin_report_response_model.dart';
+import 'package:food_receiver/ui/Store Owners/store_owner_reservation.dart';
 import 'package:food_receiver/ui/SuperAdmin/superAdminOrderDetail.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -526,46 +527,79 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                         ],
                       ),
                       const SizedBox(height: 5),
-                      GestureDetector(
-                        onTap: isRefreshing ? null : refreshAllData,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: isRefreshing
-                                ? Colors.grey
-                                : Colors.green,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: isRefreshing
-                              ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                              AlwaysStoppedAnimation<Color>(
-                                  Colors.white),
-                            ),
-                          )
-                              : const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.refresh,
-                                  color: Colors.white, size: 16),
-                              SizedBox(width: 4),
-                              Text(
-                                'Refresh',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  fontFamily: 'Mulish',
-                                ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Get.to(() => const StoreOwnerReservation());
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black, width: 1),
+                                borderRadius: BorderRadius.circular(5),
                               ),
-                            ],
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset('assets/images/reservationIcon.png', height: 15, width: 15),
+                                  const SizedBox(width: 5),
+                                  const Text(
+                                    'Reservation',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: 'Mulish',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 10),
+                          GestureDetector(
+                            onTap: isRefreshing ? null : refreshAllData,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: isRefreshing
+                                    ? Colors.grey
+                                    : Colors.green,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: isRefreshing
+                                  ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor:
+                                  AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
+                              )
+                                  : const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.refresh,
+                                      color: Colors.white, size: 16),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Refresh',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: 'Mulish',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

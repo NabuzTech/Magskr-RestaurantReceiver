@@ -40,7 +40,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 13,
+      version: 14,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -140,6 +140,7 @@ class DatabaseHelper {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       client_uuid TEXT,
       discount_id TEXT,
+      discountAmount REAL,
       note TEXT,
       order_type INTEGER,
       order_status INTEGER,
@@ -335,6 +336,7 @@ class DatabaseHelper {
         CREATE TABLE IF NOT EXISTS orders(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           discount_id TEXT,
+          discountAmount REAL,
           note TEXT,
           order_type INTEGER,
           order_status INTEGER,
@@ -490,6 +492,14 @@ class DatabaseHelper {
       final hasStoreId = cols.any((col) => col['name'] == 'store_id');
       if (!hasStoreId) {
         await db.execute('ALTER TABLE notifications ADD COLUMN store_id TEXT');
+      }
+    }
+    if (oldVersion < 14) {
+      final cols = await db.rawQuery('PRAGMA table_info(orders)');
+      final hasDiscountAmount = cols.any((col) => col['name'] == 'discountAmount');
+      if (!hasDiscountAmount) {
+        await db.execute('ALTER TABLE orders ADD COLUMN discountAmount REAL');
+        print('✅ Added discountAmount column to orders table');
       }
     }
   }
@@ -982,7 +992,7 @@ class DatabaseHelper {
     required double amount,
     String? discountId,
     DateTime? createdAt,
-    String? deliveryTime,
+    String? deliveryTime, double? discountAmount,
   }) async
   {
     final db = await database;
@@ -1011,6 +1021,7 @@ class DatabaseHelper {
     int orderId = await db.insert('orders', {
       'client_uuid': clientUuid,
       'discount_id': discountId,
+      'discountAmount':discountAmount,
       'note': note ?? '',
       'order_type': orderTypeInt,
       'order_status': 1,

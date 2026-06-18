@@ -560,8 +560,7 @@ class AppController extends GetxController {
   }
 
 
-  List<GetUserReservationDetailsResponseModel> getFilteredReservations(
-      String? selectedDate)
+  List<GetUserReservationDetailsResponseModel> getFilteredReservations(String? selectedDate)
   {
     DateTime today = DateTime.now();
     String todayString = DateFormat('yyyy-MM-dd').format(today);
