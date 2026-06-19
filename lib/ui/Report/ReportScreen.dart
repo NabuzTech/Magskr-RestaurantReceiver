@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,6 +15,7 @@ import '../../models/order_history_response_model.dart';
 import '../../models/today_report.dart';
 import '../../utils/my_application.dart';
 import '../Order_history/order_history.dart';
+import 'PdfPreviewScreen.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
@@ -47,6 +49,9 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
 
   bool _isCalculatingTotal = false;
   double _monthTotalSales = 0.0;
+
+  bool _showGenerateOptions = false;
+  bool _isGeneratingReport = false;
 
   @override
   void initState() {
@@ -311,13 +316,14 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
           children: [
             _buildHeader(),
             const SizedBox(height: 16),
+            _buildGenerateReportOptions(),
             if (showCalendar) ...[
               _calendar(),
               const SizedBox(height: 16),
             ],
             showCalendar && _selectedDate != null
                 ? _buildReportStatus(_selectedReport ?? _currentDateReport)
-                : !showCalendar ? _buildReportStatus(null) : const SizedBox.shrink(),
+                : !showCalendar && !_showGenerateOptions ? _buildReportStatus(null) : const SizedBox.shrink(),
             const SizedBox(height: 16),
           ],
         ),
@@ -339,6 +345,9 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                 _selectedDate = null;
                 _resetCalendarToCurrentMonth();
               });
+            }
+            if (_showGenerateOptions) {
+              setState(() => _showGenerateOptions = false);
             }
           },
           child: Column(
@@ -367,7 +376,46 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
         GestureDetector(
           onTap: () {
             setState(() {
+              _showGenerateOptions = !_showGenerateOptions;
+              if (_showGenerateOptions) {
+                showCalendar = false;
+                _selectedReport = null;
+                _selectedDate = null;
+              }
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: _showGenerateOptions ? Colors.green : Colors.green.shade50,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.green, width: 1),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.description_outlined, size: 16, color: _showGenerateOptions ? Colors.white : Colors.green),
+                const SizedBox(width: 4),
+                Text(
+                  'report_btn'.tr,
+                  style: TextStyle(
+                    fontFamily: "Mulish",
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: _showGenerateOptions ? Colors.white : Colors.green,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            setState(() {
               showCalendar = !showCalendar;
+              if (showCalendar) {
+                _showGenerateOptions = false;
+              }
               if (!showCalendar) {
                 _selectedReport = null;
                 _selectedDate = null;
@@ -691,6 +739,182 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
         "7": '${report.data?.taxBreakdown?.d7 ?? 0}',
       },
     };
+  }
+
+  Widget _buildGenerateReportOptions() {
+    return AnimatedCrossFade(
+      firstChild: const SizedBox.shrink(),
+      secondChild: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.green.shade100),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'generate_report'.tr,
+              style: const TextStyle(
+                fontFamily: "Mulish",
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: Color(0xff1F1E1E),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (_isGeneratingReport)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: CircularProgressIndicator(color: Colors.green),
+                ),
+              )
+            else
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  _reportOptionChip('today_option'.tr, () {
+                    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+                    _callGenerateReport(today, today);
+                  }),
+                  _reportOptionChip('weekly'.tr, () {
+                    final today = DateTime.now();
+                    final from = today.subtract(const Duration(days: 7));
+                    _callGenerateReport(
+                      DateFormat('yyyy-MM-dd').format(from),
+                      DateFormat('yyyy-MM-dd').format(today),
+                    );
+                  }),
+                  _reportOptionChip('monthly_option'.tr, () {
+                    final today = DateTime.now();
+                    final from = DateTime(today.year, today.month - 1, today.day);
+                    _callGenerateReport(
+                      DateFormat('yyyy-MM-dd').format(from),
+                      DateFormat('yyyy-MM-dd').format(today),
+                    );
+                  }),
+                  _reportOptionChip('yearly'.tr, () {
+                    final today = DateTime.now();
+                    final from = DateTime(today.year - 1, today.month, today.day);
+                    _callGenerateReport(
+                      DateFormat('yyyy-MM-dd').format(from),
+                      DateFormat('yyyy-MM-dd').format(today),
+                    );
+                  }),
+                  _reportOptionChip('custom_range'.tr, () async {
+                    final now = DateTime.now();
+                    final twoYearsAgo = DateTime(now.year - 2, now.month, now.day);
+
+                    final dateRange = await showDateRangePicker(
+                      context: context,
+                      firstDate: twoYearsAgo,
+                      lastDate: now,
+                      initialDateRange: DateTimeRange(
+                        start: now.subtract(const Duration(days: 30)),
+                        end: now,
+                      ),
+                      helpText: 'select_from_date'.tr,
+                      saveText: 'OK',
+                      builder: (context, child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: const ColorScheme.light(
+                              primary: Colors.green,
+                              onPrimary: Colors.white,
+                              surface: Colors.white,
+                              onSurface: Colors.black,
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
+                    );
+                    if (dateRange == null || !mounted) return;
+
+                    _callGenerateReport(
+                      DateFormat('yyyy-MM-dd').format(dateRange.start),
+                      DateFormat('yyyy-MM-dd').format(dateRange.end),
+                    );
+                  }),
+                ],
+              ),
+          ],
+        ),
+      ),
+      crossFadeState: _showGenerateOptions
+          ? CrossFadeState.showSecond
+          : CrossFadeState.showFirst,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
+  Widget _reportOptionChip(String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(color: Colors.green, width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.green.withValues(alpha: 0.08),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontFamily: "Mulish",
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+            color: Colors.green,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _callGenerateReport(String fromDate, String toDate) async {
+    setState(() => _isGeneratingReport = true);
+
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int storeId = int.tryParse(prefs.getString(valueShared_STORE_KEY) ?? '') ?? 13;
+
+      final pdfBytes = await CallService().generateReport(
+        fromDate: fromDate,
+        toDate: toDate,
+        storeId: storeId,
+        language: 'De',
+      );
+
+      if (!mounted) return;
+      setState(() => _isGeneratingReport = false);
+
+      Get.to(() => PdfPreviewScreen(
+        pdfBytes: Uint8List.fromList(pdfBytes),
+        fromDate: fromDate,
+        toDate: toDate,
+      ));
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isGeneratingReport = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${'generate_error'.tr}: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   Future<void> orderHistory() async {

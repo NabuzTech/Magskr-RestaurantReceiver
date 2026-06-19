@@ -771,6 +771,9 @@ class CallService extends GetConnect {
       byCategory: null,
     );
   }
+
+
+
   //Driver Section
 
   //1.) Create Driver
@@ -4562,6 +4565,31 @@ class CallService extends GetConnect {
     } else {
       throw Exception(
           'Failed to load Getting  Windows Notification History: ${res.statusCode}');
+    }
+  }
+
+  //For Generate Report
+  Future<List<int>> generateReport({required String fromDate, required String toDate,
+    required int storeId, String language = 'De',}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception("Access token not found");
+    }
+
+    final uri = Uri.parse(
+        '${Api.baseUrl}reports/pdf?from_date=$fromDate&to_date=$toDate&language=$language&store_id=$storeId');
+
+    final response = await http.get(uri, headers: {
+      'accept': 'application/pdf',
+      'Authorization': 'Bearer $accessToken',
+    });
+
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      throw Exception('Failed to generate report: ${response.statusCode}');
     }
   }
 }

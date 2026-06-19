@@ -284,10 +284,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget floatingButton(BuildContext context) {
-    if (_roleId != 1 && (_storeType == '1' || _storeType == '2')) {
-      return const SizedBox.shrink();
-    }
-
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     final fabSize = isLandscape ? 50.0 : 55.0;
 
