@@ -4570,7 +4570,8 @@ class CallService extends GetConnect {
 
   //For Generate Report
   Future<List<int>> generateReport({required String fromDate, required String toDate,
-    required int storeId, String language = 'De',}) async {
+    required int storeId, String language = 'De',}) async
+  {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
 
