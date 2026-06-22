@@ -783,25 +783,25 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                   }),
                   _reportOptionChip('weekly'.tr, () {
                     final today = DateTime.now();
-                    final from = today.subtract(const Duration(days: 7));
+                    final monday = today.subtract(Duration(days: today.weekday - 1));
                     _callGenerateReport(
-                      DateFormat('yyyy-MM-dd').format(from),
+                      DateFormat('yyyy-MM-dd').format(monday),
                       DateFormat('yyyy-MM-dd').format(today),
                     );
                   }),
                   _reportOptionChip('monthly_option'.tr, () {
                     final today = DateTime.now();
-                    final from = DateTime(today.year, today.month - 1, today.day);
+                    final firstOfMonth = DateTime(today.year, today.month, 1);
                     _callGenerateReport(
-                      DateFormat('yyyy-MM-dd').format(from),
+                      DateFormat('yyyy-MM-dd').format(firstOfMonth),
                       DateFormat('yyyy-MM-dd').format(today),
                     );
                   }),
                   _reportOptionChip('yearly'.tr, () {
                     final today = DateTime.now();
-                    final from = DateTime(today.year - 1, today.month, today.day);
+                    final firstOfYear = DateTime(today.year, 1, 1);
                     _callGenerateReport(
-                      DateFormat('yyyy-MM-dd').format(from),
+                      DateFormat('yyyy-MM-dd').format(firstOfYear),
                       DateFormat('yyyy-MM-dd').format(today),
                     );
                   }),
