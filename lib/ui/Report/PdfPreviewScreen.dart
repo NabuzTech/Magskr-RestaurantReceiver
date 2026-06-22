@@ -84,17 +84,20 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
 
   Future<void> _sharePdf() async {
     try {
+      final box = context.findRenderObject() as RenderBox?;
+      final shareOrigin =
+          box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+
       final dir = await getTemporaryDirectory();
       final fileName =
           'Sales_Report_${widget.fromDate}_${widget.toDate}.pdf';
       final file = File('${dir.path}/$fileName');
       await file.writeAsBytes(widget.pdfBytes);
 
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(file.path)],
-          title: fileName,
-        ),
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        subject: fileName,
+        sharePositionOrigin: shareOrigin,
       );
     } catch (e) {
       if (mounted) {
