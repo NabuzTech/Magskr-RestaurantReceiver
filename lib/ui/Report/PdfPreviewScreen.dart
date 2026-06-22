@@ -212,32 +212,32 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 50,
-                          child: ElevatedButton.icon(
-                            onPressed: _downloadPdf,
-                            icon: const Icon(Icons.download,
-                                color: Colors.white),
-                            label: Text(
-                              'download_pdf'.tr,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: "Mulish",
-                                color: Colors.white,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
+                      // Expanded(
+                      //   child: SizedBox(
+                      //     height: 50,
+                      //     child: ElevatedButton.icon(
+                      //       onPressed: _downloadPdf,
+                      //       icon: const Icon(Icons.download,
+                      //           color: Colors.white),
+                      //       label: Text(
+                      //         'download_pdf'.tr,
+                      //         style: const TextStyle(
+                      //           fontSize: 16,
+                      //           fontWeight: FontWeight.w700,
+                      //           fontFamily: "Mulish",
+                      //           color: Colors.white,
+                      //         ),
+                      //       ),
+                      //       style: ElevatedButton.styleFrom(
+                      //         backgroundColor: Colors.green,
+                      //         shape: RoundedRectangleBorder(
+                      //           borderRadius: BorderRadius.circular(10),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // const SizedBox(width: 12),
                       Expanded(
                         child: SizedBox(
                           height: 50,
