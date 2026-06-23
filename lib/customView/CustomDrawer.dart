@@ -295,11 +295,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     Get.to(() => const StoreCustomer(),
                         routeName: '/StoreCustomer');
                   }),
-                  // _drawerItem('invoices'.tr,'assets/images/invoice.svg', onTap: () {
-                  //   Navigator.of(context).pop();
-                  //   Get.to(() => const Invoices(),
-                  //   );
-                  // }),
+                  _drawerItem('invoices'.tr,'assets/images/invoice.svg', onTap: () {
+                    Navigator.of(context).pop();
+                    Get.to(() => const Invoices(),
+                    );
+                  }),
                   if (_roleId != 5)
                     _drawerItem('change_password'.tr,'assets/images/password.svg', onTap: () {
                       Navigator.of(context).pop();

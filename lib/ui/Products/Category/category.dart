@@ -68,10 +68,7 @@ class _CategoryState extends State<Category> {
 
   List<GetProductCategoryList> filteredCategoryList = [];
   String currentSearchQuery = '';
-  int currentPage = 1;
-  int itemsPerPage = 8;
-  int totalPages = 0;
-  List<GetProductCategoryList> currentPageItems = [];
+  final ScrollController _mainScrollController = ScrollController();
 
   @override
   void initState() {
@@ -314,63 +311,42 @@ class _CategoryState extends State<Category> {
     }
   }
 
-  void _updatePagination() {
-    totalPages = (filteredCategoryList.length / itemsPerPage).ceil();
-    if (totalPages == 0) totalPages = 1;
-
-    if (currentPage > totalPages) currentPage = totalPages;
-    if (currentPage < 1) currentPage = 1;
-
-    int startIndex = (currentPage - 1) * itemsPerPage;
-    int endIndex = startIndex + itemsPerPage;
-    if (endIndex > filteredCategoryList.length) endIndex = filteredCategoryList.length;
-
-    currentPageItems = filteredCategoryList.sublist(startIndex, endIndex);
-  }
-
-  void _goToPage(int page) {
-    if (page >= 1 && page <= totalPages) {
-      setState(() {
-        currentPage = page;
-        _updatePagination();
+  void _rebuildScrollControllers() {
+    for (ScrollController controller in scrollControllers) {
+      controller.dispose();
+    }
+    scrollControllers = List.generate(filteredCategoryList.length, (index) {
+      ScrollController controller = ScrollController();
+      controller.addListener(() {
+        if (isResetting) return;
+        if (controller.offset > 10) {
+          if (currentScrolledIndex != null && currentScrolledIndex != index) {
+            isResetting = true;
+            if (currentScrolledIndex! < scrollControllers.length &&
+                scrollControllers[currentScrolledIndex!].hasClients) {
+              scrollControllers[currentScrolledIndex!].animateTo(
+                0.0,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+              ).then((_) {
+                isResetting = false;
+              });
+            } else {
+              isResetting = false;
+            }
+          }
+          currentScrolledIndex = index;
+        }
       });
-    }
+      return controller;
+    });
   }
-
-  List<int> _getPageNumbers() {
-    List<int> pages = [];
-
-    if (totalPages <= 5) {
-      for (int i = 1; i <= totalPages; i++) {
-        pages.add(i);
-      }
-    } else {
-      int start = currentPage - 2;
-      int end = currentPage + 2;
-
-      if (start < 1) {
-        start = 1;
-        end = 5;
-      }
-
-      if (end > totalPages) {
-        end = totalPages;
-        start = totalPages - 4;
-      }
-
-      for (int i = start; i <= end; i++) {
-        pages.add(i);
-      }
-    }
-
-    return pages;
-  }
-
 
   @override
   void dispose() {
     app.appController.categoryFilterCallback = null;
     _pageController.dispose();
+    _mainScrollController.dispose();
     categoryNameController.dispose();
     descriptionController.dispose();
     for (ScrollController controller in scrollControllers) {
@@ -428,22 +404,6 @@ class _CategoryState extends State<Category> {
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        '${'showing'.tr} ${(currentPage - 1) * itemsPerPage + 1} to ${(currentPage - 1) * itemsPerPage + currentPageItems.length}'
-                            ' of ${filteredCategoryList.length} ${'entries'.tr}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontFamily: 'Mulish',
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 10),
                   Container(
@@ -518,9 +478,9 @@ class _CategoryState extends State<Category> {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: currentPageItems.length,
+                      itemCount: filteredCategoryList.length,
                       itemBuilder: (context, index) {
-                        final product = currentPageItems[index];//
+                        final product = filteredCategoryList[index];
                          var productId=product.id.toString();
                          print('Product Id IS$productId');
                         return Container(
@@ -678,101 +638,6 @@ class _CategoryState extends State<Category> {
                       },
                     ),
 
-                  if (filteredCategoryList.isNotEmpty && totalPages > 1)
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.shade200,
-                              blurRadius: 5,
-                              offset: const Offset(0, -2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: currentPage > 1 ? () => _goToPage(currentPage - 1) : null,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: currentPage > 1 ? Colors.white : Colors.grey.shade200,
-                                  border: Border.all(color: Colors.grey.shade300),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  'previous'.tr,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontFamily: 'Mulish',
-                                    fontWeight: FontWeight.w600,
-                                    color: currentPage > 1 ? Colors.black87 : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            ...(_getPageNumbers().map((pageNum) {
-                              bool isActive = pageNum == currentPage;
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4),
-                                child: GestureDetector(
-                                  onTap: () => _goToPage(pageNum),
-                                  child: Container(
-                                    width: 35,
-                                    height: 35,
-                                    decoration: BoxDecoration(
-                                      color: isActive ? const Color(0xFF0EA5E9) : Colors.white,
-                                      border: Border.all(
-                                        color: isActive ? const Color(0xFF0EA5E9) : Colors.grey.shade300,
-                                      ),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '$pageNum',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontFamily: 'Mulish',
-                                          fontWeight: FontWeight.w600,
-                                          color: isActive ? Colors.white : Colors.black87,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList()),
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: currentPage < totalPages ? () => _goToPage(currentPage + 1) : null,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: currentPage < totalPages ? Colors.white : Colors.grey.shade200,
-                                  border: Border.all(color: Colors.grey.shade300),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  'next'.tr,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontFamily: 'Mulish',
-                                    fontWeight: FontWeight.w600,
-                                    color: currentPage < totalPages ? Colors.black87 : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                 ],
               ),
             )
@@ -827,42 +692,10 @@ class _CategoryState extends State<Category> {
 
       if (mounted) {
         setState(() {
+          category.sort((a, b) => (a.displayOrder ?? 999).compareTo(b.displayOrder ?? 999));
           productCategoryList = category;
           filteredCategoryList = category;
-          currentPage = 1;
-          _updatePagination();
-          print('category list length is ${filteredCategoryList.length}');
-
-          scrollControllers = List.generate(currentPageItems.length, (index) {
-            ScrollController controller = ScrollController();
-            controller.addListener(() {
-              // Skip if we're programmatically resetting
-              if (isResetting) return;
-
-              // When this container is scrolled left
-              if (controller.offset > 10) {
-                // Reset previous container if different
-                if (currentScrolledIndex != null && currentScrolledIndex != index) {
-                  isResetting = true; // Set flag before animating
-
-                  if (scrollControllers[currentScrolledIndex!].hasClients) {
-                    scrollControllers[currentScrolledIndex!].animateTo(
-                      0.0,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeInOut,
-                    ).then((_) {
-                      isResetting = false; // Reset flag after animation
-                    });
-                  } else {
-                    isResetting = false;
-                  }
-                }
-                // Set this as current
-                currentScrolledIndex = index;
-              }
-            });
-            return controller;
-          });
+          _rebuildScrollControllers();
           isLoading = false;
         });
       }
@@ -897,43 +730,7 @@ class _CategoryState extends State<Category> {
         }).toList();
       }
 
-      currentPage = 1;
-      _updatePagination();
-
-      // ✅ CRITICAL FIX: Dispose old controllers before creating new ones
-      for (ScrollController controller in scrollControllers) {
-        controller.dispose();
-      }
-      scrollControllers.clear();
-
-      // ✅ Create scroll controllers for FILTERED list
-      scrollControllers = List.generate(currentPageItems.length, (index) {
-        ScrollController controller = ScrollController();
-        controller.addListener(() {
-          if (isResetting) return;
-
-          if (controller.offset > 10) {
-            if (currentScrolledIndex != null && currentScrolledIndex != index) {
-              isResetting = true;
-
-              if (currentScrolledIndex! < scrollControllers.length &&
-                  scrollControllers[currentScrolledIndex!].hasClients) {
-                scrollControllers[currentScrolledIndex!].animateTo(
-                  0.0,
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                ).then((_) {
-                  isResetting = false;
-                });
-              } else {
-                isResetting = false;
-              }
-            }
-            currentScrolledIndex = index;
-          }
-        });
-        return controller;
-      });
+      _rebuildScrollControllers();
     });
 
     print("🔍 Categories filtered: ${filteredCategoryList.length} results");

@@ -53,6 +53,7 @@ class _ProductsState extends State<Products> {
 
   List<GetStoreProducts> filteredProductList = [];
   String currentSearchQuery = '';
+  Set<int> expandedCategoryIds = {};
   List<Map<String, dynamic>> variants = [];
   Timer? _debounceTimer;
   File? selectedImage;
@@ -415,6 +416,7 @@ class _ProductsState extends State<Products> {
     _debounceTimer?.cancel(); // ✅ ADD THIS
     super.dispose();
   }
+
   Future<void> _initializeSharedPreferences() async {
     try {
       sharedPreferences = await SharedPreferences.getInstance();
@@ -483,6 +485,28 @@ class _ProductsState extends State<Products> {
     }
   }
 
+
+  Map<int, List<dynamic>> _groupByCategory(List<dynamic> products) {
+    final Map<int, List<dynamic>> grouped = {};
+    for (var product in products) {
+      final catId = product.categoryId ?? -1;
+      grouped.putIfAbsent(catId, () => []);
+      grouped[catId]!.add(product);
+    }
+    return grouped;
+  }
+
+  List<int> _getSortedCategoryIds(Map<int, List<dynamic>> grouped) {
+    final ids = grouped.keys.toList();
+    ids.sort((a, b) {
+      final catA = grouped[a]!.first.category;
+      final catB = grouped[b]!.first.category;
+      final orderA = catA?.displayOrder ?? 999;
+      final orderB = catB?.displayOrder ?? 999;
+      return orderA.compareTo(orderB);
+    });
+    return ids;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -564,252 +588,285 @@ class _ProductsState extends State<Products> {
                 ),
                 const SizedBox(height: 15),
 
-                Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFECF8FF),
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(width: 5,),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        child: Text('product_name'.tr,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 13,
-                              fontFamily: 'Mulish'),
-                        ),
-                      ),
-                      Container(
-                        child: Text('category'.tr,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 13,
-                                fontFamily: 'Mulish')),
-                      ),
-                      const SizedBox(width: 15),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.2,
-                        child: Center(
-                          child: Text('price'.tr,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 13,
-                                fontFamily: 'Mulish'),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                if (filteredProductList.isEmpty)
+                if (filteredProductList.isEmpty && currentSearchQuery.isEmpty)
                   Container(
                     padding: const EdgeInsets.all(40),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.search_off,
-                          size: 60,
-                          color: Colors.grey[400],
-                        ),
+                        Icon(Icons.search_off, size: 60, color: Colors.grey[400]),
                         const SizedBox(height: 16),
                         Text(
-                          currentSearchQuery.isEmpty
-                              ? 'no_product'.tr
-                              : '${'no_match'.tr} "$currentSearchQuery"',
+                          'no_product'.tr,
                           style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Mulish',
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w500,
+                            fontSize: 16, fontFamily: 'Mulish',
+                            color: Colors.grey[600], fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else if (currentSearchQuery.isNotEmpty && searchResultsList.isEmpty)
+                  Container(
+                    padding: const EdgeInsets.all(40),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.search_off, size: 60, color: Colors.grey[400]),
+                        const SizedBox(height: 16),
+                        Text(
+                          '${'no_match'.tr} "$currentSearchQuery"',
+                          style: TextStyle(
+                            fontSize: 16, fontFamily: 'Mulish',
+                            color: Colors.grey[600], fontWeight: FontWeight.w500,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        if (currentSearchQuery.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            'try'.tr,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Mulish',
-                              color: Colors.grey[500],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
                       ],
                     ),
                   )
                 else
                   ValueListenableBuilder<int>(
-                      valueListenable: _listRebuildNotifier,
-                      builder: (context, value, child) {
-                        return SlidableAutoCloseBehavior(
-                          key: ValueKey(value),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: currentSearchQuery.isEmpty
-                                ? filteredProductList.length
-                                : searchResultsList.length,
-                            itemBuilder: (context, index) {
-                              print('Image Url Is ${_getProductImageUrl(index)}');
+                    valueListenable: _listRebuildNotifier,
+                    builder: (context, value, child) {
+                      final bool isSearching = currentSearchQuery.isNotEmpty;
+                      final grouped = isSearching
+                          ? _groupByCategory(searchResultsList)
+                          : _groupByCategory(filteredProductList);
+                      final sortedCatIds = _getSortedCategoryIds(grouped);
 
-                              return Slidable(
-                                key: ValueKey(_getProductId(index)),
-                                endActionPane: ActionPane(
-                                  motion: const ScrollMotion(),
-                                  extentRatio: 0.502,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        _showProductStatusChangeDialog(
-                                            context,
-                                            _getProductName(index) ?? 'Product',
-                                            _getProductId(index) ?? 0,
-                                            _getProductIsActive(index) ?? false);
-                                      },
-                                      child: Container(
-                                        width: 60,
-                                        height: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: (_getProductIsActive(index) ?? false)
-                                              ? Colors.green
-                                              : Colors.grey.shade600,
-                                        ),
-                                        child: Icon(
-                                          (_getProductIsActive(index) ?? false)
-                                              ? Icons.airplanemode_active
-                                              : Icons.airplanemode_inactive,
-                                          color: Colors.white,
-                                          size: 25,
-                                        ),
+                      return SlidableAutoCloseBehavior(
+                        key: ValueKey(value),
+                        child: Column(
+                          children: sortedCatIds.map((catId) {
+                            final catProducts = grouped[catId]!;
+                            final category = catProducts.first.category;
+                            final isExpanded = isSearching || expandedCategoryIds.contains(catId);
+
+                            return Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: isSearching ? null : () {
+                                    setState(() {
+                                      if (expandedCategoryIds.contains(catId)) {
+                                        expandedCategoryIds.remove(catId);
+                                      } else {
+                                        expandedCategoryIds.clear();
+                                        expandedCategoryIds.add(catId);
+                                      }
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(color: Colors.grey.shade200, width: 1),
                                       ),
                                     ),
-                                    GestureDetector(
-                                      onTap: () => _editProduct(index),
-                                      child: Container(
-                                        width: 60,
-                                        height: double.infinity,
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xff0C831F),
-                                        ),
-                                        child: const Icon(
-                                          Icons.mode_edit_outline_outlined,
-                                          color: Colors.white,
-                                          size: 25,
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () => _deleteProduct(index),
-                                      child: Container(
-                                        width: 60,
-                                        height: double.infinity,
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xffE25454),
-                                        ),
-                                        child: const Icon(
-                                          Icons.delete_outline,
-                                          color: Colors.white,
-                                          size: 25,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                child: Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: Colors.grey.shade200,
-                                        width: 1,
-                                      ),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const SizedBox(width: 5),
-                                      Container(
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            //SizedBox(width: 20,),
-                                            // Container(
-                                            //   width: 50,
-                                            //   height: 50,
-                                            //   decoration: BoxDecoration(
-                                            //     shape: BoxShape.circle,
-                                            //     border: Border.all(
-                                            //         color: Colors.grey.shade300,
-                                            //         width: 1),
-                                            //   ),
-                                            //   child: ClipOval(
-                                            //     child: CachedNetworkImage(
-                                            //       imageUrl: _getTrimmedImageUrl(_getProductImageUrl(index)),
-                                            //       fit: BoxFit.cover,
-                                            //       placeholder: (context, url) =>
-                                            //       const Center(
-                                            //         child: CircularProgressIndicator(
-                                            //             strokeWidth: 2),
-                                            //       ),
-                                            //       errorWidget: (context, url, error) =>
-                                            //       const Icon(
-                                            //         Icons.image_not_supported,
-                                            //         color: Colors.grey,
-                                            //         size: 20,
-                                            //       ),
-                                            //     ),
-                                            //   ),
-                                            // ),
-                                            const SizedBox(width: 3,),
-                                            SizedBox(
-                                              width: MediaQuery.of(context).size.width * 0.4,
-                                              child: Text(
-                                                _getProductName(index) ?? 'N/A',
-                                                style: const TextStyle(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 12,
-                                                    fontFamily: 'Mulish'),
-                                                overflow: TextOverflow.ellipsis,
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 42,
+                                          height: 42,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(color: Colors.grey.shade300, width: 1),
+                                          ),
+                                          child: ClipOval(
+                                            child: CachedNetworkImage(
+                                              imageUrl: _getTrimmedImageUrl(category?.imageUrl),
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) => const Center(
+                                                child: CircularProgressIndicator(strokeWidth: 2),
                                               ),
-                                            ),SizedBox(width: 3,),
-                                            SizedBox(
-                                              width: MediaQuery.of(context).size.width * 0.3,
-                                              child: Text(
-                                                _getProductCategoryName(index) ?? 'N/A',
-                                                style: const TextStyle(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 14,
-                                                    fontFamily: 'Mulish'),
+                                              errorWidget: (context, url, error) => const Icon(
+                                                Icons.category, color: Colors.grey, size: 20,
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        child: Center(
-                                          child: Text(
-                                            '€${_getProductPrice(index)?.toStringAsFixed(2) ?? '0.00'}',
-                                            style: const TextStyle(
-                                                fontSize: 12,
-                                                fontFamily: 'Mulish',
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.black),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            category?.name ?? 'N/A',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 14,
+                                              fontFamily: 'Mulish',
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${category?.tax?.percentage ?? 0}%',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 13,
+                                            fontFamily: 'Mulish',
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(4),
+                                            color: (category?.isActive == true)
+                                                ? const Color(0xff49B27A)
+                                                : const Color(0xffE25454),
+                                          ),
+                                          child: Text(
+                                            (category?.isActive == true) ? 'active'.tr : 'inactive'.tr,
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              fontFamily: 'Mulish',
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        if (!isSearching) ...[
+                                          const SizedBox(width: 10),
+                                          Container(
+                                            width: 32,
+                                            height: 32,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: isExpanded
+                                                  ? Colors.grey.shade500
+                                                  : const Color(0xFFFCAE03),
+                                            ),
+                                            child: Icon(
+                                              isExpanded ? Icons.remove : Icons.add,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-                        );
-                      }),
+                                AnimatedSize(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                  child: isExpanded
+                                      ? Column(
+                                          children: catProducts.asMap().entries.map((entry) {
+                                            final idx = entry.key;
+                                            final product = entry.value;
+                                            final productName = product.name as String?;
+                                            final productPrice = product.price as double?;
+                                            final productId = product.id as int?;
+                                            final productIsActive = product.isActive as bool?;
+                                            int productIndex;
+                                            if (isSearching) {
+                                              productIndex = searchResultsList.indexWhere((s) => s.id == productId);
+                                              if (productIndex < 0) productIndex = 0;
+                                            } else {
+                                              productIndex = filteredProductList.indexOf(product);
+                                            }
+
+                                            return Slidable(
+                                              key: ValueKey('${catId}_${productId}_$idx'),
+                                              endActionPane: ActionPane(
+                                                motion: const ScrollMotion(),
+                                                extentRatio: 0.502,
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      _showProductStatusChangeDialog(
+                                                        context,
+                                                        productName ?? 'Product',
+                                                        productId ?? 0,
+                                                        productIsActive ?? false,
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      width: 60,
+                                                      height: double.infinity,
+                                                      decoration: BoxDecoration(
+                                                        color: (productIsActive ?? false)
+                                                            ? Colors.green
+                                                            : Colors.grey.shade600,
+                                                      ),
+                                                      child: Icon(
+                                                        (productIsActive ?? false)
+                                                            ? Icons.airplanemode_active
+                                                            : Icons.airplanemode_inactive,
+                                                        color: Colors.white, size: 25,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () => _editProduct(productIndex),
+                                                    child: Container(
+                                                      width: 60,
+                                                      height: double.infinity,
+                                                      decoration: const BoxDecoration(color: Color(0xff0C831F)),
+                                                      child: const Icon(
+                                                        Icons.mode_edit_outline_outlined,
+                                                        color: Colors.white, size: 25,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () => _deleteProduct(productIndex),
+                                                    child: Container(
+                                                      width: 60,
+                                                      height: double.infinity,
+                                                      decoration: const BoxDecoration(color: Color(0xffE25454)),
+                                                      child: const Icon(
+                                                        Icons.delete_outline,
+                                                        color: Colors.white, size: 25,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                                decoration: BoxDecoration(
+                                                  border: Border(
+                                                    bottom: BorderSide(color: Colors.grey.shade100, width: 1),
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        productName ?? 'N/A',
+                                                        style: const TextStyle(
+                                                          fontWeight: FontWeight.w500,
+                                                          fontSize: 13,
+                                                          fontFamily: 'Mulish',
+                                                        ),
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      '€${productPrice?.toStringAsFixed(2) ?? '0.00'}',
+                                                      style: const TextStyle(
+                                                        fontSize: 13,
+                                                        fontFamily: 'Mulish',
+                                                        fontWeight: FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          }).toList(),
+                                        )
+                                      : const SizedBox.shrink(),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    },
+                  ),
                 if (isLoadingMore)
                   Padding(
                     padding: const EdgeInsets.all(20),
@@ -2413,7 +2470,7 @@ class _ProductsState extends State<Products> {
                             ],
                             const SizedBox(height: 16),
                             Text(
-                              '${'desc'.tr} *',
+                              '${'desc'.tr}',
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -2513,17 +2570,6 @@ class _ProductsState extends State<Products> {
                                         );
                                         return;
                                       }
-                                      if (descriptionController.text.isEmpty) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Please enter description'),
-                                            backgroundColor: Colors.red,
-                                            duration: Duration(seconds: 2),
-                                          ),
-                                        );
-                                        return;
-                                      }
-
                                       if (selectedProductType == 'simple'.tr) {
                                         if (priceController.text.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
