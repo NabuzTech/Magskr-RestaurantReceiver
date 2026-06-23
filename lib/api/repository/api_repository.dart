@@ -24,6 +24,7 @@ import '../../models/StoreDetail.dart';
 import '../../models/StoreSetting.dart';
 import '../../models/UserMe.dart';
 import '../../models/add-store_postcode_response_model.dart';
+import '../../models/bulk_delete_order_response_model.dart';
 import '../../models/add_aleergy_link_response_model.dart';
 import '../../models/add_allergy_response_model.dart';
 import '../../models/add_collection_time_response_model.dart';
@@ -55,6 +56,7 @@ import '../../models/edit_delivery_time_response_model.dart';
 import '../../models/edit_delivery_zone_model.dart';
 import '../../models/edit_existing_product_category_response_model.dart';
 import '../../models/edit_group_item_response_model.dart';
+import '../../models/edit_payment_method_model.dart';
 import '../../models/edit_postcode_response_model.dart';
 import '../../models/edit_printer_ip_response_model.dart';
 import '../../models/edit_product_group_response_model.dart';
@@ -4593,4 +4595,106 @@ class CallService extends GetConnect {
       throw Exception('Failed to generate report: ${response.statusCode}');
     }
   }
+
+  //For Delete Single Order
+  Future<bool> deleteOrder(int orderId) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+      print("User Access Token Value is : $accessToken");
+      httpClient.baseUrl = Api.baseUrl;
+      print('Delete Url is ${Api.baseUrl}/orders/$orderId');
+      var res = await delete(
+        "orders/$orderId",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer $accessToken",
+        },
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 204) {
+        return true;
+      } else {
+        print('Delete API Error: ${res.statusCode} - ${res.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Delete API Exception: $e');
+      return false;
+    }
+  }
+
+  //For Delete Bulk Order
+  Future<BulkDeleteOrderResponse> deleteBulkOrder(List<int> orderIds) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+      httpClient.baseUrl = Api.baseUrl;
+
+      var res = await request(
+        "orders/",
+        "DELETE",
+        body: {"order_ids": orderIds},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer $accessToken",
+        },
+      );
+      print('Delete bulk order is ${Api.baseUrl}/orders/');
+      if (res.statusCode == 200) {
+        return BulkDeleteOrderResponse.fromJson(res.body);
+      } else {
+        print('Delete Bulk API Error: ${res.statusCode} - ${res.body}');
+        return BulkDeleteOrderResponse.withError('Failed to delete orders');
+      }
+    } catch (e) {
+      print('Delete API Exception: $e');
+      return BulkDeleteOrderResponse.withError(e.toString());
+    }
+  }
+
+  //For update payment method
+  Future<EditPaymentMethodModel> updatePaymentMethod(dynamic body,String orderId) async {
+    try {
+      httpClient.baseUrl = Api.baseUrl;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+      print("User Access Token Value is : $accessToken");
+
+      var res = await put('orders/$orderId/payment-method', body, headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer $accessToken",
+      });
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        print("Edit payment Method  Response is : ${res.statusCode.toString()}");
+
+        if (res.body == null || res.body.toString().isEmpty) {
+          return EditPaymentMethodModel();
+        } else if (res.body is List) {
+          final list = res.body as List;
+          if (list.isNotEmpty) {
+            return EditPaymentMethodModel.fromJson(list[0]);
+          }
+          return EditPaymentMethodModel();
+        } else if (res.body is Map) {
+          return EditPaymentMethodModel.fromJson(res.body);
+        } else {
+          return EditPaymentMethodModel();
+        }
+      }else {
+        print("Unexpected error: ${res.statusCode} - ${res.body}");
+        throw Exception('Request failed with status code: ${res.statusCode}');
+      }
+    } catch (e) {
+      print("Editing error: $e");
+      if (e is Exception) {
+        rethrow;
+      } else {
+        throw Exception('An unexpected error occurred: $e');
+      }
+    }
+  }
+
 }

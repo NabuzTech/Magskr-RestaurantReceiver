@@ -806,38 +806,11 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                     );
                   }),
                   _reportOptionChip('custom_range'.tr, () async {
-                    final now = DateTime.now();
-                    final twoYearsAgo = DateTime(now.year - 2, now.month, now.day);
-
-                    final dateRange = await showDateRangePicker(
-                      context: context,
-                      firstDate: twoYearsAgo,
-                      lastDate: now,
-                      initialDateRange: DateTimeRange(
-                        start: now.subtract(const Duration(days: 30)),
-                        end: now,
-                      ),
-                      helpText: 'select_from_date'.tr,
-                      saveText: 'OK',
-                      builder: (context, child) {
-                        return Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: const ColorScheme.light(
-                              primary: Colors.green,
-                              onPrimary: Colors.white,
-                              surface: Colors.white,
-                              onSurface: Colors.black,
-                            ),
-                          ),
-                          child: child!,
-                        );
-                      },
-                    );
-                    if (dateRange == null || !mounted) return;
-
+                    final result = await _showCustomDateRangePicker();
+                    if (result == null || !mounted) return;
                     _callGenerateReport(
-                      DateFormat('yyyy-MM-dd').format(dateRange.start),
-                      DateFormat('yyyy-MM-dd').format(dateRange.end),
+                      DateFormat('yyyy-MM-dd').format(result['start']!),
+                      DateFormat('yyyy-MM-dd').format(result['end']!),
                     );
                   }),
                 ],
@@ -879,6 +852,31 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
           ),
         ),
       ),
+    );
+  }
+
+  Future<Map<String, DateTime>?> _showCustomDateRangePicker() async {
+    final now = DateTime.now();
+    final twoYearsAgo = DateTime(now.year - 2, now.month, now.day);
+
+    return showDialog<Map<String, DateTime>>(
+      context: context,
+      builder: (context) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.green,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: _CustomDateRangeDialog(
+            firstDate: twoYearsAgo,
+            lastDate: now,
+          ),
+        );
+      },
     );
   }
 
@@ -940,5 +938,78 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
         SnackBar(content: Text('${'during'.tr}: $e'), backgroundColor: Colors.red, duration: const Duration(seconds: 3)),
       );
     }
+  }
+}
+
+class _CustomDateRangeDialog extends StatefulWidget {
+  final DateTime firstDate;
+  final DateTime lastDate;
+
+  const _CustomDateRangeDialog({required this.firstDate, required this.lastDate});
+
+  @override
+  State<_CustomDateRangeDialog> createState() => _CustomDateRangeDialogState();
+}
+
+class _CustomDateRangeDialogState extends State<_CustomDateRangeDialog> {
+  DateTime? _startDate;
+  bool _selectingEnd = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 8, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _selectingEnd ? 'select_to_date'.tr : 'select_from_date'.tr,
+                      style: const TextStyle(fontSize: 13, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 4),
+                    if (_startDate != null && _selectingEnd)
+                      Text(
+                        '${DateFormat('dd MMM yyyy').format(_startDate!)} →',
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.green),
+                      ),
+                  ],
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 350,
+            child: CalendarDatePicker(
+              initialDate: _selectingEnd ? _startDate! : widget.lastDate,
+              firstDate: _selectingEnd ? _startDate! : widget.firstDate,
+              lastDate: widget.lastDate,
+              onDateChanged: (date) {
+                if (!_selectingEnd) {
+                  setState(() {
+                    _startDate = date;
+                    _selectingEnd = true;
+                  });
+                } else {
+                  Navigator.pop(context, {'start': _startDate!, 'end': date});
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

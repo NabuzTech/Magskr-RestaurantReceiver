@@ -109,6 +109,7 @@ class _OrderScreenState extends State<OrderScreenNew>
   int _autoSyncInterval = 60;
   bool _syncTimeLoaded = false;
   double? _stripeServiceFee;
+
   bool _isVorbestellen(String? deliveryTime) {
     if (deliveryTime == null || deliveryTime.isEmpty) return false;
     try {
@@ -121,6 +122,7 @@ class _OrderScreenState extends State<OrderScreenNew>
       return false;
     }
   }
+
   @override
   void initState() {
     super.initState();

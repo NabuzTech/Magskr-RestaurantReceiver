@@ -20,6 +20,7 @@ class Postcode extends StatefulWidget {
 
 class _PostcodeState extends State<Postcode> {
   late PageController _pageController;
+  final ValueNotifier<int> _listRebuildNotifier = ValueNotifier<int>(0);
   bool isLoading = false;
   String? storeId;
   SharedPreferences? sharedPreferences;
@@ -109,6 +110,13 @@ class _PostcodeState extends State<Postcode> {
     super.initState();
     _pageController = PageController(initialPage: 0);
     _initializeSharedPreferences();
+  }
+
+  @override
+  void dispose() {
+    _listRebuildNotifier.dispose();
+    _pageController.dispose();
+    super.dispose();
   }
 
   Future<void> _initializeSharedPreferences() async {
@@ -249,7 +257,11 @@ class _PostcodeState extends State<Postcode> {
                     ),
                   ),
 
-                  SlidableAutoCloseBehavior(
+                  ValueListenableBuilder<int>(
+                    valueListenable: _listRebuildNotifier,
+                    builder: (context, value, child) {
+                    return SlidableAutoCloseBehavior(
+                    key: ValueKey(value),
                     child: ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -361,7 +373,8 @@ class _PostcodeState extends State<Postcode> {
                         );
                       },
                     ),
-                  ),
+                  );
+                  }),
                 ],
               ),
             ),
@@ -873,6 +886,7 @@ class _PostcodeState extends State<Postcode> {
           postcode = postcodeValue;
           currentPage = 1;
           _updatePagination();
+          _listRebuildNotifier.value++;
           isLoading = false;
         });
       }
@@ -925,7 +939,7 @@ class _PostcodeState extends State<Postcode> {
       var map = [
           {
             "postcode": postcode,
-            "minimum_order_amount": int.tryParse(minimumAmount),
+            "minimum_order_amount": double.tryParse(minimumAmount),
             "delivery_fee": double.tryParse(deliveryFee),
             "delivery_time": int.tryParse(deliveryTime),
             "store_id": storeId
@@ -1007,7 +1021,7 @@ class _PostcodeState extends State<Postcode> {
         {
           "id": postcodeId,
           "postcode": postcode,
-          "minimum_order_amount": int.tryParse(minimumAmount),
+          "minimum_order_amount": double.tryParse(minimumAmount),
           "delivery_fee": double.tryParse(deliveryFee),
           "delivery_time": int.tryParse(deliveryTime)
         }

@@ -578,6 +578,18 @@ class AppTranslations extends Translations {
           'custom_range': 'Custom',
           'select_from_date': 'Select from date',
           'select_to_date': 'Select to date',
+
+          'invoices': 'Invoices',
+          'invoice_hash': 'Invoice #',
+          'no_invoices_today': 'No invoices today',
+          'edit_invoice': 'Edit Invoice',
+          'payment_type': 'Payment Type',
+          'amount': 'Amount',
+          'delete_selected': 'Delete Selected',
+          'card': 'Card',
+          'confirm_delete': 'Are you sure you want to delete?',
+          'payment_updated': 'Payment method updated successfully',
+
           },
 
         'de': {
@@ -1159,6 +1171,17 @@ class AppTranslations extends Translations {
           'custom_range': 'Benutzerdefiniert',
           'select_from_date': 'Von Datum wählen',
           'select_to_date': 'Bis Datum wählen',
+
+          'invoices': 'Rechnungen',
+          'invoice_hash': 'Rechnung #',
+          'no_invoices_today': 'Heute keine Rechnungen',
+          'edit_invoice': 'Rechnung bearbeiten',
+          'payment_type': 'Zahlungsart',
+          'amount': 'Betrag',
+          'delete_selected': 'Ausgewählte löschen',
+          'card': 'Karte',
+          'confirm_delete': 'Sind Sie sicher, dass Sie löschen möchten?',
+          'payment_updated': 'Zahlungsmethode erfolgreich aktualisiert',
         },
 
         'ch': {
@@ -1243,6 +1266,17 @@ class AppTranslations extends Translations {
           'custom_range': 'Benutzerdefiniert',
           'select_from_date': 'Von Datum wählen',
           'select_to_date': 'Bis Datum wählen',
+
+          'invoices': 'Rechnungen',
+          'invoice_hash': 'Rechnung #',
+          'no_invoices_today': 'Heute keine Rechnungen',
+          'edit_invoice': 'Rechnung bearbeiten',
+          'payment_type': 'Zahlungsart',
+          'amount': 'Betrag',
+          'delete_selected': 'Ausgewählte löschen',
+          'card': 'Karte',
+          'confirm_delete': 'Sind Sie sicher, dass Sie löschen möchten?',
+          'payment_updated': 'Zahlungsmethode erfolgreich aktualisiert',
         }
       };
 }

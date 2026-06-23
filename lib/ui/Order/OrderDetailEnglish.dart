@@ -1623,7 +1623,6 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
         "order_status": 2,
         "approval_status": 2,
         "delivery_time": newTime.toIso8601String()
-       // "delivery_time": "2025-12-07T00:15:00.000"
       };
       print('map value is $jsonData');
       final result = await ApiRepo().orderAcceptDecline(

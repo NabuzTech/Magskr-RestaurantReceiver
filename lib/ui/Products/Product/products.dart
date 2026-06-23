@@ -76,13 +76,38 @@ class _ProductsState extends State<Products> {
   }
 
   void _editProduct(int index) {
-    GetStoreProducts product = filteredProductList[index];  // ✅ CHANGED FROM currentPageItems
-    _showEditProductBottomSheet(product);
+    if (currentSearchQuery.isNotEmpty) {
+      final s = searchResultsList[index];
+      final product = GetStoreProducts(
+        id: s.id,
+        name: s.name,
+        itemCode: s.itemCode,
+        categoryId: s.categoryId,
+        imageUrl: s.imageUrl,
+        type: s.type,
+        price: s.price,
+        discountPrice: s.discountPrice,
+        storeId: s.storeId,
+        taxId: s.taxId?.toString(),
+        isActive: s.isActive,
+        description: s.description,
+        displayOrder: s.displayOrder,
+        ownerId: s.ownerId,
+      );
+      _showEditProductBottomSheet(product);
+    } else {
+      _showEditProductBottomSheet(filteredProductList[index]);
+    }
   }
 
   void _deleteProduct(int index) {
-    GetStoreProducts product = filteredProductList[index];  // ✅ CHANGED FROM currentPageItems
-    showDeleteProduct(context, product.name ?? 'this product', product.id!);
+    final name = currentSearchQuery.isNotEmpty
+        ? searchResultsList[index].name
+        : filteredProductList[index].name;
+    final id = currentSearchQuery.isNotEmpty
+        ? searchResultsList[index].id
+        : filteredProductList[index].id;
+    showDeleteProduct(context, name ?? 'this product', id!);
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -1806,362 +1831,194 @@ class _ProductsState extends State<Products> {
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.85,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(color: Colors.grey.shade200),
-                      ),
-                    ),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        // Centered Title
-                        Center(
-                          child: Text(
-                            'edit_produc'.tr,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Mulish',
-                            ),
-                          ),
-                        ),
-                        // Image Button in Top Right
-                        Positioned(
-                          right: 0,
-                          top: -5,
-                          child: GestureDetector(
-                            onTap: () {
-                              _pickImageModal(setModalState);
-                            },
-                            child: Container(
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: (selectedImage != null ||
-                                    (product.imageUrl != null && product.imageUrl!.isNotEmpty))
-                                    ? Colors.transparent
-                                    : const Color(0xFFFCAE03),
-                                border: (selectedImage != null ||
-                                    (product.imageUrl != null && product.imageUrl!.isNotEmpty))
-                                    ? Border.all(color: Colors.grey.shade300, width: 2)
-                                    : null,
-                              ),
-                              child: selectedImage != null
-                                  ? Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(22.5),
-                                    child: Image.file(
-                                      selectedImage!,
-                                      width: 45,
-                                      height: 45,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  // Close Icon
-                                  Positioned(
-                                    top: 0,
-                                    right: -2,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setModalState(() {
-                                          selectedImage = null;
-                                        });
-                                        setState(() {});
-                                      },
-                                      child: Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.red,
-                                          border: Border.all(color: Colors.white, width: 1),
-                                        ),
-                                        child: const Icon(
-                                          Icons.close,
-                                          color: Colors.white,
-                                          size: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                                  : (product.imageUrl != null && product.imageUrl!.isNotEmpty)
-                                  ? Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(22.5),
-                                    child: CachedNetworkImage(
-                                      imageUrl: _getTrimmedImageUrl(product.imageUrl),
-                                      width: 45,
-                                      height: 45,
-                                      fit: BoxFit.cover,
-                                      placeholder: (context, url) => const Center(
-                                        child: CircularProgressIndicator(strokeWidth: 2),
-                                      ),
-                                      errorWidget: (context, url, error) => const Icon(
-                                        Icons.image_not_supported,
-                                        color: Colors.grey,
-                                        size: 20,
-                                      ),
-                                    ),
-                                  ),
-                                  // Close Icon for existing image
-                                  Positioned(
-                                    top: 0,
-                                    right: -2,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setModalState(() {
-                                          product.imageUrl = null;
-                                        });
-                                      },
-                                      child: Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.red,
-                                          border: Border.all(color: Colors.white, width: 1),
-                                        ),
-                                        child: const Icon(
-                                          Icons.close,
-                                          color: Colors.white,
-                                          size: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                                  : const Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+            child: Stack(clipBehavior: Clip.none,
+              children:[
+                Container(
+                height: MediaQuery.of(context).size.height * 0.85,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
-                  Expanded(
-                    child: isLoadingData
-                        ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(color: Colors.grey.shade200),
+                        ),
+                      ),
+                      child: Stack(
+                        clipBehavior: Clip.none,
                         children: [
-                          Lottie.asset(
-                            'assets/animations/burger.json',
-                            width: 150,
-                            height: 150,
-                            repeat: true,
+                          // Centered Title
+                          Center(
+                            child: Text(
+                              'edit_produc'.tr,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Mulish',
+                              ),
+                            ),
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'loading'.tr,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Mulish',
-                              color: Colors.grey[600],
+                          // Image Button in Top Right
+                          Positioned(
+                            right: 0,
+                            top: -5,
+                            child: GestureDetector(
+                              onTap: () {
+                                _pickImageModal(setModalState);
+                              },
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: (selectedImage != null ||
+                                      (product.imageUrl != null && product.imageUrl!.isNotEmpty))
+                                      ? Colors.transparent
+                                      : const Color(0xFFFCAE03),
+                                  border: (selectedImage != null ||
+                                      (product.imageUrl != null && product.imageUrl!.isNotEmpty))
+                                      ? Border.all(color: Colors.grey.shade300, width: 2)
+                                      : null,
+                                ),
+                                child: selectedImage != null
+                                    ? Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(22.5),
+                                      child: Image.file(
+                                        selectedImage!,
+                                        width: 45,
+                                        height: 45,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    // Close Icon
+                                    Positioned(
+                                      top: 0,
+                                      right: -2,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setModalState(() {
+                                            selectedImage = null;
+                                          });
+                                          setState(() {});
+                                        },
+                                        child: Container(
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.red,
+                                            border: Border.all(color: Colors.white, width: 1),
+                                          ),
+                                          child: const Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                            size: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                                    : (product.imageUrl != null && product.imageUrl!.isNotEmpty)
+                                    ? Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(22.5),
+                                      child: CachedNetworkImage(
+                                        imageUrl: _getTrimmedImageUrl(product.imageUrl),
+                                        width: 45,
+                                        height: 45,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => const Center(
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        ),
+                                        errorWidget: (context, url, error) => const Icon(
+                                          Icons.image_not_supported,
+                                          color: Colors.grey,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
+                                    // Close Icon for existing image
+                                    Positioned(
+                                      top: 0,
+                                      right: -2,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setModalState(() {
+                                            product.imageUrl = null;
+                                          });
+                                        },
+                                        child: Container(
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.red,
+                                            border: Border.all(color: Colors.white, width: 1),
+                                          ),
+                                          child: const Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                            size: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                                    : const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    )
-                        : SingleChildScrollView(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 10),
-                          Text(
-                            '${'product_name'.tr} *',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Mulish',
+                    ),
+                    Expanded(
+                      child: isLoadingData
+                          ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Lottie.asset(
+                              'assets/animations/burger.json',
+                              width: 150,
+                              height: 150,
+                              repeat: true,
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: nameController,
-                            decoration: InputDecoration(
-                              hintText: 'enter_product'.tr,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(color: Color(0xFFFCAE03)),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            'product_code'.tr,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Mulish',
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: codeController,
-                            decoration: InputDecoration(
-                              hintText: 'enter_code'.tr,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(color: Color(0xFFFCAE03)),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            '${'taxe'.tr} *',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Mulish',
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          DropdownButtonFormField<String>(
-                            initialValue: selectedTaxId,
-                            hint: Text('select'.tr),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                            ),
-                            items: storeTaxesList.map((tax) {
-                              return DropdownMenuItem<String>(
-                                value: tax.id.toString(),
-                                child: Text('${tax.name} (${tax.percentage}%)'),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setModalState(() {
-                                selectedTaxId = newValue;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            '${'category'.tr} *',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Mulish',
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          DropdownButtonFormField<String>(
-                            initialValue: selectedCategoryId,
-                            hint: Text('select_category'.tr),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                            ),
-                            items: productCategoryList.map((category) {
-                              return DropdownMenuItem<String>(
-                                value: category.id.toString(),
-                                child: Text(category.name ?? 'N/A'),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setModalState(() {
-                                selectedCategoryId = newValue;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            'product_type'.tr,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Mulish',
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          DropdownButtonFormField<String>(
-                            initialValue: selectedProductType,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                            ),
-                            items: ['simple'.tr, 'variable'.tr].map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setModalState(() {
-                                selectedProductType = newValue;
-                                if (newValue == 'simple'.tr) {
-                                  for (var variant in variants) {
-                                    variant['name'].dispose();
-                                    variant['price'].dispose();
-                                    variant['description'].dispose();
-                                  }
-                                  variants.clear();
-                                }
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                          if (selectedProductType == 'simple'.tr) ...[
+                            const SizedBox(height: 16),
                             Text(
-                              '${'price'.tr} *',
+                              'loading'.tr,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'Mulish',
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                          : SingleChildScrollView(
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+                            Text(
+                              '${'product_name'.tr} *',
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -2170,11 +2027,38 @@ class _ProductsState extends State<Products> {
                             ),
                             const SizedBox(height: 8),
                             TextField(
-                              controller: priceController,
-                              keyboardType:  TextInputType.text,
+                              controller: nameController,
                               decoration: InputDecoration(
-                                hintText: 'enter_price'.tr,
-                                prefixText: '€ ',
+                                hintText: 'enter_product'.tr,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFFFCAE03)),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'product_code'.tr,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Mulish',
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller: codeController,
+                              decoration: InputDecoration(
+                                hintText: 'enter_code'.tr,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -2191,7 +2075,7 @@ class _ProductsState extends State<Products> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              'dis_price'.tr,
+                              '${'taxe'.tr} *',
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -2199,39 +2083,312 @@ class _ProductsState extends State<Products> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            TextField(
-                              controller: discountPriceController,
-                              keyboardType:  TextInputType.text,
+                            DropdownButtonFormField<String>(
+                              initialValue: selectedTaxId,
+                              hint: Text('select'.tr),
                               decoration: InputDecoration(
-                                hintText: 'opt'.tr,
-                                prefixText: '€ ',
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide: BorderSide(color: Colors.grey.shade300),
                                 ),
-                                focusedBorder: OutlineInputBorder(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                              ),
+                              items: storeTaxesList.map((tax) {
+                                return DropdownMenuItem<String>(
+                                  value: tax.id.toString(),
+                                  child: Text('${tax.name} (${tax.percentage}%)'),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setModalState(() {
+                                  selectedTaxId = newValue;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              '${'category'.tr} *',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Mulish',
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            DropdownButtonFormField<String>(
+                              initialValue: selectedCategoryId,
+                              hint: Text('select_category'.tr),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFFFCAE03)),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                               ),
+                              items: productCategoryList.map((category) {
+                                return DropdownMenuItem<String>(
+                                  value: category.id.toString(),
+                                  child: Text(category.name ?? 'N/A'),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setModalState(() {
+                                  selectedCategoryId = newValue;
+                                });
+                              },
                             ),
-                          ],
-                          if (selectedProductType == 'variable'.tr) ...[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'variant'.tr,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Mulish',
-                                  ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'product_type'.tr,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Mulish',
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            DropdownButtonFormField<String>(
+                              initialValue: selectedProductType,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                if (variants.isEmpty)
-                                  ElevatedButton.icon(
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                              ),
+                              items: ['simple'.tr, 'variable'.tr].map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setModalState(() {
+                                  selectedProductType = newValue;
+                                  if (newValue == 'simple'.tr) {
+                                    for (var variant in variants) {
+                                      variant['name'].dispose();
+                                      variant['price'].dispose();
+                                      variant['description'].dispose();
+                                    }
+                                    variants.clear();
+                                  }
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            if (selectedProductType == 'simple'.tr) ...[
+                              Text(
+                                '${'price'.tr} *',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Mulish',
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                controller: priceController,
+                                keyboardType:  TextInputType.text,
+                                decoration: InputDecoration(
+                                  hintText: 'enter_price'.tr,
+                                  prefixText: '€ ',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(color: Colors.grey.shade300),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(color: Color(0xFFFCAE03)),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                'dis_price'.tr,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Mulish',
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                controller: discountPriceController,
+                                keyboardType:  TextInputType.text,
+                                decoration: InputDecoration(
+                                  hintText: 'opt'.tr,
+                                  prefixText: '€ ',
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(color: Colors.grey.shade300),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(color: Color(0xFFFCAE03)),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                ),
+                              ),
+                            ],
+                            if (selectedProductType == 'variable'.tr) ...[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'variant'.tr,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Mulish',
+                                    ),
+                                  ),
+                                  if (variants.isEmpty)
+                                    ElevatedButton.icon(
+                                      onPressed: () {
+                                        setModalState(() {
+                                          variants.add({
+                                            'name': TextEditingController(),
+                                            'price': TextEditingController(),
+                                            'description': TextEditingController(),
+                                          });
+                                        });
+                                      },
+                                      icon: const Icon(Icons.add, size: 18),
+                                      label: Text('add_variant'.tr),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(0xff0C831F),
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              ...List.generate(variants.length, (index) {
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey.shade300),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      TextField(
+                                        controller: variants[index]['name'],
+                                        decoration: InputDecoration(
+                                          hintText: 'variant_name'.tr,
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                            borderSide: BorderSide(color: Colors.grey.shade300),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                            borderSide: const BorderSide(color: Color(0xFFFCAE03)),
+                                          ),
+                                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      TextField(
+                                        controller: variants[index]['price'],
+                                        keyboardType:  TextInputType.text,
+                                        decoration: InputDecoration(
+                                          hintText: 'price'.tr,
+                                          prefixText: '€ ',
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                            borderSide: BorderSide(color: Colors.grey.shade300),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                            borderSide: const BorderSide(color: Color(0xFFFCAE03)),
+                                          ),
+                                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      TextField(
+                                        controller: variants[index]['description'],
+                                        maxLines: 3,
+                                        decoration: InputDecoration(
+                                          hintText: 'desc'.tr,
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                            borderSide: BorderSide(color: Colors.grey.shade300),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                            borderSide: const BorderSide(color: Color(0xFFFCAE03)),
+                                          ),
+                                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            setModalState(() {
+                                              variants[index]['name'].dispose();
+                                              variants[index]['price'].dispose();
+                                              variants[index]['description'].dispose();
+                                              variants.removeAt(index);
+                                            });
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(0xffE25454),
+                                            padding: const EdgeInsets.symmetric(vertical: 12),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            'remove'.tr,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: 'Mulish',
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                              if (variants.isNotEmpty)
+                                Center(
+                                  child: ElevatedButton.icon(
                                     onPressed: () {
                                       setModalState(() {
                                         variants.add({
@@ -2246,365 +2403,260 @@ class _ProductsState extends State<Products> {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xff0C831F),
                                       foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                     ),
                                   ),
-                              ],
+                                ),
+                            ],
+                            const SizedBox(height: 16),
+                            Text(
+                              '${'desc'.tr} *',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Mulish',
+                              ),
                             ),
-                            const SizedBox(height: 10),
-                            ...List.generate(variants.length, (index) {
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 16),
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey.shade300),
+                            const SizedBox(height: 8),
+                            TextField(
+                              controller: descriptionController,
+                              maxLines: 4,
+                              decoration: InputDecoration(
+                                hintText: 'enter_desc'.tr,
+                                border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    TextField(
-                                      controller: variants[index]['name'],
-                                      decoration: InputDecoration(
-                                        hintText: 'variant_name'.tr,
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                          borderSide: BorderSide(color: Colors.grey.shade300),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                          borderSide: const BorderSide(color: Color(0xFFFCAE03)),
-                                        ),
-                                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    TextField(
-                                      controller: variants[index]['price'],
-                                      keyboardType:  TextInputType.text,
-                                      decoration: InputDecoration(
-                                        hintText: 'price'.tr,
-                                        prefixText: '€ ',
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                          borderSide: BorderSide(color: Colors.grey.shade300),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                          borderSide: const BorderSide(color: Color(0xFFFCAE03)),
-                                        ),
-                                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    TextField(
-                                      controller: variants[index]['description'],
-                                      maxLines: 3,
-                                      decoration: InputDecoration(
-                                        hintText: 'desc'.tr,
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                          borderSide: BorderSide(color: Colors.grey.shade300),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(8),
-                                          borderSide: const BorderSide(color: Color(0xFFFCAE03)),
-                                        ),
-                                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    SizedBox(
-                                      width: double.infinity,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          setModalState(() {
-                                            variants[index]['name'].dispose();
-                                            variants[index]['price'].dispose();
-                                            variants[index]['description'].dispose();
-                                            variants.removeAt(index);
-                                          });
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(0xffE25454),
-                                          padding: const EdgeInsets.symmetric(vertical: 12),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                        ),
-                                        child: Text(
-                                          'remove'.tr,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            fontFamily: 'Mulish',
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
                                 ),
-                              );
-                            }),
-                            if (variants.isNotEmpty)
-                              Center(
-                                child: ElevatedButton.icon(
-                                  onPressed: () {
-                                    setModalState(() {
-                                      variants.add({
-                                        'name': TextEditingController(),
-                                        'price': TextEditingController(),
-                                        'description': TextEditingController(),
-                                      });
-                                    });
-                                  },
-                                  icon: const Icon(Icons.add, size: 18),
-                                  label: Text('add_variant'.tr),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xff0C831F),
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                  ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(color: Color(0xFFFCAE03)),
                                 ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                               ),
-                          ],
-                          const SizedBox(height: 16),
-                          Text(
-                            '${'desc'.tr} *',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Mulish',
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: descriptionController,
-                            maxLines: 4,
-                            decoration: InputDecoration(
-                              hintText: 'enter_desc'.tr,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(color: Colors.grey.shade300),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(color: Color(0xFFFCAE03)),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 120,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.black.withOpacity(0.2),
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                            const SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 120,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.black.withOpacity(0.2),
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
                                     ),
-                                  ),
-                                  child: Text(
-                                    'cancel'.tr,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish',
+                                    child: Text(
+                                      'cancel'.tr,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: 'Mulish',
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 15),
-                              SizedBox(
-                                width: 160,
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    if (nameController.text.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Please enter product name'),
-                                          backgroundColor: Colors.red,
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    if (codeController.text.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Please enter product code'),
-                                          backgroundColor: Colors.red,
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    if (selectedTaxId == null) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Please select tax'),
-                                          backgroundColor: Colors.red,
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    if (selectedCategoryId == null) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Please select category'),
-                                          backgroundColor: Colors.red,
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    if (descriptionController.text.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Please enter description'),
-                                          backgroundColor: Colors.red,
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
-                                      return;
-                                    }
+                                const SizedBox(width: 15),
+                                SizedBox(
+                                  width: 160,
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      if (nameController.text.isEmpty) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Please enter product name'),
+                                            backgroundColor: Colors.red,
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                        return;
+                                      }
+                                      if (codeController.text.isEmpty) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Please enter product code'),
+                                            backgroundColor: Colors.red,
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                        return;
+                                      }
+                                      if (selectedTaxId == null) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Please select tax'),
+                                            backgroundColor: Colors.red,
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                        return;
+                                      }
+                                      if (selectedCategoryId == null) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Please select category'),
+                                            backgroundColor: Colors.red,
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                        return;
+                                      }
+                                      if (descriptionController.text.isEmpty) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Please enter description'),
+                                            backgroundColor: Colors.red,
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                        return;
+                                      }
 
-                                    if (selectedProductType == 'simple'.tr) {
-                                      if (priceController.text.isEmpty) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Please enter price'),
-                                            backgroundColor: Colors.red,
-                                            duration: Duration(seconds: 2),
-                                          ),
-                                        );
-                                        return;
-                                      }
-                                    } else if (selectedProductType == 'variable'.tr) {
-                                      if (variants.isEmpty) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Please add at least one variant'),
-                                            backgroundColor: Colors.red,
-                                            duration: Duration(seconds: 2),
-                                          ),
-                                        );
-                                        return;
-                                      }
-                                      for (var variant in variants) {
-                                        if (variant['name'].text.isEmpty || variant['price'].text.isEmpty) {
+                                      if (selectedProductType == 'simple'.tr) {
+                                        if (priceController.text.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
-                                              content: Text('Please fill all variant fields'),
+                                              content: Text('Please enter price'),
                                               backgroundColor: Colors.red,
                                               duration: Duration(seconds: 2),
                                             ),
                                           );
                                           return;
                                         }
-                                      }
-                                    }
-
-                                    List<Map<String, dynamic>>? productVariants;
-                                    if (selectedProductType == 'variable'.tr) {
-                                      productVariants = variants.map((v) {
-                                        Map<String, dynamic> variantMap = {
-                                          "name": v['name'].text,
-                                          "price": double.parse(v['price'].text).toInt(),
-                                          "item_code": "${codeController.text}-" + v['name'].text.replaceAll(' ', '').toUpperCase(),
-                                          "image_url": "",
-                                          "description": v['description'].text,
-                                        };
-                                        if (v['id'] != null) {
-                                          variantMap['id'] = v['id'];
+                                      } else if (selectedProductType == 'variable'.tr) {
+                                        if (variants.isEmpty) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Please add at least one variant'),
+                                              backgroundColor: Colors.red,
+                                              duration: Duration(seconds: 2),
+                                            ),
+                                          );
+                                          return;
                                         }
-                                        return variantMap;
-                                      }).toList();
-                                    }
-                                    String? finalImageUrl = product.imageUrl;
-
-                                    if (selectedImage != null) {
-                                      String? uploadedImageUrl = await uploadProductImage(selectedImage!);
-                                      if (uploadedImageUrl == null) {
-                                        return;
+                                        for (var variant in variants) {
+                                          if (variant['name'].text.isEmpty || variant['price'].text.isEmpty) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('Please fill all variant fields'),
+                                                backgroundColor: Colors.red,
+                                                duration: Duration(seconds: 2),
+                                              ),
+                                            );
+                                            return;
+                                          }
+                                        }
                                       }
-                                      finalImageUrl = uploadedImageUrl;
-                                    }
-                                    bool success = await editProductDetail(
-                                      productId: product.id!,
-                                      name: nameController.text,
-                                      itemCode: codeController.text,
-                                      categoryId: selectedCategoryId!,
-                                      taxId: selectedTaxId!,
-                                      productType: selectedProductType!,
-                                      description: descriptionController.text,
-                                      price: selectedProductType == 'simple'.tr ? priceController.text : null,
-                                      discountPrice: selectedProductType == 'simple'.tr ? discountPriceController.text : null,
-                                      productVariants: productVariants,
-                                      imageUrl: finalImageUrl,
-                                    );
 
-                                    if (success && mounted) {
-                                      FocusScope.of(context).unfocus();
-                                      Navigator.of(context).pop();
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFFCAE03),
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                                      List<Map<String, dynamic>>? productVariants;
+                                      if (selectedProductType == 'variable'.tr) {
+                                        productVariants = variants.map((v) {
+                                          Map<String, dynamic> variantMap = {
+                                            "name": v['name'].text,
+                                            "price": double.parse(v['price'].text).toInt(),
+                                            "item_code": "${codeController.text}-" + v['name'].text.replaceAll(' ', '').toUpperCase(),
+                                            "image_url": "",
+                                            "description": v['description'].text,
+                                          };
+                                          if (v['id'] != null) {
+                                            variantMap['id'] = v['id'];
+                                          }
+                                          return variantMap;
+                                        }).toList();
+                                      }
+                                      String? finalImageUrl = product.imageUrl;
+
+                                      if (selectedImage != null) {
+                                        String? uploadedImageUrl = await uploadProductImage(selectedImage!);
+                                        if (uploadedImageUrl == null) {
+                                          return;
+                                        }
+                                        finalImageUrl = uploadedImageUrl;
+                                      }
+                                      bool success = await editProductDetail(
+                                        productId: product.id!,
+                                        name: nameController.text,
+                                        itemCode: codeController.text,
+                                        categoryId: selectedCategoryId!,
+                                        taxId: selectedTaxId!,
+                                        productType: selectedProductType!,
+                                        description: descriptionController.text,
+                                        price: selectedProductType == 'simple'.tr ? priceController.text : null,
+                                        discountPrice: selectedProductType == 'simple'.tr ? discountPriceController.text : null,
+                                        productVariants: productVariants,
+                                        imageUrl: finalImageUrl,
+                                      );
+
+                                      if (success && mounted) {
+                                        FocusScope.of(context).unfocus();
+                                        Navigator.of(context).pop();
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFFCAE03),
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
                                     ),
-                                  ),
-                                  child: Text(
-                                    'upd_product'.tr,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish',
+                                    child: Text(
+                                      'upd_product'.tr,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: 'Mulish',
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                        ],
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+                Positioned(
+                  top: -50,
+                  right: 0,
+                  left: 0,
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 6,
+                            )
+                          ],
+                        ),
+                        child: const Icon(Icons.close, size: 30, color: Colors.black),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
+                ),
+            ]),
           );
         },
       ),

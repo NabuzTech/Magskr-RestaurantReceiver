@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:food_receiver/models/Store.dart';
+import 'package:food_receiver/ui/Invoice/invoices.dart';
 import 'package:food_receiver/ui/Notification/notification.dart';
 import 'package:food_receiver/ui/PostCode/postcode.dart';
 import 'package:food_receiver/ui/Setting/PrinterSettingsScreen.dart';
@@ -294,6 +295,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     Get.to(() => const StoreCustomer(),
                         routeName: '/StoreCustomer');
                   }),
+                  // _drawerItem('invoices'.tr,'assets/images/invoice.svg', onTap: () {
+                  //   Navigator.of(context).pop();
+                  //   Get.to(() => const Invoices(),
+                  //   );
+                  // }),
                   if (_roleId != 5)
                     _drawerItem('change_password'.tr,'assets/images/password.svg', onTap: () {
                       Navigator.of(context).pop();
@@ -626,8 +632,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
               Get.to(() => const Discount());
             },
           ),
-          if (_roleId == 1 || _storeType == '0')
-            _subDrawerItem('availability'.tr,
+          _subDrawerItem('availability'.tr,
               //  svgPath: 'assets/images/discount.svg',
                 onTap: () {
             Navigator.of(context).pop();
