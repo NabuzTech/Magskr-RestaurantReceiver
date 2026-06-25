@@ -42,6 +42,10 @@ class _PosPortraitState extends State<PosPortrait> {
 
     return WillPopScope(
       onWillPop: () async {
+        if (controller.showPreviewDialog.value) {
+          controller.showPreviewDialog.value = false;
+          return false;
+        }
         if (controller.showOrderOverlay.value) {
           controller.hideOrderOverlay();
           return false;
@@ -92,24 +96,17 @@ class _PosPortraitState extends State<PosPortrait> {
                   _buildPortraitHeader(controller),
                   _buildSelectedOrderTypeBar(controller),
                   Expanded(
-                    child: Column(
+                    child: Row(
                       children: [
+                        Obx(() {
+                          if (!controller.isSearching.value) {
+                            return _buildPortraitSidebar(controller);
+                          }
+                          return const SizedBox.shrink();
+                        }),
                         Expanded(
-                          child: Row(
-                            children: [
-                              Obx(() {
-                                if (!controller.isSearching.value) {
-                                  return _buildPortraitSidebar(controller);
-                                }
-                                return const SizedBox.shrink();
-                              }),
-                              Expanded(
-                                child: _buildPortraitContent(controller, context),
-                              ),
-                            ],
-                          ),
+                          child: _buildPortraitContent(controller, context),
                         ),
-                        _buildOpenOrdersBar(controller),
                       ],
                     ),
                   ),
@@ -202,6 +199,7 @@ class _PosPortraitState extends State<PosPortrait> {
               ),
             ),
           ),
+          _buildOpenOrdersBar(controller),
         ],
       ),
     );
@@ -464,6 +462,18 @@ class _PosPortraitState extends State<PosPortrait> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          GestureDetector(
+            onTap: () => controller.resetToSelectionScreen(),
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              margin: const EdgeInsets.only(right: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xffF5F5F5),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Icon(Icons.arrow_back, size: 18, color: Color(0xff0B1928)),
+            ),
+          ),
           InkWell(
             onTap: () {
               _scaffoldKey.currentState?.openDrawer();
@@ -546,34 +556,6 @@ class _PosPortraitState extends State<PosPortrait> {
               ),
             ),
           )),
-          // Orders icon with badge
-          // InkWell(
-          //   onTap: () => controller.showOrdersOverlay(),
-          //   child: Stack(
-          //     clipBehavior: Clip.none,
-          //     children: [
-          //       SvgPicture.asset('assets/images/order-icon.svg', height: 22, width: 22),
-          //       Positioned(
-          //         top: -6,
-          //         right: -6,
-          //         child: Obx(() => controller.pendingOrdersCount.value > 0
-          //             ? Container(
-          //                 padding: const EdgeInsets.all(3),
-          //                 decoration: const BoxDecoration(
-          //                     color: Color(0xffE31E24), shape: BoxShape.circle),
-          //                 constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-          //                 child: Center(
-          //                   child: Text('${controller.pendingOrdersCount.value}',
-          //                       style: const TextStyle(
-          //                           color: Colors.white, fontSize: 9,
-          //                           fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
-          //                 ),
-          //               )
-          //             : const SizedBox.shrink()),
-          //       ),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
     );
@@ -665,20 +647,6 @@ class _PosPortraitState extends State<PosPortrait> {
                 );
               },
             ),
-            // if (controller.selectedCategoryIndex.value > 0)
-            //   Positioned(
-            //     right: 0,
-            //     top: 0,
-            //     bottom: 0,
-            //     child: Container(
-            //       width: 3,
-            //       color: const Color(0xffE31E24),
-            //       margin: EdgeInsets.only(
-            //         top: controller.selectedCategoryIndex.value * 80.0,
-            //       ),
-            //       height: 80,
-            //     ),
-            //   ),
             Obx(() {
               final idx = controller.selectedCategoryIndex.value;
               final maxIdx = controller.categories.length - 1;
@@ -1469,16 +1437,23 @@ class CheckoutScreen extends StatelessWidget {
                   const SizedBox(width: 16),
                   GestureDetector(
                     onTap: () => controller.showAddNoteDialog(context),
-                    child: Row(
-                      children: [
-                        Image.asset('assets/images/note.png', height: 16, width: 16),
-                        const SizedBox(width: 4),
-                        Obx(() => Text(
-                          controller.orderNote.value.isEmpty ? 'Edit Note' : 'Note',
-                          style: const TextStyle(fontSize: 12, fontFamily: 'Mulish'),
-                        )),
-                      ],
-                    ),
+                    child: Obx(() => Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: controller.orderNote.value.isNotEmpty
+                            ? const Color(0xff0C831F).withOpacity(0.1)
+                            : const Color(0xffF5F5F5),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Image.asset(
+                        'assets/images/note.png',
+                        height: 22,
+                        width: 22,
+                        color: controller.orderNote.value.isNotEmpty
+                            ? const Color(0xff0C831F)
+                            : const Color(0xff0B1928),
+                      ),
+                    )),
                   ),
                 ],
               ),
@@ -1495,7 +1470,10 @@ class CheckoutScreen extends StatelessWidget {
                     _buildCollapsibleSummary(context,controller),
 
                     const SizedBox(height: 16),
+                    // Payment Method Section
+                    _buildPaymentMethodSection(controller),
 
+                    const SizedBox(height: 16),
                     // Customer Details Section
                     Obx(() {
                       if (controller.customerDetails.isEmpty) {
@@ -1512,8 +1490,7 @@ class CheckoutScreen extends StatelessWidget {
 
                     const SizedBox(height: 16),
 
-                    // Payment Method Section
-                   // _buildPaymentMethodSection(controller),
+
 
                     const SizedBox(height: 100),
                   ],
@@ -1521,10 +1498,9 @@ class CheckoutScreen extends StatelessWidget {
               ),
             ),
 
-            // Bottom Draft + Weiter Buttons
+            // Bottom Draft + Preview + Place Order Buttons
             Obx(() {
               final bool hasItems = controller.cartItems.isNotEmpty;
-              final bool detailsSaved = controller.customerDetails.isNotEmpty;
               return Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(
@@ -1553,27 +1529,46 @@ class CheckoutScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // Continue / Place Order button
+                    // Preview button
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
-                          if (!detailsSaved) {
-                            controller.saveCustomerDetails(); // Continue tap
-                          } else {
-                            controller.placeOrder();           // Place Order tap
-                          }
-                        },
+                        onTap: hasItems ? () => controller.showPreview() : null,
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          decoration: const BoxDecoration(
-                            color: Color(0xff0C831F),
-                            borderRadius: BorderRadius.only(
+                          decoration: BoxDecoration(
+                            color: hasItems ? const Color(0xffFF9800) : const Color(0xffFFCC80),
+                            border: const Border.symmetric(
+                              vertical: BorderSide(color: Colors.white, width: 0.5),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.visibility_outlined, size: 16, color: Colors.white),
+                              SizedBox(width: 6),
+                              Text('Preview',
+                                  style: TextStyle(color: Colors.white, fontSize: 14,
+                                      fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Place Order button
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: hasItems ? () => controller.placeOrder() : null,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: hasItems ? const Color(0xff0C831F) : const Color(0xffA5D6A7),
+                            borderRadius: const BorderRadius.only(
                                 topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Text(
-                              detailsSaved ? 'Place Order' : 'Continue',
-                              style: const TextStyle(color: Colors.white, fontSize: 14,
+                              'Place Order',
+                              style: TextStyle(color: Colors.white, fontSize: 14,
                                   fontWeight: FontWeight.bold, fontFamily: 'Mulish'),
                             ),
                           ),
@@ -1589,6 +1584,8 @@ class CheckoutScreen extends StatelessWidget {
       ),
       // Postcode dialog overlay — visible on top of CheckoutScreen
       PostcodeDialog(controller: controller),
+      // Preview overlay
+      OrderPreviewOverlay(controller: controller),
     ],
   ),
     );
@@ -1642,9 +1639,6 @@ class CheckoutScreen extends StatelessWidget {
       double subtotal = controller.calculateSubtotal();
       double discount = controller.calculateDiscount();
       double grandTotal = controller.calculateGrandTotal();
-      double discountPercent = controller.selectedOrderType.value == 'Lieferzeit'
-          ? controller.deliveryDiscount.value
-          : controller.pickupDiscount.value;
 
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -1681,28 +1675,76 @@ class CheckoutScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
+                  // Add Discount TextField
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Total Discount (${discountPercent.toStringAsFixed(0)}%)',
-                        style: const TextStyle(
+                      const Text(
+                        'Add Discount',
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           fontFamily: 'Mulish',
                           color: Color(0xff00B10E),
                         ),
                       ),
-                      Text(
-                        '${discount.toStringAsFixed(2)} €',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
-                          color: Color(0xff00B10E),
+                      const SizedBox(width: 10),
+                      SizedBox(
+                        width: 70,
+                        height: 34,
+                        child: TextField(
+                          controller: controller.discountTextController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          onChanged: controller.onManualDiscountChanged,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Mulish',
+                            color: Color(0xff00B10E),
+                          ),
+                          decoration: InputDecoration(
+                            hintText: '0',
+                            hintStyle: TextStyle(
+                              fontSize: 13,
+                              fontFamily: 'Mulish',
+                              color: Colors.grey.shade400,
+                            ),
+                            suffixText: '%',
+                            suffixStyle: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Mulish',
+                              color: Color(0xff00B10E),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6),
+                              borderSide: const BorderSide(color: Color(0xff00B10E)),
+                            ),
+                            isDense: true,
+                          ),
                         ),
                       ),
+                      const Spacer(),
+                      if (discount > 0)
+                        Text(
+                          '-${discount.toStringAsFixed(2)} €',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Mulish',
+                            color: Color(0xff00B10E),
+                          ),
+                        ),
                     ],
                   ),
                   const Divider(height: 24, color: Color(0xffE0E0E0)),
@@ -1769,6 +1811,35 @@ class CheckoutScreen extends StatelessWidget {
                       var item = entry.value;
                       return _buildCartItemRow(context,controller, item, index);
                     }),
+                    if (controller.orderNote.value.isNotEmpty)
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffFFF8E1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xffFFE082)),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.sticky_note_2_outlined, size: 16, color: Color(0xffF9A825)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                controller.orderNote.value,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontFamily: 'Mulish',
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xff5D4037),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -1838,11 +1909,11 @@ class CheckoutScreen extends StatelessWidget {
                 ),
                 child: Image.asset(
                   'assets/images/note.png',
-                  height: 14,
-                  width: 14,
+                  height: 18,
+                  width: 18,
                   color: item['item_note'] != null && item['item_note'].toString().isNotEmpty
                       ? const Color(0xff0C831F)
-                      : Colors.grey,
+                      : const Color(0xff0B1928),
                 ),
               ),
                   ],
@@ -2025,33 +2096,28 @@ class CheckoutScreen extends StatelessWidget {
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) {
               if (controller.selectedOrderType.value == 'Lieferzeit') {
-                FocusScope.of(context).unfocus();
-                controller.showPostcodeDialog.value = true;
-              } else {
                 FocusScope.of(context).requestFocus(controller.regionFocusNode);
+              } else {
+                FocusScope.of(context).requestFocus(controller.emailFocusNode);
               }
             },
           ),
 
-          const SizedBox(height: 12),
-          GestureDetector(
-            onTap: controller.selectedOrderType.value == 'Lieferzeit'
-                ? () => controller.showPostcodeDialog.value = true
-                : null,
-            child: AbsorbPointer(
-              absorbing: controller.selectedOrderType.value == 'Lieferzeit',
-              child: _buildTextField(
-                controller.regionController,
-                controller.selectedOrderType.value == 'Lieferzeit'
-                    ? 'Wählen Sie Ihre Region'
-                    : 'Region *',
-                context,
-                suffixIcon: controller.selectedOrderType.value == 'Lieferzeit'
-                    ? const Icon(Icons.arrow_drop_down)
-                    : null,
+          if (controller.selectedOrderType.value == 'Lieferzeit') ...[
+            const SizedBox(height: 12),
+            _buildTextField(
+              controller.regionController,
+              'Postleitzahl',
+              context,
+              focusNode: controller.regionFocusNode,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.next,
+              suffixIcon: GestureDetector(
+                onTap: () => controller.showPostcodeDialog.value = true,
+                child: const Icon(Icons.arrow_drop_down, color: Color(0xff0C831F)),
               ),
             ),
-          ),
+          ],
           const SizedBox(height: 12),
         //  _buildTextField(controller.emailController, 'Ihre E-Mail', context),
           _buildTextField(
@@ -2214,11 +2280,135 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildPaymentMethodSection(PosPortraitController controller) {
+    return Obx(() {
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.payment, size: 18, color: Color(0xff0B1928)),
+                SizedBox(width: 8),
+                Text(
+                  'Payment Method',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Mulish',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => controller.selectedPaymentMethod.value = 'cash',
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      decoration: BoxDecoration(
+                        color: controller.selectedPaymentMethod.value == 'cash'
+                            ? const Color(0xff0C831F)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: controller.selectedPaymentMethod.value == 'cash'
+                              ? const Color(0xff0C831F)
+                              : Colors.grey.shade300,
+                          width: controller.selectedPaymentMethod.value == 'cash' ? 2 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.payments_outlined,
+                            size: 20,
+                            color: controller.selectedPaymentMethod.value == 'cash'
+                                ? Colors.white
+                                : const Color(0xff0B1928),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Cash',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Mulish',
+                              color: controller.selectedPaymentMethod.value == 'cash'
+                                  ? Colors.white
+                                  : const Color(0xff0B1928),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => controller.selectedPaymentMethod.value = 'card',
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      decoration: BoxDecoration(
+                        color: controller.selectedPaymentMethod.value == 'card'
+                            ? const Color(0xff0C831F)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: controller.selectedPaymentMethod.value == 'card'
+                              ? const Color(0xff0C831F)
+                              : Colors.grey.shade300,
+                          width: controller.selectedPaymentMethod.value == 'card' ? 2 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.credit_card,
+                            size: 20,
+                            color: controller.selectedPaymentMethod.value == 'card'
+                                ? Colors.white
+                                : const Color(0xff0B1928),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Card',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Mulish',
+                              color: controller.selectedPaymentMethod.value == 'card'
+                                  ? Colors.white
+                                  : const Color(0xff0B1928),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
   Widget _buildTimeSelectionSection(PosPortraitController controller, BuildContext context) {
     return Obx(() {
-      // Only show after customer details saved
-      if (controller.customerDetails.isEmpty) return const SizedBox.shrink();
-
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.all(16),
@@ -2263,33 +2453,22 @@ class CheckoutScreen extends StatelessWidget {
             // Heute timeslots — sofort + all future slots
             if (controller.isHeuteSelected.value) ...[
               const SizedBox(height: 12),
-              // Sofort chip
-              GestureDetector(
-                onTap: () => controller.selectedTimeSlot.value = 'sofort',
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: controller.selectedTimeSlot.value == 'sofort'
-                        ? const Color(0xff0C831F)
-                        : const Color(0xffF5F5F5),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: controller.selectedTimeSlot.value == 'sofort'
-                          ? const Color(0xff0C831F)
-                          : Colors.grey.shade300,
-                    ),
-                  ),
-                  child: Text(
-                    'Sofort',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
-                      color: controller.selectedTimeSlot.value == 'sofort'
-                          ? Colors.white
-                          : Colors.black,
-                    ),
+              // Sofort label — always selected when Heute is active
+              Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xff0C831F),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xff0C831F)),
+                ),
+                child: const Text(
+                  'Sofort',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Mulish',
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -3248,5 +3427,533 @@ class _SyncIconState extends State<_SyncIcon> with SingleTickerProviderStateMixi
       turns: _ctrl,
       child: const Icon(Icons.sync, size: 16, color: Colors.orange),
     );
+  }
+}
+
+class OrderPreviewOverlay extends StatelessWidget {
+  final PosPortraitController controller;
+
+  const OrderPreviewOverlay({super.key, required this.controller});
+
+  String _formatAmount(double amount) {
+    return amount.toStringAsFixed(2);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (!controller.showPreviewDialog.value) return const SizedBox.shrink();
+
+      final details = controller.previewCustomerDetails;
+      final items = controller.cartItems;
+      final subtotal = controller.calculateSubtotal();
+      final discount = controller.calculateDiscount();
+      final grandTotal = controller.calculateGrandTotal();
+      final taxBreakdown = controller.calculateTaxBreakdown();
+      final orderType = controller.selectedOrderType.value;
+      final paymentMethod = controller.selectedPaymentMethod.value;
+      final note = controller.orderNote.value;
+
+      String timeDisplay = '';
+      if (controller.selectedTimeSlot.value == 'sofort') {
+        timeDisplay = 'Sofort';
+      } else if (controller.selectedTimeSlot.value.isNotEmpty) {
+        if (controller.selectedDate.value != null) {
+          timeDisplay =
+              '${DateFormat('dd.MM.yyyy').format(controller.selectedDate.value!)} ${controller.selectedTimeSlot.value}';
+        } else {
+          timeDisplay = 'Heute ${controller.selectedTimeSlot.value}';
+        }
+      }
+
+      return Container(
+        color: const Color(0xffF0F0F0),
+        margin: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            SizedBox(height: 20,),
+            // Header
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => controller.showPreviewDialog.value = false,
+                    child: const Icon(Icons.arrow_back, size: 22),
+                  ),
+                  const Text(
+                    'Order Preview',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Mulish',
+                    ),
+                  ),
+                  const SizedBox(width: 22),
+                ],
+              ),
+            ),
+            Container(height: 1, color: Colors.grey),
+
+            // Scrollable body
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Order type
+                    Center(
+                      child: Text(
+                        orderType == 'Lieferzeit' ? 'Lieferung' : 'Abholung',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                          fontFamily: 'Mulish',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+
+                    // Date / Time
+                    Center(
+                      child: Text(
+                        'Date: ${DateFormat('dd-MM-yyyy  HH:mm').format(DateTime.now())}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          fontFamily: 'Mulish',
+                        ),
+                      ),
+                    ),
+                    if (timeDisplay.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Center(
+                        child: Text(
+                          '${orderType == 'Lieferzeit' ? 'Lieferzeit' : 'Abholzeit'}: $timeDisplay',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            fontFamily: 'Mulish',
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    const SizedBox(height: 4),
+                    Container(height: 0.5, color: Colors.grey),
+                    const SizedBox(height: 4),
+
+                    // Customer details
+                    if (details['name']?.isNotEmpty == true)
+                      Text(
+                        'Customer: ${details['name']}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          fontFamily: 'Mulish',
+                        ),
+                      ),
+                    if (details['phone']?.isNotEmpty == true) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        'Phone: ${details['phone']}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          fontFamily: 'Mulish',
+                        ),
+                      ),
+                    ],
+                    if (details['email']?.isNotEmpty == true) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        'Email: ${details['email']}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          fontFamily: 'Mulish',
+                        ),
+                      ),
+                    ],
+                    if (orderType == 'Lieferzeit' &&
+                        details['address']?.isNotEmpty == true) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        'Address: ${details['address']}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          fontFamily: 'Mulish',
+                        ),
+                      ),
+                    ],
+                    if (details['region']?.isNotEmpty == true) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        'PLZ: ${details['region']}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          fontFamily: 'Mulish',
+                        ),
+                      ),
+                    ],
+
+                    const SizedBox(height: 4),
+                    Container(height: 0.5, color: Colors.grey),
+                    const SizedBox(height: 4),
+
+                    // Cart items
+                    ...items.map((item) {
+                      double itemTotal =
+                          (item['price'] as num).toDouble() * (item['quantity'] as int);
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    '${item['quantity']}X ${item['name']}'
+                                    '${item['size'] != null && item['size'].toString().isNotEmpty ? '' : ' [€${(item['price'] as num).toStringAsFixed(2)}]'}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13,
+                                      fontFamily: 'Mulish',
+                                    ),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  '€ ${_formatAmount(itemTotal)}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 13,
+                                    fontFamily: 'Mulish',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (item['size'] != null &&
+                                item['size'].toString().isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10, top: 2),
+                                child: Text(
+                                  '${item['quantity']} × ${item['size']} [€${(item['price'] as num).toStringAsFixed(2)}]',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 13,
+                                    fontFamily: 'Mulish',
+                                  ),
+                                ),
+                              ),
+                            if (item['extras'] != null &&
+                                item['extras'].toString().isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20, top: 2),
+                                child: Text(
+                                  item['extras'].toString(),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontFamily: 'Mulish',
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            if (item['item_note'] != null &&
+                                item['item_note'].toString().isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10, top: 4),
+                                child: Text(
+                                  'Note: ${item['item_note']}',
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Mulish',
+                                    color: Colors.green,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      );
+                    }),
+
+                    Container(height: 0.5, color: Colors.grey),
+
+                    // Note
+                    if (note.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Note:  ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              fontFamily: 'Mulish',
+                              color: Colors.green,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              note,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w300,
+                                fontSize: 13,
+                                fontFamily: 'Mulish',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Container(height: 0.5, color: Colors.grey),
+                    ],
+
+                    const SizedBox(height: 4),
+
+                    // Subtotal
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Subtotal',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            fontFamily: 'Mulish',
+                          ),
+                        ),
+                        Text(
+                          _formatAmount(subtotal),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            fontFamily: 'Mulish',
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Discount
+                    if (discount > 0) ...[
+                      const SizedBox(height: 2),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Discount (${controller.manualDiscountPercent.value.toStringAsFixed(0)}%)',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              fontFamily: 'Mulish',
+                            ),
+                          ),
+                          Text(
+                            '-${_formatAmount(discount)}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              fontFamily: 'Mulish',
+                              color: Color(0xff00B10E),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+
+                    const SizedBox(height: 2),
+                    Container(height: 0.5, color: Colors.grey),
+                    const SizedBox(height: 2),
+
+                    // Grand Total
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Grand Total',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            fontFamily: 'Mulish',
+                          ),
+                        ),
+                        Text(
+                          '€ ${_formatAmount(grandTotal)}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            fontFamily: 'Mulish',
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 2),
+                    Container(height: 0.5, color: Colors.grey),
+                    const SizedBox(height: 4),
+
+                    // Payment method
+                    Text(
+                      'Payment Method: ${paymentMethod == 'cash' ? 'Cash' : 'Card'}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                        fontFamily: 'Mulish',
+                      ),
+                    ),
+
+                    const SizedBox(height: 2),
+                    Container(height: 0.5, color: Colors.grey),
+
+                    // Tax breakdown
+                    if (taxBreakdown.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        children: const [
+                          Expanded(
+                            flex: 1,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('VAT Rate',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13,
+                                      fontFamily: 'Mulish')),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: Text('Gross',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13,
+                                      fontFamily: 'Mulish')),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: Text('Net',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13,
+                                      fontFamily: 'Mulish')),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text('VAT',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13,
+                                      fontFamily: 'Mulish')),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      ...taxBreakdown.map((tax) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    '${(tax['tax_rate'] ?? 0).toStringAsFixed(0)} %',
+                                    style: const TextStyle(
+                                        fontSize: 13, fontFamily: 'Mulish'),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Center(
+                                  child: Text(
+                                    _formatAmount(tax['brutto'] ?? 0),
+                                    style: const TextStyle(
+                                        fontSize: 13, fontFamily: 'Mulish'),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Center(
+                                  child: Text(
+                                    _formatAmount(tax['netto'] ?? 0),
+                                    style: const TextStyle(
+                                        fontSize: 13, fontFamily: 'Mulish'),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    _formatAmount(tax['tax_amount'] ?? 0),
+                                    style: const TextStyle(
+                                        fontSize: 13, fontFamily: 'Mulish'),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+
+                    const SizedBox(height: 12),
+                  ],
+                ),
+              ),
+            ),
+
+            // Close button
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(16),
+              child: GestureDetector(
+                onTap: () => controller.showPreviewDialog.value = false,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xff0C831F),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Close Preview',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Mulish',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

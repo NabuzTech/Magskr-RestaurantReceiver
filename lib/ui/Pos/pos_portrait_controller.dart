@@ -98,12 +98,9 @@ class PosPortraitController extends GetxController {
   final List<Map<String, String>> sofortTimeSlots = <Map<String, String>>[].obs;  // filtered for selected date
   List<GetStoreTimingResponseModel> storeTimingList = [];
 
-  // Discount
-  final discountPercentage = 0.0.obs;
-  final deliveryDiscount = 0.0.obs;
-  final pickupDiscount = 0.0.obs;
-  String? deliveryDiscountId;
-  String? pickupDiscountId;
+  // Discount (manual input by user)
+  final manualDiscountPercent = 0.0.obs;
+  final discountTextController = TextEditingController();
 
   // Payment
   final selectedPaymentMethod = 'cash'.obs;
@@ -145,6 +142,8 @@ class PosPortraitController extends GetxController {
   final SocketServices _orderSocketService = SocketServices();
   SharedPreferences? sharedPreferences;
   final showCheckout = false.obs;
+  final showPreviewDialog = false.obs;
+  final previewCustomerDetails = <String, String>{}.obs;
 
 
   @override
@@ -174,6 +173,7 @@ class PosPortraitController extends GetxController {
     addressFocusNode.dispose();
     regionFocusNode.dispose();
     variantNoteController.dispose();
+    discountTextController.dispose();
     showVariantDialog.value = false;
     showPostcodeDialog.value = false;
     showTimeBottomSheet.value = false;
@@ -387,7 +387,6 @@ class PosPortraitController extends GetxController {
       if (storeId != null) {
         await getProductCategory();
         await getPostcodes();
-        await getDiscountPercentage();
         await getStoreTiming();
       }
     } catch (e) {
@@ -557,6 +556,38 @@ class PosPortraitController extends GetxController {
     cartItems.refresh();
   }
 
+  List<Map<String, double>> calculateTaxBreakdown() {
+    final Map<int, Map<String, double>> taxMap = {};
+    for (var item in cartItems) {
+      int taxRate = (item['tax_rate'] as int?) ?? 0;
+      if (taxRate <= 0) continue;
+      double brutto = (item['price'] as num).toDouble() * (item['quantity'] as int);
+      double netto = brutto / (1 + taxRate / 100.0);
+      double taxAmount = brutto - netto;
+
+      if (taxMap.containsKey(taxRate)) {
+        taxMap[taxRate]!['brutto'] = taxMap[taxRate]!['brutto']! + brutto;
+        taxMap[taxRate]!['netto'] = taxMap[taxRate]!['netto']! + netto;
+        taxMap[taxRate]!['tax_amount'] = taxMap[taxRate]!['tax_amount']! + taxAmount;
+      } else {
+        taxMap[taxRate] = {
+          'tax_rate': taxRate.toDouble(),
+          'brutto': brutto,
+          'netto': netto,
+          'tax_amount': taxAmount,
+        };
+      }
+    }
+    return taxMap.values.toList();
+  }
+
+  int _getTaxRateForProduct(GetStoreProducts product) {
+    final catId = product.categoryId;
+    if (catId == null) return 0;
+    final cat = productCategoryList.firstWhereOrNull((c) => c.id == catId);
+    return cat?.tax?.percentage ?? 0;
+  }
+
   void addToCartWithVariant() {
     if (selectedProduct.value == null || selectedVariant.value == null) {
       Get.snackbar('Error', 'Please select a variant',
@@ -633,9 +664,11 @@ class PosPortraitController extends GetxController {
         'topping_details': toppingDetails,
         'topping_data': toppingDataList,
         'item_note': variantNoteController.text.trim(),
+        'tax_rate': _getTaxRateForProduct(selectedProduct.value!),
       });
     }
 
+    cartItems.refresh();
     calculateTotal();
 
     showVariantDialog.value = false;
@@ -668,9 +701,11 @@ class PosPortraitController extends GetxController {
         'topping_details': [],
         'topping_data': [],
         'item_note': '',
+        'tax_rate': _getTaxRateForProduct(product),
       });
     }
 
+    cartItems.refresh();
     calculateTotal();
   }
 
@@ -866,26 +901,9 @@ class PosPortraitController extends GetxController {
     }
   }
 
-  Future<void> getDiscountPercentage() async {
-    if (storeId == null || storeId!.isEmpty) return;
-    try {
-      var discounts = await CallService().getDiscountPercentage(storeId!);
-      if (discounts.isNotEmpty) {
-        for (var discount in discounts) {
-          if (discount.code?.toLowerCase().contains('delivery') == true) {
-            deliveryDiscount.value = (discount.value ?? 0).toDouble();
-            deliveryDiscountId = discount.id?.toString();
-            print('✅ Delivery discount: ${deliveryDiscount.value}%, ID: $deliveryDiscountId');
-          } else if (discount.code?.toLowerCase().contains('pickup') == true) {
-            pickupDiscount.value = (discount.value ?? 0).toDouble();
-            pickupDiscountId = discount.id?.toString();
-            print('✅ Pickup discount: ${pickupDiscount.value}%, ID: $pickupDiscountId');
-          }
-        }
-      }
-    } catch (e) {
-      print('❌ Error getting discount percentage: $e');
-    }
+  void onManualDiscountChanged(String value) {
+    final parsed = double.tryParse(value) ?? 0.0;
+    manualDiscountPercent.value = parsed.clamp(0, 100);
   }
 
   Future<void> getStoreTiming() async {
@@ -1149,16 +1167,7 @@ class PosPortraitController extends GetxController {
 
   double calculateDiscount() {
     double subtotal = calculateSubtotal();
-    double discountPercent = 0.0;
-
-    // Apply discount based on selected order type
-    if (selectedOrderType.value == 'Lieferzeit') {
-      discountPercent = deliveryDiscount.value;
-    } else if (selectedOrderType.value == 'Abholzeit') {
-      discountPercent = pickupDiscount.value;
-    }
-
-    return subtotal * (discountPercent / 100);
+    return subtotal * (manualDiscountPercent.value / 100);
   }
 
   Future<void> placeOrder() async {
@@ -1187,9 +1196,7 @@ class PosPortraitController extends GetxController {
     }
 
     if (customerDetails.isEmpty) {
-      Get.snackbar('Kundendaten fehlen', 'Bitte zuerst Kundendaten speichern',
-          backgroundColor: Colors.red, colorText: Colors.white);
-      return;
+      saveCustomerDetails();
     }
 
     try {
@@ -1234,12 +1241,6 @@ class PosPortraitController extends GetxController {
         };
       }).toList();
 
-      String? discountId;
-      if (selectedOrderType.value == 'Lieferzeit') {
-        discountId = deliveryDiscountId;
-      } else if (selectedOrderType.value == 'Abholzeit') {
-        discountId = pickupDiscountId;
-      }
       double discount = calculateDiscount();
       // ✅ NEW: Get Germany time instead of UTC
       final germanyTime = _getGermanyTime();
@@ -1274,12 +1275,13 @@ class PosPortraitController extends GetxController {
         email: customerDetails['email'] ?? '',
         address: customerDetails['address'] ?? '',
         zip: customerDetails['region'] ?? '',
-        discountAmount:discount,
+        discountAmount: discount,
         items: orderItems,
         amount: calculateGrandTotal(),
-        discountId: discountId,
+        discountId: null,
         createdAt: germanyTime,
         deliveryTime: deliveryTime,
+        paymentMethod: selectedPaymentMethod.value,
       );
       pendingOrdersCount.value++;
       print('📈 Pending orders count increased to: ${pendingOrdersCount.value}');
@@ -1322,6 +1324,8 @@ class PosPortraitController extends GetxController {
 
       orderNote.value = '';
       noteController.clear();
+      manualDiscountPercent.value = 0.0;
+      discountTextController.clear();
 
       showCustomerDetails.value = false;
       isCartExpanded.value = true;
@@ -1333,11 +1337,12 @@ class PosPortraitController extends GetxController {
       addressController.clear();
       regionController.clear();
 
-// ✅ Return to product screen
       showCheckout.value = false;
+      showOrderTypeSelection.value = true;
 
 // Optional reset
       selectedPostcode.value = null;
+      selectedPaymentMethod.value = 'cash';
       showDraftPanel.value = false;
 
     } catch (e) {
@@ -1572,6 +1577,8 @@ class PosPortraitController extends GetxController {
       'customerDetails': detailsToSave,
       'orderNote': orderNote.value,
       'orderType': selectedOrderType.value,
+      'discountPercent': manualDiscountPercent.value,
+      'paymentMethod': selectedPaymentMethod.value,
       'savedAt': DateTime.now().toIso8601String(),
     });
     cartItems.clear();
@@ -1583,9 +1590,12 @@ class PosPortraitController extends GetxController {
     addressController.clear();
     regionController.clear();
     orderNote.value = '';
+    manualDiscountPercent.value = 0.0;
+    discountTextController.clear();
     showCustomerDetails.value = false;
     isCustomerFormVisible.value = true;
     selectedPostcode.value = null;
+    selectedPaymentMethod.value = 'cash';
     showDraftPanel.value = false;
     calculateTotal();
     Get.snackbar('Draft saved', 'Order saved as draft',
@@ -1594,6 +1604,7 @@ class PosPortraitController extends GetxController {
         duration: const Duration(seconds: 2),
         snackPosition: SnackPosition.BOTTOM);
     showCheckout.value = false;
+    showOrderTypeSelection.value = true;
   }
 
   void loadDraft(int index) {
@@ -1604,6 +1615,11 @@ class PosPortraitController extends GetxController {
     customerDetails.value = details;
     orderNote.value = draft['orderNote'] as String? ?? '';
     selectedOrderType.value = draft['orderType'] as String? ?? 'Lieferzeit';
+    manualDiscountPercent.value = (draft['discountPercent'] as num?)?.toDouble() ?? 0.0;
+    selectedPaymentMethod.value = draft['paymentMethod'] as String? ?? 'cash';
+    discountTextController.text = manualDiscountPercent.value > 0
+        ? manualDiscountPercent.value.toStringAsFixed(0)
+        : '';
     nameController.text = details['name'] ?? '';
     phoneController.text = details['phone'] ?? '';
     emailController.text = details['email'] ?? '';
@@ -1616,6 +1632,8 @@ class PosPortraitController extends GetxController {
     drafts.removeAt(index);
     calculateTotal();
     showDraftPanel.value = false;
+    showOrderTypeSelection.value = false;
+    showCheckout.value = true;
   }
 
   void deleteDraft(int index) {
@@ -1785,7 +1803,7 @@ class PosPortraitController extends GetxController {
       'items': items,
       'delivery_time': orderData['delivery_time'],
       'payment': {
-        'payment_method': 'cash',
+        'payment_method': paymentData?['payment_method'] ?? 'cash',
         'status': 'paid',
         'amount': (paymentData?['amount'] as num?)?.toDouble() ?? 0.0,
         'order_id': 0,
@@ -1900,6 +1918,30 @@ class PosPortraitController extends GetxController {
       case 2: return Icons.check;
       case 3: return Icons.close;
       default: return Icons.access_time;
+    }
+  }
+
+  void showPreview() {
+    if (cartItems.isEmpty) return;
+    final details = customerDetails.isNotEmpty
+        ? Map<String, String>.from(customerDetails)
+        : {
+            'name': nameController.text.trim(),
+            'phone': phoneController.text.trim(),
+            'email': emailController.text.trim(),
+            'address': addressController.text.trim(),
+            'region': regionController.text.trim(),
+          };
+    showPreviewDialog.value = true;
+    previewCustomerDetails.value = details;
+  }
+
+  void resetToSelectionScreen() {
+    if (cartItems.isNotEmpty) {
+      saveAsDraft();
+    } else {
+      showCheckout.value = false;
+      showOrderTypeSelection.value = true;
     }
   }
 

@@ -993,6 +993,7 @@ class DatabaseHelper {
     String? discountId,
     DateTime? createdAt,
     String? deliveryTime, double? discountAmount,
+    String? paymentMethod,
   }) async
   {
     final db = await database;
@@ -1081,9 +1082,9 @@ class DatabaseHelper {
 
     await db.insert('order_payment', {
       'order_id': orderId,
-      'payment_method': 'cash',
+      'payment_method': paymentMethod ?? 'cash',
       'status': 'paid',
-      'paid_at': orderTime.toIso8601String(), // ✅ Germany time ISO
+      'paid_at': orderTime.toIso8601String(),
       'amount': amount,
     });
 
@@ -1118,6 +1119,26 @@ class DatabaseHelper {
       where: 'store_id = ?',
       whereArgs: [storeId],
       orderBy: 'created_at DESC',
+    );
+  }
+
+  Future<void> updateOrderDeliveryTime(int orderId, String deliveryTime) async {
+    final db = await database;
+    await db.update(
+      'orders',
+      {'delivery_time': deliveryTime},
+      where: 'id = ?',
+      whereArgs: [orderId],
+    );
+  }
+
+  Future<void> updateOrderPaymentMethod(int orderId, String paymentMethod) async {
+    final db = await database;
+    await db.update(
+      'order_payment',
+      {'payment_method': paymentMethod},
+      where: 'order_id = ?',
+      whereArgs: [orderId],
     );
   }
 

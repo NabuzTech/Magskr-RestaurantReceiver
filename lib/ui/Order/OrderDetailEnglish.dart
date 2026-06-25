@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/repository/api_repository.dart';
 import '../../constants/constant.dart';
+import '../../Database/databse_helper.dart';
 import '../../models/OrderItem.dart';
 import '../../models/Store.dart';
 import '../../models/order_model.dart';
@@ -35,6 +36,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
   bool isAutoAccept = false;
   bool isLoading = false;
   Timer? _orderTimer;
+  final _dbHelper = DatabaseHelper();
 
   @override
   void initState() {
@@ -778,7 +780,9 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
             ),
             GestureDetector(
               onLongPress: () {
-                if (updatedOrder.approvalStatus == 2) {
+                if (updatedOrder.isLocalOrder == true) {
+                  _showPaymentMethodDialog();
+                } else if (updatedOrder.approvalStatus == 2) {
                   _showDeliveryTimeDialog();
                 }
               },
@@ -846,6 +850,12 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                             currentDeliveryTime = currentDeliveryTime.subtract(const Duration(minutes: 15));
                             updatedOrder.deliveryTime = currentDeliveryTime.toIso8601String();
                           });
+                          if (localOrder && updatedOrder.id != null) {
+                            _dbHelper.updateOrderDeliveryTime(
+                              updatedOrder.id!,
+                              currentDeliveryTime.toIso8601String(),
+                            );
+                          }
                         },
                         icon: const Icon(Icons.remove_circle, color: Colors.red, size: 28),
                       ),
@@ -863,6 +873,12 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                             currentDeliveryTime = currentDeliveryTime.add(const Duration(minutes: 15));
                             updatedOrder.deliveryTime = currentDeliveryTime.toIso8601String();
                           });
+                          if (localOrder && updatedOrder.id != null) {
+                            _dbHelper.updateOrderDeliveryTime(
+                              updatedOrder.id!,
+                              currentDeliveryTime.toIso8601String(),
+                            );
+                          }
                         },
                         icon: const Icon(Icons.add_circle, color: Colors.green, size: 28),
                       ),
@@ -1567,10 +1583,137 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                 ElevatedButton(
                   onPressed: () async {
                     Navigator.pop(context);
-                    await _updateDeliveryTime(updatedTime);
+                    if (updatedOrder.isLocalOrder == true && updatedOrder.id != null) {
+                      await _dbHelper.updateOrderDeliveryTime(
+                        updatedOrder.id!,
+                        updatedTime.toIso8601String(),
+                      );
+                      if (mounted) {
+                        setState(() {
+                          updatedOrder.deliveryTime = updatedTime.toIso8601String();
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Delivery time updated',
+                                style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w600)),
+                            backgroundColor: Colors.green,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    } else {
+                      await _updateDeliveryTime(updatedTime);
+                    }
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: Text('saved'.tr, style: const TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showPaymentMethodDialog() {
+    if (updatedOrder.id == null) return;
+
+    String currentMethod = updatedOrder.payment?.paymentMethod?.toLowerCase() ?? 'cash';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String selected = currentMethod;
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Payment Method',
+                  style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 16)),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () => setDialogState(() => selected = 'cash'),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        color: selected == 'cash' ? const Color(0xff0C831F) : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: selected == 'cash' ? const Color(0xff0C831F) : Colors.grey.shade300,
+                          width: selected == 'cash' ? 2 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.payments_outlined, size: 22,
+                              color: selected == 'cash' ? Colors.white : Colors.black87),
+                          const SizedBox(width: 12),
+                          Text('Cash',
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w700, fontFamily: 'Mulish',
+                                  color: selected == 'cash' ? Colors.white : Colors.black87)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => setDialogState(() => selected = 'card'),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: selected == 'card' ? const Color(0xff0C831F) : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: selected == 'card' ? const Color(0xff0C831F) : Colors.grey.shade300,
+                          width: selected == 'card' ? 2 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.credit_card, size: 22,
+                              color: selected == 'card' ? Colors.white : Colors.black87),
+                          const SizedBox(width: 12),
+                          Text('Card',
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w700, fontFamily: 'Mulish',
+                                  color: selected == 'card' ? Colors.white : Colors.black87)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('cancel'.tr,
+                      style: const TextStyle(fontFamily: 'Mulish', color: Colors.grey)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await _dbHelper.updateOrderPaymentMethod(updatedOrder.id!, selected);
+                    if (mounted) {
+                      setState(() {
+                        updatedOrder.payment?.paymentMethod = selected;
+                      });
+                      ScaffoldMessenger.of(this.context).showSnackBar(
+                        SnackBar(
+                          content: Text('Payment method changed to ${selected == 'cash' ? 'Cash' : 'Card'}',
+                              style: const TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w600)),
+                          backgroundColor: const Color(0xff0C831F),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xff0C831F)),
+                  child: Text('saved'.tr, style: const TextStyle(color: Colors.white, fontFamily: 'Mulish')),
                 ),
               ],
             );

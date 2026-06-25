@@ -20,6 +20,7 @@ import '../utils/my_application.dart';
 import 'Order/OrderScreen.dart';
 import 'Pos/pos.dart';
 import 'Pos/pos_portrait.dart' show PosPortrait;
+import 'Pos/pos_portrait_controller.dart';
 import 'Report/ReportScreen.dart';
 import 'SuperAdmin/SuperAdmin Report/super_admin_report.dart';
 import 'SuperAdmin/SuperAdminReservation/super_admin_reservation.dart';
@@ -432,6 +433,13 @@ class _HomeScreenState extends State<HomeScreen> {
     if (index == 3 && _storeType != '1') {
       return;
     }
+
+    // Auto-save draft when leaving POS or reset when entering POS
+    final currentTab = app.appController.selectedTabIndex;
+    if ((currentTab == 3 || index == 3) && Get.isRegistered<PosPortraitController>()) {
+      Get.find<PosPortraitController>().resetToSelectionScreen();
+    }
+
     // ✅ First update the controller index immediately
     app.appController.onTabChanged(index);
 
