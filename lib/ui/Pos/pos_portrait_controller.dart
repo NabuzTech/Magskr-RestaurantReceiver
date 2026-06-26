@@ -24,6 +24,8 @@ class PosPortraitController extends GetxController {
   final searchQuery = ''.obs;
   final isSearching = false.obs;
   final searchController = TextEditingController();
+  final showPosSearchBar = false.obs;
+  final showSavedOrdersScreen = false.obs;
   final orderNote = ''.obs;
   // Category Selection
   final selectedCategoryIndex = 0.obs;
@@ -554,6 +556,19 @@ class PosPortraitController extends GetxController {
       });
     }
     cartItems.refresh();
+  }
+
+  void addCustomItemToCart(String name, double price) {
+    cartItems.add({
+      'name': name,
+      'extras': '',
+      'size': '',
+      'quantity': 1,
+      'price': price,
+      'item_note': '',
+    });
+    cartItems.refresh();
+    calculateTotal();
   }
 
   List<Map<String, double>> calculateTaxBreakdown() {

@@ -847,25 +847,25 @@ class _InvoicesState extends State<Invoices> {
                                                 ),
                                               ),
                                             ),
-                                            GestureDetector(
-                                              onTap: () => _confirmSingleDelete(order),
-                                              child: Container(
-                                                width: 55,
-                                                height: double.infinity,
-                                                decoration: const BoxDecoration(
-                                                  borderRadius: BorderRadius.only(
-                                                    topRight: Radius.circular(7),
-                                                    bottomRight: Radius.circular(7),
-                                                  ),
-                                                  color: Color(0xffE25454),
-                                                ),
-                                                child: const Icon(
-                                                  Icons.delete_outline,
-                                                  color: Colors.white,
-                                                  size: 22,
-                                                ),
-                                              ),
-                                            ),
+                                            // GestureDetector(
+                                            //   onTap: () => _confirmSingleDelete(order),
+                                            //   child: Container(
+                                            //     width: 55,
+                                            //     height: double.infinity,
+                                            //     decoration: const BoxDecoration(
+                                            //       borderRadius: BorderRadius.only(
+                                            //         topRight: Radius.circular(7),
+                                            //         bottomRight: Radius.circular(7),
+                                            //       ),
+                                            //       color: Color(0xffE25454),
+                                            //     ),
+                                            //     child: const Icon(
+                                            //       Icons.delete_outline,
+                                            //       color: Colors.white,
+                                            //       size: 22,
+                                            //     ),
+                                            //   ),
+                                            // ),
                                           ],
                                         ),
                                         child: GestureDetector(
@@ -945,29 +945,29 @@ class _InvoicesState extends State<Invoices> {
                       ),
                     ),
                     const SizedBox(width: 15),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: _deleteSelected,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: const Color(0xffE25454),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${'delete_selected'.tr} (${selectedOrderIds.length})',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'Mulish',
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Expanded(
+                    //   child: GestureDetector(
+                    //     onTap: _deleteSelected,
+                    //     child: Container(
+                    //       padding: const EdgeInsets.symmetric(vertical: 14),
+                    //       decoration: BoxDecoration(
+                    //         borderRadius: BorderRadius.circular(8),
+                    //         color: const Color(0xffE25454),
+                    //       ),
+                    //       child: Center(
+                    //         child: Text(
+                    //           '${'delete_selected'.tr} (${selectedOrderIds.length})',
+                    //           style: const TextStyle(
+                    //             fontSize: 14,
+                    //             fontWeight: FontWeight.w700,
+                    //             fontFamily: 'Mulish',
+                    //             color: Colors.white,
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

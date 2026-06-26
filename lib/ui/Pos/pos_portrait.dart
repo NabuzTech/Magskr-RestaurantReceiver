@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -25,6 +26,7 @@ class PosPortrait extends StatefulWidget {
 class _PosPortraitState extends State<PosPortrait> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  Offset? _fabPosition;
 
   void _openTab(int index) {
     print("🎯 POS: Navigating to tab $index");
@@ -60,9 +62,20 @@ class _PosPortraitState extends State<PosPortrait> {
         key: _scaffoldKey,
         drawer: CustomDrawer(onSelectTab: _openTab),
         backgroundColor: const Color(0xffFAFCFF),
+        bottomNavigationBar: Obx(() {
+          final showPosBar = !controller.showOrderTypeSelection.value &&
+              !controller.showCheckout.value &&
+              !controller.showOrderOverlay.value &&
+              !controller.showSavedOrdersScreen.value;
+          if (!showPosBar) return const SizedBox.shrink();
+          return _buildPosBottomBar(controller);
+        }),
         body: Obx(() {
           if (controller.showOrderOverlay.value) {
             return _buildOrdersSection(controller, context);
+          }
+          if (controller.showSavedOrdersScreen.value) {
+            return _buildSavedOrdersScreen(controller);
           }
           return AnimatedSwitcher(
               duration: const Duration(milliseconds: 350),
@@ -92,8 +105,8 @@ class _PosPortraitState extends State<PosPortrait> {
                     children: [
               Column(
                 children: [
-                  const SizedBox(height: 20),
-                  _buildPortraitHeader(controller),
+                  const SizedBox(height: 40),
+                 // _buildPortraitHeader(controller),
                   _buildSelectedOrderTypeBar(controller),
                   Expanded(
                     child: Row(
@@ -112,12 +125,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   ),
                 ],
               ),
-              Obx(() {
-                if (controller.totalItems.value > 0) {
-                  return _buildCartBar(controller);
-                }
-                return const SizedBox.shrink();
-              }),
+              _buildDraggableFab(controller, context),
               VariantDialog(controller: controller),
               PostcodeDialog(controller: controller),
               Obx(() {
@@ -366,6 +374,18 @@ class _PosPortraitState extends State<PosPortrait> {
                 ),
               ),
             ),
+            InkWell(
+              onTap: controller.isRefreshing.value ? null : controller.refreshData,
+              child: Container(
+                padding: EdgeInsets.all(5),
+                margin: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: Color(0xffD5E6FF),width: 1)
+                ),
+                child: Center(child: SvgPicture.asset('assets/images/refresh.svg')),
+              ),
+            )
           ],
         ),
       );
@@ -594,7 +614,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   child: Container(
                     height: 80,
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xffE9F6EF) : Colors.white,
+                      color: isSelected ? const Color(0xffFAFCFF) : Colors.white,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -602,10 +622,6 @@ class _PosPortraitState extends State<PosPortrait> {
                         Container(
                           width: 45,
                           height: 45,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.grey.shade300, width: 1),
-                          ),
                           child: ClipOval(
                             child: CachedNetworkImage(
                               imageUrl: controller.getTrimmedImageUrl(category.imageUrl),
@@ -981,7 +997,7 @@ class _PosPortraitState extends State<PosPortrait> {
       return ScrollablePositionedList.builder(
         itemScrollController: controller.mainScrollController,
         itemPositionsListener: controller.mainPositionsListener,
-        padding: const EdgeInsets.only(bottom: 80), // ✅ ADD: cart bar ke liye space
+        padding: const EdgeInsets.only(bottom: 16),
         itemCount: displayCategories.length,
         itemBuilder: (context, categoryIndex) {
           final category = displayCategories[categoryIndex];
@@ -1133,6 +1149,653 @@ class _PosPortraitState extends State<PosPortrait> {
         ),
       );
     });
+  }
+
+  Widget _buildDraggableFab(PosPortraitController controller, BuildContext ctx) {
+    final screenSize = MediaQuery.of(ctx).size;
+    final padding = MediaQuery.of(ctx).padding;
+    final barHeight = Platform.isIOS ? 90.0 : 70.0;
+    final bodyHeight = screenSize.height - padding.top - barHeight;
+
+    // Lazy-init: default position above the cart button (bottom-right)
+    _fabPosition ??= Offset(screenSize.width - 72, bodyHeight - 72);
+
+    return Positioned(
+      left: _fabPosition!.dx,
+      top: _fabPosition!.dy,
+      child: GestureDetector(
+        onTap: () => _showAddCustomItemDialog(controller, ctx),
+        onPanUpdate: (details) {
+          setState(() {
+            _fabPosition = Offset(
+              (_fabPosition!.dx + details.delta.dx).clamp(0.0, screenSize.width - 56),
+              (_fabPosition!.dy + details.delta.dy).clamp(0.0, bodyHeight - 56),
+            );
+          });
+        },
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: const Color(0xffE31E24),
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.28),
+                blurRadius: 12,
+                spreadRadius: 1,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: const Icon(Icons.add, color: Colors.white, size: 30),
+        ),
+      ),
+    );
+  }
+
+  void _showAddCustomItemDialog(PosPortraitController controller, BuildContext ctx) {
+    final nameCtrl = TextEditingController();
+    final priceCtrl = TextEditingController();
+
+    showModalBottomSheet(
+      context: ctx,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Add Custom Item',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        fontFamily: 'Mulish',
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(sheetCtx),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Color(0xffF0F0F0),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.close, size: 18),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Item Name',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Mulish',
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: nameCtrl,
+                  textCapitalization: TextCapitalization.words,
+                  style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
+                  decoration: InputDecoration(
+                    hintText: 'Item Name...',
+                    hintStyle: TextStyle(color: Colors.grey.shade400, fontFamily: 'Mulish'),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xff0C831F)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Item Price',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Mulish',
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: priceCtrl,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
+                  decoration: InputDecoration(
+                    hintText: '0.00',
+                    hintStyle: TextStyle(color: Colors.grey.shade400, fontFamily: 'Mulish'),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xff0C831F)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(sheetCtx),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: const Color(0xffEEEEEE),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Mulish',
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          final name = nameCtrl.text.trim();
+                          final price = double.tryParse(priceCtrl.text.trim()) ?? 0.0;
+                          if (name.isEmpty) return;
+                          controller.addCustomItemToCart(name, price);
+                          Navigator.pop(sheetCtx);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          decoration: BoxDecoration(
+                            color: const Color(0xff0C831F),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Add Item',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Mulish',
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSavedOrdersScreen(PosPortraitController controller) {
+    return SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () => controller.showSavedOrdersScreen.value = false,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffFBF9FF),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.arrow_back, size: 20),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Saved Orders',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    fontFamily: 'Mulish',
+                  ),
+                ),
+                const Spacer(),
+                Obx(() => Text(
+                  '${controller.drafts.length} draft${controller.drafts.length == 1 ? '' : 's'}',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontFamily: 'Mulish',
+                    color: Colors.grey,
+                  ),
+                )),
+              ],
+            ),
+          ),
+          const Divider(height: 1, color: Color(0xffEEEEEE)),
+          // List
+          Expanded(
+            child: Obx(() {
+              if (controller.drafts.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.bookmark_outline, size: 60, color: Colors.grey.shade300),
+                      const SizedBox(height: 12),
+                      Text(
+                        'No saved orders',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontFamily: 'Mulish',
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: controller.drafts.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  final draft = controller.drafts[index];
+                  final List items = draft['cartItems'] as List;
+                  final Map details = draft['customerDetails'] as Map;
+                  final String customerName = details['name']?.toString().trim() ?? '';
+                  final String orderLabel = 'Draft ${index + 1}';
+                  final String subtitle = customerName.isNotEmpty
+                      ? '$customerName / ${items.length} Item${items.length == 1 ? '' : 's'}'
+                      : '${items.length} Item${items.length == 1 ? '' : 's'}';
+                  double total = 0;
+                  for (var item in items) {
+                    total += (item['price'] as num) * (item['quantity'] as int);
+                  }
+
+                  return GestureDetector(
+                    onTap: () {
+                      controller.loadDraft(index);
+                      controller.showSavedOrdersScreen.value = false;
+                      controller.showCheckout.value = true;
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xffEEEEEE)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.bookmark_rounded, color: Color(0xff0C831F), size: 22),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  orderLabel,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: 'Mulish',
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  subtitle,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontFamily: 'Mulish',
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            '€ ${total.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Mulish',
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => controller.deleteDraft(index),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade300),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPosBottomBar(PosPortraitController controller) {
+    final barHeight = Platform.isIOS ? 90.0 : 70.0;
+    return SizedBox(
+      height: barHeight,
+      child: Stack(
+        children: [
+          // ── Main bar ────────────────────────────────────────────────
+          Container(
+            height: barHeight,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, -2),
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // Order icon with live badge
+                Obx(() => _buildPosBarItem(
+                  icon: 'assets/images/ic_order.svg',
+                  label: 'Order',
+                  badge: app.appController.getPendingOrder,
+                  onTap: () => widget.onNavigateToTab?.call(0),
+                )),
+                // Search
+                _buildPosBarItem(
+                  icon: 'assets/images/search.svg',
+                  label: 'Search',
+                  onTap: () => controller.showPosSearchBar.value = true,
+                ),
+                // Save Orders
+                Obx(() => _buildPosBarItem(
+                  icon: 'assets/images/invoice.svg',
+                  label: 'Save Orders',
+                  badge: controller.drafts.length,
+                  onTap: () => controller.showSavedOrdersScreen.value = true,
+                )),
+                // Cart — becomes green checkout button when items in cart
+                Obx(() {
+                  final count = controller.totalItems.value;
+                  final price = controller.totalPrice.value;
+                  if (count > 0) {
+                    return GestureDetector(
+                      onTap: () => controller.showCheckout.value = true,
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                          vertical: Platform.isIOS ? 16 : 10,
+                          horizontal: 8,
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xff0C831F),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/images/cart.svg',
+                                  width: 24,
+                                  height: 24,
+                                  colorFilter: const ColorFilter.mode(
+                                    Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '€ ${price.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                    fontFamily: 'Mulish',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Positioned(
+                              top: -10,
+                              right: -14,
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '$count',
+                                    style: const TextStyle(
+                                      fontSize: 9,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return _buildPosBarItem(
+                    icon: 'assets/images/cart.svg',
+                    label: 'Cart',
+                    onTap: () {},
+                  );
+                }),
+              ],
+            ),
+          ),
+          // ── Search overlay (slides in horizontally over the bar) ─────
+          Obx(() {
+            final show = controller.showPosSearchBar.value;
+            return AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              bottom: 0,
+              left: show ? 0 : MediaQuery.of(context).size.width,
+              right: 0,
+              height: barHeight,
+              child: AnimatedOpacity(
+                opacity: show ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 200),
+                child: Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: Platform.isIOS ? 24 : 12,
+                  ),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/search.svg',
+                        width: 24,
+                        height: 24,
+                        colorFilter: const ColorFilter.mode(
+                          Color(0xffE31E24),
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextField(
+                          controller: controller.searchController,
+                          onChanged: controller.onSearchChanged,
+                          autofocus: show,
+                          style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
+                          decoration: const InputDecoration(
+                            hintText: 'Search item',
+                            hintStyle: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Mulish',
+                              color: Colors.grey,
+                              fontStyle: FontStyle.italic,
+                            ),
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () {
+                          controller.clearSearch();
+                          controller.showPosSearchBar.value = false;
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: Color(0xffEEF0F8),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.close, size: 16, color: Colors.black87),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPosBarItem({
+    required String icon,
+    required String label,
+    int badge = 0,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  icon,
+                  width: 22,
+                  height: 22,
+                  colorFilter: const ColorFilter.mode(
+                    Color(0xff757B8F),
+                    BlendMode.srcIn,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontFamily: 'Mulish',
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            if (badge > 0)
+              Positioned(
+                top: -4,
+                right: -10,
+                child: Container(
+                  padding: const EdgeInsets.all(3),
+                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                  decoration: const BoxDecoration(
+                    color: Colors.orange,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      '$badge',
+                      style: const TextStyle(
+                        fontSize: 9,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildCartBar(PosPortraitController controller) {

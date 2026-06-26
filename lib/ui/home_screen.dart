@@ -268,11 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
                 return const SizedBox.shrink();
               }),
-              // ✅ Hide BottomBar when on POS tab (index 3)
-              bottomNavigationBar:
-              // app.appController.selectedTabIndex == 3
-              //     ? null :
-              _buildBottomBar(),
+              bottomNavigationBar: _buildConditionalBottomBar(),
               body: _isDataLoaded ? _buildBody() : Center(
                   child: Lottie.asset(
                     'assets/animations/burger.json',
@@ -411,6 +407,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget? _buildConditionalBottomBar() {
+    if (app.appController.selectedTabIndex == 3 &&
+        Get.isRegistered<PosPortraitController>()) {
+      final posController = Get.find<PosPortraitController>();
+      if (!posController.showOrderTypeSelection.value &&
+          !posController.showCheckout.value &&
+          !posController.showOrderOverlay.value) {
+        return null;
+      }
+    }
+    return _buildBottomBar();
+  }
+
   Widget _buildBody() {
     final bool isAdmin = _roleId == 1;
     return PageView(
@@ -424,7 +433,7 @@ class _HomeScreenState extends State<HomeScreen> {
         KeepAlivePage(child: isAdmin ? const SuperAdminReservation() : const Reservation()),
         KeepAlivePage(child: isAdmin ? const SuperAdminReport() : const ReportScreen()),
         if (_storeType == '1')
-          KeepAlivePage(child: PosPortrait()),
+          KeepAlivePage(child: PosPortrait(onNavigateToTab: _openTab)),
       ],
     );
   }

@@ -102,6 +102,7 @@ class _OrderScreenState extends State<OrderScreenNew>
   // Add these with other state variables at the top
   bool _isSyncingLocalOrders = false;
   List<Order> _localOrders = [];
+  String _orderSourceTab = 'all'; // 'all' | 'pos' | 'online'
   Timer? _syncTimer;
   late AnimationController _syncRotationController;
   late Animation<double> _syncRotationAnimation;
@@ -1908,6 +1909,10 @@ class _OrderScreenState extends State<OrderScreenNew>
                   ],
                 ),
                 const SizedBox(height: 10),
+                if (_storeType == '1') ...[
+                  _buildSourceTabStrip(),
+                  const SizedBox(height: 8),
+                ],
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -1983,6 +1988,15 @@ class _OrderScreenState extends State<OrderScreenNew>
                             ..._localOrders,
                             ...app.appController.searchResultOrder,
                           ];
+                          if (_orderSourceTab == 'pos') {
+                            allOrders = allOrders
+                                .where((o) => o.source == 'pos')
+                                .toList();
+                          } else if (_orderSourceTab == 'online') {
+                            allOrders = allOrders
+                                .where((o) => o.source != 'pos')
+                                .toList();
+                          }
                           if (allOrders.isEmpty) {
                             return ListView(
                               padding: EdgeInsets.zero,
@@ -2447,6 +2461,48 @@ class _OrderScreenState extends State<OrderScreenNew>
     }
 
     return parts.join(', ');
+  }
+
+  Widget _buildSourceTabStrip() {
+    return Row(
+      children: [
+        _buildSourceTab('all', 'All'),
+        const SizedBox(width: 8),
+        _buildSourceTab('pos', 'POS'),
+        const SizedBox(width: 8),
+        _buildSourceTab('online', 'Online'),
+      ],
+    );
+  }
+
+  Widget _buildSourceTab(String key, String label) {
+    final bool isSelected = _orderSourceTab == key;
+    return GestureDetector(
+      onTap: () => setState(() => _orderSourceTab = key),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 7),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xff0C831F) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? const Color(0xff0C831F) : Colors.grey.shade300,
+          ),
+          boxShadow: isSelected
+              ? [BoxShadow(color: const Color(0xff0C831F).withOpacity(0.18), blurRadius: 6, offset: const Offset(0, 2))]
+              : [],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            fontFamily: 'Mulish',
+            color: isSelected ? Colors.white : Colors.black87,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildStatusContainer(String text, Color backgroundColor) {
