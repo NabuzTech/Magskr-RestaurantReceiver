@@ -360,22 +360,41 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
     );
 
     try {
-      // Save store hours for each selected day
-      for (int dayIndex in selectedDays) {
-        var map =[
-          {
-            "name": _storeNameController.text.trim(),
-            "day_of_week": dayIndex,
-            "opening_time": _formatTimeForAPI(_selectedOpeningTime!),
-            "closing_time": _formatTimeForAPI(_selectedClosingTime!),
-            "store_id": storeId
+      // Build map of dayIndex → timingId from original edit data
+      Map<int, int> existingDayIdMap = {};
+      if (widget.editSelectedDays != null && widget.editTimingIds != null) {
+        for (int i = 0; i < widget.editSelectedDays!.length; i++) {
+          if (i < widget.editTimingIds!.length && widget.editTimingIds![i] != null) {
+            existingDayIdMap[widget.editSelectedDays![i]] = widget.editTimingIds![i]!;
           }
-        ];
+        }
+      }
 
-        print("update Store Time Map: $map");
+      // Delete timings for days that were unselected
+      for (int day in widget.editSelectedDays ?? []) {
+        if (!selectedDays.contains(day) && existingDayIdMap.containsKey(day)) {
+          await CallService().deleteStoreTiming(existingDayIdMap[day]!);
+          print("Deleted timing for day $day (id: ${existingDayIdMap[day]})");
+        }
+      }
 
-        List<update_store_hours_response_model> model = await CallService().updateStoreTiming(map, storeId!);
-        print("Store timing updated for day $dayIndex: ${model.toString()}");
+      // Update existing days by their ID, or add newly selected days
+      for (int dayIndex in selectedDays) {
+        var map = {
+          "name": _storeNameController.text.trim(),
+          "day_of_week": dayIndex,
+          "opening_time": _formatTimeForAPI(_selectedOpeningTime!),
+          "closing_time": _formatTimeForAPI(_selectedClosingTime!),
+          "store_id": storeId
+        };
+
+        if (existingDayIdMap.containsKey(dayIndex)) {
+          print("update Store Time Map for day $dayIndex (id: ${existingDayIdMap[dayIndex]}): $map");
+          await CallService().updateSingleStoreTiming(map, existingDayIdMap[dayIndex]!);
+        } else {
+          print("add Store Time Map for new day $dayIndex: $map");
+          await CallService().addStoreTiming(map, storeId!);
+        }
       }
 
       // Close loading dialog first

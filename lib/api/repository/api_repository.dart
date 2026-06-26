@@ -1082,6 +1082,41 @@ class CallService extends GetConnect {
     }
   }
 
+  // For Updating Single Store Timing by ID
+  Future<update_store_hours_response_model> updateSingleStoreTiming(dynamic body, int timingId) async {
+    try {
+      httpClient.baseUrl = Api.baseUrl;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+
+      if (accessToken == null || accessToken.isEmpty) {
+        throw Exception('Access token is null or empty');
+      }
+
+      var res = await put(
+        'store-hours/$timingId',
+        body,
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer $accessToken",
+        },
+      );
+
+      print("Update single store-hour response: ${res.statusCode}");
+      print("Update single store-hour body: ${res.body}");
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return update_store_hours_response_model.fromJson(res.body);
+      } else {
+        throw Exception('Request failed with status code: ${res.statusCode}');
+      }
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('An unexpected error occurred: $e');
+    }
+  }
+
   //For Deleting Store Timing
   Future<bool> deleteStoreTiming(int timingId) async {
     try {
@@ -4661,7 +4696,7 @@ class CallService extends GetConnect {
       String? accessToken = prefs.getString(valueShared_BEARER_KEY);
       print("User Access Token Value is : $accessToken");
 
-      var res = await put('orders/$orderId/payment-method', body, headers: {
+      var res = await put('payments/order/$orderId', body, headers: {
         'accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization': "Bearer $accessToken",
