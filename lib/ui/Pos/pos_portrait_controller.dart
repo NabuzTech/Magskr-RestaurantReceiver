@@ -140,6 +140,7 @@ class PosPortraitController extends GetxController {
 
   // Store ID
   String? storeId;
+  String storeName = '';
   final SocketService _socketService = SocketService();
   final SocketServices _orderSocketService = SocketServices();
   SharedPreferences? sharedPreferences;
@@ -384,6 +385,7 @@ class PosPortraitController extends GetxController {
     try {
       sharedPreferences = await SharedPreferences.getInstance();
       storeId = sharedPreferences!.getString(valueShared_STORE_KEY);
+      storeName = sharedPreferences!.getString(valueShared_STORE_NAME) ?? '';
       bearerKey = sharedPreferences!.getString(valueShared_BEARER_KEY);
 
       if (storeId != null) {
@@ -1947,7 +1949,6 @@ class PosPortraitController extends GetxController {
             'address': addressController.text.trim(),
             'region': regionController.text.trim(),
           };
-    showPreviewDialog.value = true;
     previewCustomerDetails.value = details;
   }
 

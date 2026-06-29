@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/get_product_category_list_response_model.dart';
 import '../models/get_store_postcode_response_model.dart';
-import '../models/get_store_products_response_model.dart';
+import '../models/get_store_products_response_model.dart' hide Tax;
 import 'dart:io';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -40,7 +40,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 14,
+      version: 15,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -64,7 +64,8 @@ class DatabaseHelper {
       imageUrl TEXT,
       storeId TEXT,
       displayOrder INTEGER,
-      lastUpdated INTEGER
+      lastUpdated INTEGER,
+      tax_percentage INTEGER DEFAULT 0
     )
   ''');
 
@@ -502,6 +503,16 @@ class DatabaseHelper {
         print('✅ Added discountAmount column to orders table');
       }
     }
+
+    if (oldVersion < 15) {
+      final cols = await db.rawQuery('PRAGMA table_info(categories)');
+      final hasTaxPercentage = cols.any((col) => col['name'] == 'tax_percentage');
+      if (!hasTaxPercentage) {
+        await db.execute(
+            'ALTER TABLE categories ADD COLUMN tax_percentage INTEGER DEFAULT 0');
+        print('✅ Added tax_percentage column to categories table');
+      }
+    }
   }
 
   // ==================== STORE METHODS ====================
@@ -601,6 +612,7 @@ class DatabaseHelper {
           'storeId': storeId,
           'displayOrder': i,
           'lastUpdated': DateTime.now().millisecondsSinceEpoch,
+          'tax_percentage': category.tax?.percentage ?? 0,
         },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
@@ -622,10 +634,14 @@ class DatabaseHelper {
     print('📦 Retrieved ${maps.length} categories from database in API order');
 
     return maps.map((map) {
+      final taxPct = (map['tax_percentage'] as int?) ?? 0;
       return GetProductCategoryList(
         id: int.tryParse(map['id']?.toString() ?? '0'),
         name: map['name'] as String?,
         imageUrl: map['imageUrl'] as String?,
+        tax: taxPct > 0
+            ? Tax(percentage: taxPct)
+            : null,
       );
     }).toList();
   }
