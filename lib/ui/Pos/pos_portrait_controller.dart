@@ -1355,7 +1355,7 @@ class PosPortraitController extends GetxController {
       regionController.clear();
 
       showCheckout.value = false;
-      showOrderTypeSelection.value = true;
+      showOrderTypeSelection.value = false;
 
 // Optional reset
       selectedPostcode.value = null;
@@ -1621,7 +1621,7 @@ class PosPortraitController extends GetxController {
         duration: const Duration(seconds: 2),
         snackPosition: SnackPosition.BOTTOM);
     showCheckout.value = false;
-    showOrderTypeSelection.value = true;
+    showOrderTypeSelection.value = false;
   }
 
   void loadDraft(int index) {
@@ -1649,8 +1649,9 @@ class PosPortraitController extends GetxController {
     drafts.removeAt(index);
     calculateTotal();
     showDraftPanel.value = false;
+    showSavedOrdersScreen.value = false;
     showOrderTypeSelection.value = false;
-    showCheckout.value = true;
+    showCheckout.value = false;
   }
 
   void deleteDraft(int index) {

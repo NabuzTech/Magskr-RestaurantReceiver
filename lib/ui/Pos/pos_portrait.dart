@@ -60,7 +60,6 @@ class _PosPortraitState extends State<PosPortrait> {
         backgroundColor: const Color(0xffFAFCFF),
         bottomNavigationBar: Obx(() {
           final showPosBar = !controller.showOrderTypeSelection.value &&
-              !controller.showCheckout.value &&
               !controller.showOrderOverlay.value &&
               !controller.showSavedOrdersScreen.value;
           if (!showPosBar) return const SizedBox.shrink();
@@ -1453,8 +1452,6 @@ class _PosPortraitState extends State<PosPortrait> {
                   return GestureDetector(
                     onTap: () {
                       controller.loadDraft(index);
-                      controller.showSavedOrdersScreen.value = false;
-                      controller.showCheckout.value = true;
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
@@ -1579,10 +1576,10 @@ class _PosPortraitState extends State<PosPortrait> {
                       onTap: () => controller.showCheckout.value = true,
                       child: Container(
                         margin: EdgeInsets.symmetric(
-                          vertical: Platform.isIOS ? 16 : 10,
+                          vertical: Platform.isIOS ? 12 : 10,
                           horizontal: 8,
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 14,),
                         decoration: BoxDecoration(
                           color: const Color(0xff0C831F),
                           borderRadius: BorderRadius.circular(12),

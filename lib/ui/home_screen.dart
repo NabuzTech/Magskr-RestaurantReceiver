@@ -412,7 +412,6 @@ class _HomeScreenState extends State<HomeScreen> {
         Get.isRegistered<PosPortraitController>()) {
       final posController = Get.find<PosPortraitController>();
       if (!posController.showOrderTypeSelection.value &&
-          !posController.showCheckout.value &&
           !posController.showOrderOverlay.value) {
         return null;
       }
