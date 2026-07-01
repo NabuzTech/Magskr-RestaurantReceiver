@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -389,6 +391,7 @@ class PosPortraitController extends GetxController {
       bearerKey = sharedPreferences!.getString(valueShared_BEARER_KEY);
 
       if (storeId != null) {
+        await _loadPersistedDrafts();
         await getProductCategory();
         await getPostcodes();
         await getStoreTiming();
@@ -396,6 +399,69 @@ class PosPortraitController extends GetxController {
     } catch (e) {
       print('Error initializing SharedPreferences: $e');
       isLoading.value = false;
+    }
+  }
+
+  // ─── DRAFT PERSISTENCE (survives app restart, cleared on a new day) ────
+
+  String get _draftsPrefsKey => 'pos_portrait_drafts_$storeId';
+  String get _draftsDatePrefsKey => 'pos_portrait_drafts_date_$storeId';
+  String get _draftCounterPrefsKey => 'pos_portrait_draft_counter_$storeId';
+
+  Future<void> _loadPersistedDrafts() async {
+    if (storeId == null || sharedPreferences == null) return;
+    try {
+      final String todayKey = DateFormat('yyyy-MM-dd').format(_getGermanyTime());
+      final String? savedDate = sharedPreferences!.getString(_draftsDatePrefsKey);
+
+      if (savedDate != todayKey) {
+        // First run of a new day — any drafts left over from before belong
+        // to a previous date, so they get dropped.
+        await sharedPreferences!.remove(_draftsPrefsKey);
+        await sharedPreferences!.setString(_draftsDatePrefsKey, todayKey);
+        drafts.clear();
+        return;
+      }
+
+      final String? raw = sharedPreferences!.getString(_draftsPrefsKey);
+      if (raw == null || raw.isEmpty) return;
+
+      final decoded = jsonDecode(raw) as List;
+      drafts.value = decoded
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList();
+    } catch (e) {
+      print('❌ Error loading saved drafts: $e');
+    }
+  }
+
+  Future<void> _persistDrafts() async {
+    if (storeId == null || sharedPreferences == null) return;
+    try {
+      final String todayKey = DateFormat('yyyy-MM-dd').format(_getGermanyTime());
+      await sharedPreferences!.setString(_draftsDatePrefsKey, todayKey);
+      await sharedPreferences!.setString(_draftsPrefsKey, jsonEncode(drafts.toList()));
+    } catch (e) {
+      print('❌ Error saving drafts: $e');
+    }
+  }
+
+  Future<int> _nextLocalOrderNumber() async {
+    if (storeId == null || sharedPreferences == null) return drafts.length + 1;
+    try {
+      int current = sharedPreferences!.getInt(_draftCounterPrefsKey) ?? 0;
+      if (current == 0) {
+        // Seed from the local orders table so draft numbers continue on
+        // from real local order numbers instead of restarting at 1.
+        final counts = await dbHelper.getDataCount(storeId!);
+        current = counts['orders'] ?? 0;
+      }
+      current += 1;
+      await sharedPreferences!.setInt(_draftCounterPrefsKey, current);
+      return current;
+    } catch (e) {
+      print('❌ Error allotting local order number: $e');
+      return drafts.length + 1;
     }
   }
 
@@ -939,35 +1005,35 @@ class PosPortraitController extends GetxController {
   void _buildSlotsFromApiTiming() {
     final DateTime nowUtc = DateTime.now().toUtc();
     final DateTime nowGermany = nowUtc.add(Duration(hours: _isDaylightSavingTime(nowUtc) ? 2 : 1));
-    final String currentDay = _getDayOfWeek(nowGermany.weekday);
+    // API's day_of_week is 0-based (Monday=0 ... Sunday=6), Dart's weekday is 1-based (Monday=1 ... Sunday=7).
+    final int currentDayIndex = nowGermany.weekday - 1;
 
     final todayTiming = storeTimingList.firstWhere(
-          (t) => t.dayOfWeek?.toString() == currentDay,
+          (t) => t.dayOfWeek == currentDayIndex,
       orElse: () => GetStoreTimingResponseModel(),
     );
 
     if (todayTiming.openingTime != null && todayTiming.closingTime != null) {
+      final String openTime = todayTiming.openingTime!.substring(0, 5);   // "HH:mm:ss" → "HH:mm"
+      final String closeTime = todayTiming.closingTime!.substring(0, 5);
+
       _availableSlots.clear();
-      _generateSlots(
-        todayTiming.openingTime!.substring(0, 5),  // "HH:mm:ss" → "HH:mm"
-        todayTiming.closingTime!.substring(0, 5),
-        _availableSlots,
-      );
+      _generateSlots(openTime, closeTime, _availableSlots);
+
+      // Seed store-open state from the weekly schedule so "Heute" isn't stuck
+      // hidden while we wait for the first socket status push (which can lag
+      // by up to its broadcast interval right after the store opens).
+      final DateTime open = _parseSlotTime(openTime);
+      final DateTime close = _parseSlotTime(closeTime);
+      final DateTime now = _parseSlotTime(
+          '${nowGermany.hour.toString().padLeft(2, '0')}:${nowGermany.minute.toString().padLeft(2, '0')}');
+      final bool withinHours = !now.isBefore(open) && now.isBefore(close);
+
+      isStoreOpen.value = withinHours;
+      isHeuteSelected.value = withinHours;
+      isVorbestellenSelected.value = !withinHours;
     }
     _filterSlotsForSelectedDate();
-  }
-
-  String _getDayOfWeek(int weekday) {
-    switch (weekday) {
-      case 1: return 'monday';
-      case 2: return 'tuesday';
-      case 3: return 'wednesday';
-      case 4: return 'thursday';
-      case 5: return 'friday';
-      case 6: return 'saturday';
-      case 7: return 'sunday';
-      default: return 'monday';
-    }
   }
 
 
@@ -1577,7 +1643,7 @@ class PosPortraitController extends GetxController {
 
   void toggleDraftPanel() => showDraftPanel.value = !showDraftPanel.value;
 
-  void saveAsDraft() {
+  Future<void> saveAsDraft() async {
     if (cartItems.isEmpty) return;
     // Agar customerDetails empty hai toh controllers se data le lo
     final detailsToSave = customerDetails.isNotEmpty
@@ -1589,6 +1655,7 @@ class PosPortraitController extends GetxController {
       'address': addressController.text.trim(),
       'region': regionController.text.trim(),
     };
+    final int localOrderNumber = await _nextLocalOrderNumber();
     drafts.add({
       'cartItems': List<Map<String, dynamic>>.from(cartItems),
       'customerDetails': detailsToSave,
@@ -1597,7 +1664,9 @@ class PosPortraitController extends GetxController {
       'discountPercent': manualDiscountPercent.value,
       'paymentMethod': selectedPaymentMethod.value,
       'savedAt': DateTime.now().toIso8601String(),
+      'localOrderNumber': localOrderNumber,
     });
+    await _persistDrafts();
     cartItems.clear();
     calculateTotal();
     customerDetails.clear();
@@ -1647,6 +1716,7 @@ class PosPortraitController extends GetxController {
     showCustomerDetails.value = false;
     isCustomerFormVisible.value = true;
     drafts.removeAt(index);
+    _persistDrafts();
     calculateTotal();
     showDraftPanel.value = false;
     showSavedOrdersScreen.value = false;
@@ -1657,6 +1727,7 @@ class PosPortraitController extends GetxController {
   void deleteDraft(int index) {
     if (index >= 0 && index < drafts.length) {
       drafts.removeAt(index);
+      _persistDrafts();
     }
   }
 

@@ -695,6 +695,12 @@ class LoginController extends GetxController {
       if (storeId != null) {
         await DatabaseHelper().clearStoreData(storeId);
         print('✅ Database cleared for store: $storeId');
+
+        // Clear POS Portrait saved-draft state — drafts are only meant to
+        // persist while this session/day is active.
+        await prefs.remove('pos_portrait_drafts_$storeId');
+        await prefs.remove('pos_portrait_drafts_date_$storeId');
+        await prefs.remove('pos_portrait_draft_counter_$storeId');
       }
 
       // ✅ Save environment and language before clearing

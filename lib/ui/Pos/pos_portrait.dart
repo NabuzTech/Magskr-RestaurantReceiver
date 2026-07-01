@@ -151,59 +151,208 @@ class _PosPortraitState extends State<PosPortrait> {
   // ── 1. Order Type Selection Screen (entry screen) ──────────────────
   Widget _buildOrderTypeSelectionScreen(PosPortraitController controller) {
     return SafeArea(
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          Expanded(
-            child: Center(
+      child: Obx(() {
+        if (controller.drafts.isEmpty) {
+          // No saved orders yet — simple centered layout.
+          return Column(
+            children: [
+              const SizedBox(height: 20),
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Bestellart wählen',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            fontFamily: 'Mulish',
+                            color: Color(0xff0B1928),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        ..._orderTypeSelectionButtons(controller),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
+        return CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Bestellart wählen',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        fontFamily: 'Mulish',
-                        color: Color(0xff0B1928),
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    // Lieferung button
-                    _buildOrderTypeSelectionBtn(
-                      controller,
-                      label: 'Lieferung',
-                      icon: 'assets/images/delivery-icon.svg',
-                      value: 'Lieferzeit',
-                      enabled: true,
-                    ),
-                    const SizedBox(height: 16),
-                    // Abholung button
-                    _buildOrderTypeSelectionBtn(
-                      controller,
-                      label: 'Abholung',
-                      icon: 'assets/images/pickup-icon.svg',
-                      value: 'Abholzeit',
-                      enabled: true,
-                    ),
-                    const SizedBox(height: 16),
-                    // Table ordering — disabled
-                    _buildOrderTypeSelectionBtn(
-                      controller,
-                      label: 'Table Ordering',
-                      icon: 'assets/images/pickup-icon.svg', // ya koi table icon
-                      value: 'Table',
-                      enabled: false,
-                    ),
-                  ],
+                padding: const EdgeInsets.fromLTRB(32, 20, 32, 16),
+                child: const Text(
+                  'Bestellart wählen',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    fontFamily: 'Mulish',
+                    color: Color(0xff0B1928),
+                  ),
                 ),
               ),
             ),
-          ),
-          _buildOpenOrdersBar(controller),
-        ],
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _StickyHeaderDelegate(
+                height: 250,
+                child: Container(
+                  color: const Color(0xffF5F5F5),
+                  padding: const EdgeInsets.fromLTRB(32, 8, 32, 16),
+                  child: Column(
+                    children: _orderTypeSelectionButtons(controller),
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: const Text(
+                  'Save Orders',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    fontFamily: 'Mulish',
+                    color: Color(0xff0B1928),
+                  ),
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _buildSavedOrderCard(controller, index),
+                  ),
+                  childCount: controller.drafts.length,
+                ),
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+
+  List<Widget> _orderTypeSelectionButtons(PosPortraitController controller) {
+    return [
+      // Lieferung button
+      _buildOrderTypeSelectionBtn(
+        controller,
+        label: 'Lieferung',
+        icon: 'assets/images/delivery-icon.svg',
+        value: 'Lieferzeit',
+        enabled: true,
+      ),
+      const SizedBox(height: 16),
+      // Abholung button
+      _buildOrderTypeSelectionBtn(
+        controller,
+        label: 'Abholung',
+        icon: 'assets/images/pickup-icon.svg',
+        value: 'Abholzeit',
+        enabled: true,
+      ),
+      const SizedBox(height: 16),
+      // Table ordering — disabled
+      _buildOrderTypeSelectionBtn(
+        controller,
+        label: 'Table Ordering',
+        icon: 'assets/images/pickup-icon.svg', // ya koi table icon
+        value: 'Table',
+        enabled: false,
+      ),
+    ];
+  }
+
+  Widget _buildSavedOrderCard(PosPortraitController controller, int index) {
+    final draft = controller.drafts[index];
+    final List items = draft['cartItems'] as List;
+    final Map details = draft['customerDetails'] as Map;
+    final String customerName = details['name']?.toString().trim() ?? '';
+    final int localOrderNumber = draft['localOrderNumber'] as int? ?? (index + 1);
+    final String orderLabel = 'Order - $localOrderNumber';
+    final String subtitle = customerName.isNotEmpty
+        ? '$customerName / ${items.length} Item${items.length == 1 ? '' : 's'}'
+        : '${items.length} Item${items.length == 1 ? '' : 's'}';
+    double total = 0;
+    for (var item in items) {
+      total += (item['price'] as num) * (item['quantity'] as int);
+    }
+
+    return GestureDetector(
+      onTap: () => controller.loadDraft(index),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xffEEEEEE)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.bookmark_rounded, color: Color(0xff0C831F), size: 22),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    orderLabel,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Mulish',
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'Mulish',
+                      color: Colors.grey.shade500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              '€ ${total.toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                fontFamily: 'Mulish',
+              ),
+            ),
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: () => controller.deleteDraft(index),
+              child: Padding(
+                padding: const EdgeInsets.all(4),
+                child: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade300),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -381,90 +530,6 @@ class _PosPortraitState extends State<PosPortrait> {
                 child: Center(child: SvgPicture.asset('assets/images/refresh.svg')),
               ),
             )
-          ],
-        ),
-      );
-    });
-  }
-
-// ── 3. Bottom open drafts bar ──────────────────────────────────────────
-  Widget _buildOpenOrdersBar(PosPortraitController controller) {
-    return Obx(() {
-      if (controller.drafts.isEmpty) return const SizedBox.shrink();
-      return Container(
-        height: 80,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Colors.grey.shade200)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 6, 12, 2),
-              child: Text(
-                'Offene Bestellungen (${controller.drafts.length})',
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Mulish',
-                  color: Color(0xff6C4AB6),
-                ),
-              ),
-            ),
-            Expanded(
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                itemCount: controller.drafts.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  final draft = controller.drafts[index];
-                  final List items = draft['cartItems'] as List;
-                  final Map details = draft['customerDetails'] as Map;
-                  final String name = details['name']?.toString().isNotEmpty == true
-                      ? details['name'].toString()
-                      : details['phone']?.toString().isNotEmpty == true
-                      ? details['phone'].toString()
-                      : 'Draft ${index + 1}';
-                  return GestureDetector(
-                    onTap: () => controller.loadDraft(index),
-                    child: Container(
-                      width: 130,
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xffFBF9FF),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xffEDE4FF)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.bookmark_rounded, size: 14, color: Color(0xff6C4AB6)),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                        fontSize: 11, fontWeight: FontWeight.w700,
-                                        fontFamily: 'Mulish', color: Color(0xff0B1928))),
-                                Text('${items.length} item${items.length == 1 ? '' : 's'}',
-                                    style: const TextStyle(
-                                        fontSize: 10, fontFamily: 'Mulish', color: Colors.grey)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
           ],
         ),
       );
@@ -1198,9 +1263,10 @@ class _PosPortraitState extends State<PosPortrait> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetCtx) {
-        return Padding(
+        return AnimatedPadding(
+          duration: const Duration(milliseconds: 100),
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+            bottom: MediaQuery.of(sheetCtx).viewInsets.bottom,
           ),
           child: Container(
             decoration: const BoxDecoration(
@@ -1208,7 +1274,8 @@ class _PosPortraitState extends State<PosPortrait> {
               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-            child: Column(
+            child: SingleChildScrollView(
+              child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1359,6 +1426,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   ],
                 ),
               ],
+              ),
             ),
           ),
         );
@@ -1440,7 +1508,8 @@ class _PosPortraitState extends State<PosPortrait> {
                   final List items = draft['cartItems'] as List;
                   final Map details = draft['customerDetails'] as Map;
                   final String customerName = details['name']?.toString().trim() ?? '';
-                  final String orderLabel = 'Draft ${index + 1}';
+                  final int localOrderNumber = draft['localOrderNumber'] as int? ?? (index + 1);
+                  final String orderLabel = 'Order - $localOrderNumber';
                   final String subtitle = customerName.isNotEmpty
                       ? '$customerName / ${items.length} Item${items.length == 1 ? '' : 's'}'
                       : '${items.length} Item${items.length == 1 ? '' : 's'}';
@@ -1898,195 +1967,208 @@ class CheckoutScreen extends StatelessWidget {
             child: Column(
           children: [
             // Header
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => controller.showCheckout.value = false,
-                    child: const Icon(Icons.arrow_back, size: 24),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xffF5F5F5),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Text(
-                        'Phone Number / Name',
-                        style: TextStyle(fontSize: 14, fontFamily: 'Mulish', color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Draft button
-                  Obx(() => GestureDetector(
-                    onTap: () => controller.toggleDraftPanel(),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: controller.showDraftPanel.value
-                            ? const Color(0xff6C4AB6)
-                            : controller.drafts.isNotEmpty
-                                ? const Color(0xff6C4AB6).withOpacity(0.15)
-                                : const Color(0xffEDE4FF),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Icon(Icons.bookmark_outline_rounded, size: 20,
-                              color: controller.showDraftPanel.value ? Colors.white : const Color(0xff6C4AB6)),
-                          if (controller.drafts.isNotEmpty)
-                            Positioned(
-                              top: -4, right: -4,
-                              child: Container(
-                                width: 14, height: 14,
-                                decoration: const BoxDecoration(color: Color(0xff6C4AB6), shape: BoxShape.circle),
-                                child: Center(
-                                  child: Text('${controller.drafts.length}',
-                                      style: const TextStyle(fontSize: 8, color: Colors.white,
-                                          fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  )),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () => controller.onAddCustomerPressed(),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: const Color(0xffB8ABD1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: SvgPicture.asset(
-                        'assets/images/add-user.svg',
-                        height: 20, width: 20, color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(16),
+            //   child: Row(
+            //     children: [
+            //       GestureDetector(
+            //         onTap: () => controller.showCheckout.value = false,
+            //         child: const Icon(Icons.arrow_back, size: 24),
+            //       ),
+            //       const SizedBox(width: 12),
+            //       Expanded(
+            //         child: Container(
+            //           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            //           decoration: BoxDecoration(
+            //             color: const Color(0xffF5F5F5),
+            //             borderRadius: BorderRadius.circular(8),
+            //           ),
+            //           child: const Text(
+            //             'Phone Number / Name',
+            //             style: TextStyle(fontSize: 14, fontFamily: 'Mulish', color: Colors.grey),
+            //           ),
+            //         ),
+            //       ),
+            //       const SizedBox(width: 8),
+            //       // Draft button
+            //       Obx(() => GestureDetector(
+            //         onTap: () => controller.toggleDraftPanel(),
+            //         child: Container(
+            //           padding: const EdgeInsets.all(10),
+            //           decoration: BoxDecoration(
+            //             color: controller.showDraftPanel.value
+            //                 ? const Color(0xff6C4AB6)
+            //                 : controller.drafts.isNotEmpty
+            //                     ? const Color(0xff6C4AB6).withOpacity(0.15)
+            //                     : const Color(0xffEDE4FF),
+            //             borderRadius: BorderRadius.circular(8),
+            //           ),
+            //           child: Stack(
+            //             clipBehavior: Clip.none,
+            //             children: [
+            //               Icon(Icons.bookmark_outline_rounded, size: 20,
+            //                   color: controller.showDraftPanel.value ? Colors.white : const Color(0xff6C4AB6)),
+            //               if (controller.drafts.isNotEmpty)
+            //                 Positioned(
+            //                   top: -4, right: -4,
+            //                   child: Container(
+            //                     width: 14, height: 14,
+            //                     decoration: const BoxDecoration(color: Color(0xff6C4AB6), shape: BoxShape.circle),
+            //                     child: Center(
+            //                       child: Text('${controller.drafts.length}',
+            //                           style: const TextStyle(fontSize: 8, color: Colors.white,
+            //                               fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+            //                     ),
+            //                   ),
+            //                 ),
+            //             ],
+            //           ),
+            //         ),
+            //       )),
+            //       const SizedBox(width: 8),
+            //       GestureDetector(
+            //         onTap: () => controller.onAddCustomerPressed(),
+            //         child: Container(
+            //           padding: const EdgeInsets.all(10),
+            //           decoration: BoxDecoration(
+            //             color: const Color(0xffB8ABD1),
+            //             borderRadius: BorderRadius.circular(8),
+            //           ),
+            //           child: SvgPicture.asset(
+            //             'assets/images/add-user.svg',
+            //             height: 20, width: 20, color: Colors.white,
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
             // Draft panel
-            Obx(() {
-              if (!controller.showDraftPanel.value) return const SizedBox.shrink();
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xffEDE4FF)),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 6)],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Saved Drafts',
-                              style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 14)),
-                          GestureDetector(
-                            onTap: () => controller.showDraftPanel.value = false,
-                            child: const Icon(Icons.close, size: 18, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Divider(height: 1, color: Color(0xffEDE4FF)),
-                    Obx(() {
-                      if (controller.drafts.isEmpty) {
-                        return const Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Text('No saved drafts',
-                              style: TextStyle(fontFamily: 'Mulish', fontSize: 13, color: Colors.grey)),
-                        );
-                      }
-                      return ConstrainedBox(
-                        constraints: const BoxConstraints(maxHeight: 220),
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.all(10),
-                          itemCount: controller.drafts.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 6),
-                          itemBuilder: (context, index) {
-                            final draft = controller.drafts[index];
-                            final List items = draft['cartItems'] as List;
-                            final Map details = draft['customerDetails'] as Map;
-                            final String name = details['name']?.toString().isNotEmpty == true
-                                ? details['name'].toString()
-                                : details['phone']?.toString().isNotEmpty == true
-                                    ? details['phone'].toString()
-                                    : 'Draft ${index + 1}';
-                            final DateTime savedAt = DateTime.parse(draft['savedAt']);
-                            final String timeStr =
-                                '${savedAt.hour.toString().padLeft(2, '0')}:${savedAt.minute.toString().padLeft(2, '0')}';
-                            return GestureDetector(
-                              onTap: () => controller.loadDraft(index),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: const Color(0xffEDE4FF)),
-                                  borderRadius: BorderRadius.circular(6),
-                                  color: const Color(0xffFBF9FF),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(6),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xff6C4AB6).withOpacity(0.1),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(Icons.bookmark_rounded, size: 14, color: Color(0xff6C4AB6)),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(name,
-                                              style: const TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w600, fontSize: 13),
-                                              maxLines: 1, overflow: TextOverflow.ellipsis),
-                                          Text('${items.length} item${items.length == 1 ? '' : 's'}  •  $timeStr',
-                                              style: const TextStyle(fontFamily: 'Mulish', fontSize: 11, color: Color(0xff797878))),
-                                        ],
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () => controller.deleteDraft(index),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4),
-                                        child: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade300),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    }),
-                  ],
-                ),
-              );
-            }),
+            // Obx(() {
+            //   if (!controller.showDraftPanel.value) return const SizedBox.shrink();
+            //   return Container(
+            //     margin: const EdgeInsets.symmetric(horizontal: 16),
+            //     decoration: BoxDecoration(
+            //       color: Colors.white,
+            //       borderRadius: BorderRadius.circular(8),
+            //       border: Border.all(color: const Color(0xffEDE4FF)),
+            //       boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 6)],
+            //     ),
+            //     child: Column(
+            //       mainAxisSize: MainAxisSize.min,
+            //       children: [
+            //         Padding(
+            //           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            //           child: Row(
+            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //             children: [
+            //               const Text('Saved Drafts',
+            //                   style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 14)),
+            //               GestureDetector(
+            //                 onTap: () => controller.showDraftPanel.value = false,
+            //                 child: const Icon(Icons.close, size: 18, color: Colors.grey),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //         const Divider(height: 1, color: Color(0xffEDE4FF)),
+            //         Obx(() {
+            //           if (controller.drafts.isEmpty) {
+            //             return const Padding(
+            //               padding: EdgeInsets.all(16),
+            //               child: Text('No saved drafts',
+            //                   style: TextStyle(fontFamily: 'Mulish', fontSize: 13, color: Colors.grey)),
+            //             );
+            //           }
+            //           return ConstrainedBox(
+            //             constraints: const BoxConstraints(maxHeight: 220),
+            //             child: ListView.separated(
+            //               shrinkWrap: true,
+            //               padding: const EdgeInsets.all(10),
+            //               itemCount: controller.drafts.length,
+            //               separatorBuilder: (_, __) => const SizedBox(height: 6),
+            //               itemBuilder: (context, index) {
+            //                 final draft = controller.drafts[index];
+            //                 final List items = draft['cartItems'] as List;
+            //                 final Map details = draft['customerDetails'] as Map;
+            //                 final String name = details['name']?.toString().isNotEmpty == true
+            //                     ? details['name'].toString()
+            //                     : details['phone']?.toString().isNotEmpty == true
+            //                         ? details['phone'].toString()
+            //                         : 'Draft ${index + 1}';
+            //                 final DateTime savedAt = DateTime.parse(draft['savedAt']);
+            //                 final String timeStr =
+            //                     '${savedAt.hour.toString().padLeft(2, '0')}:${savedAt.minute.toString().padLeft(2, '0')}';
+            //                 return GestureDetector(
+            //                   onTap: () => controller.loadDraft(index),
+            //                   child: Container(
+            //                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            //                     decoration: BoxDecoration(
+            //                       border: Border.all(color: const Color(0xffEDE4FF)),
+            //                       borderRadius: BorderRadius.circular(6),
+            //                       color: const Color(0xffFBF9FF),
+            //                     ),
+            //                     child: Row(
+            //                       children: [
+            //                         Container(
+            //                           padding: const EdgeInsets.all(6),
+            //                           decoration: BoxDecoration(
+            //                             color: const Color(0xff6C4AB6).withOpacity(0.1),
+            //                             shape: BoxShape.circle,
+            //                           ),
+            //                           child: const Icon(Icons.bookmark_rounded, size: 14, color: Color(0xff6C4AB6)),
+            //                         ),
+            //                         const SizedBox(width: 8),
+            //                         Expanded(
+            //                           child: Column(
+            //                             crossAxisAlignment: CrossAxisAlignment.start,
+            //                             children: [
+            //                               Text(name,
+            //                                   style: const TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w600, fontSize: 13),
+            //                                   maxLines: 1, overflow: TextOverflow.ellipsis),
+            //                               Text('${items.length} item${items.length == 1 ? '' : 's'}  •  $timeStr',
+            //                                   style: const TextStyle(fontFamily: 'Mulish', fontSize: 11, color: Color(0xff797878))),
+            //                             ],
+            //                           ),
+            //                         ),
+            //                         GestureDetector(
+            //                           onTap: () => controller.deleteDraft(index),
+            //                           child: Padding(
+            //                             padding: const EdgeInsets.all(4),
+            //                             child: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade300),
+            //                           ),
+            //                         ),
+            //                       ],
+            //                     ),
+            //                   ),
+            //                 );
+            //               },
+            //             ),
+            //           );
+            //         }),
+            //       ],
+            //     ),
+            //   );
+            // }),
 
             // Order Type Buttons
+            SizedBox(height: 10,),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
+                  GestureDetector(
+                    onTap: () => controller.showCheckout.value = false,
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      margin: EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: Colors.black,width: 1)
+                      ),
+                        child: const Icon(Icons.arrow_back, size: 24)),
+                  ),
                   _buildOrderTypeBtn(controller, 'Lieferzeit', 'assets/images/delivery-icon.svg'),
                   const SizedBox(width: 8),
                   _buildOrderTypeBtn(controller, 'Abholzeit', 'assets/images/pickup-icon.svg'),
@@ -3270,6 +3352,7 @@ class CheckoutScreen extends StatelessWidget {
   }
 
 }
+
 // Variant Dialog Widget
 class VariantDialog extends StatelessWidget {
   final PosPortraitController controller;
@@ -4101,7 +4184,7 @@ class OrderPreviewScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Text('=' * 40,
             style: const TextStyle(
-                fontSize: 10, color: Colors.grey, fontFamily: 'Mulish')),
+                fontSize: 13, color: Colors.grey, fontFamily: 'Mulish')),
       );
 
   @override
@@ -4470,7 +4553,8 @@ class OrderPreviewScreen extends StatelessWidget {
       );
 
   Widget _totalsRow(String label, String value,
-      {bool bold = false, Color? valueColor}) {
+      {bool bold = false, Color? valueColor})
+  {
     final style = TextStyle(
       fontSize: 13,
       fontWeight: bold ? FontWeight.w800 : FontWeight.w500,
@@ -4487,5 +4571,28 @@ class OrderPreviewScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  final double height;
+
+  _StickyHeaderDelegate({required this.child, required this.height});
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(covariant _StickyHeaderDelegate oldDelegate) {
+    return oldDelegate.child != child || oldDelegate.height != height;
   }
 }

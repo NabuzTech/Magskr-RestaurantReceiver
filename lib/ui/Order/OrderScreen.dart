@@ -1778,6 +1778,16 @@ class _OrderScreenState extends State<OrderScreenNew>
     return _liveApiData['totalOrders'] ?? 0;
   }
 
+  int _getPosOrdersCount() {
+    final allOrders = [..._localOrders, ...app.appController.searchResultOrder];
+    return allOrders.where((o) => o.source == 'pos').length;
+  }
+
+  int _getOnlineOrdersCount() {
+    final allOrders = [..._localOrders, ...app.appController.searchResultOrder];
+    return allOrders.where((o) => o.source != 'pos').length;
+  }
+
   String _extractTime(String deliveryTime) {
     try {
       DateTime dateTime = DateTime.parse(deliveryTime);
@@ -1838,81 +1848,54 @@ class _OrderScreenState extends State<OrderScreenNew>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Row(crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('order'.tr,
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text(
-                          dateSeleted.isEmpty
-                              ? DateFormat('d MMMM, y')
-                              .format(DateTime.now())
-                              : dateSeleted,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          '${'total_order'.tr}: ${_getTotalOrders()}',
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
-                              fontFamily: "Mulish",
-                              color: Colors.black),
-                        ),
-                        IconButton(
-                          iconSize: 20,
-                          icon: const Icon(Icons.refresh),
-                          onPressed: _manualRefresh,
-                        ),
-                        if (_storeType == '1')
-                          GestureDetector(
-                            onTap: () async {
-                              await syncLocalPosOrder();
-                            },
-                            child: Container(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    height: 25,
-                                    padding: EdgeInsets.zero,
-                                    child: IconButton(
-                                      iconSize: 20,
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(
-                                        maxHeight: 0,
-                                      ),
-                                      icon: const Icon(Icons.sync),
-                                      onPressed: () async {
-                                        print('🔄 Manual sync button tapped');
-                                        await syncLocalPosOrder();
-                                      },
-                                    ),
-                                  ),
-                                  const Text(
-                                    'sync',
-                                    style: TextStyle(fontSize: 9),
-                                  ),
-                                ],
-                              ),
-                            ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 6.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _storeType == '1'
+                              ? _buildSourceTabStrip()
+                              : Text('order'.tr,
+                                  style: const TextStyle(
+                                      fontSize: 18, fontWeight: FontWeight.bold)),
+                          if (_storeType == '1')
+                            SizedBox(height: 8,),
+                          Text(
+                            dateSeleted.isEmpty
+                                ? DateFormat('d MMMM, y')
+                                .format(DateTime.now())
+                                : dateSeleted,
+                            style: const TextStyle(fontSize: 14,fontWeight: FontWeight.w700),
                           ),
-                      ],
+                        ],
+                      ),
                     ),
+                    if (_storeType == '1')
+                      _buildRefreshSyncButtons()
+                    else
+                      Row(
+                        children: [
+                          Text(
+                            '${'total_order'.tr}: ${_getTotalOrders()}',
+                            style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                fontFamily: "Mulish",
+                                color: Colors.black),
+                          ),
+                          IconButton(
+                            iconSize: 20,
+                            icon: const Icon(Icons.refresh),
+                            onPressed: _manualRefresh,
+                          ),
+                        ],
+                      ),
                   ],
                 ),
                 const SizedBox(height: 10),
-                if (_storeType == '1') ...[
-                  _buildSourceTabStrip(),
-                  const SizedBox(height: 8),
-                ],
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -1989,13 +1972,9 @@ class _OrderScreenState extends State<OrderScreenNew>
                             ...app.appController.searchResultOrder,
                           ];
                           if (_orderSourceTab == 'pos') {
-                            allOrders = allOrders
-                                .where((o) => o.source == 'pos')
-                                .toList();
+                            allOrders = allOrders.where((o) => o.source == 'pos').toList();
                           } else if (_orderSourceTab == 'online') {
-                            allOrders = allOrders
-                                .where((o) => o.source != 'pos')
-                                .toList();
+                            allOrders = allOrders.where((o) => o.source != 'pos').toList();
                           }
                           if (allOrders.isEmpty) {
                             return ListView(
@@ -2463,46 +2442,147 @@ class _OrderScreenState extends State<OrderScreenNew>
     return parts.join(', ');
   }
 
-  Widget _buildSourceTabStrip() {
-    return Row(
+  Widget _buildRefreshSyncButtons() {
+    return Row(crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        _buildSourceTab('all', 'All'),
-        const SizedBox(width: 8),
-        _buildSourceTab('pos', 'POS'),
-        const SizedBox(width: 8),
-        _buildSourceTab('online', 'Online'),
+        IconButton(
+          iconSize: 25,
+          icon: const Icon(Icons.refresh),
+          color: Colors.black,
+          onPressed: _manualRefresh,
+        ),
+        IconButton(
+          iconSize: 25,
+          icon: const Icon(Icons.sync),
+          color: Colors.black,
+          onPressed: syncLocalPosOrder
+        ),
+        // GestureDetector(
+        //   onTap: () async {
+        //     await syncLocalPosOrder();
+        //   },
+        //   child: Column(
+        //     mainAxisSize: MainAxisSize.min,
+        //     children: [
+        //       Container(
+        //         height: 25,
+        //         padding: EdgeInsets.zero,
+        //         child: IconButton(
+        //           iconSize: 25,
+        //           padding: EdgeInsets.zero,
+        //           constraints: const BoxConstraints(
+        //             maxHeight: 0,
+        //           ),
+        //           icon: const Icon(Icons.sync),
+        //           onPressed: () async {
+        //             print('🔄 Manual sync button tapped');
+        //             await syncLocalPosOrder();
+        //           },
+        //         ),
+        //       ),
+        //       const Text(
+        //         'sync',
+        //         style: TextStyle(fontSize: 12),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }
 
-  Widget _buildSourceTab(String key, String label) {
+  Widget _buildSourceTabStrip() {
+    return Obx(() {
+      // Access the reactive list so this rebuilds when orders change.
+      app.appController.searchResultOrder.length;
+      return Row(
+        children: [
+          _buildSourceTab(
+            'all',
+            'All Orders',
+            color: const Color(0xffFCAE03),
+            badgeCount: _getTotalOrders(),
+          ),
+          const SizedBox(width: 8),
+          _buildSourceTab(
+            'online',
+            'Online',
+            color: Color(0xFF747474),
+            badgeCount: _getOnlineOrdersCount(),
+          ),
+          const SizedBox(width: 8),
+          _buildSourceTab(
+            'pos',
+            'POS',
+            color: const Color(0xff1976D2),
+            badgeCount: _getPosOrdersCount(),
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget _buildSourceTab(String key, String label, {required Color color, int? badgeCount}) {
     final bool isSelected = _orderSourceTab == key;
-    return GestureDetector(
-      onTap: () => setState(() => _orderSourceTab = key),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 7),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xff0C831F) : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? const Color(0xff0C831F) : Colors.grey.shade300,
-          ),
-          boxShadow: isSelected
-              ? [BoxShadow(color: const Color(0xff0C831F).withOpacity(0.18), blurRadius: 6, offset: const Offset(0, 2))]
-              : [],
+    final Widget pill = AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      padding: EdgeInsets.fromLTRB(14, 6, 14, badgeCount != null ? 12 : 6),
+      decoration: BoxDecoration(
+        color: isSelected ? color.withOpacity(0.14) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isSelected ? color : color.withOpacity(0.55),
+          width: isSelected ? 1.6 : 1.1,
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            fontFamily: 'Mulish',
-            color: isSelected ? Colors.white : Colors.black87,
-          ),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          fontFamily: 'Mulish',
+          color: Colors.black87,
         ),
       ),
     );
+
+    return GestureDetector(
+      onTap: () => setState(() => _orderSourceTab = isSelected ? 'all' : key),
+      child: badgeCount == null
+          ? pill
+          : Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.bottomCenter,
+              children: [
+                pill,
+                Positioned(
+                  bottom: -8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: _darken(color),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '$badgeCount',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Mulish',
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  Color _darken(Color color, [double amount = 0.05]) {
+    final hsl = HSLColor.fromColor(color);
+    return hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0)).toColor();
   }
 
   Widget _buildStatusContainer(String text, Color backgroundColor) {
