@@ -4182,9 +4182,9 @@ class OrderPreviewScreen extends StatelessWidget {
 
   Widget _divider() => Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Text('=' * 40,
+        child: Text('=' * 41,
             style: const TextStyle(
-                fontSize: 13, color: Colors.grey, fontFamily: 'Mulish')),
+                fontSize: 14, color: Colors.grey, fontFamily: 'Mulish')),
       );
 
   @override
