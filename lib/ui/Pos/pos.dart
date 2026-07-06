@@ -3826,13 +3826,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
   {
     DateTime dateTime;
     try {
-      if (order.isLocalOrder == true) {
-        dateTime = DateTime.fromMillisecondsSinceEpoch(
-          int.parse(order.createdAt.toString()),
-        );
-      } else {
-        dateTime = DateTime.parse(order.createdAt.toString());
-      }
+      dateTime = DateTime.parse(order.createdAt.toString());
     } catch (e) {
       dateTime = DateTime.now();
     }

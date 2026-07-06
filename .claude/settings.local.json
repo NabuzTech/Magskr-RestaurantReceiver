@@ -9,7 +9,8 @@
       "Bash(Select-Object Name)",
       "Bash(xargs grep -l \"topping\\\\|variant\")",
       "Bash(grep -n \"^\\\\s*\\\\]\\\\s*$\\\\|^\\\\s*}\\\\s*$\" \"D:/Project_flutter/Magskr Restaurant Receiver/lib/ui/Pos/pos_portrait.dart\")",
-      "Bash(dart analyze *)"
+      "Bash(dart analyze *)",
+      "Skill(run)"
     ]
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'dart:ui' as ui;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -348,7 +349,7 @@ class _PosPortraitState extends State<PosPortrait> {
               onTap: () => controller.deleteDraft(index),
               child: Padding(
                 padding: const EdgeInsets.all(4),
-                child: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade300),
+                child: Icon(Icons.delete_outline, size: 25, color: Colors.red.shade300),
               ),
             ),
           ],
@@ -578,6 +579,11 @@ class _PosPortraitState extends State<PosPortrait> {
                     child: TextField(
                       controller: controller.searchController,
                       onChanged: controller.onSearchChanged,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) {
+                        controller.clearSearch();
+                        FocusScope.of(context).unfocus();
+                      },
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -880,9 +886,7 @@ class _PosPortraitState extends State<PosPortrait> {
   Widget _buildOrderCard(PosPortraitController controller, Order order, bool isLocalOrder) {
     DateTime dateTime;
     try {
-      dateTime = order.isLocalOrder == true
-          ? DateTime.fromMillisecondsSinceEpoch(int.parse(order.createdAt.toString()))
-          : DateTime.parse(order.createdAt.toString());
+      dateTime = DateTime.parse(order.createdAt.toString());
     } catch (_) {
       dateTime = DateTime.now();
     }
@@ -1634,7 +1638,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   icon: 'assets/images/invoice.svg',
                   label: 'Save Orders',
                   badge: controller.drafts.length,
-                  onTap: () => controller.showSavedOrdersScreen.value = true,
+                  onTap: () => controller.openSavedOrdersScreen(),
                 )),
                 // Cart — becomes green checkout button when items in cart
                 Obx(() {
@@ -1752,6 +1756,11 @@ class _PosPortraitState extends State<PosPortrait> {
                           controller: controller.searchController,
                           onChanged: controller.onSearchChanged,
                           autofocus: show,
+                          textInputAction: TextInputAction.done,
+                          onSubmitted: (_) {
+                            controller.clearSearch();
+                            FocusScope.of(context).unfocus();
+                          },
                           style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
                           decoration: const InputDecoration(
                             hintText: 'Search item',
@@ -1966,192 +1975,6 @@ class CheckoutScreen extends StatelessWidget {
           SafeArea(
             child: Column(
           children: [
-            // Header
-            // Padding(
-            //   padding: const EdgeInsets.all(16),
-            //   child: Row(
-            //     children: [
-            //       GestureDetector(
-            //         onTap: () => controller.showCheckout.value = false,
-            //         child: const Icon(Icons.arrow_back, size: 24),
-            //       ),
-            //       const SizedBox(width: 12),
-            //       Expanded(
-            //         child: Container(
-            //           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            //           decoration: BoxDecoration(
-            //             color: const Color(0xffF5F5F5),
-            //             borderRadius: BorderRadius.circular(8),
-            //           ),
-            //           child: const Text(
-            //             'Phone Number / Name',
-            //             style: TextStyle(fontSize: 14, fontFamily: 'Mulish', color: Colors.grey),
-            //           ),
-            //         ),
-            //       ),
-            //       const SizedBox(width: 8),
-            //       // Draft button
-            //       Obx(() => GestureDetector(
-            //         onTap: () => controller.toggleDraftPanel(),
-            //         child: Container(
-            //           padding: const EdgeInsets.all(10),
-            //           decoration: BoxDecoration(
-            //             color: controller.showDraftPanel.value
-            //                 ? const Color(0xff6C4AB6)
-            //                 : controller.drafts.isNotEmpty
-            //                     ? const Color(0xff6C4AB6).withOpacity(0.15)
-            //                     : const Color(0xffEDE4FF),
-            //             borderRadius: BorderRadius.circular(8),
-            //           ),
-            //           child: Stack(
-            //             clipBehavior: Clip.none,
-            //             children: [
-            //               Icon(Icons.bookmark_outline_rounded, size: 20,
-            //                   color: controller.showDraftPanel.value ? Colors.white : const Color(0xff6C4AB6)),
-            //               if (controller.drafts.isNotEmpty)
-            //                 Positioned(
-            //                   top: -4, right: -4,
-            //                   child: Container(
-            //                     width: 14, height: 14,
-            //                     decoration: const BoxDecoration(color: Color(0xff6C4AB6), shape: BoxShape.circle),
-            //                     child: Center(
-            //                       child: Text('${controller.drafts.length}',
-            //                           style: const TextStyle(fontSize: 8, color: Colors.white,
-            //                               fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
-            //                     ),
-            //                   ),
-            //                 ),
-            //             ],
-            //           ),
-            //         ),
-            //       )),
-            //       const SizedBox(width: 8),
-            //       GestureDetector(
-            //         onTap: () => controller.onAddCustomerPressed(),
-            //         child: Container(
-            //           padding: const EdgeInsets.all(10),
-            //           decoration: BoxDecoration(
-            //             color: const Color(0xffB8ABD1),
-            //             borderRadius: BorderRadius.circular(8),
-            //           ),
-            //           child: SvgPicture.asset(
-            //             'assets/images/add-user.svg',
-            //             height: 20, width: 20, color: Colors.white,
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // Draft panel
-            // Obx(() {
-            //   if (!controller.showDraftPanel.value) return const SizedBox.shrink();
-            //   return Container(
-            //     margin: const EdgeInsets.symmetric(horizontal: 16),
-            //     decoration: BoxDecoration(
-            //       color: Colors.white,
-            //       borderRadius: BorderRadius.circular(8),
-            //       border: Border.all(color: const Color(0xffEDE4FF)),
-            //       boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 6)],
-            //     ),
-            //     child: Column(
-            //       mainAxisSize: MainAxisSize.min,
-            //       children: [
-            //         Padding(
-            //           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            //           child: Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               const Text('Saved Drafts',
-            //                   style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 14)),
-            //               GestureDetector(
-            //                 onTap: () => controller.showDraftPanel.value = false,
-            //                 child: const Icon(Icons.close, size: 18, color: Colors.grey),
-            //               ),
-            //             ],
-            //           ),
-            //         ),
-            //         const Divider(height: 1, color: Color(0xffEDE4FF)),
-            //         Obx(() {
-            //           if (controller.drafts.isEmpty) {
-            //             return const Padding(
-            //               padding: EdgeInsets.all(16),
-            //               child: Text('No saved drafts',
-            //                   style: TextStyle(fontFamily: 'Mulish', fontSize: 13, color: Colors.grey)),
-            //             );
-            //           }
-            //           return ConstrainedBox(
-            //             constraints: const BoxConstraints(maxHeight: 220),
-            //             child: ListView.separated(
-            //               shrinkWrap: true,
-            //               padding: const EdgeInsets.all(10),
-            //               itemCount: controller.drafts.length,
-            //               separatorBuilder: (_, __) => const SizedBox(height: 6),
-            //               itemBuilder: (context, index) {
-            //                 final draft = controller.drafts[index];
-            //                 final List items = draft['cartItems'] as List;
-            //                 final Map details = draft['customerDetails'] as Map;
-            //                 final String name = details['name']?.toString().isNotEmpty == true
-            //                     ? details['name'].toString()
-            //                     : details['phone']?.toString().isNotEmpty == true
-            //                         ? details['phone'].toString()
-            //                         : 'Draft ${index + 1}';
-            //                 final DateTime savedAt = DateTime.parse(draft['savedAt']);
-            //                 final String timeStr =
-            //                     '${savedAt.hour.toString().padLeft(2, '0')}:${savedAt.minute.toString().padLeft(2, '0')}';
-            //                 return GestureDetector(
-            //                   onTap: () => controller.loadDraft(index),
-            //                   child: Container(
-            //                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            //                     decoration: BoxDecoration(
-            //                       border: Border.all(color: const Color(0xffEDE4FF)),
-            //                       borderRadius: BorderRadius.circular(6),
-            //                       color: const Color(0xffFBF9FF),
-            //                     ),
-            //                     child: Row(
-            //                       children: [
-            //                         Container(
-            //                           padding: const EdgeInsets.all(6),
-            //                           decoration: BoxDecoration(
-            //                             color: const Color(0xff6C4AB6).withOpacity(0.1),
-            //                             shape: BoxShape.circle,
-            //                           ),
-            //                           child: const Icon(Icons.bookmark_rounded, size: 14, color: Color(0xff6C4AB6)),
-            //                         ),
-            //                         const SizedBox(width: 8),
-            //                         Expanded(
-            //                           child: Column(
-            //                             crossAxisAlignment: CrossAxisAlignment.start,
-            //                             children: [
-            //                               Text(name,
-            //                                   style: const TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w600, fontSize: 13),
-            //                                   maxLines: 1, overflow: TextOverflow.ellipsis),
-            //                               Text('${items.length} item${items.length == 1 ? '' : 's'}  •  $timeStr',
-            //                                   style: const TextStyle(fontFamily: 'Mulish', fontSize: 11, color: Color(0xff797878))),
-            //                             ],
-            //                           ),
-            //                         ),
-            //                         GestureDetector(
-            //                           onTap: () => controller.deleteDraft(index),
-            //                           child: Padding(
-            //                             padding: const EdgeInsets.all(4),
-            //                             child: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade300),
-            //                           ),
-            //                         ),
-            //                       ],
-            //                     ),
-            //                   ),
-            //                 );
-            //               },
-            //             ),
-            //           );
-            //         }),
-            //       ],
-            //     ),
-            //   );
-            // }),
-
-            // Order Type Buttons
             SizedBox(height: 10,),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -2436,7 +2259,7 @@ class CheckoutScreen extends StatelessWidget {
                         height: 34,
                         child: TextField(
                           controller: controller.discountTextController,
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.text,
                           textAlign: TextAlign.center,
                           onChanged: controller.onManualDiscountChanged,
                           style: const TextStyle(
@@ -4180,12 +4003,30 @@ class OrderPreviewScreen extends StatelessWidget {
 
   String _fmt(double amount) => amount.toStringAsFixed(2);
 
-  Widget _divider() => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Text('=' * 41,
-            style: const TextStyle(
-                fontSize: 14, color: Colors.grey, fontFamily: 'Mulish')),
-      );
+  Widget _divider() {
+    const style =
+        TextStyle(fontSize: 14, color: Colors.grey, fontFamily: 'Mulish');
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final charWidth = (TextPainter(
+          text: const TextSpan(text: '=', style: style),
+          textDirection: ui.TextDirection.ltr,
+        )..layout())
+            .width;
+        final count = (constraints.maxWidth / charWidth).floor();
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Text(
+            '=' * count,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.clip,
+            style: style,
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

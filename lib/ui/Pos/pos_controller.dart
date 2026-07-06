@@ -2409,7 +2409,7 @@ class PosController extends GetxController {
       deliveryTime: orderData['delivery_time'] as String?,
       storeId: orderData['store_id'] != null ? int.tryParse(orderData['store_id'].toString()) : null,
       isActive: orderData['isActive'] == 1,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(orderData['created_at'] as int).toIso8601String(),
+      createdAt: DateTime.fromMillisecondsSinceEpoch(orderData['created_at'] as int, isUtc: true).toIso8601String(),
       shipping_address: shippingAddress,
       guestShippingJson: guestShippingJson,
       payment: payment,

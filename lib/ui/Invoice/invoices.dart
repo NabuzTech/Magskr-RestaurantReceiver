@@ -472,6 +472,8 @@ class _InvoicesState extends State<Invoices> {
         return 'Stripe';
       case 'paypal':
         return 'PayPal';
+      case 'card':
+        return 'Card';
       default:
         return method;
     }
@@ -486,6 +488,8 @@ class _InvoicesState extends State<Invoices> {
         return const Color(0xff635BFF);
       case 'paypal':
         return const Color(0xff003087);
+      case 'card':
+        return const Color(0xffEA580C);
       default:
         return Colors.grey;
     }
@@ -561,7 +565,7 @@ class _InvoicesState extends State<Invoices> {
                   ),
                   const SizedBox(height: 10),
                   Row(
-                    children: ['cash', 'stripe', 'paypal'].map((type) {
+                    children: ['cash', 'stripe', 'paypal','card'].map((type) {
                       bool isSelected = selectedPaymentType == type;
                       return Expanded(
                         child: GestureDetector(

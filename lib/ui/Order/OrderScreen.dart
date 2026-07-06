@@ -626,13 +626,14 @@ class _OrderScreenState extends State<OrderScreenNew>
           : null,
       isActive: orderData['isActive'] == 1,
       createdAt: DateTime.fromMillisecondsSinceEpoch(
-          orderData['created_at'] as int
+          orderData['created_at'] as int, isUtc: true
       ).toIso8601String(),
       shipping_address: shippingAddress,
       guestShippingJson: guestShippingJson,
       payment: payment,
       items: orderItems ?? [],
       isLocalOrder: true,
+      source: 'pos',
     );
   }
 

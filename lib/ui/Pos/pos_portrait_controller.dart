@@ -1643,7 +1643,11 @@ class PosPortraitController extends GetxController {
 
   void toggleDraftPanel() => showDraftPanel.value = !showDraftPanel.value;
 
-  Future<void> saveAsDraft() async {
+  // Snapshots the in-progress cart into `drafts` without touching any of
+  // the screen/UI state — used both by the explicit "Draft" button and to
+  // auto-save a WIP order before it would otherwise be overwritten (e.g.
+  // opening another saved order while still building this one).
+  Future<void> _persistCurrentCartAsDraft() async {
     if (cartItems.isEmpty) return;
     // Agar customerDetails empty hai toh controllers se data le lo
     final detailsToSave = customerDetails.isNotEmpty
@@ -1667,6 +1671,11 @@ class PosPortraitController extends GetxController {
       'localOrderNumber': localOrderNumber,
     });
     await _persistDrafts();
+  }
+
+  Future<void> saveAsDraft() async {
+    if (cartItems.isEmpty) return;
+    await _persistCurrentCartAsDraft();
     cartItems.clear();
     calculateTotal();
     customerDetails.clear();
@@ -1687,14 +1696,28 @@ class PosPortraitController extends GetxController {
     Get.snackbar('Draft saved', 'Order saved as draft',
         backgroundColor: const Color(0xff6C4AB6),
         colorText: Colors.white,
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 1),
         snackPosition: SnackPosition.BOTTOM);
     showCheckout.value = false;
     showOrderTypeSelection.value = false;
   }
 
-  void loadDraft(int index) {
+  // Opens the Save Orders list. If an order is currently being built
+  // (product screen or checkout), it's saved as a draft first so it
+  // doesn't get lost/overwritten.
+  Future<void> openSavedOrdersScreen() async {
+    if (cartItems.isNotEmpty) {
+      await saveAsDraft();
+    }
+    showSavedOrdersScreen.value = true;
+  }
+
+  Future<void> loadDraft(int index) async {
     if (index < 0 || index >= drafts.length) return;
+    // Don't lose whatever order is currently being built — save it as a
+    // draft first. `index` still points at the right draft afterwards
+    // since this only appends a new entry at the end.
+    await _persistCurrentCartAsDraft();
     final draft = drafts[index];
     cartItems.value = List<Map<String, dynamic>>.from(draft['cartItems'] as List);
     final details = Map<String, String>.from(draft['customerDetails'] as Map);
@@ -1806,7 +1829,7 @@ class PosPortraitController extends GetxController {
       note: orderData['note'] as String? ?? '',
       deliveryTime: orderData['delivery_time'] as String?,
       storeId: orderData['store_id'] != null ? int.tryParse(orderData['store_id'].toString()) : null,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(orderData['created_at'] as int).toIso8601String(),
+      createdAt: DateTime.fromMillisecondsSinceEpoch(orderData['created_at'] as int, isUtc: true).toIso8601String(),
       shipping_address: shippingAddress,
       payment: payment,
       items: [],
