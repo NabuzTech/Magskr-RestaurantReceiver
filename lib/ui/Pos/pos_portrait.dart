@@ -165,9 +165,9 @@ class _PosPortraitState extends State<PosPortrait> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          'Bestellart wählen',
-                          style: TextStyle(
+                        Text(
+                          'order_type_selection'.tr,
+                          style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
                             fontFamily: 'Mulish',
@@ -189,10 +189,10 @@ class _PosPortraitState extends State<PosPortrait> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(32, 20, 32, 16),
-                child: const Text(
-                  'Bestellart wählen',
+                child: Text(
+                  'order_type_selection'.tr,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
                     fontFamily: 'Mulish',
@@ -217,9 +217,9 @@ class _PosPortraitState extends State<PosPortrait> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: const Text(
-                  'Save Orders',
-                  style: TextStyle(
+                child: Text(
+                  'save_orders_section'.tr,
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     fontFamily: 'Mulish',
@@ -251,7 +251,7 @@ class _PosPortraitState extends State<PosPortrait> {
       // Lieferung button
       _buildOrderTypeSelectionBtn(
         controller,
-        label: 'Lieferung',
+        label: 'delivery'.tr,
         icon: 'assets/images/delivery-icon.svg',
         value: 'Lieferzeit',
         enabled: true,
@@ -260,7 +260,7 @@ class _PosPortraitState extends State<PosPortrait> {
       // Abholung button
       _buildOrderTypeSelectionBtn(
         controller,
-        label: 'Abholung',
+        label: 'pickup'.tr,
         icon: 'assets/images/pickup-icon.svg',
         value: 'Abholzeit',
         enabled: true,
@@ -269,7 +269,7 @@ class _PosPortraitState extends State<PosPortrait> {
       // Table ordering — disabled
       _buildOrderTypeSelectionBtn(
         controller,
-        label: 'Table Ordering',
+        label: 'table_ordering'.tr,
         icon: 'assets/images/pickup-icon.svg', // ya koi table icon
         value: 'Table',
         enabled: false,
@@ -283,10 +283,11 @@ class _PosPortraitState extends State<PosPortrait> {
     final Map details = draft['customerDetails'] as Map;
     final String customerName = details['name']?.toString().trim() ?? '';
     final int localOrderNumber = draft['localOrderNumber'] as int? ?? (index + 1);
-    final String orderLabel = 'Order - $localOrderNumber';
+    final String orderLabel = '${'order_label'.tr} - $localOrderNumber';
+    final String itemWord = items.length == 1 ? 'item_singular'.tr : 'item_plural'.tr;
     final String subtitle = customerName.isNotEmpty
-        ? '$customerName / ${items.length} Item${items.length == 1 ? '' : 's'}'
-        : '${items.length} Item${items.length == 1 ? '' : 's'}';
+        ? '$customerName / ${items.length} $itemWord'
+        : '${items.length} $itemWord';
     double total = 0;
     for (var item in items) {
       total += (item['price'] as num) * (item['quantity'] as int);
@@ -415,9 +416,9 @@ class _PosPortraitState extends State<PosPortrait> {
                   color: Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text(
-                  'Bald verfügbar',
-                  style: TextStyle(fontSize: 10, color: Colors.grey, fontFamily: 'Mulish'),
+                child: Text(
+                  'coming_soon'.tr,
+                  style: const TextStyle(fontSize: 10, color: Colors.grey, fontFamily: 'Mulish'),
                 ),
               ),
             if (enabled)
@@ -466,7 +467,7 @@ class _PosPortraitState extends State<PosPortrait> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Lieferung',
+                        'delivery'.tr,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -506,7 +507,7 @@ class _PosPortraitState extends State<PosPortrait> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Abholung',
+                        'pickup'.tr,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -589,8 +590,8 @@ class _PosPortraitState extends State<PosPortrait> {
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Mulish',
                       ),
-                      decoration: const InputDecoration(
-                        hintText: 'Search item',
+                      decoration: InputDecoration(
+                        hintText: 'search_item'.tr,
                         hintStyle: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w300,
@@ -780,8 +781,8 @@ class _PosPortraitState extends State<PosPortrait> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Orders',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Mulish')),
+                        Text('orders_title'.tr,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Mulish')),
                         Text(DateFormat('d MMMM, y').format(DateTime.now()),
                             style: const TextStyle(fontSize: 12, fontFamily: 'Mulish')),
                       ],
@@ -790,7 +791,7 @@ class _PosPortraitState extends State<PosPortrait> {
                 ),
                 Row(
                   children: [
-                    Obx(() => Text('Total: ${controller.orderStats['totalOrders']}',
+                    Obx(() => Text('${'total'.tr}: ${controller.orderStats['totalOrders']}',
                         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, fontFamily: 'Mulish'))),
                     const SizedBox(width: 6),
                     GestureDetector(
@@ -818,13 +819,13 @@ class _PosPortraitState extends State<PosPortrait> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             child: Row(
               children: [
-                _orderStatChip('Accepted ${controller.orderStats['accepted']}', Colors.green.withOpacity(0.1)),
+                _orderStatChip('${'accepted'.tr} ${controller.orderStats['accepted']}', Colors.green.withOpacity(0.1)),
                 const SizedBox(width: 8),
-                _orderStatChip('Declined ${controller.orderStats['declined']}', Colors.red.withOpacity(0.1)),
+                _orderStatChip('${'decline'.tr} ${controller.orderStats['declined']}', Colors.red.withOpacity(0.1)),
                 const SizedBox(width: 8),
-                _orderStatChip('Pickup ${controller.orderStats['pickup']}', Colors.blue.withOpacity(0.1)),
+                _orderStatChip('${'pickup'.tr} ${controller.orderStats['pickup']}', Colors.blue.withOpacity(0.1)),
                 const SizedBox(width: 8),
-                _orderStatChip('Delivery ${controller.orderStats['delivery']}', Colors.purple.withOpacity(0.1)),
+                _orderStatChip('${'delivery'.tr} ${controller.orderStats['delivery']}', Colors.purple.withOpacity(0.1)),
               ],
             ),
           )),
@@ -865,8 +866,8 @@ class _PosPortraitState extends State<PosPortrait> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Lottie.asset('assets/animations/empty.json', width: 120, height: 120),
-              const Text('No Orders',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey, fontFamily: 'Mulish')),
+              Text('no_order'.tr,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey, fontFamily: 'Mulish')),
             ],
           ),
         );
@@ -952,12 +953,12 @@ class _PosPortraitState extends State<PosPortrait> {
                       children: [
                         Text(
                           order.orderType == 2
-                              ? 'Pickup'
+                              ? 'pickup'.tr
                               : (order.shipping_address?.zip?.toString() ?? guestZip),
                           style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Mulish'),
                         ),
                         if (order.deliveryTime != null && order.deliveryTime!.isNotEmpty)
-                          Text('Time: ${controller.extractTime(order.deliveryTime!)}',
+                          Text('${'time'.tr}: ${controller.extractTime(order.deliveryTime!)}',
                               style: const TextStyle(fontSize: 11, fontFamily: 'Mulish')),
                       ],
                     ),
@@ -983,7 +984,7 @@ class _PosPortraitState extends State<PosPortrait> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Text('Order #${order.orderNumber ?? order.id ?? 'N/A'}',
+                Text('${'order_hash'.tr}${order.orderNumber ?? order.id ?? 'N/A'}',
                     style: const TextStyle(fontSize: 11, fontFamily: 'Mulish')),
               ],
             ),
@@ -996,7 +997,7 @@ class _PosPortraitState extends State<PosPortrait> {
                 Row(
                   children: [
                     Text(
-                      isLocalOrder ? 'Syncing' : controller.getApprovalStatusText(order.approvalStatus),
+                      isLocalOrder ? 'syncing'.tr : controller.getApprovalStatusText(order.approvalStatus),
                       style: const TextStyle(fontSize: 12, fontFamily: 'Mulish'),
                     ),
                     const SizedBox(width: 4),
@@ -1045,8 +1046,8 @@ class _PosPortraitState extends State<PosPortrait> {
               const SizedBox(height: 16),
               Text(
                 controller.isSearching.value
-                    ? 'No products found'
-                    : 'No categories available',
+                    ? 'no_match'.tr
+                    : 'no_categories_available'.tr,
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey.shade600,
@@ -1286,9 +1287,9 @@ class _PosPortraitState extends State<PosPortrait> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Add Custom Item',
-                      style: TextStyle(
+                    Text(
+                      'add_custom_item'.tr,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         fontFamily: 'Mulish',
@@ -1308,9 +1309,9 @@ class _PosPortraitState extends State<PosPortrait> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Item Name',
-                  style: TextStyle(
+                Text(
+                  'item_name_label'.tr,
+                  style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     fontFamily: 'Mulish',
@@ -1322,7 +1323,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   textCapitalization: TextCapitalization.words,
                   style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
                   decoration: InputDecoration(
-                    hintText: 'Item Name...',
+                    hintText: 'item_name_hint'.tr,
                     hintStyle: TextStyle(color: Colors.grey.shade400, fontFamily: 'Mulish'),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                     border: OutlineInputBorder(
@@ -1340,9 +1341,9 @@ class _PosPortraitState extends State<PosPortrait> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Item Price',
-                  style: TextStyle(
+                Text(
+                  'item_price_label'.tr,
+                  style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     fontFamily: 'Mulish',
@@ -1383,10 +1384,10 @@ class _PosPortraitState extends State<PosPortrait> {
                             color: const Color(0xffEEEEEE),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Text(
-                              'Cancel',
-                              style: TextStyle(
+                              'cancel'.tr,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 fontFamily: 'Mulish',
@@ -1413,10 +1414,10 @@ class _PosPortraitState extends State<PosPortrait> {
                             color: const Color(0xff0C831F),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Text(
-                              'Add Item',
-                              style: TextStyle(
+                              'add_item'.tr,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 fontFamily: 'Mulish',
@@ -1460,9 +1461,9 @@ class _PosPortraitState extends State<PosPortrait> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Text(
-                  'Saved Orders',
-                  style: TextStyle(
+                Text(
+                  'saved_orders_title'.tr,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     fontFamily: 'Mulish',
@@ -1470,7 +1471,7 @@ class _PosPortraitState extends State<PosPortrait> {
                 ),
                 const Spacer(),
                 Obx(() => Text(
-                  '${controller.drafts.length} draft${controller.drafts.length == 1 ? '' : 's'}',
+                  '${controller.drafts.length} ${controller.drafts.length == 1 ? 'draft_singular'.tr : 'draft_plural'.tr}',
                   style: const TextStyle(
                     fontSize: 13,
                     fontFamily: 'Mulish',
@@ -1492,7 +1493,7 @@ class _PosPortraitState extends State<PosPortrait> {
                       Icon(Icons.bookmark_outline, size: 60, color: Colors.grey.shade300),
                       const SizedBox(height: 12),
                       Text(
-                        'No saved orders',
+                        'no_saved_orders'.tr,
                         style: TextStyle(
                           fontSize: 15,
                           fontFamily: 'Mulish',
@@ -1513,10 +1514,11 @@ class _PosPortraitState extends State<PosPortrait> {
                   final Map details = draft['customerDetails'] as Map;
                   final String customerName = details['name']?.toString().trim() ?? '';
                   final int localOrderNumber = draft['localOrderNumber'] as int? ?? (index + 1);
-                  final String orderLabel = 'Order - $localOrderNumber';
+                  final String orderLabel = '${'order_label'.tr} - $localOrderNumber';
+                  final String itemWord = items.length == 1 ? 'item_singular'.tr : 'item_plural'.tr;
                   final String subtitle = customerName.isNotEmpty
-                      ? '$customerName / ${items.length} Item${items.length == 1 ? '' : 's'}'
-                      : '${items.length} Item${items.length == 1 ? '' : 's'}';
+                      ? '$customerName / ${items.length} $itemWord'
+                      : '${items.length} $itemWord';
                   double total = 0;
                   for (var item in items) {
                     total += (item['price'] as num) * (item['quantity'] as int);
@@ -1623,20 +1625,20 @@ class _PosPortraitState extends State<PosPortrait> {
                 // Order icon with live badge
                 Obx(() => _buildPosBarItem(
                   icon: 'assets/images/ic_order.svg',
-                  label: 'Order',
+                  label: 'order'.tr,
                   badge: app.appController.getPendingOrder,
                   onTap: () => widget.onNavigateToTab?.call(0),
                 )),
                 // Search
                 _buildPosBarItem(
                   icon: 'assets/images/search.svg',
-                  label: 'Search',
+                  label: 'search_label'.tr,
                   onTap: () => controller.showPosSearchBar.value = true,
                 ),
                 // Save Orders
                 Obx(() => _buildPosBarItem(
                   icon: 'assets/images/invoice.svg',
-                  label: 'Save Orders',
+                  label: 'save_orders_section'.tr,
                   badge: controller.drafts.length,
                   onTap: () => controller.openSavedOrdersScreen(),
                 )),
@@ -1713,7 +1715,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   }
                   return _buildPosBarItem(
                     icon: 'assets/images/cart.svg',
-                    label: 'Cart',
+                    label: 'cart_label'.tr,
                     onTap: () {},
                   );
                 }),
@@ -1762,8 +1764,8 @@ class _PosPortraitState extends State<PosPortrait> {
                             FocusScope.of(context).unfocus();
                           },
                           style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
-                          decoration: const InputDecoration(
-                            hintText: 'Search item',
+                          decoration: InputDecoration(
+                            hintText: 'search_item'.tr,
                             hintStyle: TextStyle(
                               fontSize: 14,
                               fontFamily: 'Mulish',
@@ -1921,7 +1923,7 @@ class _PosPortraitState extends State<PosPortrait> {
                           ),
                         ),
                         Text(
-                          'item: ${controller.totalItems.value}',
+                          '${'item_singular'.tr}: ${controller.totalItems.value}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 13,
@@ -1933,18 +1935,18 @@ class _PosPortraitState extends State<PosPortrait> {
                     ),
                   ],
                 ),
-                const Row(
+                Row(
                   children: [
                     Text(
-                      'View Cart',
-                      style: TextStyle(
+                      'view_cart'.tr,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Mulish',
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Icon(
                       Icons.arrow_forward_ios,
                       color: Colors.white,
@@ -2077,13 +2079,13 @@ class CheckoutScreen extends StatelessWidget {
                             borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(8), bottomLeft: Radius.circular(8)),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.bookmark_outline_rounded, size: 16, color: Colors.white),
-                              SizedBox(width: 6),
-                              Text('Draft',
-                                  style: TextStyle(color: Colors.white, fontSize: 14,
+                              const Icon(Icons.bookmark_outline_rounded, size: 16, color: Colors.white),
+                              const SizedBox(width: 6),
+                              Text('draft_singular'.tr,
+                                  style: const TextStyle(color: Colors.white, fontSize: 14,
                                       fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
                             ],
                           ),
@@ -2108,13 +2110,13 @@ class CheckoutScreen extends StatelessWidget {
                               vertical: BorderSide(color: Colors.white, width: 0.5),
                             ),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.visibility_outlined, size: 16, color: Colors.white),
-                              SizedBox(width: 6),
-                              Text('Preview',
-                                  style: TextStyle(color: Colors.white, fontSize: 14,
+                              const Icon(Icons.visibility_outlined, size: 16, color: Colors.white),
+                              const SizedBox(width: 6),
+                              Text('preview_label'.tr,
+                                  style: const TextStyle(color: Colors.white, fontSize: 14,
                                       fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
                             ],
                           ),
@@ -2132,10 +2134,10 @@ class CheckoutScreen extends StatelessWidget {
                             borderRadius: const BorderRadius.only(
                                 topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Text(
-                              'Place Order',
-                              style: TextStyle(color: Colors.white, fontSize: 14,
+                              'place_order'.tr,
+                              style: const TextStyle(color: Colors.white, fontSize: 14,
                                   fontWeight: FontWeight.bold, fontFamily: 'Mulish'),
                             ),
                           ),
@@ -2182,7 +2184,7 @@ class CheckoutScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  type,
+                  type == 'Lieferzeit' ? 'delivery'.tr : 'pickup'.tr,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -2222,9 +2224,9 @@ class CheckoutScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Subtotal',
-                        style: TextStyle(
+                      Text(
+                        'subtotal'.tr,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           fontFamily: 'Mulish',
@@ -2244,9 +2246,9 @@ class CheckoutScreen extends StatelessWidget {
                   // Add Discount TextField
                   Row(
                     children: [
-                      const Text(
-                        'Add Discount',
-                        style: TextStyle(
+                      Text(
+                        'add_discount'.tr,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           fontFamily: 'Mulish',
@@ -2316,9 +2318,9 @@ class CheckoutScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Grand Total',
-                        style: TextStyle(
+                      Text(
+                        'grand_total'.tr,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'Mulish',
@@ -2519,7 +2521,7 @@ class CheckoutScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      'Note: ${item["item_note"]}',
+                      '${'note'.tr}: ${item["item_note"]}',
                       style: const TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
@@ -2616,9 +2618,9 @@ class CheckoutScreen extends StatelessWidget {
             children: [
               SvgPicture.asset('assets/images/user.svg', height: 16, width: 16),
               const SizedBox(width: 8),
-              const Text(
-                'Customer Details',
-                style: TextStyle(
+              Text(
+                'customer_details'.tr,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Mulish',
@@ -2630,7 +2632,7 @@ class CheckoutScreen extends StatelessWidget {
           // _buildTextField(controller.nameController, 'Ihre Name *', context),
           _buildTextField(
             controller.nameController,
-            'Ihre Name',
+            'your_name'.tr,
             context,
             focusNode: controller.nameFocusNode,
             nextFocusNode: controller.phoneFocusNode,
@@ -2641,7 +2643,7 @@ class CheckoutScreen extends StatelessWidget {
          // _buildTextField(controller.phoneController, 'Ihre Telefonnummer *', context),
           _buildTextField(
             controller.phoneController,
-            'Ihre Telefonnummer',
+            'your_phone'.tr,
             context,
             focusNode: controller.phoneFocusNode,
             nextFocusNode: controller.addressFocusNode,
@@ -2653,7 +2655,7 @@ class CheckoutScreen extends StatelessWidget {
           // _buildTextField(controller.addressController, 'Straße und Hausnummer *', context),
           _buildTextField(
             controller.addressController,
-            'Straße und Hausnummer',
+            'street_address'.tr,
             context,
             focusNode: controller.addressFocusNode,
             nextFocusNode: null,
@@ -2672,7 +2674,7 @@ class CheckoutScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildTextField(
               controller.regionController,
-              'Postleitzahl',
+              'postcode'.tr,
               context,
               focusNode: controller.regionFocusNode,
               keyboardType: TextInputType.number,
@@ -2687,7 +2689,7 @@ class CheckoutScreen extends StatelessWidget {
         //  _buildTextField(controller.emailController, 'Ihre E-Mail', context),
           _buildTextField(
             controller.emailController,
-            'Ihre E-Mail',
+            'your_email'.tr,
             context,
             focusNode: controller.emailFocusNode,
             keyboardType: TextInputType.emailAddress,
@@ -2783,9 +2785,9 @@ class CheckoutScreen extends StatelessWidget {
                 children: [
                   SvgPicture.asset('assets/images/user.svg', height: 16, width: 16),
                   const SizedBox(width: 8),
-                  const Text(
-                    'Customer Details',
-                    style: TextStyle(
+                  Text(
+                    'customer_details'.tr,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Mulish',
@@ -2808,13 +2810,13 @@ class CheckoutScreen extends StatelessWidget {
             ],
           ),
           const Divider(height: 24, color: Color(0xffE6E1EE)),
-          _buildDetailRow('Ihre Name', controller.customerDetails['name'] ?? ''),
+          _buildDetailRow('your_name'.tr, controller.customerDetails['name'] ?? ''),
           const SizedBox(height: 8),
-          _buildDetailRow('Ihre Telefonnummer', controller.customerDetails['phone'] ?? ''),
+          _buildDetailRow('your_phone'.tr, controller.customerDetails['phone'] ?? ''),
           const SizedBox(height: 8),
-          _buildDetailRow('Ihre E-Mail', controller.customerDetails['email'] ?? ''),
+          _buildDetailRow('your_email'.tr, controller.customerDetails['email'] ?? ''),
           const SizedBox(height: 8),
-          _buildDetailRow('Address', controller.customerDetails['address'] ?? ''),
+          _buildDetailRow('address'.tr, controller.customerDetails['address'] ?? ''),
         ],
       ),
     );
@@ -2858,13 +2860,13 @@ class CheckoutScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.payment, size: 18, color: Color(0xff0B1928)),
-                SizedBox(width: 8),
+                const Icon(Icons.payment, size: 18, color: Color(0xff0B1928)),
+                const SizedBox(width: 8),
                 Text(
-                  'Payment Method',
-                  style: TextStyle(
+                  'payment_method'.tr,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Mulish',
@@ -2904,7 +2906,7 @@ class CheckoutScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'Cash',
+                            'cash'.tr,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -2949,7 +2951,7 @@ class CheckoutScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'Card',
+                            'card'.tr,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -3009,8 +3011,8 @@ class CheckoutScreen extends StatelessWidget {
                         : null,
                   ),
                   const SizedBox(width: 12),
-                  const Text('Heute',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+                  Text('today_option'.tr,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
                 ],
               ),
             ),
@@ -3027,9 +3029,9 @@ class CheckoutScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: const Color(0xff0C831F)),
                 ),
-                child: const Text(
-                  'Sofort',
-                  style: TextStyle(
+                child: Text(
+                  'immediately'.tr,
+                  style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Mulish',
@@ -3094,8 +3096,8 @@ class CheckoutScreen extends StatelessWidget {
                         : null,
                   ),
                   const SizedBox(width: 12),
-                  const Text('Vorbestellen',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+                  Text('preorder'.tr,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
                 ],
               ),
             ),
@@ -3118,7 +3120,7 @@ class CheckoutScreen extends StatelessWidget {
                       Text(
                         controller.selectedDate.value != null
                             ? DateFormat('dd.MM.yyyy').format(controller.selectedDate.value!)
-                            : 'Datum wählen',
+                            : 'select_date'.tr,
                         style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
                       ),
                       Container(
@@ -3284,8 +3286,8 @@ class VariantDialog extends StatelessWidget {
                           children: [
                             // ── Variants grid ─────────────────────────────
                             if ((product.variants?.isNotEmpty ?? false)) ...[
-                              const Text('Choose Variant',
-                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700,
+                              Text('choose_variant'.tr,
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700,
                                       fontFamily: 'Mulish', color: Color(0xff475569))),
                               const SizedBox(height: 10),
                               GridView.builder(
@@ -3372,7 +3374,7 @@ class VariantDialog extends StatelessWidget {
                                       // Group header
                                       Row(
                                         children: [
-                                          Text(group.name?.toUpperCase() ?? 'TOPPINGS',
+                                          Text(group.name?.toUpperCase() ?? 'topping'.tr.toUpperCase(),
                                               style: const TextStyle(fontSize: 12,
                                                   fontWeight: FontWeight.w700,
                                                   fontFamily: 'Mulish',
@@ -3386,8 +3388,8 @@ class VariantDialog extends StatelessWidget {
                                                 color: _green.withOpacity(0.1),
                                                 borderRadius: BorderRadius.circular(4),
                                               ),
-                                              child: const Text('Required',
-                                                  style: TextStyle(fontSize: 10,
+                                              child: Text('required_label'.tr,
+                                                  style: const TextStyle(fontSize: 10,
                                                       color: _green,
                                                       fontWeight: FontWeight.w700,
                                                       fontFamily: 'Mulish')),
@@ -3397,7 +3399,7 @@ class VariantDialog extends StatelessWidget {
                                       if (isRequired && minSel > 0) ...[
                                         const SizedBox(height: 4),
                                         Text(
-                                          'Select $minSel${maxSel > minSel ? ' - $maxSel' : ''} item(s)',
+                                          '${'select_label'.tr} $minSel${maxSel > minSel ? ' - $maxSel' : ''} ${'items_unit'.tr}',
                                           style: TextStyle(fontSize: 11,
                                               color: Colors.orange.shade700,
                                               fontWeight: FontWeight.w500,
@@ -3496,8 +3498,8 @@ class VariantDialog extends StatelessWidget {
                             }),
 
                             // ── Item note field ───────────────────────────
-                            const Text('Special Request',
-                                style: TextStyle(fontSize: 13,
+                            Text('special_request'.tr,
+                                style: const TextStyle(fontSize: 13,
                                     fontWeight: FontWeight.w700,
                                     fontFamily: 'Mulish',
                                     color: Color(0xff475569))),
@@ -3515,7 +3517,7 @@ class VariantDialog extends StatelessWidget {
                                 maxLines: 2,
                                 style: const TextStyle(fontSize: 13, fontFamily: 'Mulish'),
                                 decoration: InputDecoration(
-                                  hintText: 'e.g. no onions, extra sauce...',
+                                  hintText: 'special_request_hint'.tr,
                                   hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
                                   border: InputBorder.none,
                                   contentPadding: const EdgeInsets.all(12),
@@ -3548,8 +3550,8 @@ class VariantDialog extends StatelessWidget {
                             child: Center(
                               child: Text(
                                 hasVariant
-                                    ? 'In den Warenkorb  •  €${total.toStringAsFixed(2)}'
-                                    : 'Bitte Variante wählen',
+                                    ? '${'add_to_cart_label'.tr}  •  €${total.toStringAsFixed(2)}'
+                                    : 'please_select_variant'.tr,
                                 style: const TextStyle(fontSize: 15,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Mulish',
@@ -3612,9 +3614,9 @@ class PostcodeDialog extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'Postleitzahl wählen',
-                            style: TextStyle(
+                          Text(
+                            'select_postcode'.tr,
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Mulish',
@@ -3633,12 +3635,12 @@ class PostcodeDialog extends StatelessWidget {
                     // Postcode list
                     Flexible(
                       child: controller.postcode.isEmpty
-                          ? const Center(
+                          ? Center(
                         child: Padding(
-                          padding: EdgeInsets.all(32),
+                          padding: const EdgeInsets.all(32),
                           child: Text(
-                            'Keine Postleitzahlen verfügbar',
-                            style: TextStyle(
+                            'no_postcodes_available'.tr,
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Colors.grey,
                               fontFamily: 'Mulish',
@@ -3739,9 +3741,9 @@ class TimeSelectionBottomSheet extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Lieferzeit wählen',
-                  style: TextStyle(
+                Text(
+                  'select_delivery_time'.tr,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Mulish',
@@ -3781,7 +3783,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          'Heute',
+                          'today_option'.tr,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -3813,7 +3815,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        'Vorbestellen',
+                        'preorder'.tr,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -3852,14 +3854,14 @@ class TimeSelectionBottomSheet extends StatelessWidget {
               const Icon(Icons.store_mall_directory_outlined,
                   size: 50, color: Colors.grey),
               const SizedBox(height: 12),
-              const Text('Store is Currently Closed',
-                  style: TextStyle(
+              Text('store_closed_currently'.tr,
+                  style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
               const SizedBox(height: 8),
-              const Text(
-                'Please use "Vorbestellen" to schedule your order',
+              Text(
+                'use_preorder_hint'.tr,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, fontFamily: 'Mulish', color: Colors.grey),
+                style: const TextStyle(fontSize: 13, fontFamily: 'Mulish', color: Colors.grey),
               ),
             ],
           ),
@@ -3867,10 +3869,10 @@ class TimeSelectionBottomSheet extends StatelessWidget {
       }
 
       if (controller.sofortTimeSlots.isEmpty) {
-        return const Center(
+        return Center(
           child: Text(
-            'Keine Zeitfenster verfügbar',
-            style: TextStyle(
+            'no_time_slots_available'.tr,
+            style: const TextStyle(
               fontSize: 14,
               color: Colors.grey,
               fontFamily: 'Mulish',
@@ -3947,7 +3949,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                     controller.selectedVorbestellenDate.value != null
                         ? DateFormat('dd.MM.yyyy').format(
                         controller.selectedVorbestellenDate.value!)
-                        : 'Datum auswählen',
+                        : 'select_date'.tr,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -4043,13 +4045,13 @@ class OrderPreviewScreen extends StatelessWidget {
 
     String timeDisplay = '';
     if (controller.selectedTimeSlot.value == 'sofort') {
-      timeDisplay = 'Sofort';
+      timeDisplay = 'immediately'.tr;
     } else if (controller.selectedTimeSlot.value.isNotEmpty) {
       if (controller.selectedDate.value != null) {
         timeDisplay =
             '${DateFormat('dd.MM.yyyy').format(controller.selectedDate.value!)} ${controller.selectedTimeSlot.value}';
       } else {
-        timeDisplay = 'Heute ${controller.selectedTimeSlot.value}';
+        timeDisplay = '${'today_option'.tr} ${controller.selectedTimeSlot.value}';
       }
     }
 
@@ -4084,7 +4086,7 @@ class OrderPreviewScreen extends StatelessWidget {
                   // ── Order type + Date ─────────────────────────────────
                   Center(
                     child: Text(
-                      orderType == 'Lieferzeit' ? 'LIEFERUNG' : 'ABHOLUNG',
+                      (orderType == 'Lieferzeit' ? 'delivery'.tr : 'pickup'.tr).toUpperCase(),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -4095,7 +4097,7 @@ class OrderPreviewScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Center(
                     child: Text(
-                      'Datum: ${DateFormat('dd-MM-yyyy  HH:mm').format(DateTime.now())}',
+                      '${'date'.tr}: ${DateFormat('dd-MM-yyyy  HH:mm').format(DateTime.now())}',
                       style: const TextStyle(
                           fontSize: 13, fontFamily: 'Mulish'),
                     ),
@@ -4104,7 +4106,7 @@ class OrderPreviewScreen extends StatelessWidget {
                     const SizedBox(height: 2),
                     Center(
                       child: Text(
-                        '${orderType == 'Lieferzeit' ? 'Lieferzeit' : 'Abholzeit'}: $timeDisplay',
+                        '${orderType == 'Lieferzeit' ? 'delivery_time'.tr : 'collection'.tr}: $timeDisplay',
                         style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -4194,7 +4196,7 @@ class OrderPreviewScreen extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(left: 12, top: 3),
                               child: Text(
-                                'Notiz: ${item['item_note']}',
+                                '${'note'.tr}: ${item['item_note']}',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
@@ -4214,8 +4216,8 @@ class OrderPreviewScreen extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Notiz:  ',
-                            style: TextStyle(
+                        Text('${'note'.tr}:  ',
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
                                 fontFamily: 'Mulish',
@@ -4232,11 +4234,11 @@ class OrderPreviewScreen extends StatelessWidget {
                   _divider(),
 
                   // ── Totals ────────────────────────────────────────────
-                  _totalsRow('Zwischensumme', '€ ${_fmt(subtotal)}'),
+                  _totalsRow('subtotal'.tr, '€ ${_fmt(subtotal)}'),
                   if (discount > 0) ...[
                     const SizedBox(height: 2),
                     _totalsRow(
-                      'Rabatt (${controller.manualDiscountPercent.value.toStringAsFixed(0)}%)',
+                      '${'discount'.tr} (${controller.manualDiscountPercent.value.toStringAsFixed(0)}%)',
                       '-€ ${_fmt(discount)}',
                       valueColor: const Color(0xff00B10E),
                     ),
@@ -4244,13 +4246,13 @@ class OrderPreviewScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Container(height: 0.5, color: Colors.grey),
                   const SizedBox(height: 4),
-                  _totalsRow('GESAMT', '€ ${_fmt(grandTotal)}', bold: true),
+                  _totalsRow(('grand_total'.tr).toUpperCase(), '€ ${_fmt(grandTotal)}', bold: true),
 
                   _divider(),
 
                   // ── Payment ───────────────────────────────────────────
                   Text(
-                    'Zahlung: ${paymentMethod == 'cash' ? 'Bar' : 'Karte'}',
+                    '${'payment_label'.tr}: ${paymentMethod == 'cash' ? 'cash'.tr : 'card'.tr}',
                     style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -4261,27 +4263,27 @@ class OrderPreviewScreen extends StatelessWidget {
                   if (taxBreakdown.isNotEmpty) ...[
                     _divider(),
                     Row(
-                      children: const [
+                      children: [
                         Expanded(
                             flex: 2,
-                            child: Text('MWSt-Satz',
-                                style: TextStyle(
+                            child: Text('vat_rate'.tr,
+                                style: const TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 12,
                                     fontFamily: 'Mulish'))),
                         Expanded(
                             flex: 2,
                             child: Center(
-                                child: Text('Brutto',
-                                    style: TextStyle(
+                                child: Text('gross'.tr,
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 12,
                                         fontFamily: 'Mulish')))),
                         Expanded(
                             flex: 2,
                             child: Center(
-                                child: Text('Netto',
-                                    style: TextStyle(
+                                child: Text('net'.tr,
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 12,
                                         fontFamily: 'Mulish')))),
@@ -4289,8 +4291,8 @@ class OrderPreviewScreen extends StatelessWidget {
                             flex: 2,
                             child: Align(
                                 alignment: Alignment.centerRight,
-                                child: Text('MWSt',
-                                    style: TextStyle(
+                                child: Text('vat'.tr,
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 12,
                                         fontFamily: 'Mulish')))),
@@ -4339,21 +4341,21 @@ class OrderPreviewScreen extends StatelessWidget {
                   _divider(),
 
                   // ── Footer ────────────────────────────────────────────
-                  const Center(
+                  Center(
                     child: Text(
-                      'Information:',
-                      style: TextStyle(
+                      'information_label'.tr,
+                      style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
                           fontFamily: 'Mulish'),
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Center(
+                  Center(
                     child: Text(
-                      'Bei Food-Allergien bitte das\nRestaurant anrufen.',
+                      'allergy_notice'.tr,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, fontFamily: 'Mulish'),
+                      style: const TextStyle(fontSize: 12, fontFamily: 'Mulish'),
                     ),
                   ),
                   const SizedBox(height: 24),
