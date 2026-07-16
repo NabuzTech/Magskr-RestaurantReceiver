@@ -6,6 +6,8 @@ class StoreSetting {
   bool? auto_accept_reservations;   // NEW
   double? stripe_service_fee;       // NEW
   bool? lieferung_enabled;          // NEW
+  bool? abholung_enabled;
+  bool? tisch_reservierung_enabled;
   int? id;
   int? store_id;
   String? msg;
@@ -20,6 +22,8 @@ class StoreSetting {
     this.auto_accept_reservations,   // NEW
     this.stripe_service_fee,         // NEW
     this.lieferung_enabled,          // NEW
+    this.abholung_enabled,
+    this.tisch_reservierung_enabled,
     this.id,
     this.store_id,
     this.msg,
@@ -41,6 +45,8 @@ class StoreSetting {
     auto_accept_reservations: json["auto_accept_reservations"],  // NEW
     stripe_service_fee: (json["stripe_service_fee"] as num?)?.toDouble(),  // NEW
     lieferung_enabled: json["lieferung_enabled"],                // NEW
+    abholung_enabled: json["abholung_enabled"],
+    tisch_reservierung_enabled: json["tisch_reservierung_enabled"],
     id: json["id"],
     store_id: json["store_id"],
     msg: json["msg"],
@@ -54,6 +60,8 @@ class StoreSetting {
     "auto_accept_reservations": auto_accept_reservations,  // NEW
     "stripe_service_fee": stripe_service_fee,              // NEW
     "lieferung_enabled": lieferung_enabled,                // NEW
+    "abholung_enabled": abholung_enabled,
+    "tisch_reservierung_enabled": tisch_reservierung_enabled,
     "id": id,
     "store_id": store_id,
     "msg": msg,

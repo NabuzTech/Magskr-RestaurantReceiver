@@ -54,6 +54,12 @@ class _SuperAdminOrderDetailState extends State<SuperAdminOrderDetail> {
     }
   }
 
+  String _fullAddress(String? line1, String? city, String? zip, String? country) {
+    return [line1, city, zip, country]
+        .where((part) => part != null && part.trim().isNotEmpty)
+        .join(', ');
+  }
+
   Color getStatusColor(int? status) {
     switch (status) {
       case 1:
@@ -117,7 +123,12 @@ class _SuperAdminOrderDetailState extends State<SuperAdminOrderDetail> {
     final grandTotal = subtotal - discountData + deliveryFee;
 
     var note = updatedOrder.note?.toString() ?? '';
-    String guestAddress = updatedOrder.guestShippingJson?.line1?.toString() ?? '';
+    String guestAddress = _fullAddress(
+      updatedOrder.guestShippingJson?.line1,
+      updatedOrder.guestShippingJson?.city,
+      updatedOrder.guestShippingJson?.zip,
+      updatedOrder.guestShippingJson?.country,
+    );
     String guestName = updatedOrder.guestShippingJson?.customerName?.toString() ?? '';
     String guestPhone = updatedOrder.guestShippingJson?.phone?.toString() ?? '';
     String guestEmail = updatedOrder.guestShippingJson?.email?.toString() ?? '';
@@ -263,7 +274,14 @@ class _SuperAdminOrderDetailState extends State<SuperAdminOrderDetail> {
                     // Address (only for delivery)
                     if (updatedOrder.orderType == 1)
                       Text(
-                        '${'address'.tr}: ${updatedOrder.shippingAddress?.line1 ?? guestAddress}${updatedOrder.shippingAddress?.city != null ? ', ${updatedOrder.shippingAddress?.city}' : ''}',
+                        '${'address'.tr}: ${(updatedOrder.shippingAddress?.line1 != null && updatedOrder.shippingAddress!.line1!.isNotEmpty)
+                            ? _fullAddress(
+                                updatedOrder.shippingAddress?.line1,
+                                updatedOrder.shippingAddress?.city,
+                                updatedOrder.shippingAddress?.zip,
+                                updatedOrder.shippingAddress?.country,
+                              )
+                            : guestAddress}',
                         style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
                       ),
                     const SizedBox(height: 2),

@@ -110,6 +110,12 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
       return dateTimeString;
     }
   }
+  String _fullAddress(String? line1, String? city, String? zip, String? country) {
+    return [line1, city, zip, country]
+        .where((part) => part != null && part.trim().isNotEmpty)
+        .join(', ');
+  }
+
   @override
   Widget build(BuildContext context) {
     // Use widget.historyOrder instead of historyOrder
@@ -132,7 +138,12 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
     final grandTotal = subtotal - discountData + deliveryFee;
     var delFee = (historyOrder.invoice?.deliveryFee ?? 0.0).toStringAsFixed(1);
     var Note = historyOrder.note.toString();
-    String guestAddress = historyOrder.guestShippingJson?.line1?.toString() ?? '';
+    String guestAddress = _fullAddress(
+      historyOrder.guestShippingJson?.line1,
+      historyOrder.guestShippingJson?.city,
+      historyOrder.guestShippingJson?.zip,
+      historyOrder.guestShippingJson?.country,
+    );
     String guestName = historyOrder.guestShippingJson?.customerName?.toString() ?? '';
     String guestPhone = historyOrder.guestShippingJson?.phone?.toString() ?? '';
     String guestEmail = historyOrder.guestShippingJson?.email?.toString() ?? '';
@@ -249,7 +260,12 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
                         builder: (context) {
                           String displayAddress = '';
                           if (historyOrder.shippingAddress?.line1 != null && historyOrder.shippingAddress!.line1!.isNotEmpty) {
-                            displayAddress = '${'address'.tr}: ${historyOrder.shippingAddress!.line1!}, ${historyOrder.shippingAddress?.city ?? ""}';
+                            displayAddress = '${'address'.tr}: ${_fullAddress(
+                              historyOrder.shippingAddress?.line1,
+                              historyOrder.shippingAddress?.city,
+                              historyOrder.shippingAddress?.zip,
+                              historyOrder.shippingAddress?.country,
+                            )}';
                           } else {
                             displayAddress = '${'address'.tr}: $guestAddress';
                           }

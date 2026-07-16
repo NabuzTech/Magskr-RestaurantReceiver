@@ -317,6 +317,12 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
     }
   }
 
+  String _fullAddress(String? line1, String? city, String? zip, String? country) {
+    return [line1, city, zip, country]
+        .where((part) => part != null && part.trim().isNotEmpty)
+        .join(', ');
+  }
+
   bool _isVorbestellen(String? deliveryTime) {
     if (deliveryTime == null || deliveryTime.isEmpty) return false;
     try {
@@ -358,7 +364,12 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
 
     var Note=updatedOrder.note.toString();
     var couponCode= updatedOrder.couponCode.toString();
-    String guestAddress=updatedOrder.guestShippingJson?.line1?.toString()??'';
+    String guestAddress=_fullAddress(
+      updatedOrder.guestShippingJson?.line1,
+      updatedOrder.guestShippingJson?.city,
+      updatedOrder.guestShippingJson?.zip,
+      updatedOrder.guestShippingJson?.country,
+    );
     String guestName=updatedOrder.guestShippingJson?.customerName?.toString()??'';
     String guestPhone=updatedOrder.guestShippingJson?.phone?.toString()??'';
     String guestEmail=updatedOrder.guestShippingJson?.email?.toString()??'';
@@ -509,7 +520,12 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     if (updatedOrder.orderType == 1)
                       Text(
                         '${'address'.tr}: ${(updatedOrder.shipping_address?.line1 != null && updatedOrder.shipping_address!.line1!.isNotEmpty)
-                            ? "${updatedOrder.shipping_address!.line1!}, ${updatedOrder.shipping_address?.city ?? ""}"
+                            ? _fullAddress(
+                                updatedOrder.shipping_address?.line1,
+                                updatedOrder.shipping_address?.city,
+                                updatedOrder.shipping_address?.zip,
+                                updatedOrder.shipping_address?.country,
+                              )
                             : guestAddress}',
                         style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
                       ),

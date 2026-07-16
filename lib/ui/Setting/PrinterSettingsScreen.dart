@@ -30,6 +30,8 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
   bool _autoRemoteOrderrAccept = false;
   bool _autotableBook = false;
   bool deliveryAvailable = false;
+  bool pickupEnabled = false;
+  bool reservationEnabled = false;
   List<IpAddressItem> _ipAddresses = [];
   late SharedPreferences sharedPreferences;
   List<GetPrinterIpResponseModel> ip = [];
@@ -524,6 +526,46 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                   ),
                 ),
 
+                // Pickup Enabled Toggle
+                _buildSectionContainer(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text('pickup_enabled'.tr,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+                      ),
+                      Switch(
+                        value: pickupEnabled,
+                        activeThumbColor: Colors.green,
+                        onChanged: (val) async {
+                          setState(() => pickupEnabled = val);
+                          await poststoreSetting(_autoRemoteOrderrAccept, showDialog: true, pickupEnabledValue: val);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Reservation Enabled Toggle
+                _buildSectionContainer(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text('reservation_enabled'.tr,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+                      ),
+                      Switch(
+                        value: reservationEnabled,
+                        activeThumbColor: Colors.green,
+                        onChanged: (val) async {
+                          setState(() => reservationEnabled = val);
+                          await poststoreSetting(_autoRemoteOrderrAccept, showDialog: true, reservationEnabledValue: val);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
                 // // Sync Time
                 // _buildSectionContainer(
                 //   child: Column(
@@ -841,7 +883,8 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
   }
 
   Future<void> poststoreSetting(bool autoAcceptValue, {bool showDialog = true,
-    bool? autoTableBookValue, bool? deliveryAvailableValue}) async
+    bool? autoTableBookValue, bool? deliveryAvailableValue, bool? pickupEnabledValue,
+    bool? reservationEnabledValue}) async
   {
     if (!mounted) return;
     String? storeID = sharedPreferences.getString(valueShared_STORE_KEY);
@@ -852,6 +895,8 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       "auto_print_orders_local": false,
       "auto_accept_reservations": autoTableBookValue ?? _autotableBook,
       "lieferung_enabled": deliveryAvailableValue ?? deliveryAvailable,
+      "abholung_enabled": pickupEnabledValue ?? pickupEnabled,
+      "tisch_reservierung_enabled": reservationEnabledValue ?? reservationEnabled,
       "store_id": storeID
     };
     try {
@@ -1105,6 +1150,8 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
         setState(() {
           if (!_autoAcceptUserModified) _autoRemoteOrderrAccept = result.auto_accept_orders_remote ?? false;  // CHANGE
           deliveryAvailable = result.lieferung_enabled ?? false;
+          pickupEnabled = result.abholung_enabled ?? false;
+          reservationEnabled = result.tisch_reservierung_enabled ?? false;
           _autotableBook = result.auto_accept_reservations ?? false;
         });
         print("✅ Settings loaded from server: Remote Accept = $_autoRemoteOrderrAccept");
