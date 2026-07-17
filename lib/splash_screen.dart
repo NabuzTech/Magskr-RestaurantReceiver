@@ -22,7 +22,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   late SharedPreferences _prefs;
-  final supportedLocales = ['en', 'de', 'hi', 'ch'];
+  final supportedLocales = ['en', 'ee', 'ec', 'ch', 'de'];
 
   @override
   void initState() {

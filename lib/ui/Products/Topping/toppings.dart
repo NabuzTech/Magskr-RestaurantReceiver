@@ -336,7 +336,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                 Container(
                                   child: Center(
                                     child: Text(
-                                      '€${currentPageItems[index].price?.toStringAsFixed(2) ??
+                                      '${"currency".tr}${currentPageItems[index].price?.toStringAsFixed(2) ??
                                           '0.00'}',
                                       style: const TextStyle(
                                           fontSize: 12,

@@ -105,28 +105,33 @@ class DesktopLoginScreen extends StatelessWidget {
           isDense: true,
           selectedItemBuilder: (BuildContext context) {
             return const [
-              Text('English', style: TextStyle(fontSize: 16)),
-              Text('German', style: TextStyle(fontSize: 16)),
-              Text('India', style: TextStyle(fontSize: 16)),
-              Text('CHF', style: TextStyle(fontSize: 16)),
+              Text('English (GBP)', style: TextStyle(fontSize: 16)),
+              Text('English (EURO)', style: TextStyle(fontSize: 16)),
+              Text('English (CHF)', style: TextStyle(fontSize: 16)),
+              Text('German (CHF)', style: TextStyle(fontSize: 16)),
+              Text('German (EURO)', style: TextStyle(fontSize: 16)),
             ];
           },
           items: const [
             DropdownMenuItem(
               value: 'en',
-              child: Text('English', style: TextStyle(fontSize: 16)),
+              child: Text('English (GBP)', style: TextStyle(fontSize: 16)),
             ),
             DropdownMenuItem(
-              value: 'de',
-              child: Text('German', style: TextStyle(fontSize: 16)),
+              value: 'ee',
+              child: Text('English (EURO)', style: TextStyle(fontSize: 16)),
             ),
             DropdownMenuItem(
-              value: 'hi',
-              child: Text('India', style: TextStyle(fontSize: 16)),
+              value: 'ec',
+              child: Text('English (CHF)', style: TextStyle(fontSize: 16)),
             ),
             DropdownMenuItem(
               value: 'ch',
-              child: Text('CHF', style: TextStyle(fontSize: 16)),
+              child: Text('German (CHF)', style: TextStyle(fontSize: 16)),
+            ),
+            DropdownMenuItem(
+              value: 'de',
+              child: Text('German (EURO)', style: TextStyle(fontSize: 16)),
             ),
           ],
           onChanged: (value) {

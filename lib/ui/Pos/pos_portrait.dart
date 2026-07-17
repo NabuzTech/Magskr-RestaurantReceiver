@@ -338,7 +338,7 @@ class _PosPortraitState extends State<PosPortrait> {
               ),
             ),
             Text(
-              '€ ${total.toStringAsFixed(2)}',
+              '${"currency".tr} ${total.toStringAsFixed(2)}',
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -992,7 +992,7 @@ class _PosPortraitState extends State<PosPortrait> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('€ ${controller.formatAmount(order.payment?.amount ?? 0)}',
+                Text('${"currency".tr} ${controller.formatAmount(order.payment?.amount ?? 0)}',
                     style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, fontFamily: 'Mulish')),
                 Row(
                   children: [
@@ -1194,7 +1194,7 @@ class _PosPortraitState extends State<PosPortrait> {
                             ],
                           ),
                           Text(
-                            '€${product.price.toStringAsFixed(2)}',
+                            '${"currency".tr}${product.price.toStringAsFixed(2)}',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -1571,7 +1571,7 @@ class _PosPortraitState extends State<PosPortrait> {
                             ),
                           ),
                           Text(
-                            '€ ${total.toStringAsFixed(2)}',
+                            '${"currency".tr} ${total.toStringAsFixed(2)}',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -1676,7 +1676,7 @@ class _PosPortraitState extends State<PosPortrait> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  '€ ${price.toStringAsFixed(2)}',
+                                  '${"currency".tr} ${price.toStringAsFixed(2)}',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
@@ -1914,7 +1914,7 @@ class _PosPortraitState extends State<PosPortrait> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${controller.totalPrice.value.toStringAsFixed(2)} €',
+                          '${controller.totalPrice.value.toStringAsFixed(2)} ${"currency".tr}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 22,
@@ -2233,7 +2233,7 @@ class CheckoutScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '${subtotal.toStringAsFixed(2)} €',
+                        '${subtotal.toStringAsFixed(2)} ${"currency".tr}',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
@@ -2304,7 +2304,7 @@ class CheckoutScreen extends StatelessWidget {
                       const Spacer(),
                       if (discount > 0)
                         Text(
-                          '-${discount.toStringAsFixed(2)} €',
+                          '-${discount.toStringAsFixed(2)} ${"currency".tr}',
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -2329,7 +2329,7 @@ class CheckoutScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            '${grandTotal.toStringAsFixed(2)} €',
+                            '${grandTotal.toStringAsFixed(2)} ${"currency".tr}',
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
@@ -2461,7 +2461,7 @@ class CheckoutScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '[€${(item["price"] as num).toStringAsFixed(2)}]',
+                      '[${"currency".tr}${(item["price"] as num).toStringAsFixed(2)}]',
                       style: const TextStyle(
                         fontSize: 11,
                         color: Colors.grey,
@@ -2488,7 +2488,7 @@ class CheckoutScreen extends StatelessWidget {
                // Variant
                 if (item['extras'] != null && item['extras'].toString().isNotEmpty)
                   Text(
-                    '● ${item["size"]}    [€${(item["price"] as num).toStringAsFixed(2)}]',
+                    '● ${item["size"]}    [${"currency".tr}${(item["price"] as num).toStringAsFixed(2)}]',
                     style: const TextStyle(
                       fontSize: 11,
                       color: Colors.grey,
@@ -2584,7 +2584,7 @@ class CheckoutScreen extends StatelessWidget {
               ),
               SizedBox(height: 5,),
               Text(
-                '€ ${((item["quantity"] as int) * (item["price"] as num)).toStringAsFixed(2)}',
+                '${"currency".tr} ${((item["quantity"] as int) * (item["price"] as num)).toStringAsFixed(2)}',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -3338,7 +3338,7 @@ class VariantDialog extends StatelessWidget {
                                               ],
                                             ),
                                             const SizedBox(height: 4),
-                                            Text('€${(variant.price ?? 0).toStringAsFixed(2)}',
+                                            Text('${"currency".tr}${(variant.price ?? 0).toStringAsFixed(2)}',
                                                 style: TextStyle(fontSize: 13,
                                                     fontWeight: FontWeight.w700,
                                                     fontFamily: 'Mulish',
@@ -3463,7 +3463,7 @@ class VariantDialog extends StatelessWidget {
                                                             color: const Color(0xff475569))),
                                                   ),
                                                   const SizedBox(width: 12),
-                                                  Text('€${(topping.price ?? 0).toStringAsFixed(2)}',
+                                                  Text('${"currency".tr}${(topping.price ?? 0).toStringAsFixed(2)}',
                                                       style: TextStyle(fontSize: 14,
                                                           fontFamily: 'Mulish',
                                                           fontWeight: FontWeight.w600,
@@ -3550,7 +3550,7 @@ class VariantDialog extends StatelessWidget {
                             child: Center(
                               child: Text(
                                 hasVariant
-                                    ? '${'add_to_cart_label'.tr}  •  €${total.toStringAsFixed(2)}'
+                                    ? '${'add_to_cart_label'.tr}  •  ${"currency".tr}${total.toStringAsFixed(2)}'
                                     : 'please_select_variant'.tr,
                                 style: const TextStyle(fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -4149,7 +4149,7 @@ class OrderPreviewScreen extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   '${item['quantity']}x ${item['name']}'
-                                  '${(item['size'] == null || item['size'].toString().isEmpty) ? '  [€${(item['price'] as num).toStringAsFixed(2)}]' : ''}',
+                                  '${(item['size'] == null || item['size'].toString().isEmpty) ? '  [${"currency".tr}${(item['price'] as num).toStringAsFixed(2)}]' : ''}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
@@ -4158,7 +4158,7 @@ class OrderPreviewScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '€ ${_fmt(itemTotal)}',
+                                '${"currency".tr} ${_fmt(itemTotal)}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
@@ -4172,7 +4172,7 @@ class OrderPreviewScreen extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(left: 12, top: 2),
                               child: Text(
-                                '${item['quantity']} × ${item['size']}  [€${(item['price'] as num).toStringAsFixed(2)}]',
+                                '${item['quantity']} × ${item['size']}  [${"currency".tr}${(item['price'] as num).toStringAsFixed(2)}]',
                                 style: const TextStyle(
                                     fontSize: 12,
                                     fontFamily: 'Mulish',
@@ -4234,19 +4234,19 @@ class OrderPreviewScreen extends StatelessWidget {
                   _divider(),
 
                   // ── Totals ────────────────────────────────────────────
-                  _totalsRow('subtotal'.tr, '€ ${_fmt(subtotal)}'),
+                  _totalsRow('subtotal'.tr, '${"currency".tr} ${_fmt(subtotal)}'),
                   if (discount > 0) ...[
                     const SizedBox(height: 2),
                     _totalsRow(
                       '${'discount'.tr} (${controller.manualDiscountPercent.value.toStringAsFixed(0)}%)',
-                      '-€ ${_fmt(discount)}',
+                      '-${"currency".tr} ${_fmt(discount)}',
                       valueColor: const Color(0xff00B10E),
                     ),
                   ],
                   const SizedBox(height: 4),
                   Container(height: 0.5, color: Colors.grey),
                   const SizedBox(height: 4),
-                  _totalsRow(('grand_total'.tr).toUpperCase(), '€ ${_fmt(grandTotal)}', bold: true),
+                  _totalsRow(('grand_total'.tr).toUpperCase(), '${"currency".tr} ${_fmt(grandTotal)}', bold: true),
 
                   _divider(),
 

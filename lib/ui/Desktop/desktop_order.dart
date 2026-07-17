@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class DesktopOrderScreen extends StatefulWidget {
@@ -435,7 +436,7 @@ class _DesktopOrderScreenState extends State<DesktopOrderScreen> with TickerProv
       'order_number': '#ORD${1001 + index}',
       'created_at': DateTime.now().subtract(Duration(minutes: index * 10)).toIso8601String(),
       'time': '10:${30 + index}0 AM',
-      'amount': '€${25.50 + (index * 5)}',
+      'amount': '${"currency".tr}${25.50 + (index * 5)}',
       'status': statuses[index % statuses.length],
       'delivery_time': DateTime.now().add(Duration(minutes: 30 + index * 5)).toIso8601String(),
     };

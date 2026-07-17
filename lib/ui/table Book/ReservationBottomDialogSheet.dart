@@ -290,7 +290,7 @@ class _ReportScreenBottomState extends State<ReportScreenBottom> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        "€${formatAmount(report.totalSales ?? 0)}",
+                        "${"currency".tr}${formatAmount(report.totalSales ?? 0)}",
                         style: const TextStyle(fontSize: 10, color: Colors.green),
                       ),
                     ],

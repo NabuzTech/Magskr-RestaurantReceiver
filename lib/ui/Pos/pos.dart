@@ -561,7 +561,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                       Text(
                         '${double
                             .tryParse(product.price?.toString() ?? '0')
-                            ?.toStringAsFixed(2) ?? '0.00'} €',
+                            ?.toStringAsFixed(2) ?? '0.00'} ${"currency".tr}',
                         style: TextStyle(
                           fontFamily: 'Mulish',
                           fontWeight: FontWeight.w700,
@@ -1599,7 +1599,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                                     ),
                                                   ),
                                                   Text(
-                                                    '€${((variant.price ?? 0) /
+                                                    '${"currency".tr}${((variant.price ?? 0) /
                                                         100).toStringAsFixed(
                                                         2)}',
                                                     style: TextStyle(
@@ -1754,7 +1754,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                                                             ),
                                                                           ),
                                                                           Text(
-                                                                            '€${(topping
+                                                                            '${"currency".tr}${(topping
                                                                                 .price ??
                                                                                 0)
                                                                                 .toStringAsFixed(
@@ -1808,7 +1808,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            'Weiter €${_calculateDialogTotal(controller)}',
+                            'Weiter ${"currency".tr}${_calculateDialogTotal(controller)}',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontFamily: 'Mulish',
@@ -2052,7 +2052,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
 
                         // Price
                         Text(
-                          '€ ${(item['price'] * item['quantity'])
+                          '${"currency".tr} ${(item['price'] * item['quantity'])
                               .toStringAsFixed(2)}',
                           style: TextStyle(
                             fontFamily: 'Mulish',
@@ -2168,7 +2168,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                       ),
                       Text(
                         '${controller.calculateSubtotal().toStringAsFixed(
-                            2)} €',
+                            2)} ${"currency".tr}',
                         style: TextStyle(
                           fontSize: _responsive(context, 16),
                           fontWeight: FontWeight.w700,
@@ -2192,7 +2192,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                       ),
                       Text(
                         '${controller.calculateDiscount().toStringAsFixed(
-                            2)} €',
+                            2)} ${"currency".tr}',
                         style: TextStyle(
                           fontSize: _responsive(context, 16),
                           fontWeight: FontWeight.w700,
@@ -2216,7 +2216,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                       ),
                       Text(
                         '${controller.calculateGrandTotal().toStringAsFixed(
-                            2)} €',
+                            2)} ${"currency".tr}',
                         style: TextStyle(
                           fontSize: _responsive(context, 20),
                           fontWeight: FontWeight.w700,
@@ -3969,7 +3969,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '€ ${controller.formatAmount(order.payment?.amount ?? 0)}',
+                    '${"currency".tr} ${controller.formatAmount(order.payment?.amount ?? 0)}',
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: _responsive(context, 18),

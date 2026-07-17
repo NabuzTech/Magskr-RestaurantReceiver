@@ -516,7 +516,7 @@ class LoginController extends GetxController {
   Timer? loginTimer;
   late SharedPreferences prefs;
 
-  final supportedLocales = ['en', 'de', 'hi', 'ch'];
+  final supportedLocales = ['en', 'ee', 'ec', 'ch', 'de'];
 
   @override
   void onInit() {

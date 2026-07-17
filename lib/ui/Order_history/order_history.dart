@@ -571,7 +571,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  '€${formatAmount(order.invoice?.totalAmount?.toDouble() ?? 0.0)}',
+                                  '${"currency".tr}${formatAmount(order.invoice?.totalAmount?.toDouble() ?? 0.0)}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontFamily: "Mulish",

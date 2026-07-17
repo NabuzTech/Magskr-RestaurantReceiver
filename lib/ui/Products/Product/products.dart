@@ -845,7 +845,7 @@ class _ProductsState extends State<Products> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      '€${productPrice?.toStringAsFixed(2) ?? '0.00'}',
+                                                      '${"currency".tr}${productPrice?.toStringAsFixed(2) ?? '0.00'}',
                                                       style: const TextStyle(
                                                         fontSize: 13,
                                                         fontFamily: 'Mulish',
@@ -1356,7 +1356,7 @@ class _ProductsState extends State<Products> {
                                 keyboardType:  TextInputType.text,
                                 decoration: InputDecoration(
                                   hintText: 'enter_price'.tr,
-                                  prefixText: '€ ',
+                                  prefixText: '${"currency".tr} ',
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -1386,7 +1386,7 @@ class _ProductsState extends State<Products> {
                                 keyboardType:  TextInputType.text,
                                 decoration: InputDecoration(
                                   hintText: 'opt'.tr,
-                                  prefixText: '€ ',
+                                  prefixText: '${"currency".tr} ',
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -1477,7 +1477,7 @@ class _ProductsState extends State<Products> {
                                         keyboardType:  TextInputType.text,
                                         decoration: InputDecoration(
                                           hintText: 'price'.tr,
-                                          prefixText: '€ ',
+                                          prefixText: '${"currency".tr} ',
                                           border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
                                           ),
@@ -2258,7 +2258,7 @@ class _ProductsState extends State<Products> {
                                 keyboardType:  TextInputType.text,
                                 decoration: InputDecoration(
                                   hintText: 'enter_price'.tr,
-                                  prefixText: '€ ',
+                                  prefixText: '${"currency".tr} ',
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -2288,7 +2288,7 @@ class _ProductsState extends State<Products> {
                                 keyboardType:  TextInputType.text,
                                 decoration: InputDecoration(
                                   hintText: 'opt'.tr,
-                                  prefixText: '€ ',
+                                  prefixText: '${"currency".tr} ',
                                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
@@ -2374,7 +2374,7 @@ class _ProductsState extends State<Products> {
                                         keyboardType:  TextInputType.text,
                                         decoration: InputDecoration(
                                           hintText: 'price'.tr,
-                                          prefixText: '€ ',
+                                          prefixText: '${"currency".tr} ',
                                           border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
                                           ),

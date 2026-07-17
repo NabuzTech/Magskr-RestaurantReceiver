@@ -1613,6 +1613,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                             content: Text('Delivery time updated',
                                 style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w600)),
                             backgroundColor: Colors.green,
+
                             duration: Duration(seconds: 2),
                           ),
                         );

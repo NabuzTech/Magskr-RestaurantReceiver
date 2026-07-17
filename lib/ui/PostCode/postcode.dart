@@ -335,7 +335,7 @@ class _PostcodeState extends State<Postcode> {
                                       SizedBox(
                                         width: MediaQuery.of(context).size.width * 0.26,
                                         child: Text(
-                                         '€ ${currentPageItems[index].minimumOrderAmount.toString()}',
+                                         '${"currency".tr} ${currentPageItems[index].minimumOrderAmount.toString()}',
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 12,
@@ -345,7 +345,7 @@ class _PostcodeState extends State<Postcode> {
                                       SizedBox(
                                         width: MediaQuery.of(context).size.width * 0.25,
                                         child: Text(
-                                         '€ ${currentPageItems[index].deliveryFee.toString()}',
+                                         '${"currency".tr} ${currentPageItems[index].deliveryFee.toString()}',
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 12,

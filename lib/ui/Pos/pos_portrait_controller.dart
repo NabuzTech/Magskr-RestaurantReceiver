@@ -713,7 +713,7 @@ class PosPortraitController extends GetxController {
         group.toppings?.forEach((topping) {
           if (selectedToppingIds.contains(topping.id)) {
             toppingPrice += topping.price ?? 0.0;
-            toppingDetails.add('${topping.name} [€${(topping.price ?? 0.0).toStringAsFixed(2)}]');
+            toppingDetails.add('${topping.name} [${"currency".tr}${(topping.price ?? 0.0).toStringAsFixed(2)}]');
 
             toppingDataList.add({
               'topping_id': topping.id,

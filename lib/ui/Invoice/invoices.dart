@@ -553,7 +553,7 @@ class _InvoicesState extends State<Invoices> {
                   const SizedBox(height: 12),
                   _buildInfoRow(
                       'amount'.tr,
-                      '€${order.invoice?.totalAmount?.toStringAsFixed(2) ?? '0.00'}'),
+                      '${"currency".tr}${order.invoice?.totalAmount?.toStringAsFixed(2) ?? '0.00'}'),
                   const SizedBox(height: 20),
                   Text(
                     'payment_type'.tr,
@@ -1095,7 +1095,7 @@ class _InvoicesState extends State<Invoices> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '€${amount?.toStringAsFixed(2) ?? '0.00'}',
+              '${"currency".tr}${amount?.toStringAsFixed(2) ?? '0.00'}',
               style: const TextStyle(
                 fontWeight: FontWeight.w800,
                 fontFamily: 'Mulish',

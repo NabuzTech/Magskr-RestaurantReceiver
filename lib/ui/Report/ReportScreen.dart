@@ -504,7 +504,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
               ),
             )
                 : Text(
-              '€ ${formatAmount(_monthTotalSales)}',
+              '${"currency".tr} ${formatAmount(_monthTotalSales)}',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14,

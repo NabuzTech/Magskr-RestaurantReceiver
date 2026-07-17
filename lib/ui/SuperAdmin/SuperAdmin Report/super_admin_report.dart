@@ -308,7 +308,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
               if (dailyReport != null) ...[
                 SvgPicture.asset('assets/images/ic_report.svg', height: 12, width: 12),
                 const SizedBox(height: 2),
-                Text("€${formatAmount(dailyReport.totalSales ?? 0)}", // ✅ Added € symbol
+                Text("${"currency".tr}${formatAmount(dailyReport.totalSales ?? 0)}",
                     style: const TextStyle(fontSize: 10, color: Colors.green)),
               ]
             ],
@@ -382,7 +382,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
               ),
             )
                 : Text(
-              '€ ${formatAmount(_monthTotalSales)}',
+              '${"currency".tr} ${formatAmount(_monthTotalSales)}',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
@@ -576,15 +576,15 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
   Map<String, Map<String, String>> _getMonthlyReportData(Report report) {
     return {
       'sales': {
-        "total_sales".tr: '€ ${formatAmount(report.totalSales ?? 0.0)}',
+        "total_sales".tr: '${"currency".tr} ${formatAmount(report.totalSales ?? 0.0)}',
         "total_order".tr: '${report.totalOrders ?? 0}',
-        "total_tax".tr: '€ ${formatAmount(report.totalTax ?? 0.0)}',
-        "cash_total".tr: '€ ${formatAmount(report.cashTotal ?? 0.0)}',
-        "online".tr: '€ ${formatAmount(report.onlineTotal ?? 0.0)}',
-        "net_subtotal".tr: '€ ${formatAmount(report.netTotal ?? 0.0)}',
-        "discounts".tr: '€ ${formatAmount(report.discountTotal ?? 0.0)}',
-        "delivery_fee".tr: '€ ${formatAmount(report.deliveryTotal ?? 0.0)}',
-        "sale".tr: '€ ${formatAmount(report.totalSalesDelivery ?? 0.0)}',
+        "total_tax".tr: '${"currency".tr} ${formatAmount(report.totalTax ?? 0.0)}',
+        "cash_total".tr: '${"currency".tr} ${formatAmount(report.cashTotal ?? 0.0)}',
+        "online".tr: '${"currency".tr} ${formatAmount(report.onlineTotal ?? 0.0)}',
+        "net_subtotal".tr: '${"currency".tr} ${formatAmount(report.netTotal ?? 0.0)}',
+        "discounts".tr: '${"currency".tr} ${formatAmount(report.discountTotal ?? 0.0)}',
+        "delivery_fee".tr: '${"currency".tr} ${formatAmount(report.deliveryTotal ?? 0.0)}',
+        "sale".tr: '${"currency".tr} ${formatAmount(report.totalSalesDelivery ?? 0.0)}',
       },
       'payment': {"cash".tr: '${report.paymentMethods?.cash ?? 0}'},
       'orderType': {
@@ -598,8 +598,8 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
         "decline".tr: '${report.approvalStatuses?.declined ?? 0}',
       },
       'tax': {
-        "19%": '€ ${formatAmount(report.taxBreakdown?.d19 ?? 0.0)}',
-        "7%": '€ ${formatAmount(report.taxBreakdown?.d7 ?? 0.0)}',
+        "19%": '${"currency".tr} ${formatAmount(report.taxBreakdown?.d19 ?? 0.0)}',
+        "7%": '${"currency".tr} ${formatAmount(report.taxBreakdown?.d7 ?? 0.0)}',
       },
     };
   }
@@ -694,7 +694,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
         }
       }
 
-      print('💰 Total calculated: €$total from $reportCount reports');
+      print('💰 Total calculated: ${"currency".tr}$total from $reportCount reports');
 
       if (mounted) {
         setState(() {
@@ -786,15 +786,15 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
     if (report == null) {
       return {
         'sales': {
-          "total_sales".tr: '€ 0.00',
+          "total_sales".tr: '${"currency".tr} 0.00',
           "total_order".tr: '0',
-          "total_tax".tr: '€ 0.00',
-          "cash_total".tr: '€ 0.00',
-          "online".tr: '€ 0.00',
-          "net_subtotal".tr: '€ 0.00',
+          "total_tax".tr: '${"currency".tr} 0.00',
+          "cash_total".tr: '${"currency".tr} 0.00',
+          "online".tr: '${"currency".tr} 0.00',
+          "net_subtotal".tr: '${"currency".tr} 0.00',
           "discounts".tr: '0',
-          "delivery_fee".tr: '€ 0.00',
-          "sale".tr: '€ 0.00',
+          "delivery_fee".tr: '${"currency".tr} 0.00',
+          "sale".tr: '${"currency".tr} 0.00',
         },
         'payment': {"cash".tr: '0'},
         'orderType': {
@@ -808,23 +808,23 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           "decline".tr: '0',
         },
         'tax': {
-          "19%": '€ 0.00',
-          "7%": '€ 0.00',
+          "19%": '${"currency".tr} 0.00',
+          "7%": '${"currency".tr} 0.00',
         },
       };
     }
 
     return {
       'sales': {
-        "total_sales".tr: '€ ${formatAmount(report.totalSales ?? 0.0)}',
+        "total_sales".tr: '${"currency".tr} ${formatAmount(report.totalSales ?? 0.0)}',
         "total_order".tr: '${report.totalOrders ?? 0}',
-        "total_tax".tr: '€ ${formatAmount(report.totalTax ?? 0.0)}',
-        "cash_total".tr: '€ ${formatAmount(report.cashTotal ?? 0.0)}',
-        "online".tr: '€ ${formatAmount(report.onlineTotal ?? 0.0)}',
-        "net_subtotal".tr: '€ ${formatAmount(report.data?.netTotal ?? 0.0)}',
+        "total_tax".tr: '${"currency".tr} ${formatAmount(report.totalTax ?? 0.0)}',
+        "cash_total".tr: '${"currency".tr} ${formatAmount(report.cashTotal ?? 0.0)}',
+        "online".tr: '${"currency".tr} ${formatAmount(report.onlineTotal ?? 0.0)}',
+        "net_subtotal".tr: '${"currency".tr} ${formatAmount(report.data?.netTotal ?? 0.0)}',
         "discounts".tr: '${(report.data?.discountTotal ?? 0).toInt()}',
-        "delivery_fee".tr: '€ ${formatAmount(report.data?.deliveryTotal?.toDouble() ?? 0.0)}',
-        "sale".tr: '€ ${formatAmount(report.data?.totalSalesDelivery ?? 0.0)}',
+        "delivery_fee".tr: '${"currency".tr} ${formatAmount(report.data?.deliveryTotal?.toDouble() ?? 0.0)}',
+        "sale".tr: '${"currency".tr} ${formatAmount(report.data?.totalSalesDelivery ?? 0.0)}',
       },
       'payment': {"cash".tr: '${report.data?.paymentMethods['cash'] ?? 0}'},
       'orderType': {
@@ -838,8 +838,8 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
         "decline".tr: '${report.data?.approvalStatuses['declined'] ?? 0}',
       },
       'tax': {
-        "19%": '€ ${formatAmount(report.data?.taxBreakdown?.d19 ?? 0.0)}',
-        "7%": '€ ${formatAmount(report.data?.taxBreakdown?.d7 ?? 0.0)}',
+        "19%": '${"currency".tr} ${formatAmount(report.data?.taxBreakdown?.d19 ?? 0.0)}',
+        "7%": '${"currency".tr} ${formatAmount(report.data?.taxBreakdown?.d7 ?? 0.0)}',
       },
     };
   }

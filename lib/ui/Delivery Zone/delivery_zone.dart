@@ -250,7 +250,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                                   width:
                                       MediaQuery.of(context).size.width * 0.20,
                                   child: Text(
-                                    '€ ${zone.minimumOrderAmount ?? 'N/A'}',
+                                    '${"currency".tr} ${zone.minimumOrderAmount ?? 'N/A'}',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
@@ -261,7 +261,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                                   width:
                                       MediaQuery.of(context).size.width * 0.18,
                                   child: Text(
-                                    '€ ${zone.deliveryFee ?? 'N/A'}',
+                                    '${"currency".tr} ${zone.deliveryFee ?? 'N/A'}',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
