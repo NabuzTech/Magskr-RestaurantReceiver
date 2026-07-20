@@ -1404,10 +1404,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
 
   void _showCancelReasonDialog() {
     final reasonController = TextEditingController();
-    int wordCount = 0;
-
-    bool enoughWords(String text) =>
-        text.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length >= 5;
+    bool enoughWords(String text) => text.trim().isNotEmpty;
 
     showDialog(
       context: context,
@@ -1427,15 +1424,8 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   ),
-                  onChanged: (v) => setDialogState(() => wordCount =
-                      v.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length),
+                  onChanged: (v) => setDialogState(() {}),
                 ),
-                if (wordCount > 0 && wordCount < 5)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text('min_5_words'.tr,
-                        style: const TextStyle(color: Colors.red, fontSize: 12)),
-                  ),
               ],
             ),
             actions: [

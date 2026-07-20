@@ -19,7 +19,7 @@
     <application
         android:allowBackup="false"
         android:fullBackupContent="false"
-        android:label="food_app"
+        android:label="Magskr Restaurant Receiver"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
