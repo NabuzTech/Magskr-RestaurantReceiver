@@ -335,7 +335,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ),
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0),
-                  child: Text('${'version'.tr}: 2.3(1)', style: const TextStyle(
+                  child: Text('${'version'.tr}: 2.4(1)', style: const TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 15
                   ),),

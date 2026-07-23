@@ -50,8 +50,11 @@ android {
     buildTypes {
         release {
             signingConfig hasReleaseKeystore ? signingConfigs.release : signingConfigs.debug
-            minifyEnabled true
-            shrinkResources true
+            // ponytail: R8/shrinking disabled — release-only crash on launch (Android 11 tester device)
+            // with no logcat access to identify the stripped class. Re-enable once a crash log is
+            // available to write targeted -keep rules in proguard-rules.pro and verify against.
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }

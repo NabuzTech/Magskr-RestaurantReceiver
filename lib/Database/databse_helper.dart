@@ -1069,12 +1069,23 @@ class DatabaseHelper {
       print('💾 DB SAVE - Item: product_id=${item['product_id']},'
           'variant_id=${item['variant_id']}, qty=${item['quantity']}');
 
+      // ✅ 'price' is the combined total (product + variant + toppings);
+      // unit_price must exclude toppings since screens add toppingsTotal back on top.
+      double toppingsSum = 0.0;
+      if (item['toppings'] is List) {
+        for (var t in item['toppings']) {
+          toppingsSum += ((t['price'] as num?)?.toDouble() ?? 0.0) *
+              ((t['quantity'] as num?)?.toDouble() ?? 1.0);
+        }
+      }
+      double unitPrice = ((item['price'] as num?)?.toDouble() ?? 0.0) - toppingsSum;
+
       int itemId = await db.insert('order_items', {
         'order_id': orderId,
         'note': item['note'] ?? '',
         'product_id': item['product_id'],
         'quantity': item['quantity'],
-        'unit_price': item['price'],
+        'unit_price': unitPrice,
         'variant_id': item['variant_id'] ?? 0,
       });
 

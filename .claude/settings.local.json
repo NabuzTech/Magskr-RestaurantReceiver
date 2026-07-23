@@ -12,7 +12,13 @@
       "Bash(dart analyze *)",
       "Skill(run)",
       "Bash(sed -n '6,645p' AppTranslations.dart)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:pub.dev)",
+      "Bash(flutter pub *)",
+      "Bash(adb devices *)",
+      "Bash(/c/Users/hp/AppData/Local/Android/Sdk/platform-tools/adb.exe devices *)",
+      "Bash(/c/Users/hp/AppData/Local/Android/Sdk/platform-tools/adb.exe -s VB52218V21261 logcat -c)"
     ]
   }
 }

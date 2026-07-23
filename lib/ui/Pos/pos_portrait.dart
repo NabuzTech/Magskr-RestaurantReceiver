@@ -25,7 +25,6 @@ class PosPortrait extends StatefulWidget {
 }
 
 class _PosPortraitState extends State<PosPortrait> {
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Offset? _fabPosition;
 
@@ -35,7 +34,6 @@ class _PosPortraitState extends State<PosPortrait> {
     // ✅ Close drawer if open
     if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
       Navigator.of(context).pop();
-
     }
   }
 
@@ -60,7 +58,8 @@ class _PosPortraitState extends State<PosPortrait> {
         drawer: CustomDrawer(onSelectTab: _openTab),
         backgroundColor: const Color(0xffFAFCFF),
         bottomNavigationBar: Obx(() {
-          final showPosBar = !controller.showOrderTypeSelection.value &&
+          final showPosBar =
+              !controller.showOrderTypeSelection.value &&
               !controller.showOrderOverlay.value &&
               !controller.showSavedOrdersScreen.value;
           if (!showPosBar) return const SizedBox.shrink();
@@ -74,76 +73,86 @@ class _PosPortraitState extends State<PosPortrait> {
             return _buildSavedOrdersScreen(controller);
           }
           return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 350),
-              transitionBuilder: (child, animation) {
-                final offset = controller.showOrderTypeSelection.value
-                    ? const Offset(0, -1)   // selection screen: upar se aata hai
-                    : const Offset(0, 1);   // product screen: niche se aata hai
-                return SlideTransition(
-                  position: Tween<Offset>(begin: offset, end: Offset.zero)
-                      .animate(animation),
-                  child: child,
-                );
-              },
-              child: controller.showOrderTypeSelection.value
-                  ? KeyedSubtree(
-                key: const ValueKey('selection'),
-                child: _buildOrderTypeSelectionScreen(controller),
-              )
-                  : controller.showCheckout.value
-                  ? KeyedSubtree(
-                key: const ValueKey('checkout'),
-                child: CheckoutScreen(controller: controller),
-              )
-                  : KeyedSubtree(
-                  key: const ValueKey('main'),
-                  child: Stack(
-                    children: [
-              Column(
-                children: [
-                  const SizedBox(height: 40),
-                 // _buildPortraitHeader(controller),
-                  _buildSelectedOrderTypeBar(controller),
-                  Expanded(
-                    child: Row(
+            duration: const Duration(milliseconds: 350),
+            transitionBuilder: (child, animation) {
+              final offset = controller.showOrderTypeSelection.value
+                  ? const Offset(0, -1) // selection screen: upar se aata hai
+                  : const Offset(0, 1); // product screen: niche se aata hai
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: offset,
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              );
+            },
+            child: controller.showOrderTypeSelection.value
+                ? KeyedSubtree(
+                    key: const ValueKey('selection'),
+                    child: _buildOrderTypeSelectionScreen(controller),
+                  )
+                : controller.showCheckout.value
+                ? KeyedSubtree(
+                    key: const ValueKey('checkout'),
+                    child: CheckoutScreen(controller: controller),
+                  )
+                : KeyedSubtree(
+                    key: const ValueKey('main'),
+                    child: Stack(
                       children: [
+                        Column(
+                          children: [
+                            const SizedBox(height: 40),
+                            // _buildPortraitHeader(controller),
+                            _buildSelectedOrderTypeBar(controller),
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Obx(() {
+                                    if (!controller.isSearching.value) {
+                                      return _buildPortraitSidebar(controller);
+                                    }
+                                    return const SizedBox.shrink();
+                                  }),
+                                  Expanded(
+                                    child: _buildPortraitContent(
+                                      controller,
+                                      context,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        _buildDraggableFab(controller, context),
+                        VariantDialog(controller: controller),
+                        PostcodeDialog(controller: controller),
                         Obx(() {
-                          if (!controller.isSearching.value) {
-                            return _buildPortraitSidebar(controller);
+                          if (controller.showTimeBottomSheet.value) {
+                            return GestureDetector(
+                              onTap: () =>
+                                  controller.showTimeBottomSheet.value = false,
+                              child: Container(
+                                color: Colors.black.withOpacity(0.5),
+                                child: Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: GestureDetector(
+                                    onTap: () {},
+                                    child: TimeSelectionBottomSheet(
+                                      controller: controller,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
                           }
                           return const SizedBox.shrink();
                         }),
-                        Expanded(
-                          child: _buildPortraitContent(controller, context),
-                        ),
                       ],
                     ),
                   ),
-                ],
-              ),
-              _buildDraggableFab(controller, context),
-              VariantDialog(controller: controller),
-              PostcodeDialog(controller: controller),
-              Obx(() {
-                if (controller.showTimeBottomSheet.value) {
-                  return GestureDetector(
-                    onTap: () => controller.showTimeBottomSheet.value = false,
-                    child: Container(
-                      color: Colors.black.withOpacity(0.5),
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: TimeSelectionBottomSheet(controller: controller),
-                        ),
-                      ),
-                    ),
-                  );
-                }
-                return const SizedBox.shrink();
-              }),
-            ],
-          )));
+          );
         }),
       ),
     );
@@ -282,9 +291,12 @@ class _PosPortraitState extends State<PosPortrait> {
     final List items = draft['cartItems'] as List;
     final Map details = draft['customerDetails'] as Map;
     final String customerName = details['name']?.toString().trim() ?? '';
-    final int localOrderNumber = draft['localOrderNumber'] as int? ?? (index + 1);
+    final int localOrderNumber =
+        draft['localOrderNumber'] as int? ?? (index + 1);
     final String orderLabel = '${'order_label'.tr} - $localOrderNumber';
-    final String itemWord = items.length == 1 ? 'item_singular'.tr : 'item_plural'.tr;
+    final String itemWord = items.length == 1
+        ? 'item_singular'.tr
+        : 'item_plural'.tr;
     final String subtitle = customerName.isNotEmpty
         ? '$customerName / ${items.length} $itemWord'
         : '${items.length} $itemWord';
@@ -311,7 +323,11 @@ class _PosPortraitState extends State<PosPortrait> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.bookmark_rounded, color: Color(0xff0C831F), size: 22),
+            const Icon(
+              Icons.bookmark_rounded,
+              color: Color(0xff0C831F),
+              size: 22,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -350,7 +366,11 @@ class _PosPortraitState extends State<PosPortrait> {
               onTap: () => controller.deleteDraft(index),
               child: Padding(
                 padding: const EdgeInsets.all(4),
-                child: Icon(Icons.delete_outline, size: 25, color: Colors.red.shade300),
+                child: Icon(
+                  Icons.delete_outline,
+                  size: 25,
+                  color: Colors.red.shade300,
+                ),
               ),
             ),
           ],
@@ -360,19 +380,19 @@ class _PosPortraitState extends State<PosPortrait> {
   }
 
   Widget _buildOrderTypeSelectionBtn(
-      PosPortraitController controller, {
-        required String label,
-        required String icon,
-        required String value,
-        required bool enabled,
-      }) {
+    PosPortraitController controller, {
+    required String label,
+    required String icon,
+    required String value,
+    required bool enabled,
+  }) {
     return GestureDetector(
       onTap: enabled
           ? () {
-        controller.selectedOrderType.value = value;
-        // Slide animation ke saath screen switch
-        controller.showOrderTypeSelection.value = false;
-      }
+              controller.selectedOrderType.value = value;
+              // Slide animation ke saath screen switch
+              controller.showOrderTypeSelection.value = false;
+            }
           : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
@@ -386,7 +406,13 @@ class _PosPortraitState extends State<PosPortrait> {
             width: enabled ? 1.5 : 1,
           ),
           boxShadow: enabled
-              ? [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 6, offset: const Offset(0, 2))]
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
               : [],
         ),
         child: Row(
@@ -405,7 +431,9 @@ class _PosPortraitState extends State<PosPortrait> {
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Mulish',
-                  color: enabled ? const Color(0xff0B1928) : Colors.grey.shade400,
+                  color: enabled
+                      ? const Color(0xff0B1928)
+                      : Colors.grey.shade400,
                 ),
               ),
             ),
@@ -418,18 +446,26 @@ class _PosPortraitState extends State<PosPortrait> {
                 ),
                 child: Text(
                   'coming_soon'.tr,
-                  style: const TextStyle(fontSize: 10, color: Colors.grey, fontFamily: 'Mulish'),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey,
+                    fontFamily: 'Mulish',
+                  ),
                 ),
               ),
             if (enabled)
-              const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xff0C831F)),
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: Color(0xff0C831F),
+              ),
           ],
         ),
       ),
     );
   }
 
-// ── 2. Selected order type bar (product screen ke top pe) ──────────────
+  // ── 2. Selected order type bar (product screen ke top pe) ──────────────
   Widget _buildSelectedOrderTypeBar(PosPortraitController controller) {
     return Obx(() {
       final selected = controller.selectedOrderType.value;
@@ -462,8 +498,11 @@ class _PosPortraitState extends State<PosPortrait> {
                     children: [
                       SvgPicture.asset(
                         'assets/images/delivery-icon.svg',
-                        height: 14, width: 14,
-                        color: selected == 'Lieferzeit' ? Colors.white : Colors.black,
+                        height: 14,
+                        width: 14,
+                        color: selected == 'Lieferzeit'
+                            ? Colors.white
+                            : Colors.black,
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -472,7 +511,9 @@ class _PosPortraitState extends State<PosPortrait> {
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'Mulish',
-                          color: selected == 'Lieferzeit' ? Colors.white : Colors.black,
+                          color: selected == 'Lieferzeit'
+                              ? Colors.white
+                              : Colors.black,
                         ),
                       ),
                     ],
@@ -502,8 +543,11 @@ class _PosPortraitState extends State<PosPortrait> {
                     children: [
                       SvgPicture.asset(
                         'assets/images/pickup-icon.svg',
-                        height: 14, width: 14,
-                        color: selected == 'Abholzeit' ? Colors.white : Colors.black,
+                        height: 14,
+                        width: 14,
+                        color: selected == 'Abholzeit'
+                            ? Colors.white
+                            : Colors.black,
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -512,7 +556,9 @@ class _PosPortraitState extends State<PosPortrait> {
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'Mulish',
-                          color: selected == 'Abholzeit' ? Colors.white : Colors.black,
+                          color: selected == 'Abholzeit'
+                              ? Colors.white
+                              : Colors.black,
                         ),
                       ),
                     ],
@@ -521,17 +567,21 @@ class _PosPortraitState extends State<PosPortrait> {
               ),
             ),
             InkWell(
-              onTap: controller.isRefreshing.value ? null : controller.refreshData,
+              onTap: controller.isRefreshing.value
+                  ? null
+                  : controller.refreshData,
               child: Container(
                 padding: EdgeInsets.all(5),
                 margin: EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: Color(0xffD5E6FF),width: 1)
+                  border: Border.all(color: Color(0xffD5E6FF), width: 1),
                 ),
-                child: Center(child: SvgPicture.asset('assets/images/refresh.svg')),
+                child: Center(
+                  child: SvgPicture.asset('assets/images/refresh.svg'),
+                ),
               ),
-            )
+            ),
           ],
         ),
       );
@@ -553,7 +603,11 @@ class _PosPortraitState extends State<PosPortrait> {
                 color: const Color(0xffF5F5F5),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const Icon(Icons.arrow_back, size: 18, color: Color(0xff0B1928)),
+              child: const Icon(
+                Icons.arrow_back,
+                size: 18,
+                color: Color(0xff0B1928),
+              ),
             ),
           ),
           InkWell(
@@ -562,7 +616,11 @@ class _PosPortraitState extends State<PosPortrait> {
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Image.asset('assets/images/mirch.png', height: 25, width: 25),
+              child: Image.asset(
+                'assets/images/mirch.png',
+                height: 25,
+                width: 25,
+              ),
             ),
           ),
           Expanded(
@@ -608,7 +666,11 @@ class _PosPortraitState extends State<PosPortrait> {
                     if (controller.searchQuery.value.isNotEmpty) {
                       return GestureDetector(
                         onTap: controller.clearSearch,
-                        child: const Icon(Icons.clear, size: 15, color: Colors.grey),
+                        child: const Icon(
+                          Icons.clear,
+                          size: 15,
+                          color: Colors.grey,
+                        ),
                       );
                     }
                     return const SizedBox.shrink();
@@ -617,32 +679,38 @@ class _PosPortraitState extends State<PosPortrait> {
               ),
             ),
           ),
-          Obx(() => GestureDetector(
-            onTap: controller.isRefreshing.value ? null : controller.refreshData,
-            child: Container(
-              padding: const EdgeInsets.all(6),
-              margin: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: const Color(0xffDDEAFF), width: 1),
-              ),
-              child: controller.isRefreshing.value
-                  ? const SizedBox(
-                width: 15,
-                height: 15,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xffE31E24)),
+          Obx(
+            () => GestureDetector(
+              onTap: controller.isRefreshing.value
+                  ? null
+                  : controller.refreshData,
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                margin: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: const Color(0xffDDEAFF), width: 1),
                 ),
-              )
-                  : const Icon(
-                Icons.refresh,
-                color: Color(0xffE31E24),
-                size: 15,
+                child: controller.isRefreshing.value
+                    ? const SizedBox(
+                        width: 15,
+                        height: 15,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xffE31E24),
+                          ),
+                        ),
+                      )
+                    : const Icon(
+                        Icons.refresh,
+                        color: Color(0xffE31E24),
+                        size: 15,
+                      ),
               ),
             ),
-          )),
+          ),
         ],
       ),
     );
@@ -671,17 +739,20 @@ class _PosPortraitState extends State<PosPortrait> {
             ScrollablePositionedList.builder(
               itemScrollController: controller.sidebarScrollController,
               itemPositionsListener: controller.sidebarPositionsListener,
-              itemCount: controller.categories.length,   // ✅ filtered list
+              itemCount: controller.categories.length, // ✅ filtered list
               itemBuilder: (context, index) {
-                bool isSelected = controller.selectedCategoryIndex.value == index;
-                var category = controller.categories[index];  // ✅ CategoryData
+                bool isSelected =
+                    controller.selectedCategoryIndex.value == index;
+                var category = controller.categories[index]; // ✅ CategoryData
 
                 return GestureDetector(
                   onTap: () => controller.scrollToCategory(index),
                   child: Container(
                     height: 80,
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xffFAFCFF) : Colors.white,
+                      color: isSelected
+                          ? const Color(0xffFAFCFF)
+                          : Colors.white,
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -691,13 +762,17 @@ class _PosPortraitState extends State<PosPortrait> {
                           height: 45,
                           child: ClipOval(
                             child: CachedNetworkImage(
-                              imageUrl: controller.getTrimmedImageUrl(category.imageUrl),
+                              imageUrl: controller.getTrimmedImageUrl(
+                                category.imageUrl,
+                              ),
                               fit: BoxFit.cover,
                               placeholder: (context, url) => const Center(
                                 child: SizedBox(
                                   width: 20,
                                   height: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 ),
                               ),
                               errorWidget: (context, url, error) => const Icon(
@@ -718,9 +793,13 @@ class _PosPortraitState extends State<PosPortrait> {
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 9,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
                               fontFamily: 'Mulish',
-                              color: isSelected ? const Color(0xff0C831F) : Colors.black,
+                              color: isSelected
+                                  ? const Color(0xff0C831F)
+                                  : Colors.black,
                             ),
                           ),
                         ),
@@ -751,7 +830,10 @@ class _PosPortraitState extends State<PosPortrait> {
   }
 
   // ─── ORDERS SECTION ────────────────────────────────────────────────────
-  Widget _buildOrdersSection(PosPortraitController controller, BuildContext context) {
+  Widget _buildOrdersSection(
+    PosPortraitController controller,
+    BuildContext context,
+  ) {
     return SafeArea(
       child: Column(
         children: [
@@ -776,36 +858,67 @@ class _PosPortraitState extends State<PosPortrait> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Image.asset('assets/images/mirch.png', height: 22, width: 22),
+                    Image.asset(
+                      'assets/images/mirch.png',
+                      height: 22,
+                      width: 22,
+                    ),
                     const SizedBox(width: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('orders_title'.tr,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Mulish')),
-                        Text(DateFormat('d MMMM, y').format(DateTime.now()),
-                            style: const TextStyle(fontSize: 12, fontFamily: 'Mulish')),
+                        Text(
+                          'orders_title'.tr,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Mulish',
+                          ),
+                        ),
+                        Text(
+                          DateFormat('d MMMM, y').format(DateTime.now()),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'Mulish',
+                          ),
+                        ),
                       ],
                     ),
                   ],
                 ),
                 Row(
                   children: [
-                    Obx(() => Text('${'total'.tr}: ${controller.orderStats['totalOrders']}',
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, fontFamily: 'Mulish'))),
+                    Obx(
+                      () => Text(
+                        '${'total'.tr}: ${controller.orderStats['totalOrders']}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          fontFamily: 'Mulish',
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: 6),
                     GestureDetector(
                       onTap: () => controller.loadOrders(),
                       child: Container(
                         padding: const EdgeInsets.all(8),
-                        child: const Icon(Icons.refresh, color: Color(0xffE31E24), size: 20),
+                        child: const Icon(
+                          Icons.refresh,
+                          color: Color(0xffE31E24),
+                          size: 20,
+                        ),
                       ),
                     ),
                     GestureDetector(
                       onTap: () => controller.syncLocalOrders(),
                       child: Container(
                         padding: const EdgeInsets.all(8),
-                        child: const Icon(Icons.sync, color: Color(0xffE31E24), size: 20),
+                        child: const Icon(
+                          Icons.sync,
+                          color: Color(0xffE31E24),
+                          size: 20,
+                        ),
                       ),
                     ),
                   ],
@@ -814,21 +927,35 @@ class _PosPortraitState extends State<PosPortrait> {
             ),
           ),
           // Stats row
-          Obx(() => SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: Row(
-              children: [
-                _orderStatChip('${'accepted'.tr} ${controller.orderStats['accepted']}', Colors.green.withOpacity(0.1)),
-                const SizedBox(width: 8),
-                _orderStatChip('${'decline'.tr} ${controller.orderStats['declined']}', Colors.red.withOpacity(0.1)),
-                const SizedBox(width: 8),
-                _orderStatChip('${'pickup'.tr} ${controller.orderStats['pickup']}', Colors.blue.withOpacity(0.1)),
-                const SizedBox(width: 8),
-                _orderStatChip('${'delivery'.tr} ${controller.orderStats['delivery']}', Colors.purple.withOpacity(0.1)),
-              ],
+          Obx(
+            () => SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Row(
+                children: [
+                  _orderStatChip(
+                    '${'accepted'.tr} ${controller.orderStats['accepted']}',
+                    Colors.green.withOpacity(0.1),
+                  ),
+                  const SizedBox(width: 8),
+                  _orderStatChip(
+                    '${'decline'.tr} ${controller.orderStats['declined']}',
+                    Colors.red.withOpacity(0.1),
+                  ),
+                  const SizedBox(width: 8),
+                  _orderStatChip(
+                    '${'pickup'.tr} ${controller.orderStats['pickup']}',
+                    Colors.blue.withOpacity(0.1),
+                  ),
+                  const SizedBox(width: 8),
+                  _orderStatChip(
+                    '${'delivery'.tr} ${controller.orderStats['delivery']}',
+                    Colors.purple.withOpacity(0.1),
+                  ),
+                ],
+              ),
             ),
-          )),
+          ),
           // Orders list
           Expanded(child: _buildOrdersList(controller, context)),
         ],
@@ -844,16 +971,30 @@ class _PosPortraitState extends State<PosPortrait> {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Colors.grey.withOpacity(0.2)),
       ),
-      child: Text(text,
-          style: const TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 12, color: Colors.black87)),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontFamily: 'Mulish',
+          fontWeight: FontWeight.w700,
+          fontSize: 12,
+          color: Colors.black87,
+        ),
+      ),
     );
   }
 
-  Widget _buildOrdersList(PosPortraitController controller, BuildContext context) {
+  Widget _buildOrdersList(
+    PosPortraitController controller,
+    BuildContext context,
+  ) {
     return Obx(() {
       if (controller.isLoadingOrders.value) {
         return Center(
-          child: Lottie.asset('assets/animations/burger.json', width: 120, height: 120),
+          child: Lottie.asset(
+            'assets/animations/burger.json',
+            width: 120,
+            height: 120,
+          ),
         );
       }
       final allOrders = [
@@ -865,9 +1006,20 @@ class _PosPortraitState extends State<PosPortrait> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Lottie.asset('assets/animations/empty.json', width: 120, height: 120),
-              Text('no_order'.tr,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey, fontFamily: 'Mulish')),
+              Lottie.asset(
+                'assets/animations/empty.json',
+                width: 120,
+                height: 120,
+              ),
+              Text(
+                'no_order'.tr,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                  fontFamily: 'Mulish',
+                ),
+              ),
             ],
           ),
         );
@@ -884,7 +1036,11 @@ class _PosPortraitState extends State<PosPortrait> {
     });
   }
 
-  Widget _buildOrderCard(PosPortraitController controller, Order order, bool isLocalOrder) {
+  Widget _buildOrderCard(
+    PosPortraitController controller,
+    Order order,
+    bool isLocalOrder,
+  ) {
     DateTime dateTime;
     try {
       dateTime = DateTime.parse(order.createdAt.toString());
@@ -900,18 +1056,24 @@ class _PosPortraitState extends State<PosPortrait> {
     Color containerColor() {
       if (order.source == 'pos') return const Color(0xffF7F3FF);
       switch (order.approvalStatus) {
-        case 2: return const Color(0xffEBFFF4);
-        case 3: return const Color(0xffFFEFEF);
-        default: return Colors.white;
+        case 2:
+          return const Color(0xffEBFFF4);
+        case 3:
+          return const Color(0xffFFEFEF);
+        default:
+          return Colors.white;
       }
     }
 
     Color borderColor() {
       if (order.source == 'pos') return const Color(0xffB8ABD1);
       switch (order.approvalStatus) {
-        case 2: return const Color(0xffC3F2D9);
-        case 3: return const Color(0xffFFD0D0);
-        default: return Colors.grey.withOpacity(0.2);
+        case 2:
+          return const Color(0xffC3F2D9);
+        case 3:
+          return const Color(0xffFFD0D0);
+        default:
+          return Colors.grey.withOpacity(0.2);
       }
     }
 
@@ -940,8 +1102,8 @@ class _PosPortraitState extends State<PosPortrait> {
                         order.orderType == 1
                             ? 'assets/images/ic_delivery.svg'
                             : order.orderType == 2
-                                ? 'assets/images/ic_pickup.svg'
-                                : 'assets/images/table.svg',
+                            ? 'assets/images/ic_pickup.svg'
+                            : 'assets/images/table.svg',
                         height: 12,
                         width: 12,
                         color: Colors.white,
@@ -954,12 +1116,23 @@ class _PosPortraitState extends State<PosPortrait> {
                         Text(
                           order.orderType == 2
                               ? 'pickup'.tr
-                              : (order.shipping_address?.zip?.toString() ?? guestZip),
-                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Mulish'),
+                              : (order.shipping_address?.zip?.toString() ??
+                                    guestZip),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                            fontFamily: 'Mulish',
+                          ),
                         ),
-                        if (order.deliveryTime != null && order.deliveryTime!.isNotEmpty)
-                          Text('${'time'.tr}: ${controller.extractTime(order.deliveryTime!)}',
-                              style: const TextStyle(fontSize: 11, fontFamily: 'Mulish')),
+                        if (order.deliveryTime != null &&
+                            order.deliveryTime!.isNotEmpty)
+                          Text(
+                            '${'time'.tr}: ${controller.extractTime(order.deliveryTime!)}',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontFamily: 'Mulish',
+                            ),
+                          ),
                       ],
                     ),
                   ],
@@ -968,7 +1141,13 @@ class _PosPortraitState extends State<PosPortrait> {
                   children: [
                     const Icon(Icons.access_time, size: 14),
                     const SizedBox(width: 3),
-                    Text(time, style: const TextStyle(fontSize: 12, fontFamily: 'Mulish')),
+                    Text(
+                      time,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Mulish',
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -980,34 +1159,57 @@ class _PosPortraitState extends State<PosPortrait> {
                 Expanded(
                   child: Text(
                     '${order.shipping_address?.customer_name ?? guestName} / ${order.shipping_address?.phone ?? guestPhone}',
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, fontFamily: 'Mulish'),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                      fontFamily: 'Mulish',
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Text('${'order_hash'.tr}${order.orderNumber ?? order.id ?? 'N/A'}',
-                    style: const TextStyle(fontSize: 11, fontFamily: 'Mulish')),
+                Text(
+                  '${'order_hash'.tr}${order.orderNumber ?? order.id ?? 'N/A'}',
+                  style: const TextStyle(fontSize: 11, fontFamily: 'Mulish'),
+                ),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('${"currency".tr} ${controller.formatAmount(order.payment?.amount ?? 0)}',
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, fontFamily: 'Mulish')),
+                Text(
+                  '${"currency".tr} ${controller.formatAmount(order.payment?.amount ?? 0)}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                    fontFamily: 'Mulish',
+                  ),
+                ),
                 Row(
                   children: [
                     Text(
-                      isLocalOrder ? 'syncing'.tr : controller.getApprovalStatusText(order.approvalStatus),
-                      style: const TextStyle(fontSize: 12, fontFamily: 'Mulish'),
+                      isLocalOrder
+                          ? 'syncing'.tr
+                          : controller.getApprovalStatusText(
+                              order.approvalStatus,
+                            ),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Mulish',
+                      ),
                     ),
                     const SizedBox(width: 4),
                     isLocalOrder
                         ? const _SyncIcon()
                         : CircleAvatar(
                             radius: 10,
-                            backgroundColor: controller.getStatusColor(order.approvalStatus ?? 0),
+                            backgroundColor: controller.getStatusColor(
+                              order.approvalStatus ?? 0,
+                            ),
                             child: Icon(
-                              controller.getStatusIcon(order.approvalStatus ?? 0),
+                              controller.getStatusIcon(
+                                order.approvalStatus ?? 0,
+                              ),
                               color: Colors.white,
                               size: 12,
                             ),
@@ -1022,7 +1224,10 @@ class _PosPortraitState extends State<PosPortrait> {
     );
   }
 
-  Widget _buildPortraitContent(PosPortraitController controller, BuildContext context) {
+  Widget _buildPortraitContent(
+    PosPortraitController controller,
+    BuildContext context,
+  ) {
     return Obx(() {
       final filtered = controller.getFilteredCategories();
       if (controller.isLoading.value) {
@@ -1072,7 +1277,10 @@ class _PosPortraitState extends State<PosPortrait> {
     });
   }
 
-  Widget _buildCategorySection(PosPortraitController controller, CategoryData category) {
+  Widget _buildCategorySection(
+    PosPortraitController controller,
+    CategoryData category,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
       child: Column(
@@ -1111,18 +1319,19 @@ class _PosPortraitState extends State<PosPortrait> {
 
   Widget _buildProductCard(PosPortraitController controller, Product product) {
     GetStoreProducts? actualProduct = controller.productList.firstWhereOrNull(
-          (p) => p.id.toString() == product.id,
+      (p) => p.id.toString() == product.id,
     );
 
     return Obx(() {
       // ✅ Check if product is in cart
-      bool isInCart = controller.cartItems.any((item) =>
-      item['product_id'] == actualProduct?.id
+      bool isInCart = controller.cartItems.any(
+        (item) => item['product_id'] == actualProduct?.id,
       );
 
       int totalQuantity = 0;
       if (isInCart) {
-        controller.cartItems.where((item) => item['product_id'] == actualProduct?.id)
+        controller.cartItems
+            .where((item) => item['product_id'] == actualProduct?.id)
             .forEach((item) => totalQuantity += (item['quantity'] as int));
       }
 
@@ -1175,7 +1384,10 @@ class _PosPortraitState extends State<PosPortrait> {
                             children: [
                               if (isInCart) ...[
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: const Color(0xff0C831F),
                                     borderRadius: BorderRadius.circular(12),
@@ -1199,10 +1411,11 @@ class _PosPortraitState extends State<PosPortrait> {
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Mulish',
-                              color: isInCart ? const Color(0xff0C831F) : const Color(0xff0B1928),
+                              color: isInCart
+                                  ? const Color(0xff0C831F)
+                                  : const Color(0xff0B1928),
                             ),
                           ),
-
                         ],
                       ),
                     ],
@@ -1216,7 +1429,10 @@ class _PosPortraitState extends State<PosPortrait> {
     });
   }
 
-  Widget _buildDraggableFab(PosPortraitController controller, BuildContext ctx) {
+  Widget _buildDraggableFab(
+    PosPortraitController controller,
+    BuildContext ctx,
+  ) {
     final screenSize = MediaQuery.of(ctx).size;
     final padding = MediaQuery.of(ctx).padding;
     final barHeight = Platform.isIOS ? 90.0 : 70.0;
@@ -1233,7 +1449,10 @@ class _PosPortraitState extends State<PosPortrait> {
         onPanUpdate: (details) {
           setState(() {
             _fabPosition = Offset(
-              (_fabPosition!.dx + details.delta.dx).clamp(0.0, screenSize.width - 56),
+              (_fabPosition!.dx + details.delta.dx).clamp(
+                0.0,
+                screenSize.width - 56,
+              ),
               (_fabPosition!.dy + details.delta.dy).clamp(0.0, bodyHeight - 56),
             );
           });
@@ -1259,7 +1478,10 @@ class _PosPortraitState extends State<PosPortrait> {
     );
   }
 
-  void _showAddCustomItemDialog(PosPortraitController controller, BuildContext ctx) {
+  void _showAddCustomItemDialog(
+    PosPortraitController controller,
+    BuildContext ctx,
+  ) {
     final nameCtrl = TextEditingController();
     final priceCtrl = TextEditingController();
 
@@ -1281,156 +1503,171 @@ class _PosPortraitState extends State<PosPortrait> {
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
             child: SingleChildScrollView(
               child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'add_custom_item'.tr,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        fontFamily: 'Mulish',
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(sheetCtx),
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(
-                          color: Color(0xffF0F0F0),
-                          shape: BoxShape.circle,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'add_custom_item'.tr,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          fontFamily: 'Mulish',
                         ),
-                        child: const Icon(Icons.close, size: 18),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'item_name_label'.tr,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Mulish',
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: nameCtrl,
-                  textCapitalization: TextCapitalization.words,
-                  style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
-                  decoration: InputDecoration(
-                    hintText: 'item_name_hint'.tr,
-                    hintStyle: TextStyle(color: Colors.grey.shade400, fontFamily: 'Mulish'),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xff0C831F)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'item_price_label'.tr,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Mulish',
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: priceCtrl,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
-                  decoration: InputDecoration(
-                    hintText: '0.00',
-                    hintStyle: TextStyle(color: Colors.grey.shade400, fontFamily: 'Mulish'),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xff0C831F)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
+                      GestureDetector(
                         onTap: () => Navigator.pop(sheetCtx),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffEEEEEE),
-                            borderRadius: BorderRadius.circular(8),
+                          padding: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                            color: Color(0xffF0F0F0),
+                            shape: BoxShape.circle,
                           ),
-                          child: Center(
-                            child: Text(
-                              'cancel'.tr,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'Mulish',
-                                color: Colors.black87,
+                          child: const Icon(Icons.close, size: 18),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'item_name_label'.tr,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Mulish',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: nameCtrl,
+                    textCapitalization: TextCapitalization.words,
+                    style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
+                    decoration: InputDecoration(
+                      hintText: 'item_name_hint'.tr,
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontFamily: 'Mulish',
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 14,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xff0C831F)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'item_price_label'.tr,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Mulish',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: priceCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
+                    decoration: InputDecoration(
+                      hintText: '0.00',
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontFamily: 'Mulish',
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 14,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xff0C831F)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => Navigator.pop(sheetCtx),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffEEEEEE),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'cancel'.tr,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Mulish',
+                                  color: Colors.black87,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          final name = nameCtrl.text.trim();
-                          final price = double.tryParse(priceCtrl.text.trim()) ?? 0.0;
-                          if (name.isEmpty) return;
-                          controller.addCustomItemToCart(name, price);
-                          Navigator.pop(sheetCtx);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          decoration: BoxDecoration(
-                            color: const Color(0xff0C831F),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'add_item'.tr,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'Mulish',
-                                color: Colors.white,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            final name = nameCtrl.text.trim();
+                            final price =
+                                double.tryParse(priceCtrl.text.trim()) ?? 0.0;
+                            if (name.isEmpty) return;
+                            controller.addCustomItemToCart(name, price);
+                            Navigator.pop(sheetCtx);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff0C831F),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'add_item'.tr,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Mulish',
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
@@ -1470,14 +1707,16 @@ class _PosPortraitState extends State<PosPortrait> {
                   ),
                 ),
                 const Spacer(),
-                Obx(() => Text(
-                  '${controller.drafts.length} ${controller.drafts.length == 1 ? 'draft_singular'.tr : 'draft_plural'.tr}',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontFamily: 'Mulish',
-                    color: Colors.grey,
+                Obx(
+                  () => Text(
+                    '${controller.drafts.length} ${controller.drafts.length == 1 ? 'draft_singular'.tr : 'draft_plural'.tr}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'Mulish',
+                      color: Colors.grey,
+                    ),
                   ),
-                )),
+                ),
               ],
             ),
           ),
@@ -1490,7 +1729,11 @@ class _PosPortraitState extends State<PosPortrait> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.bookmark_outline, size: 60, color: Colors.grey.shade300),
+                      Icon(
+                        Icons.bookmark_outline,
+                        size: 60,
+                        color: Colors.grey.shade300,
+                      ),
                       const SizedBox(height: 12),
                       Text(
                         'no_saved_orders'.tr,
@@ -1512,10 +1755,15 @@ class _PosPortraitState extends State<PosPortrait> {
                   final draft = controller.drafts[index];
                   final List items = draft['cartItems'] as List;
                   final Map details = draft['customerDetails'] as Map;
-                  final String customerName = details['name']?.toString().trim() ?? '';
-                  final int localOrderNumber = draft['localOrderNumber'] as int? ?? (index + 1);
-                  final String orderLabel = '${'order_label'.tr} - $localOrderNumber';
-                  final String itemWord = items.length == 1 ? 'item_singular'.tr : 'item_plural'.tr;
+                  final String customerName =
+                      details['name']?.toString().trim() ?? '';
+                  final int localOrderNumber =
+                      draft['localOrderNumber'] as int? ?? (index + 1);
+                  final String orderLabel =
+                      '${'order_label'.tr} - $localOrderNumber';
+                  final String itemWord = items.length == 1
+                      ? 'item_singular'.tr
+                      : 'item_plural'.tr;
                   final String subtitle = customerName.isNotEmpty
                       ? '$customerName / ${items.length} $itemWord'
                       : '${items.length} $itemWord';
@@ -1529,7 +1777,10 @@ class _PosPortraitState extends State<PosPortrait> {
                       controller.loadDraft(index);
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
@@ -1544,7 +1795,11 @@ class _PosPortraitState extends State<PosPortrait> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.bookmark_rounded, color: Color(0xff0C831F), size: 22),
+                          const Icon(
+                            Icons.bookmark_rounded,
+                            color: Color(0xff0C831F),
+                            size: 22,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -1583,7 +1838,11 @@ class _PosPortraitState extends State<PosPortrait> {
                             onTap: () => controller.deleteDraft(index),
                             child: Padding(
                               padding: const EdgeInsets.all(4),
-                              child: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade300),
+                              child: Icon(
+                                Icons.delete_outline,
+                                size: 18,
+                                color: Colors.red.shade300,
+                              ),
                             ),
                           ),
                         ],
@@ -1623,12 +1882,14 @@ class _PosPortraitState extends State<PosPortrait> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 // Order icon with live badge
-                Obx(() => _buildPosBarItem(
-                  icon: 'assets/images/ic_order.svg',
-                  label: 'order'.tr,
-                  badge: app.appController.getPendingOrder,
-                  onTap: () => widget.onNavigateToTab?.call(0),
-                )),
+                Obx(
+                  () => _buildPosBarItem(
+                    icon: 'assets/images/ic_order.svg',
+                    label: 'order'.tr,
+                    badge: app.appController.getPendingOrder,
+                    onTap: () => widget.onNavigateToTab?.call(0),
+                  ),
+                ),
                 // Search
                 _buildPosBarItem(
                   icon: 'assets/images/search.svg',
@@ -1636,12 +1897,14 @@ class _PosPortraitState extends State<PosPortrait> {
                   onTap: () => controller.showPosSearchBar.value = true,
                 ),
                 // Save Orders
-                Obx(() => _buildPosBarItem(
-                  icon: 'assets/images/invoice.svg',
-                  label: 'save_orders_section'.tr,
-                  badge: controller.drafts.length,
-                  onTap: () => controller.openSavedOrdersScreen(),
-                )),
+                Obx(
+                  () => _buildPosBarItem(
+                    icon: 'assets/images/invoice.svg',
+                    label: 'save_orders_section'.tr,
+                    badge: controller.drafts.length,
+                    onTap: () => controller.openSavedOrdersScreen(),
+                  ),
+                ),
                 // Cart — becomes green checkout button when items in cart
                 Obx(() {
                   final count = controller.totalItems.value;
@@ -1654,7 +1917,7 @@ class _PosPortraitState extends State<PosPortrait> {
                           vertical: Platform.isIOS ? 12 : 10,
                           horizontal: 8,
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 14,),
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
                           color: const Color(0xff0C831F),
                           borderRadius: BorderRadius.circular(12),
@@ -1691,7 +1954,10 @@ class _PosPortraitState extends State<PosPortrait> {
                               right: -14,
                               child: Container(
                                 padding: const EdgeInsets.all(3),
-                                constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                                constraints: const BoxConstraints(
+                                  minWidth: 18,
+                                  minHeight: 18,
+                                ),
                                 decoration: const BoxDecoration(
                                   color: Colors.red,
                                   shape: BoxShape.circle,
@@ -1763,7 +2029,10 @@ class _PosPortraitState extends State<PosPortrait> {
                             controller.clearSearch();
                             FocusScope.of(context).unfocus();
                           },
-                          style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Mulish',
+                          ),
                           decoration: InputDecoration(
                             hintText: 'search_item'.tr,
                             hintStyle: TextStyle(
@@ -1790,7 +2059,11 @@ class _PosPortraitState extends State<PosPortrait> {
                             color: Color(0xffEEF0F8),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.close, size: 16, color: Colors.black87),
+                          child: const Icon(
+                            Icons.close,
+                            size: 16,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
                     ],
@@ -1848,7 +2121,10 @@ class _PosPortraitState extends State<PosPortrait> {
                 right: -10,
                 child: Container(
                   padding: const EdgeInsets.all(3),
-                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
                   decoration: const BoxDecoration(
                     color: Colors.orange,
                     shape: BoxShape.circle,
@@ -1888,7 +2164,7 @@ class _PosPortraitState extends State<PosPortrait> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color:  Colors.white,
+                color: Colors.white,
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
@@ -1976,189 +2252,249 @@ class CheckoutScreen extends StatelessWidget {
         children: [
           SafeArea(
             child: Column(
-          children: [
-            SizedBox(height: 10,),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => controller.showCheckout.value = false,
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(color: Colors.black,width: 1)
-                      ),
-                        child: const Icon(Icons.arrow_back, size: 24)),
-                  ),
-                  _buildOrderTypeBtn(controller, 'Lieferzeit', 'assets/images/delivery-icon.svg'),
-                  const SizedBox(width: 8),
-                  _buildOrderTypeBtn(controller, 'Abholzeit', 'assets/images/pickup-icon.svg'),
-                  const SizedBox(width: 16),
-                  GestureDetector(
-                    onTap: () => controller.showAddNoteDialog(context),
-                    child: Obx(() => Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: controller.orderNote.value.isNotEmpty
-                            ? const Color(0xff0C831F).withOpacity(0.1)
-                            : const Color(0xffF5F5F5),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Image.asset(
-                        'assets/images/note.png',
-                        height: 22,
-                        width: 22,
-                        color: controller.orderNote.value.isNotEmpty
-                            ? const Color(0xff0C831F)
-                            : const Color(0xff0B1928),
-                      ),
-                    )),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Scrollable Content
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // ✅ Fixed Summary Box with Dropdown
-                    _buildCollapsibleSummary(context,controller),
-
-                    const SizedBox(height: 16),
-                    // Payment Method Section
-                    _buildPaymentMethodSection(controller),
-
-                    const SizedBox(height: 16),
-                    // Customer Details Section
-                    Obx(() {
-                      if (controller.customerDetails.isEmpty) {
-                        return _buildCustomerDetailsForm(controller, context);
-                      } else {
-                        return _buildCustomerDetailsDisplay(controller);
-                      }
-                    }),
-
-                    const SizedBox(height: 16),
-
-                    // Time Selection Section (Heute/Vorbestellen)
-                    _buildTimeSelectionSection(controller, context),
-
-                    const SizedBox(height: 16),
-
-
-
-                    const SizedBox(height: 100),
-                  ],
-                ),
-              ),
-            ),
-
-            // Bottom Draft + Preview + Place Order Buttons
-            Obx(() {
-              final bool hasItems = controller.cartItems.isNotEmpty;
-              return Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    // Draft button
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: hasItems ? () => controller.saveAsDraft() : null,
+              children: [
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => controller.showCheckout.value = false,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          padding: EdgeInsets.all(5),
+                          margin: EdgeInsets.all(3),
                           decoration: BoxDecoration(
-                            color: hasItems ? const Color(0xff6C4AB6) : const Color(0xffB8ABD1),
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(8), bottomLeft: Radius.circular(8)),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.black, width: 1),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.bookmark_outline_rounded, size: 16, color: Colors.white),
-                              const SizedBox(width: 6),
-                              Text('draft_singular'.tr,
-                                  style: const TextStyle(color: Colors.white, fontSize: 14,
-                                      fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
-                            ],
-                          ),
+                          child: const Icon(Icons.arrow_back, size: 24),
                         ),
                       ),
-                    ),
-                    // Preview button
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: hasItems
-                            ? () {
-                                controller.showPreview();
-                                Get.to(() => OrderPreviewScreen(
-                                    controller: controller));
-                              }
-                            : null,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          decoration: BoxDecoration(
-                            color: hasItems ? const Color(0xffFF9800) : const Color(0xffFFCC80),
-                            border: const Border.symmetric(
-                              vertical: BorderSide(color: Colors.white, width: 0.5),
+                      _buildOrderTypeBtn(
+                        controller,
+                        'Lieferzeit',
+                        'assets/images/delivery-icon.svg',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildOrderTypeBtn(
+                        controller,
+                        'Abholzeit',
+                        'assets/images/pickup-icon.svg',
+                      ),
+                      const SizedBox(width: 16),
+                      GestureDetector(
+                        onTap: () => controller.showAddNoteDialog(context),
+                        child: Obx(
+                          () => Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: controller.orderNote.value.isNotEmpty
+                                  ? const Color(0xff0C831F).withOpacity(0.1)
+                                  : const Color(0xffF5F5F5),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.visibility_outlined, size: 16, color: Colors.white),
-                              const SizedBox(width: 6),
-                              Text('preview_label'.tr,
-                                  style: const TextStyle(color: Colors.white, fontSize: 14,
-                                      fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Place Order button
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: hasItems ? () => controller.placeOrder() : null,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          decoration: BoxDecoration(
-                            color: hasItems ? const Color(0xff0C831F) : const Color(0xffA5D6A7),
-                            borderRadius: const BorderRadius.only(
-                                topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'place_order'.tr,
-                              style: const TextStyle(color: Colors.white, fontSize: 14,
-                                  fontWeight: FontWeight.bold, fontFamily: 'Mulish'),
+                            child: Image.asset(
+                              'assets/images/note.png',
+                              height: 22,
+                              width: 22,
+                              color: controller.orderNote.value.isNotEmpty
+                                  ? const Color(0xff0C831F)
+                                  : const Color(0xff0B1928),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              );
-            }),
-          ],
-        ),
+
+                const SizedBox(height: 16),
+
+                // Scrollable Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        // ✅ Fixed Summary Box with Dropdown
+                        _buildCollapsibleSummary(context, controller),
+
+                        const SizedBox(height: 16),
+                        // Payment Method Section
+                        _buildPaymentMethodSection(controller),
+
+                        const SizedBox(height: 16),
+                        // Customer Details Section
+                        Obx(() {
+                          if (controller.customerDetails.isEmpty) {
+                            return _buildCustomerDetailsForm(
+                              controller,
+                              context,
+                            );
+                          } else {
+                            return _buildCustomerDetailsDisplay(controller);
+                          }
+                        }),
+
+                        const SizedBox(height: 16),
+
+                        // Time Selection Section (Heute/Vorbestellen)
+                        _buildTimeSelectionSection(controller, context),
+
+                        const SizedBox(height: 16),
+
+                        const SizedBox(height: 100),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Bottom Draft + Preview + Place Order Buttons
+                Obx(() {
+                  final bool hasItems = controller.cartItems.isNotEmpty;
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        // Draft button
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: hasItems
+                                ? () => controller.saveAsDraft()
+                                : null,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              decoration: BoxDecoration(
+                                color: hasItems
+                                    ? const Color(0xff6C4AB6)
+                                    : const Color(0xffB8ABD1),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  bottomLeft: Radius.circular(8),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.bookmark_outline_rounded,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'draft_singular'.tr,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: 'Mulish',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Preview button
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: hasItems
+                                ? () {
+                                    controller.showPreview();
+                                    Get.to(
+                                      () => OrderPreviewScreen(
+                                        controller: controller,
+                                      ),
+                                    );
+                                  }
+                                : null,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              decoration: BoxDecoration(
+                                color: hasItems
+                                    ? const Color(0xffFF9800)
+                                    : const Color(0xffFFCC80),
+                                border: const Border.symmetric(
+                                  vertical: BorderSide(
+                                    color: Colors.white,
+                                    width: 0.5,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.visibility_outlined,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'preview_label'.tr,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: 'Mulish',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Place Order button
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: hasItems
+                                ? () => controller.placeOrder()
+                                : null,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              decoration: BoxDecoration(
+                                color: hasItems
+                                    ? const Color(0xff0C831F)
+                                    : const Color(0xffA5D6A7),
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(8),
+                                  bottomRight: Radius.circular(8),
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'place_order'.tr,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Mulish',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+          // Postcode dialog overlay — visible on top of CheckoutScreen
+          PostcodeDialog(controller: controller),
+        ],
       ),
-      // Postcode dialog overlay — visible on top of CheckoutScreen
-      PostcodeDialog(controller: controller),
-    ],
-  ),
     );
   }
 
-  Widget _buildOrderTypeBtn(PosPortraitController controller, String type, String iconPath) {
+  Widget _buildOrderTypeBtn(
+    PosPortraitController controller,
+    String type,
+    String iconPath,
+  ) {
     return Obx(() {
       bool isSelected = controller.selectedOrderType.value == type;
       return Expanded(
@@ -2170,7 +2506,9 @@ class CheckoutScreen extends StatelessWidget {
               color: isSelected ? const Color(0xff0C831F) : Colors.white,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: isSelected ? const Color(0xff0C831F) : Colors.grey.shade300,
+                color: isSelected
+                    ? const Color(0xff0C831F)
+                    : Colors.grey.shade300,
               ),
             ),
             child: Row(
@@ -2201,7 +2539,10 @@ class CheckoutScreen extends StatelessWidget {
   }
 
   // ✅ Collapsible Summary Box
-  Widget _buildCollapsibleSummary(BuildContext context,PosPortraitController controller) {
+  Widget _buildCollapsibleSummary(
+    BuildContext context,
+    PosPortraitController controller,
+  ) {
     return Obx(() {
       double subtotal = controller.calculateSubtotal();
       double discount = controller.calculateDiscount();
@@ -2284,18 +2625,27 @@ class CheckoutScreen extends StatelessWidget {
                               fontFamily: 'Mulish',
                               color: Color(0xff00B10E),
                             ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 6,
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(6),
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(6),
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(6),
-                              borderSide: const BorderSide(color: Color(0xff00B10E)),
+                              borderSide: const BorderSide(
+                                color: Color(0xff00B10E),
+                              ),
                             ),
                             isDense: true,
                           ),
@@ -2338,7 +2688,8 @@ class CheckoutScreen extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           GestureDetector(
-                            onTap: () => controller.isCartExpanded.value = !controller.isCartExpanded.value,
+                            onTap: () => controller.isCartExpanded.value =
+                                !controller.isCartExpanded.value,
                             child: Container(
                               padding: const EdgeInsets.all(6),
                               decoration: const BoxDecoration(
@@ -2376,7 +2727,12 @@ class CheckoutScreen extends StatelessWidget {
                     ...controller.cartItems.asMap().entries.map((entry) {
                       int index = entry.key;
                       var item = entry.value;
-                      return _buildCartItemRow(context,controller, item, index);
+                      return _buildCartItemRow(
+                        context,
+                        controller,
+                        item,
+                        index,
+                      );
                     }),
                     if (controller.orderNote.value.isNotEmpty)
                       Container(
@@ -2391,7 +2747,11 @@ class CheckoutScreen extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.sticky_note_2_outlined, size: 16, color: Color(0xffF9A825)),
+                            const Icon(
+                              Icons.sticky_note_2_outlined,
+                              size: 16,
+                              color: Color(0xffF9A825),
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -2416,20 +2776,21 @@ class CheckoutScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildCartItemRow(BuildContext context,PosPortraitController controller, Map<String, dynamic> item, int index) {
+  Widget _buildCartItemRow(
+    BuildContext context,
+    PosPortraitController controller,
+    Map<String, dynamic> item,
+    int index,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child:Row(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Remove button
           GestureDetector(
             onTap: () => controller.removeCartItem(index),
-            child: const Icon(
-              Icons.close,
-              size: 20,
-              color: Color(0xffE31E24),
-            ),
+            child: const Icon(Icons.close, size: 20, color: Color(0xffE31E24)),
           ),
 
           const SizedBox(width: 8),
@@ -2442,17 +2803,19 @@ class CheckoutScreen extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${item["quantity"]} ×',
+                    Text(
+                      '${item["quantity"]} ×',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey,
                       ),
                     ),
-                    SizedBox(width: 5,),
+                    SizedBox(width: 5),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width*0.34,
-                      child: Text('${item['name']}',
+                      width: MediaQuery.of(context).size.width * 0.33,
+                      child: Text(
+                        '${item['name']}',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -2460,64 +2823,68 @@ class CheckoutScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text(
-                      '[${"currency".tr}${(item["price"] as num).toStringAsFixed(2)}]',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey,
+                    if (((item["base_price"] ?? item["price"]) as num) > 0)
+                      Text(
+                        '[${"currency".tr}${((item["base_price"] ?? item["price"]) as num).toStringAsFixed(2)}]',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () => controller.editItemNote(
+                        index: index,
+                        initial: item['item_note'] ?? '',
+                        onSave: (v) => controller.updateItemNote(index, v),
+                      ),
+                      child: Image.asset(
+                        'assets/images/note.png',
+                        height: 18,
+                        width: 18,
+                        color:
+                            item['item_note'] != null &&
+                                item['item_note'].toString().isNotEmpty
+                            ? const Color(0xff0C831F)
+                            : const Color(0xff0B1928),
                       ),
                     ),
-                    SizedBox(width: 10,),
-                    GestureDetector(
-                onTap: () => controller.editItemNote(
-                  index: index,
-                  initial: item['item_note'] ?? '',
-                  onSave: (v) => controller.updateItemNote(index, v),
-                ),
-                child: Image.asset(
-                  'assets/images/note.png',
-                  height: 18,
-                  width: 18,
-                  color: item['item_note'] != null && item['item_note'].toString().isNotEmpty
-                      ? const Color(0xff0C831F)
-                      : const Color(0xff0B1928),
-                ),
-              ),
                   ],
                 ),
-               // Variant
-                if (item['extras'] != null && item['extras'].toString().isNotEmpty)
+                // Variant
+                if (item['size'] != null && item['size'].toString().isNotEmpty)
                   Text(
-                    '● ${item["size"]}    [${"currency".tr}${(item["price"] as num).toStringAsFixed(2)}]',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey,
-                    ),
+                    ((item["variant_price"] ?? 0) as num) > 0
+                        ? '● ${item["size"]}    [${"currency".tr}${((item["variant_price"] ?? 0) as num).toStringAsFixed(2)}]'
+                        : '● ${item["size"]}',
+                    style: const TextStyle(fontSize: 11, color: Colors.grey),
                   ),
 
                 // // Toppings
-                if (item['extras'] != null && item['extras'].toString().isNotEmpty)
+                if (item['extras'] != null &&
+                    item['extras'].toString().isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                       Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Text(
-                              '${item['extras']}',
-                                  // '${(topping.price ?? 0) > 0 ? ' [${(topping.price as double).toStringAsFixed(2)} €]' : ''}',
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Colors.grey,
-                              ),
-                            ),)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 2),
+                          child: Text(
+                            '${item['extras']}',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
 
                 // Note
-                if (item['item_note'] != null && item['item_note'].toString().isNotEmpty)
+                if (item['item_note'] != null &&
+                    item['item_note'].toString().isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
@@ -2539,7 +2906,7 @@ class CheckoutScreen extends StatelessWidget {
             children: [
               Container(
                 decoration: BoxDecoration(
-                    border: Border.all(color:Colors.grey,width: 1),
+                  border: Border.all(color: Colors.grey, width: 1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
@@ -2553,7 +2920,9 @@ class CheckoutScreen extends StatelessWidget {
                           //border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Center(child: const Icon(Icons.remove, size: 16)),
+                        child: Center(
+                          child: const Icon(Icons.remove, size: 16),
+                        ),
                       ),
                     ),
                     Padding(
@@ -2582,7 +2951,7 @@ class CheckoutScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 5,),
+              SizedBox(height: 5),
               Text(
                 '${"currency".tr} ${((item["quantity"] as int) * (item["price"] as num)).toStringAsFixed(2)}',
                 style: const TextStyle(
@@ -2596,13 +2965,15 @@ class CheckoutScreen extends StatelessWidget {
           const SizedBox(width: 6),
 
           // Total Price
-
         ],
-      )
+      ),
     );
   }
 
-  Widget _buildCustomerDetailsForm(PosPortraitController controller, BuildContext context) {
+  Widget _buildCustomerDetailsForm(
+    PosPortraitController controller,
+    BuildContext context,
+  ) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
@@ -2640,7 +3011,7 @@ class CheckoutScreen extends StatelessWidget {
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 12),
-         // _buildTextField(controller.phoneController, 'Ihre Telefonnummer *', context),
+          // _buildTextField(controller.phoneController, 'Ihre Telefonnummer *', context),
           _buildTextField(
             controller.phoneController,
             'your_phone'.tr,
@@ -2681,12 +3052,15 @@ class CheckoutScreen extends StatelessWidget {
               textInputAction: TextInputAction.next,
               suffixIcon: GestureDetector(
                 onTap: () => controller.showPostcodeDialog.value = true,
-                child: const Icon(Icons.arrow_drop_down, color: Color(0xff0C831F)),
+                child: const Icon(
+                  Icons.arrow_drop_down,
+                  color: Color(0xff0C831F),
+                ),
               ),
             ),
           ],
           const SizedBox(height: 12),
-        //  _buildTextField(controller.emailController, 'Ihre E-Mail', context),
+          //  _buildTextField(controller.emailController, 'Ihre E-Mail', context),
           _buildTextField(
             controller.emailController,
             'your_email'.tr,
@@ -2701,17 +3075,17 @@ class CheckoutScreen extends StatelessWidget {
   }
 
   Widget _buildTextField(
-      TextEditingController controller,
-      String label,
-      BuildContext context, {
-        Widget? suffixIcon,
-        FocusNode? focusNode,
-        FocusNode? nextFocusNode,
-        TextInputType? keyboardType,
-        TextInputAction? textInputAction,
-        bool readOnly = false,
-        Function(String)? onFieldSubmitted,
-      }) {
+    TextEditingController controller,
+    String label,
+    BuildContext context, {
+    Widget? suffixIcon,
+    FocusNode? focusNode,
+    FocusNode? nextFocusNode,
+    TextInputType? keyboardType,
+    TextInputAction? textInputAction,
+    bool readOnly = false,
+    Function(String)? onFieldSubmitted,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2747,7 +3121,10 @@ class CheckoutScreen extends StatelessWidget {
               fontFamily: 'Mulish',
             ),
             suffixIcon: suffixIcon,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 14,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: Colors.grey.shade300),
@@ -2783,7 +3160,11 @@ class CheckoutScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  SvgPicture.asset('assets/images/user.svg', height: 16, width: 16),
+                  SvgPicture.asset(
+                    'assets/images/user.svg',
+                    height: 16,
+                    width: 16,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'customer_details'.tr,
@@ -2804,19 +3185,35 @@ class CheckoutScreen extends StatelessWidget {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Image.asset('assets/images/note.png', height: 18, width: 18),
+                  child: Image.asset(
+                    'assets/images/note.png',
+                    height: 18,
+                    width: 18,
+                  ),
                 ),
               ),
             ],
           ),
           const Divider(height: 24, color: Color(0xffE6E1EE)),
-          _buildDetailRow('your_name'.tr, controller.customerDetails['name'] ?? ''),
+          _buildDetailRow(
+            'your_name'.tr,
+            controller.customerDetails['name'] ?? '',
+          ),
           const SizedBox(height: 8),
-          _buildDetailRow('your_phone'.tr, controller.customerDetails['phone'] ?? ''),
+          _buildDetailRow(
+            'your_phone'.tr,
+            controller.customerDetails['phone'] ?? '',
+          ),
           const SizedBox(height: 8),
-          _buildDetailRow('your_email'.tr, controller.customerDetails['email'] ?? ''),
+          _buildDetailRow(
+            'your_email'.tr,
+            controller.customerDetails['email'] ?? '',
+          ),
           const SizedBox(height: 8),
-          _buildDetailRow('address'.tr, controller.customerDetails['address'] ?? ''),
+          _buildDetailRow(
+            'address'.tr,
+            controller.customerDetails['address'] ?? '',
+          ),
         ],
       ),
     );
@@ -2837,10 +3234,7 @@ class CheckoutScreen extends StatelessWidget {
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
-              fontSize: 12,
-              fontFamily: 'Mulish',
-            ),
+            style: const TextStyle(fontSize: 12, fontFamily: 'Mulish'),
           ),
         ),
       ],
@@ -2879,7 +3273,8 @@ class CheckoutScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => controller.selectedPaymentMethod.value = 'cash',
+                    onTap: () =>
+                        controller.selectedPaymentMethod.value = 'cash',
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
@@ -2888,10 +3283,14 @@ class CheckoutScreen extends StatelessWidget {
                             : Colors.white,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: controller.selectedPaymentMethod.value == 'cash'
+                          color:
+                              controller.selectedPaymentMethod.value == 'cash'
                               ? const Color(0xff0C831F)
                               : Colors.grey.shade300,
-                          width: controller.selectedPaymentMethod.value == 'cash' ? 2 : 1,
+                          width:
+                              controller.selectedPaymentMethod.value == 'cash'
+                              ? 2
+                              : 1,
                         ),
                       ),
                       child: Row(
@@ -2900,7 +3299,8 @@ class CheckoutScreen extends StatelessWidget {
                           Icon(
                             Icons.payments_outlined,
                             size: 20,
-                            color: controller.selectedPaymentMethod.value == 'cash'
+                            color:
+                                controller.selectedPaymentMethod.value == 'cash'
                                 ? Colors.white
                                 : const Color(0xff0B1928),
                           ),
@@ -2911,7 +3311,9 @@ class CheckoutScreen extends StatelessWidget {
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               fontFamily: 'Mulish',
-                              color: controller.selectedPaymentMethod.value == 'cash'
+                              color:
+                                  controller.selectedPaymentMethod.value ==
+                                      'cash'
                                   ? Colors.white
                                   : const Color(0xff0B1928),
                             ),
@@ -2924,7 +3326,8 @@ class CheckoutScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => controller.selectedPaymentMethod.value = 'card',
+                    onTap: () =>
+                        controller.selectedPaymentMethod.value = 'card',
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       decoration: BoxDecoration(
@@ -2933,10 +3336,14 @@ class CheckoutScreen extends StatelessWidget {
                             : Colors.white,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: controller.selectedPaymentMethod.value == 'card'
+                          color:
+                              controller.selectedPaymentMethod.value == 'card'
                               ? const Color(0xff0C831F)
                               : Colors.grey.shade300,
-                          width: controller.selectedPaymentMethod.value == 'card' ? 2 : 1,
+                          width:
+                              controller.selectedPaymentMethod.value == 'card'
+                              ? 2
+                              : 1,
                         ),
                       ),
                       child: Row(
@@ -2945,7 +3352,8 @@ class CheckoutScreen extends StatelessWidget {
                           Icon(
                             Icons.credit_card,
                             size: 20,
-                            color: controller.selectedPaymentMethod.value == 'card'
+                            color:
+                                controller.selectedPaymentMethod.value == 'card'
                                 ? Colors.white
                                 : const Color(0xff0B1928),
                           ),
@@ -2956,7 +3364,9 @@ class CheckoutScreen extends StatelessWidget {
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               fontFamily: 'Mulish',
-                              color: controller.selectedPaymentMethod.value == 'card'
+                              color:
+                                  controller.selectedPaymentMethod.value ==
+                                      'card'
                                   ? Colors.white
                                   : const Color(0xff0B1928),
                             ),
@@ -2974,7 +3384,10 @@ class CheckoutScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildTimeSelectionSection(PosPortraitController controller, BuildContext context) {
+  Widget _buildTimeSelectionSection(
+    PosPortraitController controller,
+    BuildContext context,
+  ) {
     return Obx(() {
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -2987,117 +3400,141 @@ class CheckoutScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // ── Heute ───────────────────────────────────────────────
             if (controller.isStoreOpen.value) ...[
-          GestureDetector(
-          onTap: () => controller.selectHeute(),
-      child: Row(
-                children: [
-                  Container(
-                    width: 24, height: 24,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 2),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: controller.isHeuteSelected.value
-                        ? Container(
-                      margin: const EdgeInsets.all(2),
+              GestureDetector(
+                onTap: () => controller.selectHeute(),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
                       decoration: BoxDecoration(
-                        color: const Color(0xff0C831F),
-                        borderRadius: BorderRadius.circular(2),
+                        border: Border.all(color: Colors.black, width: 2),
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                    )
-                        : null,
-                  ),
-                  const SizedBox(width: 12),
-                  Text('today_option'.tr,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
-                ],
+                      child: controller.isHeuteSelected.value
+                          ? Container(
+                              margin: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xff0C831F),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            )
+                          : null,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'today_option'.tr,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Mulish',
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            // Heute timeslots — sofort + all future slots
-            if (controller.isHeuteSelected.value) ...[
-              const SizedBox(height: 12),
-              // Sofort label — always selected when Heute is active
-              Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: const Color(0xff0C831F),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xff0C831F)),
-                ),
-                child: Text(
-                  'immediately'.tr,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Mulish',
-                    color: Colors.white,
+              // Heute timeslots — sofort + all future slots
+              if (controller.isHeuteSelected.value) ...[
+                const SizedBox(height: 12),
+                // Sofort label — always selected when Heute is active
+                Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xff0C831F),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xff0C831F)),
+                  ),
+                  child: Text(
+                    'immediately'.tr,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Mulish',
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-              // Time slot chips
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: controller.sofortTimeSlots.map((slot) {
-                  final time = slot['time']!;
-                  final isSelected = controller.selectedTimeSlot.value == time;
-                  return GestureDetector(
-                    onTap: () => controller.selectTimeSlot(time, 'heute'),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: isSelected ? const Color(0xff0C831F) : const Color(0xffF5F5F5),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: isSelected ? const Color(0xff0C831F) : Colors.grey.shade300,
+                // Time slot chips
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: controller.sofortTimeSlots.map((slot) {
+                    final time = slot['time']!;
+                    final isSelected =
+                        controller.selectedTimeSlot.value == time;
+                    return GestureDetector(
+                      onTap: () => controller.selectTimeSlot(time, 'heute'),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xff0C831F)
+                              : const Color(0xffF5F5F5),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isSelected
+                                ? const Color(0xff0C831F)
+                                : Colors.grey.shade300,
+                          ),
+                        ),
+                        child: Text(
+                          time,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Mulish',
+                            color: isSelected ? Colors.white : Colors.black,
+                          ),
                         ),
                       ),
-                      child: Text(
-                        time,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Mulish',
-                          color: isSelected ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
+                    );
+                  }).toList(),
+                ),
+              ],
+
+              const SizedBox(height: 16),
             ],
-
-            const SizedBox(height: 16),
-],
             // ── Vorbestellen ─────────────────────────────────────────
             GestureDetector(
               onTap: () => controller.selectVorbestellen(),
               child: Row(
                 children: [
                   Container(
-                    width: 24, height: 24,
+                    width: 24,
+                    height: 24,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black, width: 2),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: controller.isVorbestellenSelected.value
                         ? Container(
-                      margin: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        color: const Color(0xff0C831F),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    )
+                            margin: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff0C831F),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          )
                         : null,
                   ),
                   const SizedBox(width: 12),
-                  Text('preorder'.tr,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+                  Text(
+                    'preorder'.tr,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Mulish',
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -3108,7 +3545,10 @@ class CheckoutScreen extends StatelessWidget {
               GestureDetector(
                 onTap: () => controller.selectVorbestellenDate(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xffFBF9FF),
                     borderRadius: BorderRadius.circular(8),
@@ -3119,9 +3559,14 @@ class CheckoutScreen extends StatelessWidget {
                     children: [
                       Text(
                         controller.selectedDate.value != null
-                            ? DateFormat('dd.MM.yyyy').format(controller.selectedDate.value!)
+                            ? DateFormat(
+                                'dd.MM.yyyy',
+                              ).format(controller.selectedDate.value!)
                             : 'select_date'.tr,
-                        style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontFamily: 'Mulish',
+                        ),
                       ),
                       Container(
                         padding: const EdgeInsets.all(6),
@@ -3129,7 +3574,11 @@ class CheckoutScreen extends StatelessWidget {
                           color: const Color(0xffE31E24),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Icon(Icons.calendar_today, color: Colors.white, size: 16),
+                        child: const Icon(
+                          Icons.calendar_today,
+                          color: Colors.white,
+                          size: 16,
+                        ),
                       ),
                     ],
                   ),
@@ -3143,16 +3592,25 @@ class CheckoutScreen extends StatelessWidget {
                   runSpacing: 8,
                   children: controller.sofortTimeSlots.map((slot) {
                     final time = slot['time']!;
-                    final isSelected = controller.selectedTimeSlot.value == time;
+                    final isSelected =
+                        controller.selectedTimeSlot.value == time;
                     return GestureDetector(
-                      onTap: () => controller.selectTimeSlot(time, 'vorbestellen'),
+                      onTap: () =>
+                          controller.selectTimeSlot(time, 'vorbestellen'),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xff0C831F) : const Color(0xffF5F5F5),
+                          color: isSelected
+                              ? const Color(0xff0C831F)
+                              : const Color(0xffF5F5F5),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: isSelected ? const Color(0xff0C831F) : Colors.grey.shade300,
+                            color: isSelected
+                                ? const Color(0xff0C831F)
+                                : Colors.grey.shade300,
                           ),
                         ),
                         child: Text(
@@ -3175,7 +3633,6 @@ class CheckoutScreen extends StatelessWidget {
       );
     });
   }
-
 }
 
 // Variant Dialog Widget
@@ -3190,7 +3647,11 @@ class VariantDialog extends StatelessWidget {
 
   double _calculateTotal() {
     if (controller.selectedProduct.value == null) return 0.0;
-    double base = double.tryParse(controller.selectedProduct.value!.price?.toString() ?? '0') ?? 0.0;
+    double base =
+        double.tryParse(
+          controller.selectedProduct.value!.price?.toString() ?? '0',
+        ) ??
+        0.0;
     double variant = (controller.selectedVariant.value?.price ?? 0).toDouble();
     double toppings = 0.0;
     final variantId = controller.selectedVariant.value?.id;
@@ -3208,7 +3669,8 @@ class VariantDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (!controller.showVariantDialog.value || controller.selectedProduct.value == null) {
+      if (!controller.showVariantDialog.value ||
+          controller.selectedProduct.value == null) {
         return const SizedBox.shrink();
       }
 
@@ -3268,7 +3730,9 @@ class VariantDialog extends StatelessWidget {
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: const Color(0xffE1E8F1)),
+                                border: Border.all(
+                                  color: const Color(0xffE1E8F1),
+                                ),
                               ),
                               child: const Icon(Icons.close, size: 22),
                             ),
@@ -3286,63 +3750,106 @@ class VariantDialog extends StatelessWidget {
                           children: [
                             // ── Variants grid ─────────────────────────────
                             if ((product.variants?.isNotEmpty ?? false)) ...[
-                              Text('choose_variant'.tr,
-                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish', color: Color(0xff475569))),
+                              Text(
+                                'choose_variant'.tr,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Mulish',
+                                  color: Color(0xff475569),
+                                ),
+                              ),
                               const SizedBox(height: 10),
                               GridView.builder(
                                 shrinkWrap: true,
                                 padding: EdgeInsets.zero,
                                 physics: const NeverScrollableScrollPhysics(),
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
-                                  childAspectRatio: 2.4,
-                                ),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                      childAspectRatio: 2.4,
+                                    ),
                                 itemCount: product.variants!.length,
                                 itemBuilder: (context, i) {
                                   final variant = product.variants![i];
                                   return Obx(() {
-                                    final isSelected = controller.selectedVariant.value?.id == variant.id;
+                                    final isSelected =
+                                        controller.selectedVariant.value?.id ==
+                                        variant.id;
                                     return GestureDetector(
-                                      onTap: () => controller.selectVariant(variant),
+                                      onTap: () =>
+                                          controller.selectVariant(variant),
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 4,
+                                        ),
                                         decoration: BoxDecoration(
                                           border: Border.all(
-                                            color: isSelected ? _green : _border,
+                                            color: isSelected
+                                                ? _green
+                                                : _border,
                                             width: isSelected ? 2 : 1,
                                           ),
-                                          borderRadius: BorderRadius.circular(10),
-                                          color: isSelected ? _lightGreen : Colors.white,
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                          color: isSelected
+                                              ? _lightGreen
+                                              : Colors.white,
                                         ),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 Expanded(
-                                                  child: Text(variant.name ?? '',
-                                                      style: TextStyle(fontSize: 13,
-                                                          fontWeight: FontWeight.w600,
-                                                          fontFamily: 'Mulish',
-                                                          color: isSelected ? _green : const Color(0xff475569)),
-                                                      maxLines: 1,
-                                                      overflow: TextOverflow.ellipsis),
+                                                  child: Text(
+                                                    variant.name ?? '',
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontFamily: 'Mulish',
+                                                      color: isSelected
+                                                          ? _green
+                                                          : const Color(
+                                                              0xff475569,
+                                                            ),
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
                                                 ),
                                                 if (isSelected)
-                                                  const Icon(Icons.check_circle, color: _green, size: 16),
+                                                  const Icon(
+                                                    Icons.check_circle,
+                                                    color: _green,
+                                                    size: 16,
+                                                  ),
                                               ],
                                             ),
                                             const SizedBox(height: 4),
-                                            Text('${"currency".tr}${(variant.price ?? 0).toStringAsFixed(2)}',
-                                                style: TextStyle(fontSize: 13,
-                                                    fontWeight: FontWeight.w700,
-                                                    fontFamily: 'Mulish',
-                                                    color: isSelected ? _green : const Color(0xff475569))),
+                                            Text(
+                                              '${"currency".tr}${(variant.price ?? 0).toStringAsFixed(2)}',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w700,
+                                                fontFamily: 'Mulish',
+                                                color: isSelected
+                                                    ? _green
+                                                    : const Color(0xff475569),
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -3355,44 +3862,68 @@ class VariantDialog extends StatelessWidget {
 
                             // ── Toppings for selected variant ─────────────
                             Obx(() {
-                              final selVariant = controller.selectedVariant.value;
-                              if (selVariant == null) return const SizedBox.shrink();
-                              final isExpanded = controller.expandedVariantId.value == selVariant.id;
+                              final selVariant =
+                                  controller.selectedVariant.value;
+                              if (selVariant == null)
+                                return const SizedBox.shrink();
+                              final isExpanded =
+                                  controller.expandedVariantId.value ==
+                                  selVariant.id;
                               if (!isExpanded) return const SizedBox.shrink();
-                              final groups = selVariant.enrichedToppingGroups ?? [];
-                              if (groups.isEmpty) return const SizedBox.shrink();
+                              final groups =
+                                  selVariant.enrichedToppingGroups ?? [];
+                              if (groups.isEmpty)
+                                return const SizedBox.shrink();
 
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: groups.map((group) {
-                                  final bool isRequired = group.isRequired == true;
+                                  final bool isRequired =
+                                      group.isRequired == true;
                                   final int minSel = group.minSelect ?? 0;
                                   final int maxSel = group.maxSelect ?? 0;
                                   return Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       // Group header
                                       Row(
                                         children: [
-                                          Text(group.name?.toUpperCase() ?? 'topping'.tr.toUpperCase(),
-                                              style: const TextStyle(fontSize: 12,
-                                                  fontWeight: FontWeight.w700,
-                                                  fontFamily: 'Mulish',
-                                                  color: Color(0xff475569),
-                                                  letterSpacing: 0.5)),
+                                          Text(
+                                            group.name?.toUpperCase() ??
+                                                'topping'.tr.toUpperCase(),
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700,
+                                              fontFamily: 'Mulish',
+                                              color: Color(0xff475569),
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
                                           if (isRequired)
                                             Container(
-                                              margin: const EdgeInsets.only(left: 8),
-                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                              margin: const EdgeInsets.only(
+                                                left: 8,
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 6,
+                                                    vertical: 2,
+                                                  ),
                                               decoration: BoxDecoration(
                                                 color: _green.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(4),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
                                               ),
-                                              child: Text('required_label'.tr,
-                                                  style: const TextStyle(fontSize: 10,
-                                                      color: _green,
-                                                      fontWeight: FontWeight.w700,
-                                                      fontFamily: 'Mulish')),
+                                              child: Text(
+                                                'required_label'.tr,
+                                                style: const TextStyle(
+                                                  fontSize: 10,
+                                                  color: _green,
+                                                  fontWeight: FontWeight.w700,
+                                                  fontFamily: 'Mulish',
+                                                ),
+                                              ),
                                             ),
                                         ],
                                       ),
@@ -3400,88 +3931,150 @@ class VariantDialog extends StatelessWidget {
                                         const SizedBox(height: 4),
                                         Text(
                                           '${'select_label'.tr} $minSel${maxSel > minSel ? ' - $maxSel' : ''} ${'items_unit'.tr}',
-                                          style: TextStyle(fontSize: 11,
-                                              color: Colors.orange.shade700,
-                                              fontWeight: FontWeight.w500,
-                                              fontFamily: 'Mulish'),
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: Colors.orange.shade700,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: 'Mulish',
+                                          ),
                                         ),
                                       ],
                                       // Group error
                                       Obx(() {
-                                        final err = controller.variantGroupErrors[group.id ?? 0];
-                                        if (err == null) return const SizedBox.shrink();
+                                        final err = controller
+                                            .variantGroupErrors[group.id ?? 0];
+                                        if (err == null)
+                                          return const SizedBox.shrink();
                                         return Container(
                                           width: double.infinity,
                                           margin: const EdgeInsets.only(top: 6),
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 6,
+                                          ),
                                           decoration: BoxDecoration(
                                             color: Colors.red.shade50,
-                                            borderRadius: BorderRadius.circular(6),
-                                            border: Border.all(color: Colors.red.shade200),
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.red.shade200,
+                                            ),
                                           ),
-                                          child: Text(err,
-                                              style: TextStyle(color: Colors.red.shade700,
-                                                  fontSize: 12, fontFamily: 'Mulish')),
+                                          child: Text(
+                                            err,
+                                            style: TextStyle(
+                                              color: Colors.red.shade700,
+                                              fontSize: 12,
+                                              fontFamily: 'Mulish',
+                                            ),
+                                          ),
                                         );
                                       }),
                                       const SizedBox(height: 10),
                                       // Topping items
                                       ...(group.toppings ?? []).map((topping) {
                                         return Obx(() {
-                                          final isToppingSelected = controller
-                                              .selectedToppingsMap[selVariant.id]
-                                              ?.contains(topping.id) ?? false;
+                                          final isToppingSelected =
+                                              controller
+                                                  .selectedToppingsMap[selVariant
+                                                      .id]
+                                                  ?.contains(topping.id) ??
+                                              false;
                                           return GestureDetector(
-                                            onTap: () => controller.toggleVariantTopping(
-                                              selVariant.id!,
-                                              topping.id!,
-                                              groupId: group.id,
-                                              maxSelect: maxSel > 0 ? maxSel : null,
-                                            ),
+                                            onTap: () =>
+                                                controller.toggleVariantTopping(
+                                                  selVariant.id!,
+                                                  topping.id!,
+                                                  groupId: group.id,
+                                                  maxSelect: maxSel > 0
+                                                      ? maxSel
+                                                      : null,
+                                                ),
                                             child: Container(
-                                              margin: const EdgeInsets.only(bottom: 10),
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 14, vertical: 12),
+                                              margin: const EdgeInsets.only(
+                                                bottom: 10,
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 14,
+                                                    vertical: 12,
+                                                  ),
                                               decoration: BoxDecoration(
                                                 border: Border.all(
-                                                  color: isToppingSelected ? _green : _border,
-                                                  width: isToppingSelected ? 1.5 : 1,
+                                                  color: isToppingSelected
+                                                      ? _green
+                                                      : _border,
+                                                  width: isToppingSelected
+                                                      ? 1.5
+                                                      : 1,
                                                 ),
-                                                borderRadius: BorderRadius.circular(8),
-                                                color: isToppingSelected ? _lightGreen : Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                color: isToppingSelected
+                                                    ? _lightGreen
+                                                    : Colors.white,
                                               ),
                                               child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
                                                   Expanded(
-                                                    child: Text(topping.name ?? '',
-                                                        style: TextStyle(fontSize: 14,
-                                                            fontFamily: 'Mulish',
-                                                            fontWeight: isToppingSelected
-                                                                ? FontWeight.w600
-                                                                : FontWeight.w500,
-                                                            color: const Color(0xff475569))),
+                                                    child: Text(
+                                                      topping.name ?? '',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontFamily: 'Mulish',
+                                                        fontWeight:
+                                                            isToppingSelected
+                                                            ? FontWeight.w600
+                                                            : FontWeight.w500,
+                                                        color: const Color(
+                                                          0xff475569,
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
                                                   const SizedBox(width: 12),
-                                                  Text('${"currency".tr}${(topping.price ?? 0).toStringAsFixed(2)}',
-                                                      style: TextStyle(fontSize: 14,
-                                                          fontFamily: 'Mulish',
-                                                          fontWeight: FontWeight.w600,
-                                                          color: isToppingSelected
-                                                              ? _green
-                                                              : const Color(0xff475569))),
+                                                  Text(
+                                                    '${"currency".tr}${(topping.price ?? 0).toStringAsFixed(2)}',
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontFamily: 'Mulish',
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: isToppingSelected
+                                                          ? _green
+                                                          : const Color(
+                                                              0xff475569,
+                                                            ),
+                                                    ),
+                                                  ),
                                                   const SizedBox(width: 10),
                                                   Container(
-                                                    width: 20, height: 20,
+                                                    width: 20,
+                                                    height: 20,
                                                     decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
-                                                      color: isToppingSelected ? _green : Colors.transparent,
+                                                      color: isToppingSelected
+                                                          ? _green
+                                                          : Colors.transparent,
                                                       border: Border.all(
-                                                          color: isToppingSelected ? _green : Colors.grey.shade400,
-                                                          width: 1.5),
+                                                        color: isToppingSelected
+                                                            ? _green
+                                                            : Colors
+                                                                  .grey
+                                                                  .shade400,
+                                                        width: 1.5,
+                                                      ),
                                                     ),
                                                     child: isToppingSelected
-                                                        ? const Icon(Icons.check, color: Colors.white, size: 13)
+                                                        ? const Icon(
+                                                            Icons.check,
+                                                            color: Colors.white,
+                                                            size: 13,
+                                                          )
                                                         : null,
                                                   ),
                                                 ],
@@ -3498,11 +4091,15 @@ class VariantDialog extends StatelessWidget {
                             }),
 
                             // ── Item note field ───────────────────────────
-                            Text('special_request'.tr,
-                                style: const TextStyle(fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    fontFamily: 'Mulish',
-                                    color: Color(0xff475569))),
+                            Text(
+                              'special_request'.tr,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Mulish',
+                                color: Color(0xff475569),
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             Container(
                               decoration: BoxDecoration(
@@ -3513,12 +4110,19 @@ class VariantDialog extends StatelessWidget {
                               child: TextField(
                                 controller: controller.variantNoteController,
                                 textInputAction: TextInputAction.done,
-                                onSubmitted: (_) => FocusScope.of(context).unfocus(),
+                                onSubmitted: (_) =>
+                                    FocusScope.of(context).unfocus(),
                                 maxLines: 2,
-                                style: const TextStyle(fontSize: 13, fontFamily: 'Mulish'),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontFamily: 'Mulish',
+                                ),
                                 decoration: InputDecoration(
                                   hintText: 'special_request_hint'.tr,
-                                  hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
+                                  hintStyle: TextStyle(
+                                    color: Colors.grey[400],
+                                    fontSize: 13,
+                                  ),
                                   border: InputBorder.none,
                                   contentPadding: const EdgeInsets.all(12),
                                 ),
@@ -3534,9 +4138,13 @@ class VariantDialog extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
                       decoration: BoxDecoration(
-                          border: Border(top: BorderSide(color: Colors.grey.shade200))),
+                        border: Border(
+                          top: BorderSide(color: Colors.grey.shade200),
+                        ),
+                      ),
                       child: Obx(() {
-                        final hasVariant = controller.selectedVariant.value != null;
+                        final hasVariant =
+                            controller.selectedVariant.value != null;
                         final total = _calculateTotal();
                         return GestureDetector(
                           onTap: () => controller.addToCartWithVariant(),
@@ -3552,10 +4160,12 @@ class VariantDialog extends StatelessWidget {
                                 hasVariant
                                     ? '${'add_to_cart_label'.tr}  •  ${"currency".tr}${total.toStringAsFixed(2)}'
                                     : 'please_select_variant'.tr,
-                                style: const TextStyle(fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Mulish',
-                                    color: Colors.white),
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Mulish',
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
@@ -3623,7 +4233,8 @@ class PostcodeDialog extends StatelessWidget {
                             ),
                           ),
                           IconButton(
-                            onPressed: () => controller.showPostcodeDialog.value = false,
+                            onPressed: () =>
+                                controller.showPostcodeDialog.value = false,
                             icon: const Icon(Icons.close),
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
@@ -3636,66 +4247,74 @@ class PostcodeDialog extends StatelessWidget {
                     Flexible(
                       child: controller.postcode.isEmpty
                           ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(32),
-                          child: Text(
-                            'no_postcodes_available'.tr,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                              fontFamily: 'Mulish',
-                            ),
-                          ),
-                        ),
-                      )
-                          : ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: controller.postcode.length,
-                        itemBuilder: (context, index) {
-                          final postcode = controller.postcode[index];
-                          final isSelected = controller.selectedPostcode.value?.id == postcode.id;
-                          return GestureDetector(
-                            onTap: () => controller.selectPostcode(postcode),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? const Color(0xffE9F6EF)
-                                    : Colors.white,
-                                border: const Border(
-                                  bottom: BorderSide(
+                              child: Padding(
+                                padding: const EdgeInsets.all(32),
+                                child: Text(
+                                  'no_postcodes_available'.tr,
+                                  style: const TextStyle(
+                                    fontSize: 14,
                                     color: Colors.grey,
-                                    width: 0.3,
+                                    fontFamily: 'Mulish',
                                   ),
                                 ),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    postcode.postcode ?? '',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                      fontFamily: 'Mulish',
-                                      color: isSelected ? const Color(0xff0C831F) : Colors.black,
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: controller.postcode.length,
+                              itemBuilder: (context, index) {
+                                final postcode = controller.postcode[index];
+                                final isSelected =
+                                    controller.selectedPostcode.value?.id ==
+                                    postcode.id;
+                                return GestureDetector(
+                                  onTap: () =>
+                                      controller.selectPostcode(postcode),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? const Color(0xffE9F6EF)
+                                          : Colors.white,
+                                      border: const Border(
+                                        bottom: BorderSide(
+                                          color: Colors.grey,
+                                          width: 0.3,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          postcode.postcode ?? '',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: isSelected
+                                                ? FontWeight.w700
+                                                : FontWeight.w500,
+                                            fontFamily: 'Mulish',
+                                            color: isSelected
+                                                ? const Color(0xff0C831F)
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                        if (isSelected)
+                                          const Icon(
+                                            Icons.check_circle,
+                                            color: Color(0xff0C831F),
+                                            size: 20,
+                                          ),
+                                      ],
                                     ),
                                   ),
-                                  if (isSelected)
-                                    const Icon(
-                                      Icons.check_circle,
-                                      color: Color(0xff0C831F),
-                                      size: 20,
-                                    ),
-                                ],
-                              ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
                     ),
                   ],
                 ),
@@ -3851,17 +4470,29 @@ class TimeSelectionBottomSheet extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.store_mall_directory_outlined,
-                  size: 50, color: Colors.grey),
+              const Icon(
+                Icons.store_mall_directory_outlined,
+                size: 50,
+                color: Colors.grey,
+              ),
               const SizedBox(height: 12),
-              Text('store_closed_currently'.tr,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Mulish')),
+              Text(
+                'store_closed_currently'.tr,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Mulish',
+                ),
+              ),
               const SizedBox(height: 8),
               Text(
                 'use_preorder_hint'.tr,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 13, fontFamily: 'Mulish', color: Colors.grey),
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontFamily: 'Mulish',
+                  color: Colors.grey,
+                ),
               ),
             ],
           ),
@@ -3947,8 +4578,9 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                   const SizedBox(width: 12),
                   Text(
                     controller.selectedVorbestellenDate.value != null
-                        ? DateFormat('dd.MM.yyyy').format(
-                        controller.selectedVorbestellenDate.value!)
+                        ? DateFormat(
+                            'dd.MM.yyyy',
+                          ).format(controller.selectedVorbestellenDate.value!)
                         : 'select_date'.tr,
                     style: const TextStyle(
                       fontSize: 14,
@@ -3974,13 +4606,17 @@ class _SyncIcon extends StatefulWidget {
   State<_SyncIcon> createState() => _SyncIconState();
 }
 
-class _SyncIconState extends State<_SyncIcon> with SingleTickerProviderStateMixin {
+class _SyncIconState extends State<_SyncIcon>
+    with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..repeat();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
   }
 
   @override
@@ -4006,15 +4642,17 @@ class OrderPreviewScreen extends StatelessWidget {
   String _fmt(double amount) => amount.toStringAsFixed(2);
 
   Widget _divider() {
-    const style =
-        TextStyle(fontSize: 14, color: Colors.grey, fontFamily: 'Mulish');
+    const style = TextStyle(
+      fontSize: 14,
+      color: Colors.grey,
+      fontFamily: 'Mulish',
+    );
     return LayoutBuilder(
       builder: (context, constraints) {
         final charWidth = (TextPainter(
           text: const TextSpan(text: '=', style: style),
           textDirection: ui.TextDirection.ltr,
-        )..layout())
-            .width;
+        )..layout()).width;
         final count = (constraints.maxWidth / charWidth).floor();
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
@@ -4051,7 +4689,8 @@ class OrderPreviewScreen extends StatelessWidget {
         timeDisplay =
             '${DateFormat('dd.MM.yyyy').format(controller.selectedDate.value!)} ${controller.selectedTimeSlot.value}';
       } else {
-        timeDisplay = '${'today_option'.tr} ${controller.selectedTimeSlot.value}';
+        timeDisplay =
+            '${'today_option'.tr} ${controller.selectedTimeSlot.value}';
       }
     }
 
@@ -4086,7 +4725,8 @@ class OrderPreviewScreen extends StatelessWidget {
                   // ── Order type + Date ─────────────────────────────────
                   Center(
                     child: Text(
-                      (orderType == 'Lieferzeit' ? 'delivery'.tr : 'pickup'.tr).toUpperCase(),
+                      (orderType == 'Lieferzeit' ? 'delivery'.tr : 'pickup'.tr)
+                          .toUpperCase(),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -4099,7 +4739,9 @@ class OrderPreviewScreen extends StatelessWidget {
                     child: Text(
                       '${'date'.tr}: ${DateFormat('dd-MM-yyyy  HH:mm').format(DateTime.now())}',
                       style: const TextStyle(
-                          fontSize: 13, fontFamily: 'Mulish'),
+                        fontSize: 13,
+                        fontFamily: 'Mulish',
+                      ),
                     ),
                   ),
                   if (timeDisplay.isNotEmpty) ...[
@@ -4108,9 +4750,10 @@ class OrderPreviewScreen extends StatelessWidget {
                       child: Text(
                         '${orderType == 'Lieferzeit' ? 'delivery_time'.tr : 'collection'.tr}: $timeDisplay',
                         style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Mulish'),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Mulish',
+                        ),
                       ),
                     ),
                   ],
@@ -4136,7 +4779,7 @@ class OrderPreviewScreen extends StatelessWidget {
                   ...items.map((item) {
                     final double itemTotal =
                         (item['price'] as num).toDouble() *
-                            (item['quantity'] as int);
+                        (item['quantity'] as int);
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 10),
                       child: Column(
@@ -4174,9 +4817,10 @@ class OrderPreviewScreen extends StatelessWidget {
                               child: Text(
                                 '${item['quantity']} × ${item['size']}  [${"currency".tr}${(item['price'] as num).toStringAsFixed(2)}]',
                                 style: const TextStyle(
-                                    fontSize: 12,
-                                    fontFamily: 'Mulish',
-                                    color: Colors.black54),
+                                  fontSize: 12,
+                                  fontFamily: 'Mulish',
+                                  color: Colors.black54,
+                                ),
                               ),
                             ),
                           if (item['extras'] != null &&
@@ -4186,9 +4830,10 @@ class OrderPreviewScreen extends StatelessWidget {
                               child: Text(
                                 '+ ${item['extras']}',
                                 style: const TextStyle(
-                                    fontSize: 12,
-                                    fontFamily: 'Mulish',
-                                    color: Colors.black54),
+                                  fontSize: 12,
+                                  fontFamily: 'Mulish',
+                                  color: Colors.black54,
+                                ),
                               ),
                             ),
                           if (item['item_note'] != null &&
@@ -4216,16 +4861,23 @@ class OrderPreviewScreen extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${'note'.tr}:  ',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                fontFamily: 'Mulish',
-                                color: Colors.green)),
+                        Text(
+                          '${'note'.tr}:  ',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            fontFamily: 'Mulish',
+                            color: Colors.green,
+                          ),
+                        ),
                         Expanded(
-                          child: Text(note,
-                              style: const TextStyle(
-                                  fontSize: 13, fontFamily: 'Mulish')),
+                          child: Text(
+                            note,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontFamily: 'Mulish',
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -4234,7 +4886,10 @@ class OrderPreviewScreen extends StatelessWidget {
                   _divider(),
 
                   // ── Totals ────────────────────────────────────────────
-                  _totalsRow('subtotal'.tr, '${"currency".tr} ${_fmt(subtotal)}'),
+                  _totalsRow(
+                    'subtotal'.tr,
+                    '${"currency".tr} ${_fmt(subtotal)}',
+                  ),
                   if (discount > 0) ...[
                     const SizedBox(height: 2),
                     _totalsRow(
@@ -4246,7 +4901,11 @@ class OrderPreviewScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Container(height: 0.5, color: Colors.grey),
                   const SizedBox(height: 4),
-                  _totalsRow(('grand_total'.tr).toUpperCase(), '${"currency".tr} ${_fmt(grandTotal)}', bold: true),
+                  _totalsRow(
+                    ('grand_total'.tr).toUpperCase(),
+                    '${"currency".tr} ${_fmt(grandTotal)}',
+                    bold: true,
+                  ),
 
                   _divider(),
 
@@ -4254,9 +4913,10 @@ class OrderPreviewScreen extends StatelessWidget {
                   Text(
                     '${'payment_label'.tr}: ${paymentMethod == 'cash' ? 'cash'.tr : 'card'.tr}',
                     style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Mulish'),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Mulish',
+                    ),
                   ),
 
                   // ── Tax table ─────────────────────────────────────────
@@ -4265,77 +4925,115 @@ class OrderPreviewScreen extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                            flex: 2,
-                            child: Text('vat_rate'.tr,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 12,
-                                    fontFamily: 'Mulish'))),
+                          flex: 2,
+                          child: Text(
+                            'vat_rate'.tr,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                              fontFamily: 'Mulish',
+                            ),
+                          ),
+                        ),
                         Expanded(
-                            flex: 2,
-                            child: Center(
-                                child: Text('gross'.tr,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 12,
-                                        fontFamily: 'Mulish')))),
+                          flex: 2,
+                          child: Center(
+                            child: Text(
+                              'gross'.tr,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                                fontFamily: 'Mulish',
+                              ),
+                            ),
+                          ),
+                        ),
                         Expanded(
-                            flex: 2,
-                            child: Center(
-                                child: Text('net'.tr,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 12,
-                                        fontFamily: 'Mulish')))),
+                          flex: 2,
+                          child: Center(
+                            child: Text(
+                              'net'.tr,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                                fontFamily: 'Mulish',
+                              ),
+                            ),
+                          ),
+                        ),
                         Expanded(
-                            flex: 2,
-                            child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Text('vat'.tr,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 12,
-                                        fontFamily: 'Mulish')))),
+                          flex: 2,
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              'vat'.tr,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                                fontFamily: 'Mulish',
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    ...taxBreakdown.map((tax) => Padding(
-                          padding: const EdgeInsets.only(bottom: 3),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                      '${(tax['tax_rate'] ?? 0).toStringAsFixed(0)} %',
-                                      style: const TextStyle(
-                                          fontSize: 12,
-                                          fontFamily: 'Mulish'))),
-                              Expanded(
-                                  flex: 2,
-                                  child: Center(
-                                      child: Text(_fmt(tax['brutto'] ?? 0),
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              fontFamily: 'Mulish')))),
-                              Expanded(
-                                  flex: 2,
-                                  child: Center(
-                                      child: Text(_fmt(tax['netto'] ?? 0),
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              fontFamily: 'Mulish')))),
-                              Expanded(
-                                  flex: 2,
-                                  child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Text(
-                                          _fmt(tax['tax_amount'] ?? 0),
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              fontFamily: 'Mulish')))),
-                            ],
-                          ),
-                        )),
+                    ...taxBreakdown.map(
+                      (tax) => Padding(
+                        padding: const EdgeInsets.only(bottom: 3),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                '${(tax['tax_rate'] ?? 0).toStringAsFixed(0)} %',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontFamily: 'Mulish',
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Center(
+                                child: Text(
+                                  _fmt(tax['brutto'] ?? 0),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontFamily: 'Mulish',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Center(
+                                child: Text(
+                                  _fmt(tax['netto'] ?? 0),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontFamily: 'Mulish',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  _fmt(tax['tax_amount'] ?? 0),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontFamily: 'Mulish',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
 
                   _divider(),
@@ -4345,9 +5043,10 @@ class OrderPreviewScreen extends StatelessWidget {
                     child: Text(
                       'information_label'.tr,
                       style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                          fontFamily: 'Mulish'),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                        fontFamily: 'Mulish',
+                      ),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -4355,7 +5054,10 @@ class OrderPreviewScreen extends StatelessWidget {
                     child: Text(
                       'allergy_notice'.tr,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 12, fontFamily: 'Mulish'),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Mulish',
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -4387,17 +5089,23 @@ class OrderPreviewScreen extends StatelessWidget {
   }
 
   Widget _infoRow(String text) => Padding(
-        padding: const EdgeInsets.only(bottom: 2),
-        child: Text(text,
-            style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Mulish')),
-      );
+    padding: const EdgeInsets.only(bottom: 2),
+    child: Text(
+      text,
+      style: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        fontFamily: 'Mulish',
+      ),
+    ),
+  );
 
-  Widget _totalsRow(String label, String value,
-      {bool bold = false, Color? valueColor})
-  {
+  Widget _totalsRow(
+    String label,
+    String value, {
+    bool bold = false,
+    Color? valueColor,
+  }) {
     final style = TextStyle(
       fontSize: 13,
       fontWeight: bold ? FontWeight.w800 : FontWeight.w500,
@@ -4409,8 +5117,7 @@ class OrderPreviewScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: style),
-          Text(value,
-              style: style.copyWith(color: valueColor)),
+          Text(value, style: style.copyWith(color: valueColor)),
         ],
       ),
     );
@@ -4430,7 +5137,11 @@ class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return child;
   }
 

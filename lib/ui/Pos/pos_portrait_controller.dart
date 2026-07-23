@@ -713,7 +713,10 @@ class PosPortraitController extends GetxController {
         group.toppings?.forEach((topping) {
           if (selectedToppingIds.contains(topping.id)) {
             toppingPrice += topping.price ?? 0.0;
-            toppingDetails.add('${topping.name} [${"currency".tr}${(topping.price ?? 0.0).toStringAsFixed(2)}]');
+            final tPrice = topping.price ?? 0.0;
+            toppingDetails.add(tPrice > 0
+                ? '${topping.name} [${"currency".tr}${tPrice.toStringAsFixed(2)}]'
+                : '${topping.name}');
 
             toppingDataList.add({
               'topping_id': topping.id,
@@ -728,7 +731,7 @@ class PosPortraitController extends GetxController {
 
     double totalPrice = basePrice + variantPrice + toppingPrice;
     String variantName = selectedVariant.value!.name ?? '';
-    String itemKey = '${selectedProduct.value!.name}_${variantName}_${toppingDetails.join(',')}';
+    String itemKey = '${selectedProduct.value!.id}_${selectedVariant.value!.id}_${toppingDetails.join(',')}';
 
     int existingIndex = cartItems.indexWhere((item) => item['key'] == itemKey);
 
@@ -742,6 +745,8 @@ class PosPortraitController extends GetxController {
         'size': variantName,
         'quantity': 1,
         'price': totalPrice,
+        'base_price': basePrice,
+        'variant_price': variantPrice,
         'variant_id': selectedVariant.value!.id,
         'product_id': selectedProduct.value!.id,
         'topping_details': toppingDetails,
@@ -765,7 +770,7 @@ class PosPortraitController extends GetxController {
 
   void addSimpleProductToCart(GetStoreProducts product) {
     double basePrice = double.tryParse(product.price?.toString() ?? '0') ?? 0.0;
-    String itemKey = '${product.name}_no_variant';
+    String itemKey = '${product.id}_no_variant';
 
     int existingIndex = cartItems.indexWhere((item) => item['key'] == itemKey);
 
@@ -1284,11 +1289,6 @@ class PosPortraitController extends GetxController {
 
     try {
       List<Map<String, dynamic>> orderItems = cartItems.map((item) {
-        var product = productList.firstWhere(
-              (p) => p.name == item['name'],
-          orElse: () => GetStoreProducts(id: 0),
-        );
-
         // ✅ FIX: Check both 'topping_data' AND 'toppings'
         List<Map<String, dynamic>>? toppings;
 
@@ -1315,7 +1315,7 @@ class PosPortraitController extends GetxController {
           print('🔍 toppings content: ${item['toppings']}');
         }
         return {
-          'product_id': product.id ?? 0,
+          'product_id': item['product_id'] ?? 0,
           'quantity': item['quantity'],
           'price': item['price'],
           'variant_id': item['variant_id'],
@@ -1605,6 +1605,7 @@ class PosPortraitController extends GetxController {
 
   void removeCartItem(int index) {
     cartItems.removeAt(index);
+    calculateTotal();
     cartItems.refresh();
   }
 

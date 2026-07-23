@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
+import 'package:food_receiver/models/today_report.dart' hide TaxBreakdown;
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -21,7 +21,7 @@ import '../../models/Topping.dart';
 import '../../models/UserMe.dart';
 import '../../models/order_model.dart';
 import '../../models/sync_order_response_model.dart';
-import '../../models/today_report.dart' hide TaxBreakdown;
+
 import '../../utils/log_util.dart';
 import '../../utils/my_application.dart';
 import '../Login/LoginScreen.dart';
