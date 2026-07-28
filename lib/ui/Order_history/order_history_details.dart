@@ -11,6 +11,7 @@ import '../../constants/constant.dart';
 import '../../models/order_history_response_model.dart';
 import '../../models/print_order_without_ip.dart';
 import '../../utils/printer_helper_english.dart';
+import '../../utils/contact_launcher.dart';
 
 class OrderHistoryDetails extends StatefulWidget {
   final orderHistoryResponseModel historyOrder;
@@ -147,6 +148,20 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
     String guestName = historyOrder.guestShippingJson?.customerName?.toString() ?? '';
     String guestPhone = historyOrder.guestShippingJson?.phone?.toString() ?? '';
     String guestEmail = historyOrder.guestShippingJson?.email?.toString() ?? '';
+    String displayAddress = (historyOrder.shippingAddress?.line1 != null && historyOrder.shippingAddress!.line1!.isNotEmpty)
+        ? _fullAddress(
+            historyOrder.shippingAddress?.line1,
+            historyOrder.shippingAddress?.city,
+            historyOrder.shippingAddress?.zip,
+            historyOrder.shippingAddress?.country,
+          )
+        : guestAddress;
+    String displayPhone = (historyOrder.shippingAddress?.phone != null && historyOrder.shippingAddress!.phone!.isNotEmpty)
+        ? historyOrder.shippingAddress!.phone!
+        : guestPhone;
+    String displayEmail = (historyOrder.user?.username != null && historyOrder.user!.username!.isNotEmpty)
+        ? (historyOrder.user?.username ?? '')
+        : guestEmail;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -256,38 +271,36 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
                     ),
                     const SizedBox(height: 2),
                     if (historyOrder.orderType == 1)
-                      Builder(
-                        builder: (context) {
-                          String displayAddress = '';
-                          if (historyOrder.shippingAddress?.line1 != null && historyOrder.shippingAddress!.line1!.isNotEmpty) {
-                            displayAddress = '${'address'.tr}: ${_fullAddress(
-                              historyOrder.shippingAddress?.line1,
-                              historyOrder.shippingAddress?.city,
-                              historyOrder.shippingAddress?.zip,
-                              historyOrder.shippingAddress?.country,
-                            )}';
-                          } else {
-                            displayAddress = '${'address'.tr}: $guestAddress';
-                          }
-
-                          return Text(
-                            displayAddress,
-                            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
-                          );
-                        },
+                      GestureDetector(
+                        onTap: () => launchMapAddress(displayAddress),
+                        child: Text(
+                          '${'address'.tr}: $displayAddress',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              decoration: TextDecoration.underline),
+                        ),
                       ),
                     const SizedBox(height: 2),
-                    Text(
-                      '${'phone'.tr}: ${(historyOrder.shippingAddress?.phone != null && historyOrder.shippingAddress!.phone!.isNotEmpty)
-                          ? historyOrder.shippingAddress!.phone!
-                          : guestPhone}',
-                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                    GestureDetector(
+                      onTap: () => launchPhone(displayPhone),
+                      child: Text(
+                        '${'phone'.tr}: $displayPhone',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            decoration: TextDecoration.underline),
+                      ),
                     ),
-                    Text(
-                      '${'email'.tr}: ${(historyOrder.user?.username != null && historyOrder.user!.username!.isNotEmpty)
-                          ? historyOrder.user?.username
-                          : guestEmail}',
-                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                    GestureDetector(
+                      onTap: () => launchEmail(displayEmail),
+                      child: Text(
+                        '${'email'.tr}: $displayEmail',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            decoration: TextDecoration.underline),
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Container(height: 0.5, color: Colors.grey),

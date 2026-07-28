@@ -18,7 +18,8 @@
       "Bash(flutter pub *)",
       "Bash(adb devices *)",
       "Bash(/c/Users/hp/AppData/Local/Android/Sdk/platform-tools/adb.exe devices *)",
-      "Bash(/c/Users/hp/AppData/Local/Android/Sdk/platform-tools/adb.exe -s VB52218V21261 logcat -c)"
+      "Bash(/c/Users/hp/AppData/Local/Android/Sdk/platform-tools/adb.exe -s VB52218V21261 logcat -c)",
+      "Bash(rm analyze_out.txt)"
     ]
   }
 }

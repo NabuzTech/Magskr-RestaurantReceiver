@@ -15,6 +15,7 @@ import '../../models/order_model.dart';
 import '../../models/print_order_without_ip.dart';
 import '../../utils/log_util.dart';
 import '../../utils/printer_helper_english.dart';
+import '../../utils/contact_launcher.dart';
 
 class OrderDetailEnglish extends StatefulWidget {
   final Order order;
@@ -373,6 +374,20 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
     String guestName=updatedOrder.guestShippingJson?.customerName?.toString()??'';
     String guestPhone=updatedOrder.guestShippingJson?.phone?.toString()??'';
     String guestEmail=updatedOrder.guestShippingJson?.email?.toString()??'';
+    String displayAddress = (updatedOrder.shipping_address?.line1 != null && updatedOrder.shipping_address!.line1!.isNotEmpty)
+        ? _fullAddress(
+            updatedOrder.shipping_address?.line1,
+            updatedOrder.shipping_address?.city,
+            updatedOrder.shipping_address?.zip,
+            updatedOrder.shipping_address?.country,
+          )
+        : guestAddress;
+    String displayPhone = (updatedOrder.shipping_address?.phone != null && updatedOrder.shipping_address!.phone!.isNotEmpty)
+        ? updatedOrder.shipping_address!.phone!
+        : guestPhone;
+    String displayEmail = (updatedOrder.user?.username != null && updatedOrder.user!.username!.isNotEmpty)
+        ? updatedOrder.user!.username!
+        : guestEmail;
     print('guest name is $guestName');
     print('guest name is $guestAddress');
     print('guest name is $guestPhone');
@@ -518,29 +533,36 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     ),
                     const SizedBox(height: 2),
                     if (updatedOrder.orderType == 1)
-                      Text(
-                        '${'address'.tr}: ${(updatedOrder.shipping_address?.line1 != null && updatedOrder.shipping_address!.line1!.isNotEmpty)
-                            ? _fullAddress(
-                                updatedOrder.shipping_address?.line1,
-                                updatedOrder.shipping_address?.city,
-                                updatedOrder.shipping_address?.zip,
-                                updatedOrder.shipping_address?.country,
-                              )
-                            : guestAddress}',
-                        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                      GestureDetector(
+                        onTap: () => launchMapAddress(displayAddress),
+                        child: Text(
+                          '${'address'.tr}: $displayAddress',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              decoration: TextDecoration.underline),
+                        ),
                       ),
                     const SizedBox(height: 2),
-                    Text(
-                      '${'phone'.tr}: ${(updatedOrder.shipping_address?.phone != null && updatedOrder.shipping_address!.phone!.isNotEmpty)
-                          ? updatedOrder.shipping_address!.phone!
-                          : guestPhone}',
-                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                    GestureDetector(
+                      onTap: () => launchPhone(displayPhone),
+                      child: Text(
+                        '${'phone'.tr}: $displayPhone',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            decoration: TextDecoration.underline),
+                      ),
                     ),
-                    Text(
-                      '${'email'.tr}: ${(updatedOrder.user?.username != null && updatedOrder.user!.username!.isNotEmpty)
-                          ? updatedOrder.user!.username!
-                          : guestEmail}',
-                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                    GestureDetector(
+                      onTap: () => launchEmail(displayEmail),
+                      child: Text(
+                        '${'email'.tr}: $displayEmail',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            decoration: TextDecoration.underline),
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Container(height: 0.5, color: Colors.grey),
