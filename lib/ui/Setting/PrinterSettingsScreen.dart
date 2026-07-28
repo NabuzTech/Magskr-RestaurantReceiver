@@ -39,7 +39,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
   bool isManualOverride = false;
   bool isManualStatus = false;
   bool _isManualOverride = false;
-  bool _isManualStart = true;
+  bool _isManualStart = false;
   bool _manualSettingsInitialized = false;
   bool _autoAcceptUserModified = false;
   @override
@@ -62,7 +62,6 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
     sharedPreferences = await SharedPreferences.getInstance();
     await getPrinterIp();
     await _loadSettings();
-    await _loadManualSettings();
     String? savedSyncTime = sharedPreferences.getString('sync_time');
     if (savedSyncTime != null && savedSyncTime.isNotEmpty) {
       int? syncTimeSeconds = int.tryParse(savedSyncTime);
@@ -118,13 +117,6 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
     if (bearerKey != null && bearerKey.isNotEmpty) await getStoreSetting(bearerKey);
   }
 
-  Future<void> _loadManualSettings() async {
-    setState(() {
-      _isManualOverride = sharedPreferences.getBool('manual_override') ?? false;
-      _isManualStart = sharedPreferences.getBool('manual_start') ?? false;
-    });
-  }
-
   Future<void> manualStatus() async {
     storeId = sharedPreferences.getString(valueShared_STORE_KEY);
     if (storeId == null) {
@@ -174,8 +166,6 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
   }
 
   Future<void> _saveManualSettings() async {
-    await sharedPreferences.setBool('manual_override', _isManualOverride);
-    await sharedPreferences.setBool('manual_start', _isManualStart);
     await manualStatus();
   }
 
@@ -382,7 +372,6 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                                   isSelected: _isManualOverride,
                                   onTap: () {
                                     setState(() => _isManualOverride = true);
-                                    sharedPreferences.setBool('manual_override', _isManualOverride);
                                     _saveManualSettings();
                                   },
                                 ),

@@ -335,7 +335,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ),
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0),
-                  child: Text('${'version'.tr}: 2.4(2)', style: const TextStyle(
+                  child: Text('${'version'.tr}: 2.4(3)', style: const TextStyle(
                       fontWeight: FontWeight.w300,
                       fontSize: 15
                   ),),
@@ -529,6 +529,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
           'auto_order_print',
           'auto_order_remote_accept',
           'auto_order_remote_print',
+
+          'manual_override',
+          'manual_start',
         ];
 
         for (String key in keysToRemove) {
