@@ -554,10 +554,10 @@ class _OrderScreenState extends State<OrderScreenNew>
     List<OrderItem>? orderItems;
     if (itemsData.isNotEmpty) {
       final itemFutures = itemsData.map((item) async {
-        String productName = 'Product';
+        String productName = (item['product_name'] as String?) ?? 'Product';
         try {
           final productId = item['product_id'] as int?;
-          if (productId != null) {
+          if (productId != null && item['product_name'] == null) {
             final product = await DatabaseHelper().getProductById(productId.toString());
             if (product != null) {
               productName = product.name ?? 'Product';
@@ -3022,11 +3022,13 @@ class _OrderScreenState extends State<OrderScreenNew>
           toppings.add({
             'topping_id': t['id'] ?? 0,
             'quantity': t['topping_quantity'] ?? 1,
+            'price': (t['topping_price'] as num?)?.toDouble() ?? 0.0,
           });
         }
       }
       items.add({
         'product_id': item['product_id'],
+        'product_name': item['product_name'],
         'quantity': item['quantity'],
         'unit_price': (item['unit_price'] as num?)?.toDouble() ?? 0.0,
         'note': item['note'] ?? '',

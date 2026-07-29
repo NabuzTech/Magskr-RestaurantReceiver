@@ -2346,10 +2346,10 @@ class PosController extends GetxController {
     List<OrderItem>? orderItems;
     if (itemsData.isNotEmpty) {
       final itemFutures = itemsData.map((item) async {
-        String productName = 'Product';
+        String productName = (item['product_name'] as String?) ?? 'Product';
         try {
           final productId = item['product_id'] as int?;
-          if (productId != null) {
+          if (productId != null && item['product_name'] == null) {
             final product = await DatabaseHelper().getProductById(productId.toString());
             if (product != null) {
               productName = product.name ?? 'Product';

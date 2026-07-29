@@ -629,6 +629,7 @@ class PosPortraitController extends GetxController {
   void addCustomItemToCart(String name, double price) {
     cartItems.add({
       'name': name,
+      'product_id': null, // custom/off-menu item — no catalog product
       'extras': '',
       'size': '',
       'quantity': 1,
@@ -1315,7 +1316,8 @@ class PosPortraitController extends GetxController {
           print('🔍 toppings content: ${item['toppings']}');
         }
         return {
-          'product_id': item['product_id'] ?? 0,
+          'product_id': item['product_id'],
+          'product_name': item['name'],
           'quantity': item['quantity'],
           'price': item['price'],
           'variant_id': item['variant_id'],
@@ -1892,11 +1894,16 @@ class PosPortraitController extends GetxController {
       List<Map<String, dynamic>> toppings = [];
       if (item['toppings'] != null && item['toppings'] is List) {
         for (var t in item['toppings']) {
-          toppings.add({'topping_id': t['id'] ?? 0, 'quantity': t['topping_quantity'] ?? 1});
+          toppings.add({
+            'topping_id': t['id'] ?? 0,
+            'quantity': t['topping_quantity'] ?? 1,
+            'price': (t['topping_price'] as num?)?.toDouble() ?? 0.0,
+          });
         }
       }
       items.add({
         'product_id': item['product_id'],
+        'product_name': item['product_name'],
         'quantity': item['quantity'],
         'unit_price': (item['unit_price'] as num?)?.toDouble() ?? 0.0,
         'note': item['note'] ?? '',

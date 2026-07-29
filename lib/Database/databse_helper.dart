@@ -40,7 +40,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 15,
+      version: 16,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -179,6 +179,7 @@ class DatabaseHelper {
       order_id INTEGER,
       note TEXT,
       product_id INTEGER,
+      product_name TEXT,
       quantity INTEGER,
       unit_price REAL,
       variant_id INTEGER,
@@ -511,6 +512,15 @@ class DatabaseHelper {
         await db.execute(
             'ALTER TABLE categories ADD COLUMN tax_percentage INTEGER DEFAULT 0');
         print('✅ Added tax_percentage column to categories table');
+      }
+    }
+
+    if (oldVersion < 16) {
+      final cols = await db.rawQuery('PRAGMA table_info(order_items)');
+      final hasProductName = cols.any((col) => col['name'] == 'product_name');
+      if (!hasProductName) {
+        await db.execute('ALTER TABLE order_items ADD COLUMN product_name TEXT');
+        print('✅ Added product_name column to order_items table');
       }
     }
   }
@@ -1084,6 +1094,7 @@ class DatabaseHelper {
         'order_id': orderId,
         'note': item['note'] ?? '',
         'product_id': item['product_id'],
+        'product_name': item['product_name'] ?? item['name'],
         'quantity': item['quantity'],
         'unit_price': unitPrice,
         'variant_id': item['variant_id'] ?? 0,
