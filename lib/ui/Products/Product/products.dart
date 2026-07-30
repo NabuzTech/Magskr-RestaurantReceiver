@@ -923,11 +923,11 @@ class _ProductsState extends State<Products> {
     }
 
     try {
-      // ✅ RESET PAGINATION STATE
-      currentOffset = 0;
-      hasMoreProducts = true;
+      // Category grouping needs the full catalog, not a paginated slice,
+      // otherwise categories outside the first page appear empty.
+      hasMoreProducts = false;
 
-      List<GetStoreProducts> product = await CallService().getProductsbylimit(storeId!, currentLimit, currentOffset);
+      List<GetStoreProducts> product = await CallService().getProducts(storeId!);
       print('product list length is ${product.length}');
 
       if (showLoader) {
