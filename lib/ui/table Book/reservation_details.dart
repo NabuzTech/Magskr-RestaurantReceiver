@@ -434,7 +434,8 @@ class _ReservationDetailsState extends State<ReservationDetails> {
 
   Future<void> _editReservationDetail(String name, String phoneNum,
       String emailText, String guestCount, String reservationDate, String noteText,
-      {String? customerMessage}) async {
+      {String? customerMessage}) async
+  {
     setState(() {
       isLoading = true;
     });

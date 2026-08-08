@@ -45,6 +45,10 @@ class _SuperAdminState extends State<SuperAdmin> {
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
   bool _isHistoryMode = false;
+  int _totalOrdersCount = 0;
+  double _totalSalesAmount = 0.0;
+  bool _isLoadingTotals = false;
+
   bool _isVorbestellen(String? deliveryTime) {
     if (deliveryTime == null || deliveryTime.isEmpty) return false;
     try {
@@ -446,7 +450,7 @@ class _SuperAdminState extends State<SuperAdmin> {
               children: [
                 const SizedBox(height: 40),
                 // Search Box and Logout
-                Padding(
+                Padding (
                   padding: const EdgeInsets.all(12.0),
                   child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -632,8 +636,8 @@ class _SuperAdminState extends State<SuperAdmin> {
                 )
                     : RepaintBoundary(
                       child: SizedBox(
-                                        height: 150,
-                                        child: ListView.builder(
+                        height: 135,
+                        child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       shrinkWrap: true,
                       padding: EdgeInsets.zero,
@@ -682,6 +686,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width*0.28,
                                       child: Text('${store.storeName}',
+                                        maxLines: 2,overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w700,
@@ -787,6 +792,61 @@ class _SuperAdminState extends State<SuperAdmin> {
                             ),
                           ),
                         ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffEBFAF2),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xff029543).withOpacity(0.3)),
+                        ),
+                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${'total_order'.tr} : ',
+                              style: const TextStyle(fontSize: 12, fontFamily: 'Mulish',
+                                  fontWeight: FontWeight.w600, color: Colors.black54),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _isLoadingTotals ? '...' : '$_totalOrdersCount',
+                              style: const TextStyle(fontSize: 16, fontFamily: 'Mulish', fontWeight: FontWeight.w800, color: Color(0xff029543)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffFAF3E0),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xffE64425).withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              '${'total_sales'.tr} : ',
+                              style: const TextStyle(fontSize: 11, fontFamily: 'Mulish', fontWeight: FontWeight.w600, color: Colors.black54),
+                            ),
+                            const SizedBox(height: 2),
+                            SizedBox(
+                              child: Text(
+                                _isLoadingTotals ? '...' : '${'currency'.tr} ${formatAmount(_totalSalesAmount)}',
+                                maxLines: 2,
+                                style: const TextStyle(fontSize: 16, fontFamily: 'Mulish',
+                                    fontWeight: FontWeight.w800, color: Color(0xffE64425)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -1163,6 +1223,45 @@ class _SuperAdminState extends State<SuperAdmin> {
     }
   }
 
+  // Store cards only ever reflect "today", so ignore them and always pull the
+  // full order list for the picked date range. Only accepted orders
+  // (approvalStatus == 2) count toward totals — pending/declined don't.
+  Future<void> _calculateTotals() async {
+    setState(() => _isLoadingTotals = true);
+    try {
+      // The API rejects large limits (422), so page through with the same
+      // limit already proven to work for the order list, accumulating until exhausted.
+      List<AllOrderAdminResponseModel> allOrders = [];
+      int offset = 0;
+      const int batchSize = 20;
+      const int maxBatches = 200; // safety cap: 4000 orders/day is plenty
+      for (int i = 0; i < maxBatches; i++) {
+        List<AllOrderAdminResponseModel> batch = await CallService().getAllAdminOrder(
+          limit: batchSize,
+          offset: offset,
+          startDate: DateFormat('yyyy-MM-dd').format(_startDate),
+          endDate: DateFormat('yyyy-MM-dd').format(_endDate),
+          includePast: true,
+        );
+        allOrders.addAll(batch);
+        if (batch.length < batchSize) break;
+        offset += batchSize;
+      }
+      List<AllOrderAdminResponseModel> acceptedOrders =
+          allOrders.where((o) => o.approvalStatus == 2).toList();
+      int orders = acceptedOrders.length;
+      double sales = acceptedOrders.fold(0.0, (sum, o) => sum + (o.payment?.amount ?? 0));
+      setState(() {
+        _totalOrdersCount = orders;
+        _totalSalesAmount = sales;
+      });
+    } catch (e) {
+      print('Error calculating totals: $e');
+    } finally {
+      if (mounted) setState(() => _isLoadingTotals = false);
+    }
+  }
+
   Future<void> getAllStoreReport({bool showLoader = true}) async {
     setState(() {
       isLoading = true;
@@ -1225,6 +1324,7 @@ class _SuperAdminState extends State<SuperAdmin> {
         print('order length is ${orderList.length}');
         isLoading = false;
       });
+      await _calculateTotals();
     } catch (e) {
       print('Error getting order : $e');
       setState(() {
