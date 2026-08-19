@@ -636,5 +636,5 @@ class AppController extends GetxController {
     print('🔔 Sync time update triggered');
   }
 
-
+  final stripeServiceFee = Rxn<double>();
 }

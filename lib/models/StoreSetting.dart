@@ -8,6 +8,7 @@ class StoreSetting {
   bool? lieferung_enabled;          // NEW
   bool? abholung_enabled;
   bool? tisch_reservierung_enabled;
+  bool? reservation_v2_enabled;
   int? id;
   int? store_id;
   String? msg;
@@ -24,6 +25,7 @@ class StoreSetting {
     this.lieferung_enabled,          // NEW
     this.abholung_enabled,
     this.tisch_reservierung_enabled,
+    this.reservation_v2_enabled,
     this.id,
     this.store_id,
     this.msg,
@@ -47,6 +49,7 @@ class StoreSetting {
     lieferung_enabled: json["lieferung_enabled"],                // NEW
     abholung_enabled: json["abholung_enabled"],
     tisch_reservierung_enabled: json["tisch_reservierung_enabled"],
+    reservation_v2_enabled: json["reservation_v2_enabled"] ?? false,
     id: json["id"],
     store_id: json["store_id"],
     msg: json["msg"],
@@ -62,6 +65,7 @@ class StoreSetting {
     "lieferung_enabled": lieferung_enabled,                // NEW
     "abholung_enabled": abholung_enabled,
     "tisch_reservierung_enabled": tisch_reservierung_enabled,
+    "reservation_v2_enabled": reservation_v2_enabled,
     "id": id,
     "store_id": store_id,
     "msg": msg,

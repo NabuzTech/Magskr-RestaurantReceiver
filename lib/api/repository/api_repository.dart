@@ -18,6 +18,9 @@ import '../../models/DailySalesReport.dart'
     hide PaymentMethods, ApprovalStatuses, TaxBreakdown;
 import '../../models/Logout.dart';
 import '../../models/PrinterSetting.dart';
+import '../../models/Reservation V2/get_reservation_of_store_byDate.dart';
+import '../../models/Reservation V2/get_today_reservation_V2_of_store.dart';
+import '../../models/Reservation V2/get_today_slot_reservationV2.dart';
 import '../../models/Store Owners/owners_store_today_report_model.dart' hide OrderTypes, ApprovalStatuses;
 import '../../models/Store.dart';
 import '../../models/StoreDetail.dart';
@@ -4729,6 +4732,82 @@ class CallService extends GetConnect {
       } else {
         throw Exception('An unexpected error occurred: $e');
       }
+    }
+  }
+
+  ///Reservation V2
+  //For Getting Today Reservation V2 Of Store
+  Future<GetTodayReservationV2OfStore> getTodayReservationV2(String storeID) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('reservations/v2/store/today?store_id=$storeID', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Today Reservation V2 response body is :${res.statusCode}");
+      return GetTodayReservationV2OfStore.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load Getting Today Reservation V2: ${res.statusCode}');
+    }
+  }
+
+  //Get ReservationV2 By Date
+  Future<List<GetReservationV2OfStoreByDate>> getReservationV2History(dynamic body) async {
+    httpClient.baseUrl = Api.baseUrl;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $accessToken");
+
+    var res = await post(
+      'reservations/v2/store/filter',
+      body,
+      headers: {
+        'accept': 'application/json',
+        'Authorization': "Bearer $accessToken",
+      },
+    );
+
+    print("response is ${res.statusCode}");
+
+    if (res.statusCode == 200) {
+      print("Reservation V2 History Response is : ${res.statusCode.toString()}");
+      print("Reservation V2 Response Body is : ${res.body}");
+
+      // Parse the response body as a list
+      List<dynamic> jsonList = res.body;
+      List<GetReservationV2OfStoreByDate> reservation = [];
+
+      for (var json in jsonList) {
+        reservation.add(GetReservationV2OfStoreByDate.fromJson(json));
+      }
+
+      return reservation;
+    } else {
+      throw Exception("Failed to load order history");
+    }
+  }
+
+  //For Getting Time Slots
+  Future<GetTodaySlotOfReservation> gettingTimeSlotReservationV2(String storeID, String date) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('reservations/v2/availability?store_id=$storeID&date=$date&party_size=2', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+    if (res.statusCode == 200) {
+      print("Getting TimeSlot Reservation V2 response body is :${res.statusCode}");
+      return GetTodaySlotOfReservation.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load TimeSlot V2: ${res.statusCode}');
     }
   }
 

@@ -109,7 +109,6 @@ class _OrderScreenState extends State<OrderScreenNew>
   Timer? _autoSyncTimer;
   int _autoSyncInterval = 60;
   bool _syncTimeLoaded = false;
-  double? _stripeServiceFee;
 
   bool _isVorbestellen(String? deliveryTime) {
     if (deliveryTime == null || deliveryTime.isEmpty) return false;
@@ -435,7 +434,6 @@ class _OrderScreenState extends State<OrderScreenNew>
         await _loadAndSyncLocalOrders();
         if (bearerKey != null && bearerKey!.isNotEmpty) {
           _initializeSocket();
-          await _fetchStripeServiceFee(bearerKey!, storeID);
         }
       } else {
         if (storeID != null && _isErrorCode(storeID)) {
@@ -1102,19 +1100,6 @@ class _OrderScreenState extends State<OrderScreenNew>
     }
   }
 
-  Future<void> _fetchStripeServiceFee(String bearerKey, String storeID) async {
-    try {
-      final result = await ApiRepo().getStoreSetting(bearerKey, storeID);
-      if (result.code == null && result.stripe_service_fee != null) {
-        setState(() {
-          _stripeServiceFee = result.stripe_service_fee;
-        });
-      }
-    } catch (e) {
-      // ignore — fee stays null, fallback to full amount
-    }
-  }
-
   Future<void> getStoreUserMeDataWithoutLoader(String? bearerKey) async {
     try {
       final result = await ApiRepo().getUserMe(bearerKey);
@@ -1158,7 +1143,6 @@ class _OrderScreenState extends State<OrderScreenNew>
         await getStoredta(bearerKey!);
         await _restoreUserSpecificData(newStoreId);
         await getOrdersWithoutLoader(bearerKey, newStoreId);
-        await _fetchStripeServiceFee(bearerKey!, newStoreId);
 
         if (bearerKey.isNotEmpty) {
           _initializeSocket();
@@ -2284,7 +2268,7 @@ class _OrderScreenState extends State<OrderScreenNew>
                                                       final rawAmount = order.payment!.amount ?? 0;
                                                       final isStripe = order.payment!.paymentMethod == 'stripe';
                                                       final displayAmount = isStripe
-                                                          ? rawAmount - (_stripeServiceFee ?? 0)
+                                                          ? rawAmount - (app.appController.stripeServiceFee.value ?? 0)
                                                           : rawAmount;
                                                       return '${'currency'.tr} ${formatAmount(displayAmount)}';
                                                     }(),

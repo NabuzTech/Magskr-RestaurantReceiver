@@ -7,6 +7,7 @@ import 'package:food_receiver/ui/table%20Book/reservation.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../api/repository/api_repository.dart';
 import '../constants/constant.dart';
 import '../constants/item_bottom_bar.dart';
 import '../constants/app_color.dart';
@@ -18,6 +19,7 @@ import '../utils/global.dart';
 import '../utils/keep_alive_page.dart';
 import '../utils/my_application.dart';
 import 'Order/OrderScreen.dart';
+import 'Reservation V2/reservation_dashboard_v2.dart';
 import 'Pos/pos.dart';
 import 'Pos/pos_portrait.dart' show PosPortrait;
 import 'Pos/pos_portrait_controller.dart';
@@ -46,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int? _lastProcessedOrderId;
   String? _storeType;
   int? _roleId;
+  bool _reservationV2Enabled = false;
 
   @override
   void initState() {
@@ -139,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await Future.wait([
       getOrdersInBackground(),
+      _fetchStoreSettings(freshPrefs),
       //getReservationsInBackground(),
     ]);
 
@@ -147,6 +151,42 @@ class _HomeScreenState extends State<HomeScreen> {
         _isDataLoaded = true;
       });
       print("✅ _isDataLoaded set to true");
+    }
+  }
+
+  Future<void> _fetchStoreSettings(SharedPreferences prefs) async {
+    String? bearerKey = prefs.getString(valueShared_BEARER_KEY);
+    String? storeID = prefs.getString(valueShared_STORE_KEY);
+    if (bearerKey == null || bearerKey.isEmpty) {
+      return;
+    }
+
+    // Fresh login: store_id isn't saved yet at this point, resolve it first.
+    if (storeID == null || storeID.isEmpty) {
+      try {
+        final userMe = await ApiRepo().getUserMe(bearerKey);
+        if (userMe.store_id != null && userMe.store_id! > 0) {
+          storeID = userMe.store_id.toString();
+          await prefs.setString(valueShared_STORE_KEY, storeID);
+        }
+      } catch (e) {
+        print("⚠️ Could not resolve store_id for store settings: $e");
+      }
+    }
+
+    if (storeID == null || storeID.isEmpty) {
+      return;
+    }
+
+    try {
+      final result = await ApiRepo().getStoreSetting(bearerKey, storeID);
+      if (result.code == null) {
+        app.appController.stripeServiceFee.value = result.stripe_service_fee;
+        _reservationV2Enabled = result.reservation_v2_enabled ?? false;
+        print("🔍 reservation_v2_enabled = $_reservationV2Enabled");
+      }
+    } catch (e) {
+      // ignore — flags stay at their defaults
     }
   }
 
@@ -195,6 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
           int reservationNumber = int.parse(match.group(1)!);
           print("Reservation number: $reservationNumber - refreshing data");
           getReservationsInBackground();
+          app.appController.updateSyncTime();
         }
       }
     });
@@ -209,6 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } else if (title.contains("Reservation")) {
         _openTab(1);
         getReservationsInBackground();
+        app.appController.updateSyncTime();
       }
 
       print('Notification Screen tapped (app opened): ${message.notification
@@ -421,6 +463,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildBody() {
     final bool isAdmin = _roleId == 1;
+    print("🔍 reservation_v2_enabled = $_reservationV2Enabled, redirecting to "
+        "${isAdmin ? 'SuperAdminReservation' : (_reservationV2Enabled ? 'ReservationDashboardV2' : 'Reservation')}");
     return PageView(
       controller: _pageController,
       physics: const NeverScrollableScrollPhysics(),
@@ -429,7 +473,13 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       children: [
         KeepAlivePage(child: isAdmin ? const AdminOrder() : const OrderScreenNew()),
-        KeepAlivePage(child: isAdmin ? const SuperAdminReservation() : const Reservation()),
+        KeepAlivePage(
+          child: isAdmin
+              ? const SuperAdminReservation()
+              : (_reservationV2Enabled
+                  ? const ReservationDashboardV2()
+                  : const Reservation()),
+        ),
         KeepAlivePage(child: isAdmin ? const SuperAdminReport() : const ReportScreen()),
         if (_storeType == '1')
           KeepAlivePage(child: PosPortrait(onNavigateToTab: _openTab)),
