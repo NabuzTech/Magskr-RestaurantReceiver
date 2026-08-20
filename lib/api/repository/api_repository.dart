@@ -21,6 +21,8 @@ import '../../models/PrinterSetting.dart';
 import '../../models/Reservation V2/get_reservation_of_store_byDate.dart';
 import '../../models/Reservation V2/get_today_reservation_V2_of_store.dart';
 import '../../models/Reservation V2/get_today_slot_reservationV2.dart';
+import '../../models/Reservation V2/reservation_V2_update_model.dart';
+import '../../models/Reservation V2/reservation_v2_settings_model.dart';
 import '../../models/Store Owners/owners_store_today_report_model.dart' hide OrderTypes, ApprovalStatuses;
 import '../../models/Store.dart';
 import '../../models/StoreDetail.dart';
@@ -4810,5 +4812,90 @@ class CallService extends GetConnect {
           'Failed to load TimeSlot V2: ${res.statusCode}');
     }
   }
+
+  //For Updating Reservation V2
+  Future<ReservationV2UpdateModel> updateReservationV2(dynamic body,String reservationId) async {
+    try {
+      httpClient.baseUrl = Api.baseUrl;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+      print("User Access Token Value is : $accessToken");
+
+      var res = await put('reservations/v2/$reservationId', body, headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer $accessToken",
+      });
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        print("Update Reservation V2  Response is : ${res.statusCode.toString()}");
+
+        if (res.body == null || res.body.toString().isEmpty) {
+          return ReservationV2UpdateModel();
+        } else if (res.body is List) {
+          final list = res.body as List;
+          if (list.isNotEmpty) {
+            return ReservationV2UpdateModel.fromJson(list[0]);
+          }
+          return ReservationV2UpdateModel();
+        } else if (res.body is Map) {
+          return ReservationV2UpdateModel.fromJson(res.body);
+        } else {
+          return ReservationV2UpdateModel();
+        }
+      }else {
+        print("Unexpected error: ${res.statusCode} - ${res.body}");
+        throw Exception('Request failed with status code: ${res.statusCode}');
+      }
+    } catch (e) {
+      print("Editing error: $e");
+      if (e is Exception) {
+        rethrow;
+      } else {
+        throw Exception('An unexpected error occurred: $e');
+      }
+    }
+  }
+
+  //For getting Reservation V2 Settings
+  Future<GetReservationV2SettingsModel> getSettingsReservationV2(String storeID) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('reservations/v2/config?store_id=$storeID', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Reservation V2 Settings response body is :${res.statusCode}");
+      return GetReservationV2SettingsModel.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load Getting Reservation V2 Settings: ${res.statusCode}');
+    }
+  }
+
+   //For Updating Reservation V2 Settings
+  Future<GetReservationV2SettingsModel> updateSettingsReservationV2(dynamic body ,String storeID) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await put('reservations/v2/config?store_id=$storeID',body, headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Reservation V2 Settings response body is :${res.statusCode}");
+      return GetReservationV2SettingsModel.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load Getting Reservation V2 Settings: ${res.statusCode}');
+    }
+  }
+
 
 }
