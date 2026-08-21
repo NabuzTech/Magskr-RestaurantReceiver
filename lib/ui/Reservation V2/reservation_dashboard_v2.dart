@@ -219,6 +219,15 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                 ),
                 actions: [
                   Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () => _loadTodayReservations(),
+                        child: const Icon(Icons.refresh_rounded, color: Colors.green),
+                      ),
+                    ),
+                  ),
+                  Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: Center(
                       child: GestureDetector(
@@ -425,19 +434,29 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   }
 
   // -------------------- COVERS FILLED --------------------
-  Map<String, List<_SlotBooking>> _bucketBySlot(List<Reservations> list) {
+  // A booking occupies every slot its [reservedFor, reservedUntil) window overlaps,
+  // not just its start slot — a 16:00 booking lasting 60 min still holds the table
+  // at 16:30, so it must still show up in that slot's bar.
+  Map<String, List<_SlotBooking>> _bucketBySlot(List<Slots> slots, List<Reservations> list) {
     final sorted = [...list]
       ..sort((a, b) => (a.reservedFor ?? '').compareTo(b.reservedFor ?? ''));
     final Map<String, List<_SlotBooking>> map = {};
     for (int i = 0; i < sorted.length; i++) {
       final r = sorted[i];
-      final dt = DateTime.tryParse(r.reservedFor ?? '');
-      if (dt == null) continue;
-      final label = DateFormat('HH:mm').format(dt);
+      final start = DateTime.tryParse(r.reservedFor ?? '');
+      if (start == null) continue;
+      final end = DateTime.tryParse(r.reservedUntil ?? '') ??
+          start.add(Duration(minutes: r.durationMinutes ?? 0));
       final color = (r.status ?? '').toLowerCase() == 'cancelled'
           ? _statusColor(r.status)
           : _bookingColors[i % _bookingColors.length];
-      map.putIfAbsent(label, () => []).add(_SlotBooking(r, color));
+      for (final slot in slots) {
+        final slotDt = _slotDateTime(slot);
+        if (slotDt == null) continue;
+        if (!slotDt.isBefore(start) && slotDt.isBefore(end)) {
+          map.putIfAbsent(slot.time ?? '', () => []).add(_SlotBooking(r, color));
+        }
+      }
     }
     return map;
   }
@@ -495,8 +514,13 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
 
   Widget _coversFilledCard() {
     final slots = timeSlotData?.slots ?? [];
-    final buckets = _bucketBySlot(reservationsData ?? []);
-    final allBookings = buckets.values.expand((e) => e).toList()
+    final buckets = _bucketBySlot(slots, reservationsData ?? []);
+    final seenBookingIds = <int?>{};
+    final allBookings = buckets.values.expand((e) => e).where((b) {
+      final id = b.reservation.id;
+      if (id != null && !seenBookingIds.add(id)) return false;
+      return true;
+    }).toList()
       ..sort((a, b) => (a.reservation.reservedFor ?? '')
           .compareTo(b.reservation.reservedFor ?? ''));
 
@@ -1135,7 +1159,8 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       GetTodayReservationV2OfStore reservation= await CallService().getTodayReservationV2(storeID);
       setState(() {
         summary = reservation.summary;
-        reservationsData = reservation.reservations ?? [];
+        reservationsData = (reservation.reservations ?? [])
+          ..sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
         isLoading = false;
         print('Today Reservation V2: ${reservationsData!.length}');
       });
@@ -1161,7 +1186,8 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       GetTodayReservationV2OfStore received =
           await CallService().getTodayReceivedReservationV2(storeID);
       setState(() {
-        receivedReservationsData = received.reservations ?? [];
+        receivedReservationsData = (received.reservations ?? [])
+          ..sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
         print('Today Received Reservation V2: ${receivedReservationsData!.length}');
       });
       if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
@@ -1255,7 +1281,8 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                 note: e.note,
                 createdAt: e.createdAt,
               ))
-          .toList();
+          .toList()
+        ..sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
 
       setState(() {
         reservationsData = mapped;
