@@ -993,6 +993,7 @@ class _CustomDateRangeDialogState extends State<_CustomDateRangeDialog> {
           SizedBox(
             height: 350,
             child: CalendarDatePicker(
+              key: ValueKey(_selectingEnd),
               initialDate: _selectingEnd ? _startDate! : widget.lastDate,
               firstDate: _selectingEnd ? _startDate! : widget.firstDate,
               lastDate: widget.lastDate,
