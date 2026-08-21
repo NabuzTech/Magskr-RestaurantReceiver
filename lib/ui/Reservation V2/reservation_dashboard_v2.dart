@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +10,7 @@ import '../../api/repository/api_repository.dart';
 import '../../constants/constant.dart';
 import '../../models/Reservation V2/get_reservation_of_store_byDate.dart';
 import '../../models/Reservation V2/get_today_reservation_V2_of_store.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../models/Reservation V2/get_today_slot_reservationV2.dart';
 import '../../utils/my_application.dart';
 import 'reservation_settings_screen.dart';
@@ -30,6 +33,8 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   int? _highlightedReservationId;
   Color? _highlightedColor;
   final ScrollController _coversScrollController = ScrollController();
+  final Map<int, GlobalKey> _slotKeys = {};
+  Timer? _slotClockTimer;
   OverlayEntry? _bookingOverlay;
 
   static const List<Color> _bookingColors = [
@@ -48,11 +53,13 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     super.initState();
     _loadTodayReservations();
     _syncWorker = ever(app.appController.syncTimeUpdated, (_) => _refreshForNotification());
+    _slotClockTimer = Timer.periodic(const Duration(minutes: 1), (_) => _scrollToCurrentSlot());
   }
 
   @override
   void dispose() {
     _syncWorker?.dispose();
+    _slotClockTimer?.cancel();
     _coversScrollController.dispose();
     _dismissBookingPopup();
     super.dispose();
@@ -105,6 +112,45 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     }
   }
 
+  Widget _todayChip() {
+    return GestureDetector(
+      onTap: _goToToday,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        decoration: BoxDecoration(
+          color: Colors.blue.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.blue, width: 1),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.today, size: 14, color: Colors.blue),
+            SizedBox(width: 4),
+            Text(
+              'Today',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.blue,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _goToToday() async {
+    final id = storeID;
+    if (id == null) return;
+    setState(() => _selectedDate = DateTime.now());
+    await Future.wait([
+      getReservationV2(id, showLoader: true),
+      getTodayTimeSlot(id, showLoader: false),
+    ]);
+  }
+
   void _openReservationSettings() {
     Navigator.of(context).push(PageRouteBuilder(
       pageBuilder: (_, __, ___) => const ReservationSettingsScreen(),
@@ -134,29 +180,37 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
           child: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
               SliverAppBar(
-                floating: true,
-                snap: true,
-                pinned: false,
+                floating: false,
+                snap: false,
+                pinned: true,
                 elevation: 1,
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black87,
-                title: GestureDetector(
-                  onTap: _openCalendar,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('reserv'.tr,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      Row(
-                        children: [
-                          Text(_todayLabel(),
-                              style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                          const SizedBox(width: 4),
-                          const Icon(Icons.expand_more, size: 14, color: Colors.grey),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('reserv'.tr,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: _openCalendar,
+                          child: Row(
+                            children: [
+                              Text(_todayLabel(),
+                                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.expand_more, size: 14, color: Colors.grey),
+                            ],
+                          ),
+                        ),
+                        if (!_isSameDay(_selectedDate, DateTime.now())) ...[
+                          const SizedBox(width: 8),
+                          _todayChip(),
                         ],
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
                 actions: [
                   Padding(
@@ -179,18 +233,12 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
             ],
             body: Padding(
               padding: const EdgeInsets.fromLTRB(8, 12, 8, 0),
-              child: Column(
+              child: ListView(
+                padding: const EdgeInsets.only(bottom: 8),
                 children: [
                   _coversFilledCard(),
                   const SizedBox(height: 12),
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      children: [
-                        _todaysBookingsCard(),
-                      ],
-                    ),
-                  ),
+                  _todaysBookingsCard(),
                 ],
               ),
             ),
@@ -319,6 +367,15 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     }
   }
 
+  String _formatDate(String? iso) {
+    if (iso == null) return '-';
+    try {
+      return DateFormat('d MMM yyyy').format(DateTime.parse(iso).toLocal());
+    } catch (e) {
+      return '-';
+    }
+  }
+
   Widget _legendRow(Color color, String label, int value) {
     return Row(
       children: [
@@ -380,6 +437,46 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     return map;
   }
 
+  DateTime? _slotDateTime(Slots slot) {
+    final fromDatetime = DateTime.tryParse(slot.datetime ?? '')?.toLocal();
+    if (fromDatetime != null) return fromDatetime;
+    final parts = (slot.time ?? '').split(':');
+    if (parts.length < 2) return null;
+    final h = int.tryParse(parts[0]);
+    final m = int.tryParse(parts[1]);
+    if (h == null || m == null) return null;
+    return DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, h, m);
+  }
+
+  void _scrollToCurrentSlot() {
+    if (!_isSameDay(_selectedDate, DateTime.now())) return;
+    final slots = timeSlotData?.slots;
+    if (slots == null || slots.isEmpty) return;
+    final now = DateTime.now();
+    int bestIndex = 0;
+    Duration bestDiff = const Duration(days: 9999);
+    for (int i = 0; i < slots.length; i++) {
+      final dt = _slotDateTime(slots[i]);
+      if (dt == null) continue;
+      final diff = dt.difference(now).abs();
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestIndex = i;
+      }
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_coversScrollController.hasClients &&
+          _coversScrollController.position.isScrollingNotifier.value) {
+        return;
+      }
+      final ctx = _slotKeys[bestIndex]?.currentContext;
+      if (ctx != null) {
+        Scrollable.ensureVisible(ctx,
+            alignment: 0.5, duration: const Duration(milliseconds: 300));
+      }
+    });
+  }
+
   void _nudgeScroll(double direction) {
     if (!_coversScrollController.hasClients) return;
     final target = (_coversScrollController.offset + direction * 160)
@@ -433,7 +530,9 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: slots
-                            .map((s) => _slotColumn(s, buckets[s.time] ?? []))
+                            .asMap()
+                            .entries
+                            .map((e) => _slotColumn(e.key, e.value, buckets[e.value.time] ?? []))
                             .toList(),
                       ),
                     ),
@@ -460,9 +559,10 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     );
   }
 
-  Widget _slotColumn(Slots slot, List<_SlotBooking> bookings) {
+  Widget _slotColumn(int index, Slots slot, List<_SlotBooking> bookings) {
     const segmentHeight = 22.0;
     return Padding(
+      key: _slotKeys.putIfAbsent(index, () => GlobalKey()),
       padding: const EdgeInsets.symmetric(horizontal: 6),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -593,6 +693,27 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
             _popupRow(Icons.people_outline, '${r.partySize ?? 0} ${'guests'.tr}', color),
             const SizedBox(height: 8),
             _popupRow(Icons.schedule, _titleCase(r.status ?? '-'), color),
+            if (!['pending', 'cancelled'].contains((r.status ?? '').toLowerCase())) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 36,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    _dismissBookingPopup();
+                    _showEditReservationDialog(r);
+                  },
+                  icon: const Icon(Icons.edit_outlined, size: 16),
+                  label: Text('edit_booking'.tr,
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: color,
+                    side: BorderSide(color: color),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -645,12 +766,21 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
         children: [
           _cardTitle(
             _todayLabel(),
-            trailing: IconButton(
-              icon: const Icon(Icons.calendar_month_outlined,
-                  size: 20, color: Colors.green),
-              onPressed: _openCalendar,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!_isSameDay(_selectedDate, DateTime.now())) ...[
+                  _todayChip(),
+                  const SizedBox(width: 8),
+                ],
+                IconButton(
+                  icon: const Icon(Icons.calendar_month_outlined,
+                      size: 20, color: Colors.green),
+                  onPressed: _openCalendar,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 12),
@@ -661,12 +791,65 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                   style: const TextStyle(color: Colors.grey, fontSize: 13)),
             )
           else
-            for (final booking in bookings) ...[
-              _bookingTile(booking),
-              const SizedBox(height: 8),
-            ],
+            SlidableAutoCloseBehavior(
+              child: Column(
+                children: [
+                  for (final booking in bookings) ...[
+                    _bookingSlidable(booking),
+                    const SizedBox(height: 8),
+                  ],
+                ],
+              ),
+            ),
         ],
       ),
+    );
+  }
+
+  Widget _bookingSlidable(Reservations booking) {
+    final status = (booking.status ?? '').toLowerCase();
+    final canEdit = status != 'pending' && status != 'cancelled';
+    if (!canEdit) return _bookingTile(booking);
+
+    return Slidable(
+      key: ValueKey('booking_${booking.id}_${booking.reservedFor}'),
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        extentRatio: 0.28,
+        children: [
+          GestureDetector(
+            onTap: () {
+              Slidable.of(context)?.close();
+              _showEditReservationDialog(booking);
+            },
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              decoration: const BoxDecoration(
+                color: Color(0xFF2563EB),
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
+              ),
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.edit_outlined, color: Colors.white, size: 20),
+                  const SizedBox(height: 4),
+                  Text('edit_booking'.tr,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      child: _bookingTile(booking),
     );
   }
 
@@ -682,7 +865,10 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
         color: isHighlighted
             ? Color.alphaBlend(highlightColor.withOpacity(0.08), Colors.white)
             : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+          bottomLeft: Radius.circular(16),
+        ),
         border: Border.all(
           color: isHighlighted
               ? highlightColor
@@ -730,37 +916,6 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                 ),
               ),
 
-              const Spacer(),
-
-              _statusChip(_titleCase(booking.status ?? '-')),
-            ],
-          ),
-
-          const SizedBox(height: 7),
-
-          /// CUSTOMER NAME
-          Row(
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  (booking.customerName?.isNotEmpty ?? false)
-                      ? booking.customerName![0].toUpperCase()
-                      : '?',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF374151),
-                  ),
-                ),
-              ),
-
               const SizedBox(width: 10),
 
               Expanded(
@@ -775,44 +930,50 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                   ),
                 ),
               ),
+
+
+              _statusChip(_titleCase(booking.status ?? '-')),
             ],
           ),
 
           const SizedBox(height: 7),
 
           /// BOOKING INFO
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 10,
-            ),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFB),
-              borderRadius: BorderRadius.circular(10),
-            ),
+          Padding(
+            padding: const EdgeInsets.only(left: 4.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Expanded(
-                  child: _bookingInfoItem(
-                    icon: Icons.people_outline_rounded,
-                    label: 'guests'.tr,
-                    value: '${booking.partySize ?? 0}',
-                  ),
+                _bookingInfoItem(
+                  icon: Icons.people_outline_rounded,
+                  label: 'guests'.tr,
+                  value: '${booking.partySize ?? 0}',
                 ),
-
+                SizedBox(width: 10,),
                 Container(
                   height: 30,
                   width: 1,
                   color: const Color(0xFFE5E7EB),
                 ),
-
-                Expanded(
-                  child: _bookingInfoItem(
-                    icon: Icons.timer_outlined,
-                    label: 'duration_label'.tr,
-                    value: '${booking.durationMinutes ?? 0} ${'min_unit'.tr}',
-                  ),
+                SizedBox(width: 10,),
+                _bookingInfoItem(
+                  icon: Icons.timer_outlined,
+                 // label: 'duration_label'.tr,
+                  value: '${booking.durationMinutes ?? 0} ${'min_unit'.tr}',
                 ),
+                Expanded(
+                  child: Text(
+                    _formatDate(booking.reservedFor),
+                    textAlign: TextAlign.end,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF6B7280),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -869,34 +1030,6 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                   ),
                 ),
               ],
-            )
-          else if ((booking.status ?? '').toLowerCase() != 'cancelled')
-            SizedBox(
-              width: double.infinity,
-              height: 40,
-              child: OutlinedButton.icon(
-                onPressed: () => _showEditReservationDialog(booking),
-                icon: const Icon(
-                  Icons.edit_outlined,
-                  size: 17,
-                ),
-                label: Text(
-                  'edit_booking'.tr,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF2563EB),
-                  side: const BorderSide(
-                    color: Color(0xFFBFDBFE),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
             ),
         ],
       ),
@@ -905,7 +1038,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
 
   Widget _bookingInfoItem({
     required IconData icon,
-    required String label,
+    String?label,
     required String value,
   }) {
     return Row(
@@ -920,19 +1053,21 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
         Text(
           value,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
             color: Color(0xFF374151),
           ),
         ),
-        const SizedBox(width: 2),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 10,
-            color: Color(0xFF9CA3AF),
+        if (label != null) ...[
+          const SizedBox(width: 2),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 10,
+              color: Colors.black,
+            ),
           ),
-        ),
+        ],
       ],
     );
   }
@@ -1097,11 +1232,13 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       }
       final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
       GetTodaySlotOfReservation timeSlot= await CallService().gettingTimeSlotReservationV2(storeID, dateStr);
+      _slotKeys.clear();
       setState(() {
         timeSlotData = timeSlot;
         isLoading = false;
         print('Time Slot Reservation V2: ${timeSlotData?.slots?.length ?? 0} slots');
       });
+      _scrollToCurrentSlot();
       if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
     } catch (e) {
       print('Error getting Time Slot V2: $e');
