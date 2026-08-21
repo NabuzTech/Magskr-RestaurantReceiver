@@ -9,7 +9,7 @@ class GetTodayReservationV2OfStore {
 
   GetTodayReservationV2OfStore.fromJson(Map<String, dynamic> json) {
     date = json['date'];
-    storeIds = json['store_ids'].cast<int>();
+    storeIds = json['store_ids']?.cast<int>();
     summary =
     json['summary'] != null ? new Summary.fromJson(json['summary']) : null;
     if (json['reservations'] != null) {

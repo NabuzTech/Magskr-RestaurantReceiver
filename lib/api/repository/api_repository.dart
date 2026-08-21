@@ -19,6 +19,7 @@ import '../../models/DailySalesReport.dart'
 import '../../models/Logout.dart';
 import '../../models/PrinterSetting.dart';
 import '../../models/Reservation V2/get_reservation_of_store_byDate.dart';
+import '../../models/Reservation V2/get_today_received_reservationV2_superAdmin.dart';
 import '../../models/Reservation V2/get_today_reservation_V2_of_store.dart';
 import '../../models/Reservation V2/get_today_slot_reservationV2.dart';
 import '../../models/Reservation V2/reservation_V2_update_model.dart';
@@ -4758,6 +4759,25 @@ class CallService extends GetConnect {
     }
   }
 
+  //For getting today received reservation v2
+  Future<GetTodayReservationV2OfStore> getTodayReceivedReservationV2(String storeID) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('reservations/v2/store/received-today?store_id=$storeID', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+    if (res.statusCode == 200) {
+      print("Getting today received  Reservation V2  response body is :${res.statusCode}");
+      return GetTodayReservationV2OfStore.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load today received Reservation V2: ${res.statusCode}');
+    }
+  }
+
   //Get ReservationV2 By Date
   Future<List<GetReservationV2OfStoreByDate>> getReservationV2History(dynamic body) async {
     httpClient.baseUrl = Api.baseUrl;
@@ -4877,7 +4897,7 @@ class CallService extends GetConnect {
     }
   }
 
-   //For Updating Reservation V2 Settings
+  //For Updating Reservation V2 Settings
   Future<GetReservationV2SettingsModel> updateSettingsReservationV2(dynamic body ,String storeID) async   {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? Token = prefs.getString(valueShared_BEARER_KEY);
@@ -4894,6 +4914,26 @@ class CallService extends GetConnect {
     } else {
       throw Exception(
           'Failed to load Getting Reservation V2 Settings: ${res.statusCode}');
+    }
+  }
+
+ //For GettingTodayReceived Reservation V2 For SuperAdmin
+  Future<GetTodayReceivedReservationV2SuperAdminModel> gettingTodayReceivedReservationV2SuperAdmin() async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('reservations/v2/admin/received-today',headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("GettingTodayReceived Reservation V2 For SuperAdmin response body is :${res.statusCode}");
+      return GetTodayReceivedReservationV2SuperAdminModel.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load GettingTodayReceived Reservation V2 For SuperAdmin: ${res.statusCode}');
     }
   }
 

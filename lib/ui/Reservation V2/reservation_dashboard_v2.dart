@@ -12,9 +12,9 @@ import '../../models/Reservation V2/get_reservation_of_store_byDate.dart';
 import '../../models/Reservation V2/get_today_reservation_V2_of_store.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../models/Reservation V2/get_today_slot_reservationV2.dart';
+
 import '../../utils/my_application.dart';
 import 'reservation_settings_screen.dart';
-
 class ReservationDashboardV2 extends StatefulWidget {
   const ReservationDashboardV2({super.key});
 
@@ -25,6 +25,8 @@ class ReservationDashboardV2 extends StatefulWidget {
 class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   bool isLoading=false;
   List<Reservations>? reservationsData=[];
+  List<Reservations>? receivedReservationsData=[];
+  int _bookingTabIndex = 0;
   Summary? summary;
   GetTodaySlotOfReservation? timeSlotData;
   DateTime _selectedDate = DateTime.now();
@@ -72,6 +74,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     storeID = id;
     await Future.wait([
       getReservationV2(id),
+      getTodayReceivedReservationV2(id, showLoader: false),
       getTodayTimeSlot(id, showLoader: false),
     ]);
   }
@@ -84,6 +87,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     } else {
       reservationV2History(showLoader: false);
     }
+    getTodayReceivedReservationV2(id, showLoader: false);
     getTodayTimeSlot(id, showLoader: false);
   }
 
@@ -147,6 +151,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     setState(() => _selectedDate = DateTime.now());
     await Future.wait([
       getReservationV2(id, showLoader: true),
+      getTodayReceivedReservationV2(id, showLoader: false),
       getTodayTimeSlot(id, showLoader: false),
     ]);
   }
@@ -757,32 +762,75 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     return s[0].toUpperCase() + s.substring(1).toLowerCase();
   }
 
+  Widget _bookingTabsRow() {
+    return Row(
+      children: [
+        _bookingTab('today_booking'.tr, 0),
+        const SizedBox(width: 16),
+        _bookingTab('today_received_booking'.tr, 1),
+      ],
+    );
+  }
+
+  Widget _bookingTab(String label, int index) {
+    final selected = _bookingTabIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _bookingTabIndex = index),
+      child: Container(
+        padding: const EdgeInsets.only(bottom: 6),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: selected ? Colors.black : Colors.transparent,
+              width: 2,
+            ),
+          ),
+        ),
+        child: Text(label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+            )),
+      ),
+    );
+  }
+
   // -------------------- TODAY'S BOOKINGS --------------------
   Widget _todaysBookingsCard() {
-    final bookings = reservationsData ?? [];
+    final isToday = _isSameDay(_selectedDate, DateTime.now());
+    final bookings = isToday && _bookingTabIndex == 1
+        ? (receivedReservationsData ?? [])
+        : (reservationsData ?? []);
+    final calendarActions = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (!isToday) ...[
+          _todayChip(),
+          const SizedBox(width: 8),
+        ],
+        IconButton(
+          icon: const Icon(Icons.calendar_month_outlined,
+              size: 20, color: Colors.green),
+          onPressed: _openCalendar,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+        ),
+      ],
+    );
+
     return _card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cardTitle(
-            _todayLabel(),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
+          if (isToday)
+            Row(
               children: [
-                if (!_isSameDay(_selectedDate, DateTime.now())) ...[
-                  _todayChip(),
-                  const SizedBox(width: 8),
-                ],
-                IconButton(
-                  icon: const Icon(Icons.calendar_month_outlined,
-                      size: 20, color: Colors.green),
-                  onPressed: _openCalendar,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
+                Expanded(child: _bookingTabsRow()),
+                calendarActions,
               ],
-            ),
-          ),
+            )
+          else
+            _cardTitle(_todayLabel(), trailing: calendarActions),
           const SizedBox(height: 12),
           if (bookings.isEmpty)
             Padding(
@@ -1097,6 +1145,28 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       setState(() {
         isLoading = false;
       });
+      if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
+    }
+  }
+
+  Future<void> getTodayReceivedReservationV2(String storeID, {bool showLoader = true}) async {
+    try {
+      if (showLoader && !(Get.isDialogOpen ?? false)) {
+        Get.dialog(
+          Center(
+              child: Lottie.asset('assets/animations/burger.json', width: 150, height: 150, repeat: true)),
+          barrierDismissible: false,
+        );
+      }
+      GetTodayReservationV2OfStore received =
+          await CallService().getTodayReceivedReservationV2(storeID);
+      setState(() {
+        receivedReservationsData = received.reservations ?? [];
+        print('Today Received Reservation V2: ${receivedReservationsData!.length}');
+      });
+      if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
+    } catch (e) {
+      print('Error getting Today Received Reservation V2: $e');
       if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:food_receiver/ui/SuperAdmin/all_store_reservation.dart';
+import 'package:food_receiver/ui/SuperAdmin/V2 Reservation/all_store_reservationV2.dart';
 import 'package:food_receiver/ui/SuperAdmin/settings.dart';
 import 'package:food_receiver/ui/SuperAdmin/superAdminOrderDetail.dart';
 import 'package:get/get.dart';
@@ -517,89 +518,112 @@ class _SuperAdminState extends State<SuperAdmin> {
                 ),
                 Container(
                   padding: const EdgeInsets.only(left: 12,right: 12,bottom: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          InkWell(
-                            onTap: (){
-                              Get.to(()=>const DeviceStatusScreen());
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black,width: 1),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: const Row(
-                                children: [
-                                  Icon(Icons.print_outlined,color: Colors.green,size: 20,),
-                                  SizedBox(width: 5,),
-                                  Text('Status',),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10,),
-                          InkWell(
-                            onTap: (){
-                              Get.to(()=>AllStoreReservation());
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black,width: 1),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child:  Row(
-                                children: [
-                                 Image.asset('assets/images/reservationIcon.png',height: 15,width: 15,),
-                                  SizedBox(width: 5,),
-                                  Text('Reservation',),
-                                ],
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            InkWell(
+                              onTap: (){
+                                Get.to(()=>const DeviceStatusScreen());
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black,width: 1),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.print_outlined,color: Colors.green,size: 20,),
+                                    SizedBox(width: 5,),
+                                    Text('Status',),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 10,),
-                          GestureDetector(
-                            onTap: isRefreshing ? null : refreshAllData,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: isRefreshing ? Colors.grey : Colors.green,
-                                borderRadius: BorderRadius.circular(5),
+                            const SizedBox(width: 10,),
+                            InkWell(
+                              onTap: (){
+                                Get.to(()=>AllStoreReservation());
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black,width: 1),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child:  Row(
+                                  children: [
+                                   Image.asset('assets/images/reservationIcon.png',height: 15,width: 15,),
+                                    SizedBox(width: 5,),
+                                    Text('Reservation',),
+                                  ],
+                                ),
                               ),
-                              child: isRefreshing
-                                  ? const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                      ),
-                                    )
-                                  : const Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.refresh, color: Colors.white, size: 16),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          'Refresh',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w700,
-                                            fontFamily: 'Mulish',
-                                          ),
+                            ),
+                            const SizedBox(width: 10,),
+                            InkWell(
+                              onTap: (){
+                                Get.to(()=>const AllStoreReservationV2());
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black,width: 1),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child:  Row(
+                                  children: [
+                                   Image.asset('assets/images/reservationIcon.png',height: 15,width: 15,),
+                                    SizedBox(width: 5,),
+                                    Text('Reservation V2',),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10,),
+                            GestureDetector(
+                              onTap: isRefreshing ? null : refreshAllData,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: isRefreshing ? Colors.grey : Colors.green,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: isRefreshing
+                                    ? const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                         ),
-                                      ],
-                                    ),
+                                      )
+                                    : const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(Icons.refresh, color: Colors.white, size: 16),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            'Refresh',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w700,
+                                              fontFamily: 'Mulish',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                              ),
                             ),
-                          ),
-                        ],
-                      )
-                    ],
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 if (searchController.text.isNotEmpty)
