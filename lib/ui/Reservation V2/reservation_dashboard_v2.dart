@@ -1188,7 +1188,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       setState(() {
         summary = reservation.summary;
         reservationsData = (reservation.reservations ?? [])
-          ..sort((a, b) => (a.id ?? 0).compareTo(b.id ?? 0));
+          ..sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
         isLoading = false;
         print('Today Reservation V2: ${reservationsData!.length}');
       });
@@ -1215,7 +1215,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
           await CallService().getTodayReceivedReservationV2(storeID);
       setState(() {
         receivedReservationsData = (received.reservations ?? [])
-          ..sort((a, b) => (a.id ?? 0).compareTo(b.id ?? 0));
+          ..sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
         print('Today Received Reservation V2: ${receivedReservationsData!.length}');
       });
       if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
@@ -1310,7 +1310,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                 createdAt: e.createdAt,
               ))
           .toList()
-        ..sort((a, b) => (a.id ?? 0).compareTo(b.id ?? 0));
+        ..sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
 
       setState(() {
         reservationsData = mapped;
