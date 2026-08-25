@@ -74,7 +74,9 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     if (id == null || id.isEmpty) return;
     storeID = id;
     await Future.wait([
-      getReservationV2(id),
+      _isSameDay(_selectedDate, DateTime.now())
+          ? getReservationV2(id)
+          : reservationV2History(),
       getTodayReceivedReservationV2(id, showLoader: false),
       getTodayTimeSlot(id, showLoader: false),
     ]);
@@ -376,7 +378,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   String _formatTime(String? iso) {
     if (iso == null) return '--:--';
     try {
-      return DateFormat('HH:mm').format(DateTime.parse(iso));
+      return DateFormat('HH:mm').format(DateTime.parse(iso).toLocal());
     } catch (e) {
       return '--:--';
     }
@@ -682,7 +684,8 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   }
 
   void _showTopSnackBar(String message,
-      {required Color backgroundColor, required Color textColor}) {
+      {required Color backgroundColor, required Color textColor})
+  {
     final overlay = Overlay.of(context);
     late OverlayEntry entry;
     entry = OverlayEntry(
@@ -796,7 +799,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   String _addMinutes(String? iso, int minutes) {
     if (iso == null) return '--:--';
     try {
-      final dt = DateTime.parse(iso).add(Duration(minutes: minutes));
+      final dt = DateTime.parse(iso).toLocal().add(Duration(minutes: minutes));
       return DateFormat('HH:mm').format(dt);
     } catch (e) {
       return '--:--';
@@ -984,6 +987,9 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
           /// TOP : TIME + STATUS
           Row(
             children: [
+              Text('Id : ${booking.id} ',style: TextStyle(
+                fontSize: 16,fontWeight: FontWeight.w500
+              ),),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6,),
                 decoration: BoxDecoration(
@@ -1182,7 +1188,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       setState(() {
         summary = reservation.summary;
         reservationsData = (reservation.reservations ?? [])
-          ..sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
+          ..sort((a, b) => (a.id ?? 0).compareTo(b.id ?? 0));
         isLoading = false;
         print('Today Reservation V2: ${reservationsData!.length}');
       });
@@ -1209,7 +1215,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
           await CallService().getTodayReceivedReservationV2(storeID);
       setState(() {
         receivedReservationsData = (received.reservations ?? [])
-          ..sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
+          ..sort((a, b) => (a.id ?? 0).compareTo(b.id ?? 0));
         print('Today Received Reservation V2: ${receivedReservationsData!.length}');
       });
       if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
@@ -1304,7 +1310,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                 createdAt: e.createdAt,
               ))
           .toList()
-        ..sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
+        ..sort((a, b) => (a.id ?? 0).compareTo(b.id ?? 0));
 
       setState(() {
         reservationsData = mapped;
@@ -1455,7 +1461,10 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     final id = storeID;
     if (id != null) {
       if (_isSameDay(_selectedDate, DateTime.now())) {
-        await getReservationV2(id, showLoader: false);
+        await Future.wait([
+          getReservationV2(id, showLoader: false),
+          getTodayReceivedReservationV2(id, showLoader: false),
+        ]);
       } else {
         await reservationV2History(showLoader: false);
       }
@@ -1574,7 +1583,12 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
     final b = widget.booking;
     _originalPartySize = b.partySize ?? 0;
     _originalDuration = b.durationMinutes ?? 0;
-    _originalDateTime = DateTime.tryParse(b.reservedFor ?? '') ?? DateTime.now();
+    // reservedFor comes back from the API as a UTC ISO string ("...Z"); without
+    // toLocal() the picker below showed the UTC hour as if it were local wall time.
+    _originalDateTime =
+        (DateTime.tryParse(b.reservedFor ?? '') ?? DateTime.now()).toLocal();
+    print('EditReservation DEBUG: raw reservedFor from API = ${b.reservedFor}, '
+        'parsed local = $_originalDateTime');
 
     _partySizeController = TextEditingController(text: '$_originalPartySize');
     _durationController = TextEditingController(text: '$_originalDuration');
@@ -1609,7 +1623,11 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
     final originalDateTimeMinute = DateTime(_originalDateTime.year, _originalDateTime.month,
         _originalDateTime.day, _originalDateTime.hour, _originalDateTime.minute);
     if (newDateTime != originalDateTimeMinute) {
-      body['reserved_for'] = '${newDateTime.toIso8601String()}Z';
+      // The API's reserved_for is a naive wall-clock string with no timezone
+      // marker (confirmed via debug logs: GET returns "...T11:30:00", no "Z").
+      // Sending a real UTC value (.toUtc() + "Z") made the backend apply its
+      // own offset on top, shifting the time. Send the picked time as-is.
+      body['reserved_for'] = newDateTime.toIso8601String();
     }
 
     return body;
@@ -1634,6 +1652,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
 
   Future<void> _save() async {
     final body = _computeChanges();
+    print('EditReservation DEBUG: sending update map = $body');
 
     if (body.isEmpty) {
       Navigator.of(context).pop();
@@ -1642,7 +1661,9 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
 
     setState(() => _saving = true);
     try {
-      await CallService().updateReservationV2(body, widget.booking.id.toString());
+      final updated =
+          await CallService().updateReservationV2(body, widget.booking.id.toString());
+      print('EditReservation DEBUG: API returned reserved_for = ${updated.reservedFor}');
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
       if (mounted) {

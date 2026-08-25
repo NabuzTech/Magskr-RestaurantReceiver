@@ -4840,12 +4840,15 @@ class CallService extends GetConnect {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? accessToken = prefs.getString(valueShared_BEARER_KEY);
       print("User Access Token Value is : $accessToken");
+      print("Update Reservation V2 REQUEST body: $body");
 
       var res = await put('reservations/v2/$reservationId', body, headers: {
         'accept': 'application/json',
         'Content-Type': 'application/json',
         'Authorization': "Bearer $accessToken",
       });
+
+      print("Update Reservation V2 RESPONSE (${res.statusCode}) body: ${res.body}");
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         print("Update Reservation V2  Response is : ${res.statusCode.toString()}");
