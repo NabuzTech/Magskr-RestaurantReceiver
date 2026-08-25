@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -99,7 +100,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     if (id == null) return;
     final picked = await showDialog<DateTime>(
       context: context,
-      builder: (_) => _ReservationCalendarDialog(initialDate: _selectedDate),
+      builder: (_) => _ReservationCalendarDialog(initialDate: _selectedDate, storeId: id),
     );
     if (picked == null) return;
     setState(() => _selectedDate = picked);
@@ -489,14 +490,20 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       }
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_coversScrollController.hasClients &&
+      if (!_coversScrollController.hasClients ||
           _coversScrollController.position.isScrollingNotifier.value) {
         return;
       }
-      final ctx = _slotKeys[bestIndex]?.currentContext;
-      if (ctx != null) {
-        Scrollable.ensureVisible(ctx,
-            alignment: 0.5, duration: const Duration(milliseconds: 300));
+      final renderObject = _slotKeys[bestIndex]?.currentContext?.findRenderObject();
+      if (renderObject != null) {
+        // Scoped to _coversScrollController's own position only — the static
+        // Scrollable.ensureVisible walks every ancestor Scrollable, including
+        // the outer page scroll, which was yanking the whole screen up.
+        _coversScrollController.position.ensureVisible(
+          renderObject,
+          alignment: 0.5,
+          duration: const Duration(milliseconds: 300),
+        );
       }
     });
   }
@@ -672,6 +679,21 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       ),
     );
     overlay.insert(_bookingOverlay!);
+  }
+
+  void _showTopSnackBar(String message,
+      {required Color backgroundColor, required Color textColor}) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (_) => _TopSnackBar(
+        message: message,
+        backgroundColor: backgroundColor,
+        textColor: textColor,
+        onDismiss: () => entry.remove(),
+      ),
+    );
+    overlay.insert(entry);
   }
 
   void _dismissBookingPopup() {
@@ -1365,20 +1387,33 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
 
       if (Get.isDialogOpen ?? false) Get.back();
 
+      // Update the local lists right away so the status chip/buttons flip
+      // instantly instead of waiting on the refetch below to land.
+      final numericId = int.tryParse(reservationId);
+      if (numericId != null && mounted) {
+        setState(() {
+          for (final r in [...?reservationsData, ...?receivedReservationsData]) {
+            if (r.id == numericId) r.status = status;
+          }
+        });
+      }
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(status == 'booked' ? 'booking_accepted'.tr : 'booking_declined'.tr),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
+        final isDeclined = status != 'booked';
+        _showTopSnackBar(
+          isDeclined ? 'booking_declined'.tr : 'booking_accepted'.tr,
+          backgroundColor: isDeclined ? const Color(0xFFFEE2E2) : const Color(0xFF16A34A),
+          textColor: isDeclined ? const Color(0xFFB91C1C) : Colors.white,
         );
       }
 
       final id = storeID;
       if (id != null) {
         if (_isSameDay(_selectedDate, DateTime.now())) {
-          await getReservationV2(id, showLoader: false);
+          await Future.wait([
+            getReservationV2(id, showLoader: false),
+            getTodayReceivedReservationV2(id, showLoader: false),
+          ]);
         } else {
           await reservationV2History(showLoader: false);
         }
@@ -1428,6 +1463,82 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     }
   }
 
+}
+
+// -------------------- TOP SNACKBAR --------------------
+// SnackBar is always bottom-anchored to the Scaffold; this drops in from the
+// top via Overlay instead, since the app wants top-positioned toasts.
+class _TopSnackBar extends StatefulWidget {
+  final String message;
+  final Color backgroundColor;
+  final Color textColor;
+  final VoidCallback onDismiss;
+  const _TopSnackBar({
+    required this.message,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.onDismiss,
+  });
+
+  @override
+  State<_TopSnackBar> createState() => _TopSnackBarState();
+}
+
+class _TopSnackBarState extends State<_TopSnackBar> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<Offset> _offset;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 250));
+    _offset = Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _controller.forward();
+    Future.delayed(const Duration(seconds: 2), () async {
+      if (!mounted) return;
+      await _controller.reverse();
+      widget.onDismiss();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: SafeArea(
+        child: SlideTransition(
+          position: _offset,
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: widget.backgroundColor,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 3)),
+                ],
+              ),
+              child: Text(
+                widget.message,
+                style: TextStyle(color: widget.textColor, fontWeight: FontWeight.w600, fontSize: 14),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 // -------------------- MODELS --------------------
@@ -1685,6 +1796,14 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
                               controller: _partySizeController,
                               keyboardType:
                               TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(3),
+                                TextInputFormatter.withFunction((oldValue, newValue) {
+                                  final n = int.tryParse(newValue.text);
+                                  return (n != null && n > 100) ? oldValue : newValue;
+                                }),
+                              ],
                               decoration: _fieldDecoration(
                                 hint: '0',
                                 icon:
@@ -2007,7 +2126,8 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
 // -------------------- CALENDAR DIALOG --------------------
 class _ReservationCalendarDialog extends StatefulWidget {
   final DateTime initialDate;
-  const _ReservationCalendarDialog({required this.initialDate});
+  final String? storeId;
+  const _ReservationCalendarDialog({required this.initialDate, this.storeId});
 
   @override
   State<_ReservationCalendarDialog> createState() => _ReservationCalendarDialogState();
@@ -2016,6 +2136,9 @@ class _ReservationCalendarDialog extends StatefulWidget {
 class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> {
   late int _month;
   late int _year;
+  Set<int> _daysWithBooking = {};
+  // Cached per "year-month" so flipping back and forth doesn't refetch.
+  final Map<String, Set<int>> _monthCache = {};
 
   static const _monthKeys = ['', 'january', 'february', 'march', 'april', 'may', 'june',
     'july', 'august', 'september', 'october', 'november', 'december'];
@@ -2026,6 +2149,41 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
     super.initState();
     _month = widget.initialDate.month;
     _year = widget.initialDate.year;
+    _loadMonthBookings();
+  }
+
+  Future<void> _loadMonthBookings() async {
+    final storeId = int.tryParse(widget.storeId ?? '');
+    if (storeId == null) return;
+    final requestedYear = _year;
+    final requestedMonth = _month;
+    final key = '$requestedYear-$requestedMonth';
+    final cached = _monthCache[key];
+    if (cached != null) {
+      if (mounted) setState(() => _daysWithBooking = cached);
+      return;
+    }
+
+    final totalDays = DateTime(requestedYear, requestedMonth + 1, 0).day;
+    final results = await Future.wait(List.generate(totalDays, (i) async {
+      final day = i + 1;
+      final dateStr =
+          DateFormat('yyyy-MM-dd').format(DateTime(requestedYear, requestedMonth, day));
+      try {
+        final list = await CallService()
+            .getReservationV2History({"store_id": storeId, "target_date": dateStr, "offset": 0});
+        return list.isNotEmpty ? day : null;
+      } catch (e) {
+        return null;
+      }
+    }));
+
+    final days = results.whereType<int>().toSet();
+    _monthCache[key] = days;
+    // Only apply if the user hasn't already flipped to a different month.
+    if (mounted && _year == requestedYear && _month == requestedMonth) {
+      setState(() => _daysWithBooking = days);
+    }
   }
 
   @override
@@ -2049,27 +2207,35 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
               children: [
                 IconButton(
                   icon: const Icon(Icons.chevron_left),
-                  onPressed: () => setState(() {
-                    if (_month == 1) {
-                      _month = 12;
-                      _year--;
-                    } else {
-                      _month--;
-                    }
-                  }),
+                  onPressed: () {
+                    setState(() {
+                      if (_month == 1) {
+                        _month = 12;
+                        _year--;
+                      } else {
+                        _month--;
+                      }
+                      _daysWithBooking = {};
+                    });
+                    _loadMonthBookings();
+                  },
                 ),
                 Text('${_monthKeys[_month].tr} $_year',
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 IconButton(
                   icon: const Icon(Icons.chevron_right),
-                  onPressed: () => setState(() {
-                    if (_month == 12) {
-                      _month = 1;
-                      _year++;
-                    } else {
-                      _month++;
-                    }
-                  }),
+                  onPressed: () {
+                    setState(() {
+                      if (_month == 12) {
+                        _month = 1;
+                        _year++;
+                      } else {
+                        _month++;
+                      }
+                      _daysWithBooking = {};
+                    });
+                    _loadMonthBookings();
+                  },
                 ),
               ],
             ),
@@ -2097,6 +2263,7 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
                       cellDate.year == today.year &&
                       cellDate.month == today.month &&
                       cellDate.day == today.day;
+                  final hasBooking = isCurrentMonth && _daysWithBooking.contains(day);
 
                   return Expanded(
                     child: GestureDetector(
@@ -2111,15 +2278,33 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
                               : null,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Center(
-                          child: Text(
-                            isCurrentMonth ? '$day' : '',
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black87,
-                              fontWeight:
-                                  isToday || isSelected ? FontWeight.bold : FontWeight.normal,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              isCurrentMonth ? '$day' : '',
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : Colors.black87,
+                                fontWeight:
+                                    isToday || isSelected ? FontWeight.bold : FontWeight.normal,
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 2),
+                            SizedBox(
+                              height: 5,
+                              width: 5,
+                              child: hasBooking
+                                  ? DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : const Color(0xFF16A34A),
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                          ],
                         ),
                       ),
                     ),
