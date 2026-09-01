@@ -16,7 +16,7 @@ if (hasReleaseKeystore) {
 android {
     namespace "com.food.mandeep.foodApptest"
     compileSdk 36
-    ndkVersion flutter.ndkVersion
+    ndkVersion "30.0.16138531"
 
     compileOptions {
         coreLibraryDesugaringEnabled true

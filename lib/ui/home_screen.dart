@@ -20,6 +20,7 @@ import '../utils/keep_alive_page.dart';
 import '../utils/my_application.dart';
 import 'Order/OrderScreen.dart';
 import 'Reservation V2/reservation_dashboard_v2.dart';
+import 'Reservation V2/add_reservation_v2_screen.dart';
 import 'Pos/pos.dart';
 import 'Pos/pos_portrait.dart' show PosPortrait;
 import 'Pos/pos_portrait_controller.dart';
@@ -346,8 +347,12 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(27.5),
           onTap: () {
             if (app.appController.selectedTabIndex == 1) {
-              app.appController.triggerAddReservation.value =
-              !app.appController.triggerAddReservation.value;
+              if (_reservationV2Enabled) {
+                showAddReservationV2Flow(context);
+              } else {
+                app.appController.triggerAddReservation.value =
+                !app.appController.triggerAddReservation.value;
+              }
             }
           },
           child: const Center(

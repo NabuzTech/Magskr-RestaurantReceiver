@@ -4815,12 +4815,12 @@ class CallService extends GetConnect {
   }
 
   //For Getting Time Slots
-  Future<GetTodaySlotOfReservation> gettingTimeSlotReservationV2(String storeID, String date) async   {
+  Future<GetTodaySlotOfReservation> gettingTimeSlotReservationV2(String storeID, String date, {int partySize = 2}) async   {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? Token = prefs.getString(valueShared_BEARER_KEY);
     print("User Access Token Value is : $Token");
     httpClient.baseUrl = Api.baseUrl;
-    var res = await get('reservations/v2/availability?store_id=$storeID&date=$date&party_size=2', headers: {
+    var res = await get('reservations/v2/availability?store_id=$storeID&date=$date&party_size=$partySize', headers: {
       'accept': 'application/json',
       'Authorization': "Bearer $Token",
     });
@@ -4830,6 +4830,51 @@ class CallService extends GetConnect {
     } else {
       throw Exception(
           'Failed to load TimeSlot V2: ${res.statusCode}');
+    }
+  }
+
+  //For Creating New Reservation V2
+  Future<ReservationV2UpdateModel> createReservationV2(dynamic body) async {
+    try {
+      httpClient.baseUrl = Api.baseUrl;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+      print("User Access Token Value is : $accessToken");
+      print("Create Reservation V2 REQUEST body: $body");
+
+      var res = await post('reservations/v2/guest', body, headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer $accessToken",
+      });
+
+      print("Create Reservation V2 RESPONSE (${res.statusCode}) body: ${res.body}");
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        if (res.body == null || res.body.toString().isEmpty) {
+          return ReservationV2UpdateModel();
+        } else if (res.body is List) {
+          final list = res.body as List;
+          if (list.isNotEmpty) {
+            return ReservationV2UpdateModel.fromJson(list[0]);
+          }
+          return ReservationV2UpdateModel();
+        } else if (res.body is Map) {
+          return ReservationV2UpdateModel.fromJson(res.body);
+        } else {
+          return ReservationV2UpdateModel();
+        }
+      } else {
+        print("Unexpected error: ${res.statusCode} - ${res.body}");
+        throw Exception('Request failed with status code: ${res.statusCode}');
+      }
+    } catch (e) {
+      print("Create Reservation V2 error: $e");
+      if (e is Exception) {
+        rethrow;
+      } else {
+        throw Exception('An unexpected error occurred: $e');
+      }
     }
   }
 
