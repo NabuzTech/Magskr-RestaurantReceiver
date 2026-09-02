@@ -83,6 +83,10 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _noteController = TextEditingController();
+  final _nameFocus = FocusNode();
+  final _phoneFocus = FocusNode();
+  final _emailFocus = FocusNode();
+  final _noteFocus = FocusNode();
 
   bool _submitting = false;
   String? _error;
@@ -118,6 +122,10 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
     _phoneController.dispose();
     _emailController.dispose();
     _noteController.dispose();
+    _nameFocus.dispose();
+    _phoneFocus.dispose();
+    _emailFocus.dispose();
+    _noteFocus.dispose();
     _stepScrollController.dispose();
     super.dispose();
   }
@@ -232,10 +240,15 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
       debugPrint('Create V2 Reservation body is $body');
       await CallService().createReservationV2(body);
 
-      app.appController.updateSyncTime();
-
       if (!mounted) return;
+      // Close the sheet before firing the refresh triggers below — the
+      // dashboard opens its own loading dialog on these, and doing that
+      // first would push it above this sheet, so `pop` would close that
+      // dialog instead of the sheet, leaving this stuck on "please wait".
       Navigator.of(context).pop(true);
+
+      app.appController.updateSyncTime();
+      app.appController.triggerReservationV2Created();
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -258,20 +271,46 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.82,
-        color: Colors.white,
-        child: SafeArea(
-          top: false,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isWide = constraints.maxWidth >= 700;
-              return isWide ? _wideLayout() : _narrowLayout();
-            },
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 100),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.82,
+              color: Colors.white,
+              child: SafeArea(
+                top: false,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWide = constraints.maxWidth >= 700;
+                    return isWide ? _wideLayout() : _narrowLayout();
+                  },
+                ),
+              ),
+            ),
           ),
-        ),
+          Positioned(
+            right: 0,
+            left: 0,
+            top: -30,
+            child: Center(child: _closeButtonCircle()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _closeButtonCircle() {
+    return Container(
+      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+     // padding: const EdgeInsets.all(5),
+      child: IconButton(
+        icon: const Icon(Icons.close, color: Colors.black54),
+        onPressed: () => Navigator.of(context).pop(false),
       ),
     );
   }
@@ -293,29 +332,12 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
   Widget _narrowLayout() {
     return Column(
       children: [
-        Stack(clipBehavior: Clip.none,
-          children:[
-            Container(
-            width: double.infinity,
-            color: _kDarkGreen,
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-            child: _sidebar(vertical: false),
-          ),
-            Positioned(
-              right: 0,left: 0,top: -20,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,color: Colors.white
-                ),
-              padding: const EdgeInsets.all(5),
-              child: Center(
-                child: IconButton(
-                  icon: const Icon(Icons.close, color: Colors.black54),
-                  onPressed: () => Navigator.of(context).pop(false),
-                ),
-              ),
-            ), )
-        ]),
+        Container(
+          width: double.infinity,
+          color: _kDarkGreen,
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+          child: _sidebar(vertical: false),
+        ),
         Expanded(child: _content()),
       ],
     );
@@ -329,19 +351,6 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
         const SizedBox(height: 8),
         Expanded(child: _stepBody()),
       ],
-    );
-  }
-
-  Widget _closeButtonRow() {
-    return Align(
-      alignment: Alignment.topRight,
-      child: Padding(
-        padding: const EdgeInsets.only(top: 8, right: 12),
-        child: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black54),
-          onPressed: () => Navigator.of(context).pop(false),
-        ),
-      ),
     );
   }
 
@@ -800,12 +809,31 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
               children: [
                 _stepHeader(3, 'your_details_label'.tr, 'almost_done_label'.tr),
                 const SizedBox(height: 24),
-                _detailsField('customer_name'.tr, _nameController, 'Max Mustermann', required: true),
+                _detailsField('customer_name'.tr, _nameController, 'Max Mustermann',
+                    required: true,
+                    focusNode: _nameFocus,
+                    textInputAction: TextInputAction.next,
+                    onEditingComplete: () => FocusScope.of(context).requestFocus(_phoneFocus)),
                 _detailsField('phone_number'.tr, _phoneController, '+49 170 1234567',
-                    required: true, keyboardType: TextInputType.phone),
+                    required: true,
+                    keyboardType: TextInputType.phone,
+                    focusNode: _phoneFocus,
+                    textInputAction: TextInputAction.next,
+                    onEditingComplete: () => FocusScope.of(context).requestFocus(_emailFocus)),
                 _detailsField('email_address'.tr, _emailController, 'max.mustermann@email.com',
-                    required: true, keyboardType: TextInputType.emailAddress),
-                _detailsField('special_note'.tr, _noteController, 'Geburtstagsfeier', maxLines: 3),
+                    required: true,
+                    keyboardType: TextInputType.emailAddress,
+                    focusNode: _emailFocus,
+                    textInputAction: TextInputAction.next,
+                    onEditingComplete: () => FocusScope.of(context).requestFocus(_noteFocus)),
+                _detailsField('special_note'.tr, _noteController, 'Geburtstagsfeier',
+                    maxLines: 3,
+                    focusNode: _noteFocus,
+                    textInputAction: TextInputAction.done,
+                    onEditingComplete: () {
+                      _noteFocus.unfocus();
+                      if (!_submitting) _submit();
+                    }),
                 if (_error != null) ...[
                   const SizedBox(height: 8),
                   Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
@@ -829,7 +857,12 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
   }
 
   Widget _detailsField(String label, TextEditingController controller, String hint,
-      {bool required = false, int maxLines = 1, TextInputType? keyboardType}) {
+      {bool required = false,
+      int maxLines = 1,
+      TextInputType? keyboardType,
+      FocusNode? focusNode,
+      TextInputAction? textInputAction,
+      VoidCallback? onEditingComplete}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 18),
       child: Column(
@@ -847,8 +880,11 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
           const SizedBox(height: 8),
           TextField(
             controller: controller,
+            focusNode: focusNode,
             maxLines: maxLines,
             keyboardType: keyboardType,
+            textInputAction: textInputAction,
+            onEditingComplete: onEditingComplete,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: TextStyle(color: Colors.grey.shade400),

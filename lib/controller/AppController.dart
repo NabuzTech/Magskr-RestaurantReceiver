@@ -636,5 +636,11 @@ class AppController extends GetxController {
     print('🔔 Sync time update triggered');
   }
 
+  final reservationV2Created = false.obs;
+
+  void triggerReservationV2Created() {
+    reservationV2Created.value = !reservationV2Created.value;
+  }
+
   final stripeServiceFee = Rxn<double>();
 }

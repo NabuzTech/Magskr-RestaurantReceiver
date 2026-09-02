@@ -33,6 +33,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   DateTime _selectedDate = DateTime.now();
   String? storeID;
   Worker? _syncWorker;
+  Worker? _createdWorker;
   int? _highlightedReservationId;
   Color? _highlightedColor;
   final ScrollController _coversScrollController = ScrollController();
@@ -56,12 +57,14 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     super.initState();
     _loadTodayReservations();
     _syncWorker = ever(app.appController.syncTimeUpdated, (_) => _refreshForNotification());
+    _createdWorker = ever(app.appController.reservationV2Created, (_) => _refreshForNotification(showLoader: true));
     _slotClockTimer = Timer.periodic(const Duration(minutes: 1), (_) => _scrollToCurrentSlot());
   }
 
   @override
   void dispose() {
     _syncWorker?.dispose();
+    _createdWorker?.dispose();
     _slotClockTimer?.cancel();
     _coversScrollController.dispose();
     _dismissBookingPopup();
@@ -82,13 +85,13 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     ]);
   }
 
-  void _refreshForNotification() {
+  void _refreshForNotification({bool showLoader = false}) {
     final id = storeID;
     if (id == null) return;
     if (_isSameDay(_selectedDate, DateTime.now())) {
-      getReservationV2(id, showLoader: false);
+      getReservationV2(id, showLoader: showLoader);
     } else {
-      reservationV2History(showLoader: false);
+      reservationV2History(showLoader: showLoader);
     }
     getTodayReceivedReservationV2(id, showLoader: false);
     getTodayTimeSlot(id, showLoader: false);
