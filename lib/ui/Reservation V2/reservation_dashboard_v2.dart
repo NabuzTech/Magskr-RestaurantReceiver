@@ -1639,11 +1639,12 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
   bool get _hasChanges => _computeChanges().isNotEmpty;
 
   Future<void> _pickDate() async {
-    final picked = await showDatePicker(
+    final picked = await showDialog<DateTime>(
       context: context,
-      initialDate: _date,
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (_) => _ReservationCalendarDialog(
+        initialDate: _date,
+        storeId: widget.booking.storeId?.toString(),
+      ),
     );
     if (picked != null) setState(() => _date = picked);
   }
