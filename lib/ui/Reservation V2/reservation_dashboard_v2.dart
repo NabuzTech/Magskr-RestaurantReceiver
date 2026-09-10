@@ -440,13 +440,20 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   }
 
   // -------------------- COVERS FILLED --------------------
+  static const double _slotColumnWidth = 38.0;
+  static const double _laneHeight = 22.0;
+  static const double _laneGap = 1.0;
+
   // A booking occupies every slot its [reservedFor, reservedUntil) window overlaps,
   // not just its start slot — a 16:00 booking lasting 60 min still holds the table
-  // at 16:30, so it must still show up in that slot's bar.
-  Map<String, List<_SlotBooking>> _bucketBySlot(List<Slots> slots, List<Reservations> list) {
+  // at 16:30. Rather than drawing a separate box per overlapped slot, it collapses
+  // into a single bar spanning startIndex..endIndex so a 60 min booking reads as
+  // one box, not two. Overlapping bookings still get their own lane (bottom-up,
+  // same as before) so simultaneous bookings stack instead of colliding.
+  List<_MergedBooking> _mergedBookings(List<Slots> slots, List<Reservations> list) {
     final sorted = [...list]
       ..sort((a, b) => (a.reservedFor ?? '').compareTo(b.reservedFor ?? ''));
-    final Map<String, List<_SlotBooking>> map = {};
+    final result = <_MergedBooking>[];
     for (int i = 0; i < sorted.length; i++) {
       final r = sorted[i];
       final start = DateTime.tryParse(r.reservedFor ?? '');
@@ -456,15 +463,32 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       final color = (r.status ?? '').toLowerCase() == 'cancelled'
           ? _statusColor(r.status)
           : _bookingColors[i % _bookingColors.length];
-      for (final slot in slots) {
-        final slotDt = _slotDateTime(slot);
+      int? startIndex, endIndex;
+      for (int s = 0; s < slots.length; s++) {
+        final slotDt = _slotDateTime(slots[s]);
         if (slotDt == null) continue;
         if (!slotDt.isBefore(start) && slotDt.isBefore(end)) {
-          map.putIfAbsent(slot.time ?? '', () => []).add(_SlotBooking(r, color));
+          startIndex ??= s;
+          endIndex = s;
         }
       }
+      if (startIndex == null || endIndex == null) continue;
+      result.add(_MergedBooking(r, color, startIndex, endIndex));
     }
-    return map;
+    final laneEnd = <int>[];
+    for (final b in result) {
+      int lane = 0;
+      while (lane < laneEnd.length && laneEnd[lane] >= b.startIndex) {
+        lane++;
+      }
+      if (lane == laneEnd.length) {
+        laneEnd.add(b.endIndex);
+      } else {
+        laneEnd[lane] = b.endIndex;
+      }
+      b.lane = lane;
+    }
+    return result;
   }
 
   DateTime? _slotDateTime(Slots slot) {
@@ -526,15 +550,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
 
   Widget _coversFilledCard() {
     final slots = timeSlotData?.slots ?? [];
-    final buckets = _bucketBySlot(slots, reservationsData ?? []);
-    final seenBookingIds = <int?>{};
-    final allBookings = buckets.values.expand((e) => e).where((b) {
-      final id = b.reservation.id;
-      if (id != null && !seenBookingIds.add(id)) return false;
-      return true;
-    }).toList()
-      ..sort((a, b) => (a.reservation.reservedFor ?? '')
-          .compareTo(b.reservation.reservedFor ?? ''));
+    final merged = _mergedBookings(slots, reservationsData ?? []);
 
     return _card(
       child: Column(
@@ -568,14 +584,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                       controller: _coversScrollController,
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: slots
-                            .asMap()
-                            .entries
-                            .map((e) => _slotColumn(e.key, e.value, buckets[e.value.time] ?? []))
-                            .toList(),
-                      ),
+                      child: _coversTimeline(slots, merged),
                     ),
                   ),
                 ),
@@ -586,12 +595,12 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                 ),
               ],
             ),
-            if (allBookings.isNotEmpty) ...[
+            if (merged.isNotEmpty) ...[
               const SizedBox(height: 8),
               Wrap(
                 spacing: 14,
                 runSpacing: 6,
-                children: allBookings.map(_legendChip).toList(),
+                children: merged.map(_legendChip).toList(),
               ),
             ],
           ],
@@ -600,42 +609,79 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     );
   }
 
-  Widget _slotColumn(int index, Slots slot, List<_SlotBooking> bookings) {
-    const segmentHeight = 22.0;
-    return Padding(
-      key: _slotKeys.putIfAbsent(index, () => GlobalKey()),
-      padding: const EdgeInsets.symmetric(horizontal: 6),
+  // Fixed-width slot columns for the count/time rows so each merged bar's
+  // left/width can be computed from its slot index instead of intrinsic layout.
+  Widget _coversTimeline(List<Slots> slots, List<_MergedBooking> merged) {
+    final maxLane =
+        merged.isEmpty ? 0 : merged.map((b) => b.lane).reduce((a, b) => a > b ? a : b) + 1;
+    final barAreaHeight =
+        maxLane == 0 ? 4.0 : maxLane * _laneHeight + (maxLane - 1) * _laneGap;
+
+    return SizedBox(
+      width: slots.length * _slotColumnWidth,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${bookings.length}',
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+          Row(
+            children: List.generate(slots.length, (i) {
+              final count = merged.where((b) => i >= b.startIndex && i <= b.endIndex).length;
+              return SizedBox(
+                key: _slotKeys.putIfAbsent(i, () => GlobalKey()),
+                width: _slotColumnWidth,
+                child: Center(
+                  child: Text('$count',
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                ),
+              );
+            }),
+          ),
           const SizedBox(height: 4),
-          if (bookings.isEmpty)
-            Container(width: 26, height: 4, color: const Color(0xFFE5E7EB))
-          else
-            Column(
-              children: bookings
-                  .map((b) => GestureDetector(
-                        onTapDown: (details) =>
-                            _showBookingPopup(b.reservation, b.color, details.globalPosition),
-                        child: Container(
-                          width: 26,
-                          height: segmentHeight,
-                          margin: const EdgeInsets.only(bottom: 1),
-                          decoration: BoxDecoration(color: b.color),
-                        ),
-                      ))
-                  .toList(),
+          SizedBox(
+            height: barAreaHeight,
+            child: Stack(
+              children: [
+                const Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SizedBox(
+                    height: 4,
+                    child: ColoredBox(color: Color(0xFFE5E7EB)),
+                  ),
+                ),
+                for (final b in merged)
+                  Positioned(
+                    left: b.startIndex * _slotColumnWidth + 6,
+                    width: (b.endIndex - b.startIndex + 1) * _slotColumnWidth - 12,
+                    height: _laneHeight,
+                    bottom: b.lane * (_laneHeight + _laneGap),
+                    child: GestureDetector(
+                      onTapDown: (details) =>
+                          _showBookingPopup(b.reservation, b.color, details.globalPosition),
+                      child: Container(decoration: BoxDecoration(color: b.color)),
+                    ),
+                  ),
+              ],
             ),
+          ),
           const SizedBox(height: 6),
-          Text(slot.time ?? '', style: const TextStyle(fontSize: 9, color: Colors.grey)),
+          Row(
+            children: slots
+                .map((s) => SizedBox(
+                      width: _slotColumnWidth,
+                      child: Center(
+                        child: Text(s.time ?? '',
+                            style: const TextStyle(fontSize: 9, color: Colors.grey)),
+                      ),
+                    ))
+                .toList(),
+          ),
         ],
       ),
     );
   }
 
-  Widget _legendChip(_SlotBooking b) {
+  Widget _legendChip(_MergedBooking b) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -1554,10 +1600,13 @@ class _TopSnackBarState extends State<_TopSnackBar> with SingleTickerProviderSta
 }
 
 // -------------------- MODELS --------------------
-class _SlotBooking {
+class _MergedBooking {
   final Reservations reservation;
   final Color color;
-  _SlotBooking(this.reservation, this.color);
+  final int startIndex;
+  final int endIndex;
+  int lane = 0;
+  _MergedBooking(this.reservation, this.color, this.startIndex, this.endIndex);
 }
 
 // -------------------- EDIT RESERVATION DIALOG --------------------
@@ -1650,8 +1699,20 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
   }
 
   Future<void> _pickTime() async {
-    final picked = await showTimePicker(context: context, initialTime: _time);
-    if (picked != null) setState(() => _time = picked);
+    final picked = await showDialog<Slots>(
+      context: context,
+      builder: (_) => _ReservationTimeSlotDialog(
+        date: _date,
+        storeId: widget.booking.storeId?.toString(),
+        partySize: int.tryParse(_partySizeController.text) ?? _originalPartySize,
+        selectedTime: _time,
+      ),
+    );
+    if (picked == null) return;
+    final parts = (picked.time ?? '').split(':');
+    final h = parts.isNotEmpty ? int.tryParse(parts[0]) : null;
+    final m = parts.length > 1 ? int.tryParse(parts[1]) : null;
+    if (h != null && m != null) setState(() => _time = TimeOfDay(hour: h, minute: m));
   }
 
   Future<void> _save() async {
@@ -2337,6 +2398,184 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
                 }),
               );
             }),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// -------------------- TIME SLOT DIALOG (edit reservation) --------------------
+// Mirrors the slot grid from the "new reservation" wizard's Available Times
+// step, so picking a time in Edit shows real availability instead of a bare
+// native time wheel.
+class _ReservationTimeSlotDialog extends StatefulWidget {
+  final DateTime date;
+  final String? storeId;
+  final int partySize;
+  final TimeOfDay? selectedTime;
+  const _ReservationTimeSlotDialog({
+    required this.date,
+    required this.storeId,
+    required this.partySize,
+    this.selectedTime,
+  });
+
+  @override
+  State<_ReservationTimeSlotDialog> createState() => _ReservationTimeSlotDialogState();
+}
+
+class _ReservationTimeSlotDialogState extends State<_ReservationTimeSlotDialog> {
+  bool _loading = true;
+  List<Slots> _slots = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final storeId = widget.storeId;
+    if (storeId == null) {
+      setState(() => _loading = false);
+      return;
+    }
+    try {
+      final dateStr = DateFormat('yyyy-MM-dd').format(widget.date);
+      final result = await CallService()
+          .gettingTimeSlotReservationV2(storeId, dateStr, partySize: widget.partySize);
+      if (mounted) {
+        setState(() {
+          _slots = result.slots ?? [];
+          _loading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  bool _isSelected(Slots s) {
+    final t = widget.selectedTime;
+    if (t == null) return false;
+    final parts = (s.time ?? '').split(':');
+    final h = parts.isNotEmpty ? int.tryParse(parts[0]) : null;
+    final m = parts.length > 1 ? int.tryParse(parts[1]) : null;
+    return h == t.hour && m == t.minute;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Bounded so the grid below gets a real viewport to scroll inside of —
+    // without a max height, Dialog sizes to its content and a long slot list
+    // just overflows the screen instead of scrolling.
+    final maxHeight = MediaQuery.of(context).size.height * 0.7;
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('available_times_label'.tr,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              Text(DateFormat('EEE, d MMM yyyy').format(widget.date),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+              const SizedBox(height: 12),
+              Flexible(
+                child: _loading
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40),
+                        child: Center(
+                            child: CircularProgressIndicator(color: Color(0xFF16A34A))),
+                      )
+                    : _slots.isEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 40),
+                            child: Text('no_time_slots_for_date'.tr,
+                                style: TextStyle(color: Colors.grey.shade600)),
+                          )
+                        // shrinkWrap:false so the grid sizes to the Flexible's
+                        // bounded height and scrolls internally, instead of
+                        // growing to fit all its content.
+                        : GridView.count(
+                            crossAxisCount: 2,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            childAspectRatio: 2.6,
+                            children: _slots.map(_slotTile).toList(),
+                          ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _slotTile(Slots s) {
+    final bookable = s.bookable ?? (s.available ?? 0) > 0;
+    final selected = _isSelected(s);
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: bookable ? () => Navigator.pop(context, s) : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFF16A34A) : Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: selected ? const Color(0xFF16A34A) : Colors.grey.shade300,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.restaurant,
+                    size: 16,
+                    color: !bookable
+                        ? Colors.grey.shade400
+                        : (selected ? Colors.white : Colors.black54)),
+                const SizedBox(width: 4),
+                Text(
+                  s.time ?? '',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    decoration: bookable ? null : TextDecoration.lineThrough,
+                    color: !bookable
+                        ? Colors.grey.shade400
+                        : (selected ? Colors.white : Colors.black87),
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              bookable ? '${s.available ?? 0} ${'slots_free_label'.tr}' : 'fully_booked_label'.tr,
+              style: TextStyle(
+                fontSize: 12,
+                decoration: bookable ? null : TextDecoration.lineThrough,
+                color: !bookable
+                    ? Colors.grey.shade400
+                    : (selected ? Colors.white : Colors.grey.shade600),
+              ),
+            ),
           ],
         ),
       ),

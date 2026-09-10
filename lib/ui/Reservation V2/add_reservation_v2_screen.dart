@@ -197,12 +197,12 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
     final phone = _phoneController.text.trim();
     final email = _emailController.text.trim();
 
-    if (name.isEmpty || phone.isEmpty || email.isEmpty) {
+    if (name.isEmpty || phone.isEmpty) {
       setState(() => _error = 'fill'.tr);
       return;
     }
     final emailValid = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
-    if (!emailValid) {
+    if (email.isNotEmpty && !emailValid) {
       setState(() => _error = 'invalid_email_label'.tr);
       return;
     }
@@ -233,7 +233,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
         'status': 'booked',
         'customer_name': name,
         'customer_phone': phone,
-        'customer_email': email,
+        if (email.isNotEmpty) 'customer_email': email,
         'note': _noteController.text.trim(),
       };
 
@@ -821,7 +821,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                     textInputAction: TextInputAction.next,
                     onEditingComplete: () => FocusScope.of(context).requestFocus(_emailFocus)),
                 _detailsField('email_address'.tr, _emailController, 'max.mustermann@email.com',
-                    required: true,
+                    required: false,
                     keyboardType: TextInputType.emailAddress,
                     focusNode: _emailFocus,
                     textInputAction: TextInputAction.next,
