@@ -16,6 +16,103 @@ import '../../models/Reservation V2/get_today_slot_reservationV2.dart';
 
 import '../../utils/my_application.dart';
 import 'reservation_settings_screen.dart';
+
+// Shared "send a message to the customer" popup, used before accept/decline/cancel
+// so every status-changing action can optionally attach a customer_message.
+Future<String?> _showCustomerMessageDialog(
+  BuildContext context, {
+  required String confirmLabel,
+  required Color confirmColor,
+}) {
+  final ctrl = TextEditingController();
+  return showDialog<String?>(
+    context: context,
+    barrierDismissible: false,
+    builder: (dialogContext) => Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.message_outlined, color: Colors.blue, size: 40),
+            const SizedBox(height: 10),
+            Text('customer_message'.tr,
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 6),
+            Text('send_msg_to_customer'.tr,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+            const SizedBox(height: 14),
+            TextField(
+              controller: ctrl,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: 'type_msg_here'.tr,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                SizedBox(
+                  width: 90,
+                  height: 46,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(''),
+                    style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'skip'.tr,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: SizedBox(
+                    height: 46,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final typedMsg = ctrl.text.trim();
+                        Navigator.of(dialogContext).pop(typedMsg);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: confirmColor,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        confirmLabel,
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 class ReservationDashboardV2 extends StatefulWidget {
   const ReservationDashboardV2({super.key});
 
@@ -550,14 +647,16 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
 
   Widget _coversFilledCard() {
     final slots = timeSlotData?.slots ?? [];
-    final merged = _mergedBookings(slots, reservationsData ?? []);
+    final activeBookings =
+        (reservationsData ?? []).where((r) => (r.status ?? '').toLowerCase() != 'cancelled').toList();
+    final merged = _mergedBookings(slots, activeBookings);
 
     return _card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _cardTitle('covers_filled'.tr,
-              subtitle: '${reservationsData?.length ?? 0} ${'bookings_count_label'.tr}'),
+              subtitle: '${activeBookings.length} ${'bookings_count_label'.tr}'),
           const SizedBox(height: 16),
           if (slots.isEmpty)
             Padding(
@@ -1141,15 +1240,15 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                     child: OutlinedButton.icon(
                       onPressed: booking.id == null
                           ? null
-                          : () => updateReservationV2(booking.id.toString(), 'booked'),
-                      icon: const Icon(Icons.check_circle_outline, size: 17),
+                          : () => updateReservationV2(booking.id.toString(), 'cancelled'),
+                      icon: const Icon(Icons.cancel_outlined, size: 17),
                       label: Text(
-                        'accept'.tr,
+                        'decline'.tr,
                         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF16A34A),
-                        side: const BorderSide(color: Color(0xFFBBF7D0)),
+                        foregroundColor: const Color(0xFFDC2626),
+                        side: const BorderSide(color: Color(0xFFFECACA)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -1164,15 +1263,15 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                     child: OutlinedButton.icon(
                       onPressed: booking.id == null
                           ? null
-                          : () => updateReservationV2(booking.id.toString(), 'cancelled'),
-                      icon: const Icon(Icons.cancel_outlined, size: 17),
+                          : () => updateReservationV2(booking.id.toString(), 'booked'),
+                      icon: const Icon(Icons.check_circle_outline, size: 17),
                       label: Text(
-                        'decline'.tr,
+                        'accept'.tr,
                         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFFDC2626),
-                        side: const BorderSide(color: Color(0xFFFECACA)),
+                        foregroundColor: const Color(0xFF16A34A),
+                        side: const BorderSide(color: Color(0xFFBBF7D0)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -1439,6 +1538,14 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   }
 
   Future<void> updateReservationV2(String reservationId, String status) async {
+    final isBooked = status == 'booked';
+    final msg = await _showCustomerMessageDialog(
+      context,
+      confirmLabel: isBooked ? 'accept'.tr : 'decline'.tr,
+      confirmColor: isBooked ? const Color(0xFF16A34A) : const Color(0xFFDC2626),
+    );
+    if (msg == null) return;
+
     Get.dialog(
       Center(
         child: Lottie.asset(
@@ -1452,7 +1559,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     );
 
     try {
-      final body = {"status": status};
+      final body = {"status": status, "customer_message": msg};
       await CallService().updateReservationV2(body, reservationId);
 
       if (Get.isDialogOpen ?? false) Get.back();
@@ -1760,106 +1867,12 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
     }
   }
 
-  Future<String?> _showCancelMessageDialog() {
-    final ctrl = TextEditingController();
-    return showDialog<String?>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.message_outlined, color: Colors.blue, size: 40),
-              const SizedBox(height: 10),
-              Text('customer_message'.tr,
-                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 6),
-              Text('send_msg_to_customer'.tr,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-              const SizedBox(height: 14),
-              TextField(
-                controller: ctrl,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: 'type_msg_here'.tr,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  // Smaller Skip button
-                  SizedBox(
-                    width: 90,
-                    height: 46,
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.of(dialogContext).pop(''),
-                      style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        'skip'.tr,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 10),
-
-                  // Remaining space for Cancel Order
-                  Expanded(
-                    child: SizedBox(
-                      height: 46,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          final typedMsg = ctrl.text.trim();
-                          print('CancelOrder DEBUG: typed customer_message = "$typedMsg"');
-                          Navigator.of(dialogContext).pop(typedMsg);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFDC2626),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text(
-                          'cancel_order'.tr,
-                          maxLines: 1,
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Future<void> _cancelOrder() async {
-    final msg = await _showCancelMessageDialog();
+    final msg = await _showCustomerMessageDialog(
+      context,
+      confirmLabel: 'cancel_order'.tr,
+      confirmColor: const Color(0xFFDC2626),
+    );
     print('CancelOrder DEBUG: dialog returned msg = $msg');
     if (msg == null) return;
 
