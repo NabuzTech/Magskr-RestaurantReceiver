@@ -56,13 +56,14 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
         'select_date'.tr,
         'available_times_label'.tr,
         'your_details_label'.tr,
+        'review_your_details'.tr,
       ];
   List<String> get _weekLabels => _weekdayKeys.map((k) => k.tr).toList();
   List<String> get _monthNames => _monthKeys.map((k) => k.isEmpty ? '' : k.tr).toList();
 
   int _step = 0;
   double _stepDirection = 1.0;
-  final List<GlobalKey> _stepKeys = List.generate(4, (_) => GlobalKey());
+  final List<GlobalKey> _stepKeys = List.generate(5, (_) => GlobalKey());
   final ScrollController _stepScrollController = ScrollController();
   String? _storeId;
   String _storeName = 'Restaurant';
@@ -192,12 +193,10 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
     }
   }
 
-  Future<void> _submit() async {
-    final name = _nameController.text.trim();
-    final phone = _phoneController.text.trim();
+  // Validates the details form; on success moves to the review step.
+  void _goToReview() {
     final email = _emailController.text.trim();
-
-    if (name.isEmpty || phone.isEmpty) {
+    if (_nameController.text.trim().isEmpty || _phoneController.text.trim().isEmpty) {
       setState(() => _error = 'fill'.tr);
       return;
     }
@@ -206,6 +205,19 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
       setState(() => _error = 'invalid_email_label'.tr);
       return;
     }
+    FocusScope.of(context).unfocus();
+    _goToStep(4);
+    setState(() {
+      _error = null;
+      _step = 4;
+    });
+  }
+
+  Future<void> _submit() async {
+    final name = _nameController.text.trim();
+    final phone = _phoneController.text.trim();
+    final email = _emailController.text.trim();
+
     final storeId = int.tryParse(_storeId ?? '');
     final slot = _selectedSlot;
     if (storeId == null || slot?.datetime == null || _selectedGuests == null) {
@@ -432,8 +444,11 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
       case 2:
         child = _timesStep();
         break;
-      default:
+      case 3:
         child = _detailsStep();
+        break;
+      default:
+        child = _reviewStep();
     }
     return ClipRect(
       child: AnimatedSwitcher(
@@ -830,10 +845,78 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                     maxLines: 3,
                     focusNode: _noteFocus,
                     textInputAction: TextInputAction.done,
-                    onEditingComplete: () {
-                      _noteFocus.unfocus();
-                      if (!_submitting) _submit();
-                    }),
+                    onEditingComplete: () => _noteFocus.unfocus()),
+                if (_error != null) ...[
+                  const SizedBox(height: 8),
+                  Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+                ],
+              ],
+            ),
+          ),
+        ),
+        _navButtons(
+          onBack: () {
+            _goToStep(2);
+            setState(() => _step = 2);
+          },
+          onNext: _goToReview,
+        ),
+      ],
+    );
+  }
+
+  // ---------------- STEP 5: REVIEW ----------------
+  Widget _reviewStep() {
+    final slot = _selectedSlot;
+    final rows = <List<dynamic>>[
+      [Icons.people_outline, 'party_size_label'.tr, '$_selectedGuests ${'guests'.tr}'],
+      [Icons.calendar_today_outlined, 'select_date'.tr, DateFormat('EEE, d MMM yyyy').format(_selectedDate)],
+      [Icons.access_time_rounded, 'time'.tr, slot?.time ?? '-'],
+      [Icons.person_outline, 'customer_name'.tr, _nameController.text.trim()],
+      [Icons.phone_outlined, 'phone_number'.tr, _phoneController.text.trim()],
+      if (_emailController.text.trim().isNotEmpty)
+        [Icons.email_outlined, 'email_address'.tr, _emailController.text.trim()],
+      if (_noteController.text.trim().isNotEmpty)
+        [Icons.notes, 'special_note'.tr, _noteController.text.trim()],
+    ];
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+            child: Column(
+              children: [
+                _stepHeaderIcon(Icons.fact_check_outlined, 'review_your_details'.tr, 'almost_done_label'.tr),
+                const SizedBox(height: 20),
+                for (final r in rows)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(r[0] as IconData, color: _kAccentGreen, size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(r[1] as String,
+                                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                              const SizedBox(height: 2),
+                              Text(r[2] as String,
+                                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 if (_error != null) ...[
                   const SizedBox(height: 8),
                   Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
@@ -846,8 +929,8 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
           onBack: _submitting
               ? null
               : () {
-                  _goToStep(2);
-                  setState(() => _step = 2);
+                  _goToStep(3);
+                  setState(() => _step = 3);
                 },
           onNext: _submitting ? null : _submit,
           nextLabel: _submitting ? 'please_wait_label'.tr : 'complete_reservation_label'.tr,

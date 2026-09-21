@@ -35,6 +35,13 @@ Future<String?> _showCustomerMessageDialog(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: InkWell(
+                onTap: () => Navigator.of(dialogContext).pop(),
+                child: const Icon(Icons.close, size: 22),
+              ),
+            ),
             const Icon(Icons.message_outlined, color: Colors.blue, size: 40),
             const SizedBox(height: 10),
             Text('customer_message'.tr,
@@ -59,7 +66,7 @@ Future<String?> _showCustomerMessageDialog(
                   width: 90,
                   height: 46,
                   child: OutlinedButton(
-                    onPressed: () => Navigator.of(dialogContext).pop(''),
+                    onPressed: () => Navigator.of(dialogContext).pop(),
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.zero,
                       shape: RoundedRectangleBorder(
@@ -721,19 +728,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: List.generate(slots.length, (i) {
-              final count = merged.where((b) => i >= b.startIndex && i <= b.endIndex).length;
-              return SizedBox(
-                key: _slotKeys.putIfAbsent(i, () => GlobalKey()),
-                width: _slotColumnWidth,
-                child: Center(
-                  child: Text('$count',
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                ),
-              );
-            }),
-          ),
+          Row(children: _countRuns(slots.length, merged)),
           const SizedBox(height: 4),
           SizedBox(
             height: barAreaHeight,
@@ -778,6 +773,41 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
         ],
       ),
     );
+  }
+
+  // Consecutive slots with the same count share one centered number.
+  // Per-slot keyed boxes stay underneath so auto-scroll can still find each slot.
+  List<Widget> _countRuns(int n, List<_MergedBooking> merged) {
+    final counts = List.generate(
+        n, (i) => merged.where((b) => i >= b.startIndex && i <= b.endIndex).length);
+    final runs = <Widget>[];
+    for (int i = 0; i < n;) {
+      int j = i;
+      while (j + 1 < n && counts[j + 1] == counts[i]) {
+        j++;
+      }
+      runs.add(SizedBox(
+        width: (j - i + 1) * _slotColumnWidth,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Row(
+              children: [
+                for (int k = i; k <= j; k++)
+                  SizedBox(
+                      key: _slotKeys.putIfAbsent(k, () => GlobalKey()),
+                      width: _slotColumnWidth,
+                      height: 14),
+              ],
+            ),
+            Text('${counts[i]}',
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ));
+      i = j + 1;
+    }
+    return runs;
   }
 
   Widget _legendChip(_MergedBooking b) {
