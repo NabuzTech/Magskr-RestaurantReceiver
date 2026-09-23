@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:food_receiver/ui/Login/LoginScreen.dart';
 import 'package:food_receiver/ui/Store%20Owners/store_owner_stores.dart';
-import 'package:food_receiver/ui/SuperAdmin/super_admin.dart';
+import 'package:food_receiver/ui/SuperAdmin/Admin%20Home/super_admin.dart';
 import 'package:food_receiver/ui/home_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';

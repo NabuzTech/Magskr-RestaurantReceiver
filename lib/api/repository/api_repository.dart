@@ -30,6 +30,12 @@ import '../../models/StoreDetail.dart';
 import '../../models/StoreSetting.dart';
 import '../../models/UserMe.dart';
 import '../../models/add-store_postcode_response_model.dart';
+import '../../models/admin/add_store_config_model.dart';
+import '../../models/admin/payment_by_ordertype_model.dart';
+import '../../models/admin/store_config_model.dart';
+import '../../models/admin/store_status_model.dart';
+import '../../models/admin/update_payment_by_orderType.dart';
+import '../../models/admin/update_store_status_model.dart';
 import '../../models/bulk_delete_order_response_model.dart';
 import '../../models/add_aleergy_link_response_model.dart';
 import '../../models/add_allergy_response_model.dart';
@@ -4965,7 +4971,7 @@ class CallService extends GetConnect {
     }
   }
 
- //For GettingTodayReceived Reservation V2 For SuperAdmin
+  //For GettingTodayReceived Reservation V2 For SuperAdmin
   Future<GetTodayReceivedReservationV2SuperAdminModel> gettingTodayReceivedReservationV2SuperAdmin() async   {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? Token = prefs.getString(valueShared_BEARER_KEY);
@@ -4985,5 +4991,209 @@ class CallService extends GetConnect {
     }
   }
 
+  ///Admin Control Api
+  //For Getting Store Config
+  Future<List<GetStoreConfigModel>> getStoreConfig({int limit = 20, int offset = 0}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    print("🔵 API URL: ${Api.baseUrl}store-domain-config?limit=$limit&offset=$offset");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('store-domain-config?limit=$limit&offset=$offset', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Get Store Config response is :${res.statusCode.toString()}");
+      print("Getting Store Config response body is :${res.body}");
+      List<dynamic> jsonList = res.body;
+      return jsonList.map((json) => GetStoreConfigModel.fromJson(json)).toList();
+    } else {
+      throw Exception(
+          'Failed to load Store Config: ${res.statusCode}');
+    }
+  }
+
+  //For Creating Store Config
+  Future<AddStoreConfigModel> addStoreConfig(dynamic body) async {
+    try {
+      httpClient.baseUrl = Api.baseUrl;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+      print("User Access Token Value is : $accessToken");
+
+      var res = await post('store-domain-config', body, headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer $accessToken",
+      });
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        print("Add Store Config Response is : ${res.statusCode.toString()}");
+
+        if (res.body == null || res.body.toString().isEmpty) {
+          // 201 with empty body = success, return empty model
+          return AddStoreConfigModel();
+        } else if (res.body is List) {
+          final list = res.body as List;
+          if (list.isNotEmpty) {
+            return AddStoreConfigModel.fromJson(list[0]);
+          }
+          return AddStoreConfigModel();
+        } else if (res.body is Map) {
+          return AddStoreConfigModel.fromJson(res.body);
+        } else {
+          return AddStoreConfigModel();
+        }
+      }else {
+        print("Unexpected error: ${res.statusCode} - ${res.body}");
+        throw Exception('Request failed with status code: ${res.statusCode}');
+      }
+    } catch (e) {
+      print("Adding error: $e");
+      if (e is Exception) {
+        rethrow;
+      } else {
+        throw Exception('An unexpected error occurred: $e');
+      }
+    }
+  }
+
+  //For Updating Store Config
+  Future<AddStoreConfigModel> updateStoreConfig(dynamic body ,String domain) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await put('store-domain-config/$domain',body, headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Updating Store Config response body is :${res.statusCode}");
+      return AddStoreConfigModel.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to Updating Store Config : ${res.statusCode}');
+    }
+  }
+
+  //For Delete Store Config
+  Future<bool> deleteStoreConfig(String domain) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+      print("User Access Token Value is : $accessToken");
+      httpClient.baseUrl = Api.baseUrl;
+      print('Delete Url is ${Api.baseUrl}/store-domain-config/$domain');
+      var res = await delete(
+        "store-domain-config/$domain",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer $accessToken",
+        },
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 204) {
+        return true;
+      } else {
+        print('Delete Domain  Error: ${res.statusCode} - ${res.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Delete Domain Exception: $e');
+      return false;
+    }
+  }
+
+  //For Getting Active Store In Magskr User App
+  Future<List<storeStatusModel>> getActiveStore() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    print("🔵 API URL: ${Api.baseUrl}superadmin/stores/active");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('superadmin/stores/active', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Get Store Status response is :${res.statusCode.toString()}");
+      print("Getting Store Status response body is :${res.body}");
+      List<dynamic> jsonList = res.body;
+      return jsonList.map((json) => storeStatusModel.fromJson(json)).toList();
+    } else {
+      throw Exception(
+          'Failed to load Store Status: ${res.statusCode}');
+    }
+  }
+
+  //For Updating Active Store In Magskr User App
+  Future<UpdateStoreStatusModel> updateStoreActive(dynamic body ,String storeId) async  {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    print("🔵 API URL: ${Api.baseUrl}superadmin/stores/13/active");
+    var res = await patch('superadmin/stores/$storeId/active',body, headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Updating Store Status response body is :${res.statusCode}");
+      return UpdateStoreStatusModel.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to Updating Store Status : ${res.statusCode}');
+    }
+  }
+
+  //for getting payment by order type
+  Future<List<PaymentByOrderTypeModel>> getPaymentOrderType(String storeId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    print("🔵 API URL: ${Api.baseUrl}store-payment-settings/$storeId/order-types");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('store-payment-settings/$storeId/order-types', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Get payment by order type response is :${res.statusCode.toString()}");
+      print("Getting payment by order type response body is :${res.body}");
+      List<dynamic> jsonList = res.body;
+      return jsonList.map((json) => PaymentByOrderTypeModel.fromJson(json)).toList();
+    } else {
+      throw Exception(
+          'Failed to load payment by order type: ${res.statusCode}');
+    }
+  }
+
+  //For Update payment by orderType
+  Future<UpdatePaymentByOrderTypeModel> updatePaymentByOrderType(dynamic body ,String storeId, String orderType) async  {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    print("🔵 API URL: ${Api.baseUrl}store-payment-settings/$storeId/order-types/$orderType");
+    var res = await put('store-payment-settings/$storeId/order-types/$orderType',body, headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Updating Store payment by ordertype response body is :${res.statusCode}");
+      return UpdatePaymentByOrderTypeModel.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to Updating payment by ordertype : ${res.statusCode}');
+    }
+  }
 
 }

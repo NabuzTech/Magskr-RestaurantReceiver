@@ -7,6 +7,7 @@ import 'package:food_receiver/ui/Notification/notification.dart';
 import 'package:food_receiver/ui/PostCode/postcode.dart';
 import 'package:food_receiver/ui/Setting/PrinterSettingsScreen.dart';
 import 'package:food_receiver/ui/Setting/change_password.dart';
+import 'package:food_receiver/ui/Setting/payment_settings.dart';
 import 'package:food_receiver/ui/home_screen.dart';
 
 import 'package:get/get.dart';
@@ -32,7 +33,7 @@ import '../ui/Products/Topping/toppings.dart';
 import '../ui/Products/product_group/product_group.dart';
 import '../ui/StoreTiming/delivery_pickup_timing.dart';
 import '../ui/StoreTiming/store_timing.dart';
-import '../ui/SuperAdmin/device_status.dart';
+import '../ui/SuperAdmin/Admin Home/device_status.dart';
 import '../ui/Tax MAnagement/taxmanagement.dart';
 import '../utils/log_util.dart';
 import '../utils/my_application.dart';
@@ -283,6 +284,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     _drawerItem('device_status'.tr,'assets/images/device.svg', onTap: () {
                       Navigator.of(context).pop();
                       Get.to(() => const DeviceStatusScreen());
+                    }),
+
+                  if (_roleId == 1)
+                    _drawerItem('Payment Settings','assets/images/settings.svg', onTap: () {
+                      Navigator.of(context).pop();
+                      Get.to(() => const PaymentSettings());
                     }),
 
                   _drawerItem('windows'.tr,'assets/images/device.svg', onTap: () {

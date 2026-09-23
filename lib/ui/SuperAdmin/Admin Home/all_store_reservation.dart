@@ -4,9 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import '../../api/repository/api_repository.dart';
-import '../../models/get_all_reservation_for_all_store.dart';
-import '../table Book/reservation_details.dart';
+import '../../../api/repository/api_repository.dart';
+import '../../../models/get_all_reservation_for_all_store.dart';
+import '../../table Book/reservation_details.dart';
 
 class AllStoreReservation extends StatefulWidget {
   const AllStoreReservation({super.key});

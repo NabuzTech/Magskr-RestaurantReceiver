@@ -10,7 +10,7 @@ import '../Database/databse_helper.dart';
 import '../api/repository/api_repository.dart';
 import '../constants/constant.dart';
 import '../ui/Notification/notification.dart';
-import '../ui/SuperAdmin/super_admin.dart';
+import '../ui/SuperAdmin/Admin Home/super_admin.dart';
 import '../ui/Store Owners/store_owner_stores.dart';
 import '../utils/global.dart';
 

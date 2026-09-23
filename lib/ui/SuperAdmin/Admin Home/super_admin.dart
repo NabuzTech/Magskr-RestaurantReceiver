@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:food_receiver/ui/SuperAdmin/all_store_reservation.dart';
-import 'package:food_receiver/ui/SuperAdmin/V2 Reservation/all_store_reservationV2.dart';
-import 'package:food_receiver/ui/SuperAdmin/settings.dart';
-import 'package:food_receiver/ui/SuperAdmin/superAdminOrderDetail.dart';
+import 'package:food_receiver/ui/SuperAdmin/Admin%20Home/all_store_reservation.dart';
+import 'package:food_receiver/ui/SuperAdmin/Admin%20Home/settings.dart';
+import 'package:food_receiver/ui/SuperAdmin/Admin%20Home/superAdminOrderDetail.dart';
+import 'package:food_receiver/ui/SuperAdmin/drawer/store_config.dart';
+import 'package:food_receiver/ui/SuperAdmin/drawer/store_status.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
-import '../../Database/databse_helper.dart';
-import '../../api/repository/api_repository.dart';
-import '../../constants/constant.dart';
-import '../../models/all_admin_order_response_model.dart';
-import '../../models/get_admin_report_response_model.dart';
-import '../Login/LoginScreen.dart';
-import '../home_screen.dart';
+import '../../../Database/databse_helper.dart';
+import '../../../api/repository/api_repository.dart';
+import '../../../constants/constant.dart';
+import '../../../models/all_admin_order_response_model.dart';
+import '../../../models/get_admin_report_response_model.dart';
+import '../../Login/LoginScreen.dart';
+import '../../home_screen.dart';
+import 'V2 Reservation/all_store_reservationV2.dart';
 import 'device_status.dart';
 
 class SuperAdmin extends StatefulWidget {
@@ -43,6 +45,7 @@ class _SuperAdminState extends State<SuperAdmin> {
   DateTime? _lastScrollTime;
   bool isRefreshing = false;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
   bool _isHistoryMode = false;
@@ -441,7 +444,46 @@ class _SuperAdminState extends State<SuperAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
+      drawer: Drawer(
+        backgroundColor: Colors.white,
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  'Menu',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    fontFamily: 'Mulish',
+                  ),
+                ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.store_outlined, color: Colors.green),
+                title: const Text('Store Config', style: TextStyle(fontFamily: 'Mulish')),
+                onTap: () {
+                  Get.back();
+                  Get.to(() => const StoreConfig());
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.info_outline, color: Colors.green),
+                title: const Text('Store Status', style: TextStyle(fontFamily: 'Mulish')),
+                onTap: () {
+                  Get.back();
+                  Get.to(() => const StoreStatus());
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
       body: Column(
         children: [
           // Sticky Header Section
@@ -455,6 +497,20 @@ class _SuperAdminState extends State<SuperAdmin> {
                   padding: const EdgeInsets.all(12.0),
                   child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      GestureDetector(
+                        onTap: () {
+                          _scaffoldKey.currentState?.openDrawer();
+                        },
+                        child: Container(padding: EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.lightGreen, width: 1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Icons.menu, color: Colors.green),
+                        ),
+                      ),
+                      SizedBox(width: 5,),
                       Expanded(
                         child: Container(
                           height: 45,

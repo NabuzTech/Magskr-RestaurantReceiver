@@ -4,13 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../api/repository/api_repository.dart';
-import '../../constants/constant.dart';
-import '../../models/device_status_response_model.dart';
-import '../../models/get_notification_windows_history.dart';
-import '../../models/get_specific_store_device_status_response_model.dart';
-import '../../models/windows_device_status.dart';
-import '../Notification/notification.dart';
+import '../../../api/repository/api_repository.dart';
+import '../../../constants/constant.dart';
+import '../../../models/device_status_response_model.dart';
+import '../../../models/get_notification_windows_history.dart';
+import '../../../models/get_specific_store_device_status_response_model.dart';
+import '../../../models/windows_device_status.dart';
+import '../../Notification/notification.dart';
 
 class DeviceStatusScreen extends StatefulWidget {
   const DeviceStatusScreen({super.key});

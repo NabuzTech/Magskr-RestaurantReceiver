@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../api/repository/api_repository.dart';
-import '../../models/get_admin_report_response_model.dart';
+import '../../../api/repository/api_repository.dart';
+import '../../../models/get_admin_report_response_model.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});

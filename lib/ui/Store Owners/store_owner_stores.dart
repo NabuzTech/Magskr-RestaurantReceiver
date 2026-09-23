@@ -4,7 +4,7 @@ import 'package:food_receiver/api/repository/api_repository.dart';
 import 'package:food_receiver/models/all_admin_order_response_model.dart';
 import 'package:food_receiver/models/get_admin_report_response_model.dart';
 import 'package:food_receiver/ui/Store Owners/store_owner_reservation.dart';
-import 'package:food_receiver/ui/SuperAdmin/superAdminOrderDetail.dart';
+import 'package:food_receiver/ui/SuperAdmin/Admin%20Home/superAdminOrderDetail.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
