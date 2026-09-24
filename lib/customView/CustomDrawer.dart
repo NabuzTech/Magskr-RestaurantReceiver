@@ -8,6 +8,7 @@ import 'package:food_receiver/ui/PostCode/postcode.dart';
 import 'package:food_receiver/ui/Setting/PrinterSettingsScreen.dart';
 import 'package:food_receiver/ui/Setting/change_password.dart';
 import 'package:food_receiver/ui/Setting/payment_settings.dart';
+import 'package:food_receiver/ui/Setting/store_profile.dart';
 import 'package:food_receiver/ui/home_screen.dart';
 
 import 'package:get/get.dart';
@@ -262,6 +263,12 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       Get.to(() => const StoreTiming());
                     }),
 
+                  if (_roleId == 1)
+                    _drawerItem('Store Profile','assets/images/store.svg', onTap: () {
+                      Navigator.of(context).pop();
+                      Get.to(() => const StoreProfile());
+                    }),
+
                   if (_roleId != 5)
                     _drawerItem('postcode'.tr,'assets/images/postcode.svg', onTap: () {
                       Navigator.of(context).pop();
@@ -286,7 +293,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       Get.to(() => const DeviceStatusScreen());
                     }),
 
-                  if (_roleId == 1)
                     _drawerItem('Payment Settings','assets/images/settings.svg', onTap: () {
                       Navigator.of(context).pop();
                       Get.to(() => const PaymentSettings());

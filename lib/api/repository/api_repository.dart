@@ -5196,4 +5196,25 @@ class CallService extends GetConnect {
     }
   }
 
+  //For Update store images
+  Future<Store> updateStoreImages(dynamic body ,String storeId,) async  {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    print("🔵 API URL: ${Api.baseUrl}stores/$storeId");
+    var res = await put('stores/$storeId',body, headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Updating Store profile response body is :${res.statusCode}");
+      return Store.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to Updating Store profile : ${res.statusCode}');
+    }
+  }
+
 }

@@ -1,4 +1,4 @@
-package com.food.mandeep.foodApptest
+package com.magskrReciever.app
 
 
 import android.content.Context
@@ -8,7 +8,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
-    private val CHANNEL = "com.food.mandeep.foodApptest/battery"
+    private val CHANNEL = "com.magskrReciever.app/battery"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

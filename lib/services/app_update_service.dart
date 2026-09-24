@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:get/get.dart';
 class AppUpdateService {
-  static const String _androidPackageName = 'com.food.mandeep.foodApptest';
+  static const String _androidPackageName = 'com.magskrReciever.app';
   static const String _iosAppId = '6747834218';
   static const String _iosAppStoreUrl = 'https://apps.apple.com/us/app/magskr-restaurant-receiver/id6765853333';
 

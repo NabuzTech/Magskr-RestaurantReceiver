@@ -1063,7 +1063,7 @@ void checkBatteryOptimization() async {
 
 Future<void> askIgnoreBatteryOptimizations() async {
   if (Platform.isAndroid) {
-    const platform = MethodChannel('com.food.mandeep.foodApptest/battery');
+    const platform = MethodChannel('com.magskrReciever.app/battery');
 
     try {
       final bool isIgnoring =
@@ -1072,7 +1072,7 @@ Future<void> askIgnoreBatteryOptimizations() async {
       if (!isIgnoring) {
         const intent = AndroidIntent(
           action: 'android.settings.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS',
-          data: 'package:com.food.mandeep.foodApptest',
+          data: 'package:com.magskrReciever.app',
         );
         await intent.launch();
       }

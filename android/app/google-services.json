@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:267253688789:android:b5748c5f9c7ec74da0355c",
+        "mobilesdk_app_id": "1:267253688789:android:17ea201b19085171a0355c",
         "android_client_info": {
-          "package_name": "com.food.mandeep.foodApptest"
+          "package_name": "com.magskrReciever.app"
         }
       },
       "oauth_client": [],

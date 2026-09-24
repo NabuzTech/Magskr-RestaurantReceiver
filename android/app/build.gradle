@@ -14,7 +14,7 @@ if (hasReleaseKeystore) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 android {
-    namespace "com.food.mandeep.foodApptest"
+    namespace "com.magskrReciever.app"
     compileSdk 36
     ndkVersion "30.0.16138531"
 
@@ -29,7 +29,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.food.mandeep.foodApptest"
+        applicationId "com.magskrReciever.app"
         minSdk flutter.minSdkVersion
         targetSdk flutter.targetSdkVersion
         versionCode flutter.versionCode
