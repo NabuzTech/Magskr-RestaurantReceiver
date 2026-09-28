@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 class AppUpdateService {
   static const String _androidPackageName = 'com.magskrReciever.app';
   static const String _iosAppId = '6747834218';
@@ -48,6 +49,20 @@ class AppUpdateService {
 
       await upgrader.initialize();
 
+      if (Platform.isAndroid) {
+        final installedVersion = upgrader.currentInstalledVersion;
+        final storeVersion = await _fetchPlayStoreVersion();
+        print("📱 Local Version: $installedVersion");
+        print("🎯 Play Store Version: $storeVersion");
+        if (installedVersion != null &&
+            storeVersion != null &&
+            _isNewer(storeVersion, installedVersion) &&
+            context.mounted) {
+          _showUpdateDialog(context, installedVersion, storeVersion, () => _launchStore());
+        }
+        return;
+      }
+
       final blocked = upgrader.blocked();
       print("🚫 Blocked (Force Update): $blocked");
 
@@ -91,6 +106,31 @@ class AppUpdateService {
   }
 
 
+  // ponytail: scrapes Play Store HTML, breaks if Google changes page markup
+  static Future<String?> _fetchPlayStoreVersion() async {
+    try {
+      final res = await http.get(
+        Uri.parse('https://play.google.com/store/apps/details?id=$_androidPackageName&hl=en&gl=US'),
+        headers: {'User-Agent': 'Mozilla/5.0'},
+      );
+      if (res.statusCode != 200) return null;
+      return RegExp(r'\[\[\["(\d+(?:\.\d+)+)"\]\]').firstMatch(res.body)?.group(1);
+    } catch (e) {
+      print("❌ Error fetching Play Store version: $e");
+      return null;
+    }
+  }
+
+  static bool _isNewer(String store, String installed) {
+    final a = store.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+    final b = installed.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+    for (var i = 0; i < a.length || i < b.length; i++) {
+      final x = i < a.length ? a[i] : 0, y = i < b.length ? b[i] : 0;
+      if (x != y) return x > y;
+    }
+    return false;
+  }
+
   static Future<void> _launchStore() async {
     try {
       final uri = Uri.parse(
@@ -126,7 +166,9 @@ class AppUpdateService {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return AlertDialog(
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: AlertDialog(
             title: Text('app_update'.tr),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -141,20 +183,12 @@ class AppUpdateService {
               ],
             ),
             actions: [
-              // TextButton(
-              //   onPressed: () {
-              //     Navigator.of(context).pop();
-              //   },
-              //   child: Text('later'.tr),
-              // ),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  onUpdate();
-                },
+                onPressed: onUpdate,
                 child: Text('update_now'.tr),
               ),
             ],
+          ),
           );
         },
       );
@@ -180,10 +214,7 @@ class AppUpdateService {
               ),
               actions: [
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _launchStore();
-                  },
+                  onPressed: _launchStore,
                   child: const Text('Update Now'),
                 ),
               ],

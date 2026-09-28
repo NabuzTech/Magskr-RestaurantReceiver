@@ -298,11 +298,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       Get.to(() => const PaymentSettings());
                     }),
 
-                  _drawerItem('windows'.tr,'assets/images/device.svg', onTap: () {
-                    Navigator.of(context).pop();
-                    final sid = sharedPreferences.getString(valueShared_STORE_KEY);
-                    Get.to(() => NotificationScreen(storeId: sid?.isNotEmpty == true ? sid : null));
-                  }),
+                  // _drawerItem('windows'.tr,'assets/images/device.svg', onTap: () {
+                  //   Navigator.of(context).pop();
+                  //   final sid = sharedPreferences.getString(valueShared_STORE_KEY);
+                  //   Get.to(() => NotificationScreen(storeId: sid?.isNotEmpty == true ? sid : null));
+                  // }),
                   _drawerItem('customer'.tr,'assets/images/customer.svg', onTap: () {
                     Navigator.of(context).pop();
                     Get.to(() => const StoreCustomer(),
@@ -335,7 +335,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           Container(
-            color: Colors.white,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

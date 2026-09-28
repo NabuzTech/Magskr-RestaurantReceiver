@@ -69,7 +69,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
       backgroundColor: Colors.white,
       drawer: CustomDrawer(onSelectTab: _openTab),
       appBar: const CustomAppBar(),
-      body: Padding(
+      body: SingleChildScrollView(
           padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
