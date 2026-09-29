@@ -17,6 +17,7 @@ import '../../utils/my_application.dart';
 import '../Order_history/order_history.dart';
 import 'PdfPreviewScreen.dart';
 
+import 'package:food_receiver/constants/app_theme.dart';
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
 
@@ -299,8 +300,9 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return AppGradientBackground(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       body: _isInitialLoading
           ? Center(
         child: Lottie.asset(
@@ -328,6 +330,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -356,12 +359,12 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Text('liveSale'.tr, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, fontFamily: "Mulish", color: Color(0xff0C831F))),
+                  Text('liveSale'.tr, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, fontFamily: "Mulish", color: AppTheme.accent)),
                   Positioned(
                     right: -11, top: 0,
                     child: FadeTransition(
                       opacity: _animation,
-                      child: Container(width: 9, height: 9, decoration: const BoxDecoration(color: Color(0xff0C831F), shape: BoxShape.circle)),
+                      child: Container(width: 9, height: 9, decoration: const BoxDecoration(color: AppTheme.accent, shape: BoxShape.circle)),
                     ),
                   ),
                 ],
@@ -387,14 +390,14 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: _showGenerateOptions ? Colors.green : Colors.green.shade50,
+              color: _showGenerateOptions ? AppTheme.accent : AppTheme.accentLight,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.green, width: 1),
+              border: Border.all(color: AppTheme.accent, width: 1),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.description_outlined, size: 16, color: _showGenerateOptions ? Colors.white : Colors.green),
+                Icon(Icons.description_outlined, size: 16, color: _showGenerateOptions ? Colors.white : AppTheme.accent),
                 const SizedBox(width: 4),
                 Text(
                   'report_btn'.tr,
@@ -402,7 +405,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                     fontFamily: "Mulish",
                     fontWeight: FontWeight.w700,
                     fontSize: 13,
-                    color: _showGenerateOptions ? Colors.white : Colors.green,
+                    color: _showGenerateOptions ? Colors.white : AppTheme.accent,
                   ),
                 ),
               ],
@@ -500,7 +503,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
               height: 16,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accent),
               ),
             )
                 : Text(
@@ -508,7 +511,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
-                color: Colors.green,
+                color: AppTheme.accent,
               ),
             ),
           ],
@@ -580,7 +583,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
               if (report != null) ...[
                 SvgPicture.asset('assets/images/ic_report.svg', height: 12, width: 12),
                 const SizedBox(height: 2),
-                Text(formatAmount(report.totalSales ?? 0), style: const TextStyle(fontSize: 10, color: Colors.green)),
+                Text(formatAmount(report.totalSales ?? 0), style: const TextStyle(fontSize: 10, color: AppTheme.accent)),
               ]
             ],
           ),
@@ -657,7 +660,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
             onTap: orderHistory,
             child: Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: Colors.green),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: AppTheme.accent),
               child: Text('view_full'.tr, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, fontFamily: "Mulish", color: Colors.white)),
             ),
           )
@@ -673,7 +676,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
         text: TextSpan(
           children: [
             TextSpan(text: e.key, style: const TextStyle(color: Colors.black)),
-            TextSpan(text: "   ${e.value}", style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+            TextSpan(text: "   ${e.value}", style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.accent)),
           ],
         ),
       ),
@@ -750,7 +753,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
         decoration: BoxDecoration(
           color: Colors.grey.shade50,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.green.shade100),
+          border: Border.all(color: AppTheme.accentLight),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -769,7 +772,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
               const Center(
                 child: Padding(
                   padding: EdgeInsets.all(20),
-                  child: CircularProgressIndicator(color: Colors.green),
+                  child: CircularProgressIndicator(color: AppTheme.accent),
                 ),
               )
             else
@@ -833,10 +836,10 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(25),
-          border: Border.all(color: Colors.green, width: 1.2),
+          border: Border.all(color: AppTheme.accent, width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.green.withValues(alpha: 0.08),
+              color: AppTheme.accent.withValues(alpha: 0.08),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -848,7 +851,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
             fontFamily: "Mulish",
             fontWeight: FontWeight.w600,
             fontSize: 13,
-            color: Colors.green,
+            color: AppTheme.accent,
           ),
         ),
       ),
@@ -865,7 +868,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Colors.green,
+              primary: AppTheme.accent,
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Colors.black,
@@ -979,7 +982,7 @@ class _CustomDateRangeDialogState extends State<_CustomDateRangeDialog> {
                     if (_startDate != null && _selectingEnd)
                       Text(
                         '${DateFormat('dd MMM yyyy').format(_startDate!)} →',
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.green),
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.accent),
                       ),
                   ],
                 ),

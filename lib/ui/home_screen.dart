@@ -11,6 +11,7 @@ import '../api/repository/api_repository.dart';
 import '../constants/constant.dart';
 import '../constants/item_bottom_bar.dart';
 import '../constants/app_color.dart';
+import '../constants/app_theme.dart';
 import '../customView/CustomAppBar.dart';
 import '../customView/CustomDrawer.dart';
 import '../main.dart';
@@ -331,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
       height: fabSize,
       width: fabSize,
       decoration: BoxDecoration(
-        color: Colors.orange,
+        gradient: AppTheme.accentGradient,
         borderRadius: BorderRadius.circular(27.5),
         boxShadow: const [
           BoxShadow(

@@ -7,6 +7,7 @@ import '../../api/repository/api_repository.dart';
 import '../../constants/constant.dart';
 import '../../models/Reservation V2/reservation_v2_settings_model.dart';
 
+import 'package:food_receiver/constants/app_theme.dart';
 class ReservationSettingsScreen extends StatefulWidget {
   const ReservationSettingsScreen({super.key});
 
@@ -121,7 +122,7 @@ class _ReservationSettingsScreenState extends State<ReservationSettingsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('setting_update'.tr),
-            backgroundColor: Colors.green,
+            backgroundColor: AppTheme.accent,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -181,7 +182,7 @@ class _ReservationSettingsScreenState extends State<ReservationSettingsScreen> {
                           ),
                           Switch(
                             value: _enabled,
-                            activeColor: const Color(0xFF16A34A),
+                            activeColor: AppTheme.accent,
                             onChanged: (v) => setState(() {
                               _enabled = v;
                               _dirty = true;
@@ -213,7 +214,7 @@ class _ReservationSettingsScreenState extends State<ReservationSettingsScreen> {
                         child: ElevatedButton(
                           onPressed: _dirty ? _saveSettings : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF16A34A),
+                            backgroundColor: AppTheme.accent,
                             disabledBackgroundColor: const Color(0xFFE5E7EB),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           ),

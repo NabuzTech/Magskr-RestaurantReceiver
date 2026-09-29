@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:food_receiver/constants/app_theme.dart';
 class ItemBottomBar extends StatefulWidget {
   final String icon;          // asset path
   final String name;          // tab label
@@ -86,7 +87,7 @@ class _ItemBottomBarState extends State<ItemBottomBar> {
                     widget.icon,
                     width: widget.iconWidth,
                     height: widget.iconHeight,
-                    color: widget.selected ? Colors.green : Colors.black,
+                    color: widget.selected ? AppTheme.accent : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -98,7 +99,7 @@ class _ItemBottomBarState extends State<ItemBottomBar> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: widget.selected ? Colors.green : Colors.black,
+                      color: widget.selected ? AppTheme.accent : Colors.black,
                     ),
                   ),
                 ),

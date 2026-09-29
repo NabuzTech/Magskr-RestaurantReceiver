@@ -121,14 +121,18 @@ flutter:
           weight: 400
         - asset: assets/fontFamily/Mulish-VariableFont_wght.ttf
           weight: 600
-    - family: Oswald
+    - family: Urbanist
       fonts:
-        - asset: assets/fontFamily/Oswald-Regular.ttf
-          weight: 400
-    - family: MontserratAlternates
+         - asset: assets/fontFamily/Urbanist-Regular.ttf
+           weight: 400
+    - family: PlusJakartaSans
       fonts:
-        - asset: assets/fontFamily/MontserratAlternates-Bold.ttf
-          weight: 700
+         - asset: assets/fontFamily/PlusJakartaSans-Regular.ttf
+           weight: 800
+    - family: Sora
+      fonts:
+         - asset: assets/fontFamily/Sora-Regular.ttf
+           weight: 400
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

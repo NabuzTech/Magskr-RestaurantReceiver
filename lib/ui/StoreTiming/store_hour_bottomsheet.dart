@@ -370,15 +370,15 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
         }
       }
 
-      // Delete timings for days that were unselected
-      for (int day in widget.editSelectedDays ?? []) {
-        if (!selectedDays.contains(day) && existingDayIdMap.containsKey(day)) {
-          await CallService().deleteStoreTiming(existingDayIdMap[day]!);
-          print("Deleted timing for day $day (id: ${existingDayIdMap[day]})");
+      // PUT on an existing row fails with 400 "Another store hour with same day
+      // and label already exists", so edit = delete every old row, then add fresh.
+      for (final id in existingDayIdMap.values) {
+        if (!await CallService().deleteStoreTiming(id)) {
+          throw Exception('Failed to delete store hour $id');
         }
+        print("Deleted store timing id: $id");
       }
 
-      // Update existing days by their ID, or add newly selected days
       for (int dayIndex in selectedDays) {
         var map = {
           "name": _storeNameController.text.trim(),
@@ -387,14 +387,8 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
           "closing_time": _formatTimeForAPI(_selectedClosingTime!),
           "store_id": storeId
         };
-
-        if (existingDayIdMap.containsKey(dayIndex)) {
-          print("update Store Time Map for day $dayIndex (id: ${existingDayIdMap[dayIndex]}): $map");
-          await CallService().updateSingleStoreTiming(map, existingDayIdMap[dayIndex]!);
-        } else {
-          print("add Store Time Map for new day $dayIndex: $map");
-          await CallService().addStoreTiming(map, storeId!);
-        }
+        print("add Store Time Map for day $dayIndex: $map");
+        await CallService().addStoreTiming(map, storeId!);
       }
 
       // Close loading dialog first

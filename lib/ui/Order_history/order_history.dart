@@ -8,6 +8,7 @@ import '../../constants/constant.dart';
 import '../../models/order_history_response_model.dart';
 import 'order_history_details.dart';
 
+import 'package:food_receiver/constants/app_theme.dart';
 class OrderHistory extends StatefulWidget {
   final List<orderHistoryResponseModel> orders;
   final String targetDate;
@@ -49,7 +50,7 @@ class _OrderHistoryState extends State<OrderHistory> {
       case 1:
         return Colors.orange;
       case 2:
-        return Colors.green;
+        return AppTheme.accent;
       case 3:
         return Colors.red;
       default:
@@ -231,8 +232,9 @@ class _OrderHistoryState extends State<OrderHistory> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+    return AppGradientBackground(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
@@ -275,7 +277,7 @@ class _OrderHistoryState extends State<OrderHistory> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.search, color: Colors.green, size: 20),
+                const Icon(Icons.search, color: AppTheme.accent, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
@@ -416,7 +418,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                   children: [
                                     CircleAvatar(
                                       radius: 14,
-                                      backgroundColor: Colors.green,
+                                      backgroundColor: AppTheme.accent,
                                       child: SvgPicture.asset(
                                         getOrderTypeIcon(order.orderType),
                                         height: 14,
@@ -612,6 +614,7 @@ class _OrderHistoryState extends State<OrderHistory> {
             ),
         ],
       ),
+    ),
     );
   }
 }

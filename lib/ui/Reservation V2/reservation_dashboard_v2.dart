@@ -17,6 +17,7 @@ import '../../models/Reservation V2/get_today_slot_reservationV2.dart';
 import '../../utils/my_application.dart';
 import 'reservation_settings_screen.dart';
 
+import 'package:food_receiver/constants/app_theme.dart';
 // Shared "send a message to the customer" popup, used before accept/decline/cancel
 // so every status-changing action can optionally attach a customer_message.
 Future<String?> _showCustomerMessageDialog(
@@ -147,9 +148,9 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
 
   static const List<Color> _bookingColors = [
     Color(0xFF3B82F6), // blue
-    Color(0xFF14B8A6), // teal
+    AppTheme.blue, // teal
     Color(0xFFF59E0B), // orange
-    Color(0xFF16A34A), // green
+    AppTheme.accent, // green
     Color(0xFF6366F1), // indigo
     Color(0xFFEF4444), // red
     Color(0xFFEC4899), // pink
@@ -281,8 +282,9 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   Widget build(BuildContext context) {
     const bg = Color(0xFFF3F4F6);
 
-    return Scaffold(
-      backgroundColor: bg,
+    return AppGradientBackground(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       body: RefreshIndicator(
         onRefresh: ()=> _loadTodayReservations(),
         child: NotificationListener<ScrollNotification>(
@@ -333,7 +335,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                     child: Center(
                       child: GestureDetector(
                         onTap: () => _loadTodayReservations(),
-                        child: const Icon(Icons.refresh_rounded, color: Colors.green),
+                        child: const Icon(Icons.refresh_rounded, color: AppTheme.accent),
                       ),
                     ),
                   ),
@@ -342,7 +344,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                     child: Center(
                       child: GestureDetector(
                         onTap: _openReservationSettings,
-                        child: const Icon(Icons.settings_rounded, color: Colors.green),
+                        child: const Icon(Icons.settings_rounded, color: AppTheme.accent),
                       ),
                     ),
                   ),
@@ -369,6 +371,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
           ),
         ),
       ),
+    ),
     );
   }
 
@@ -463,7 +466,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _legendRow(const Color(0xFF16A34A), 'booked_label'.tr, booked),
+                    _legendRow(AppTheme.accent, 'booked_label'.tr, booked),
                     const SizedBox(height: 8),
                     _legendRow(const Color(0xFFF59E0B), 'pending'.tr, pending),
                     const SizedBox(height: 8),
@@ -520,7 +523,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   Color _statusColor(String? status) {
     switch ((status ?? '').toLowerCase()) {
       case 'booked':
-        return const Color(0xFF16A34A);
+        return AppTheme.accent;
       case 'pending':
         return const Color(0xFFF59E0B);
       case 'cancelled':
@@ -1037,7 +1040,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
         ],
         IconButton(
           icon: const Icon(Icons.calendar_month_outlined,
-              size: 20, color: Colors.green),
+              size: 20, color: AppTheme.accent),
           onPressed: _openCalendar,
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(),
@@ -1300,8 +1303,8 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF16A34A),
-                        side: const BorderSide(color: Color(0xFFBBF7D0)),
+                        foregroundColor: AppTheme.accent,
+                        side: const BorderSide(color: Color(0xFFD9D2FB)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -1572,7 +1575,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     final msg = await _showCustomerMessageDialog(
       context,
       confirmLabel: isBooked ? 'accept'.tr : 'decline'.tr,
-      confirmColor: isBooked ? const Color(0xFF16A34A) : const Color(0xFFDC2626),
+      confirmColor: isBooked ? AppTheme.accent : const Color(0xFFDC2626),
     );
     if (msg == null) return;
 
@@ -1609,7 +1612,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
         final isDeclined = status != 'booked';
         _showTopSnackBar(
           isDeclined ? 'booking_declined'.tr : 'booking_accepted'.tr,
-          backgroundColor: isDeclined ? const Color(0xFFFEE2E2) : const Color(0xFF16A34A),
+          backgroundColor: isDeclined ? const Color(0xFFFEE2E2) : AppTheme.accent,
           textColor: isDeclined ? const Color(0xFFB91C1C) : Colors.white,
         );
       }
@@ -1653,7 +1656,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('reserv_update'.tr),
-          backgroundColor: Colors.green,
+          backgroundColor: AppTheme.accent,
           duration: const Duration(seconds: 2),
         ),
       );
@@ -1967,7 +1970,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
               Container(
                 padding: const EdgeInsets.fromLTRB(20, 20, 16, 18),
                 decoration: const BoxDecoration(
-                  color: Color(0xFFF0FDF4),
+                  color: Color(0xFFF3F0FF),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(24),
                     topRight: Radius.circular(24),
@@ -1980,7 +1983,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF16A34A),
+                        color: AppTheme.accent,
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: const Icon(
@@ -2242,7 +2245,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
                             ElevatedButton.styleFrom(
                               minimumSize: const Size(0, 48),
                               elevation: 0, backgroundColor:
-                              const Color(0xFF16A34A),
+                              AppTheme.accent,
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -2290,13 +2293,13 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: const Color(0xFFF0FDF4),
+            color: const Color(0xFFF3F0FF),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
             icon,
             size: 16,
-            color: const Color(0xFF16A34A),
+            color: AppTheme.accent,
           ),
         ),
         const SizedBox(width: 8),
@@ -2378,7 +2381,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(
-          color: Color(0xFF16A34A),
+          color: AppTheme.accent,
           width: 1.5,
         ),
       ),
@@ -2535,9 +2538,9 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
                         margin: const EdgeInsets.all(2),
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF16A34A) : null,
+                          color: isSelected ? AppTheme.accent : null,
                           border: isToday && !isSelected
-                              ? Border.all(color: const Color(0xFF16A34A))
+                              ? Border.all(color: AppTheme.accent)
                               : null,
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -2562,7 +2565,7 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
                                         shape: BoxShape.circle,
                                         color: isSelected
                                             ? Colors.white
-                                            : const Color(0xFF16A34A),
+                                            : AppTheme.accent,
                                       ),
                                     )
                                   : null,
@@ -2678,7 +2681,7 @@ class _ReservationTimeSlotDialogState extends State<_ReservationTimeSlotDialog> 
                     ? const Padding(
                         padding: EdgeInsets.symmetric(vertical: 40),
                         child: Center(
-                            child: CircularProgressIndicator(color: Color(0xFF16A34A))),
+                            child: CircularProgressIndicator(color: AppTheme.accent)),
                       )
                     : _slots.isEmpty
                         ? Padding(
@@ -2714,10 +2717,10 @@ class _ReservationTimeSlotDialogState extends State<_ReservationTimeSlotDialog> 
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF16A34A) : Colors.white,
+          color: selected ? AppTheme.accent : Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: selected ? const Color(0xFF16A34A) : Colors.grey.shade300,
+            color: selected ? AppTheme.accent : Colors.grey.shade300,
           ),
         ),
         child: Row(
@@ -2788,7 +2791,7 @@ class _DonutPainter extends CustomPainter {
     final pendingSweep = 2 * 3.14159265 * (pending / total);
 
     final bookedPaint = Paint()
-      ..color = const Color(0xFF16A34A)
+      ..color = AppTheme.accent
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = strokeWidth;
@@ -2856,7 +2859,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
   Color _statusColor(String? status) {
     switch ((status ?? '').toLowerCase()) {
       case 'booked':
-        return const Color(0xFF16A34A);
+        return AppTheme.accent;
       case 'pending':
         return const Color(0xFFF59E0B);
       case 'cancelled':
@@ -3666,7 +3669,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                 onPressed: _busy ? null : _handleAccept,
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
-                  backgroundColor: const Color(0xFF16A34A),
+                  backgroundColor: AppTheme.accent,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),

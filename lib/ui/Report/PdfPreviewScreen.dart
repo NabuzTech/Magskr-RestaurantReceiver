@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import 'package:food_receiver/constants/app_theme.dart';
 class PdfPreviewScreen extends StatefulWidget {
   final Uint8List pdfBytes;
   final String fromDate;
@@ -64,7 +65,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
               '${'pdf_saved'.tr}:\n$fullPath',
               maxLines: 3,
             ),
-            backgroundColor: Colors.green,
+            backgroundColor: AppTheme.accent,
             duration: const Duration(seconds: 5),
           ),
         );
@@ -152,7 +153,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.accent,
         foregroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -161,7 +162,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
       ),
       body: _tempPath == null
           ? const Center(
-              child: CircularProgressIndicator(color: Colors.green))
+              child: CircularProgressIndicator(color: AppTheme.accent))
           : Column(
               children: [
                 Expanded(
@@ -229,7 +230,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                       //         ),
                       //       ),
                       //       style: ElevatedButton.styleFrom(
-                      //         backgroundColor: Colors.green,
+                      //         backgroundColor: AppTheme.accent,
                       //         shape: RoundedRectangleBorder(
                       //           borderRadius: BorderRadius.circular(10),
                       //         ),
@@ -255,7 +256,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                               ),
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              backgroundColor: AppTheme.accent,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),

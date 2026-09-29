@@ -11,9 +11,10 @@ import '../../models/Reservation V2/reservation_v2_settings_model.dart';
 import '../../utils/global.dart';
 import '../../utils/my_application.dart';
 
-const Color _kDarkGreen = Color(0xFF163C2C);
-const Color _kAccentGreen = Color(0xFF16A34A);
-const Color _kAccentGreenLight = Color(0xFFDCFCE7);
+import 'package:food_receiver/constants/app_theme.dart';
+const Color _kDarkGreen = AppTheme.accentDark;
+const Color _kAccentGreen = AppTheme.accent;
+const Color _kAccentGreenLight = AppTheme.accentLight;
 const Color _kGoldLabel = Color(0xFFC7D39B);
 
 /// Opens the v2 "new reservation" step wizard as a bottom sheet.

@@ -13,6 +13,7 @@ import '../../models/print_order_without_ip.dart';
 import '../../utils/printer_helper_english.dart';
 import '../../utils/contact_launcher.dart';
 
+import 'package:food_receiver/constants/app_theme.dart';
 class OrderHistoryDetails extends StatefulWidget {
   final orderHistoryResponseModel historyOrder;
 
@@ -163,8 +164,9 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
         ? (historyOrder.user?.username ?? '')
         : guestEmail;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return AppGradientBackground(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
@@ -339,7 +341,7 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
-                            color: Colors.green,
+                            color: AppTheme.accent,
                           ),
                         ),
                         SizedBox(
@@ -557,6 +559,7 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -597,7 +600,7 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
               child: Text("status_accepted".tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.green[400])),
+                      fontWeight: FontWeight.bold, color: AppTheme.accent)),
             ),
             const SizedBox(height: 10),
           ],
@@ -742,7 +745,7 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
-                  color: Colors.green,
+                  color: AppTheme.accent,
                 ),
               ),
               SizedBox(
@@ -859,7 +862,7 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
       ScaffoldMessenger.of(context).showSnackBar(
          SnackBar(
           content: Text('print'.tr),
-          backgroundColor: Colors.green,
+          backgroundColor: AppTheme.accent,
           duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
