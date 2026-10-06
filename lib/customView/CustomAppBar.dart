@@ -23,44 +23,70 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(80);
 }
 
+// Bumped by fetchStoreBrand() once the logo/name are saved; app bars listen.
+final ValueNotifier<int> storeBrandReload = ValueNotifier(0);
+
+// Called from HomeScreen: fetches the store logo/name for the current login +
+// store and saves them in SharedPreferences, then tells the app bars to show it.
+// Skips the API if they were already fetched for this "<token>|<storeId>".
+Future<void> fetchStoreBrand() async {
+  final prefs = await SharedPreferences.getInstance();
+  final bearer = prefs.getString(valueShared_BEARER_KEY);
+  final storeId = prefs.getString(valueShared_STORE_KEY);
+  if (bearer == null || storeId == null || storeId.isEmpty) return;
+  final brandFor = '$bearer|$storeId';
+  if (prefs.getString(valueShared_STORE_BRAND_FOR) == brandFor) {
+    storeBrandReload.value++;
+    return;
+  }
+  try {
+    final store = await ApiRepo().getStoreData(bearer, storeId);
+    if (store.name == null && store.imageUrl == null) return; // API error object
+    final url = store.imageUrl ?? '';
+    final q = url.indexOf('?');
+    await prefs.setString(valueShared_STORE_LOGO, q == -1 ? url : url.substring(0, q));
+    await prefs.setString(valueShared_STORE_NAME, store.name ?? '');
+    await prefs.setString(valueShared_STORE_BRAND_FOR, brandFor);
+    storeBrandReload.value++;
+  } catch (e) {
+    print('fetchStoreBrand failed: $e');
+  }
+}
+
 class _CustomAppBarState extends State<CustomAppBar> {
   TextEditingController searchControllerTodo = TextEditingController();
   FocusNode searchFocusNode = FocusNode();
   bool _isSearchActive = false;
   String get currentSearchQuery => searchControllerTodo.text;
-  // Shared by every CustomAppBar so the store API is hit once per app run.
-  static String? _storeName;
-  static String? _logoUrl;
+  String? _storeName;
+  String? _logoUrl;
+  // False until the logo/name belong to the current login; until then the
+  // slot stays empty instead of showing stale or placeholder data.
+  bool _brandReady = false;
 
   @override
   void initState() {
     super.initState();
     searchControllerTodo.addListener(_onSearchTextChanged);
+    storeBrandReload.addListener(_loadStore);
     _loadStore();
   }
 
+  // Shows the saved logo/name only if they belong to the current login + store;
+  // otherwise stays empty until fetchStoreBrand() (HomeScreen) saves them.
   Future<void> _loadStore() async {
-    if (_logoUrl != null) return;
     final prefs = await SharedPreferences.getInstance();
-    if (_storeName == null && mounted) {
-      setState(() => _storeName =
-          prefs.getString(valueShared_STORE_NAME) ?? prefs.getString('store_name'));
-    }
     final bearer = prefs.getString(valueShared_BEARER_KEY);
     final storeId = prefs.getString(valueShared_STORE_KEY);
-    if (bearer == null || storeId == null) return;
-    try {
-      final store = await ApiRepo().getStoreData(bearer, storeId);
-      final url = store.imageUrl ?? '';
-      final q = url.indexOf('?');
-      if (!mounted) return;
-      setState(() {
-        _logoUrl = q == -1 ? url : url.substring(0, q);
-        if (store.name != null && store.name!.isNotEmpty) _storeName = store.name;
-      });
-    } catch (e) {
-      print('CustomAppBar store load failed: $e');
-    }
+    final ready = bearer != null &&
+        storeId != null &&
+        prefs.getString(valueShared_STORE_BRAND_FOR) == '$bearer|$storeId';
+    if (!mounted) return;
+    setState(() {
+      _brandReady = ready;
+      _storeName = ready ? prefs.getString(valueShared_STORE_NAME) : null;
+      _logoUrl = ready ? prefs.getString(valueShared_STORE_LOGO) : null;
+    });
   }
 
   String _greeting() {
@@ -73,6 +99,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   @override
   void dispose() {
+    storeBrandReload.removeListener(_loadStore);
     searchFocusNode.unfocus();
     searchControllerTodo.removeListener(_onSearchTextChanged);
     searchControllerTodo.dispose();
@@ -168,7 +195,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget _storeLogo() {
     return GestureDetector(
       onTap: () => Scaffold.of(context).openDrawer(),
-      child: ClipRRect(
+      child: !_brandReady
+          ? const SizedBox(width: _logoSize, height: _logoSize)
+          : ClipRRect(
         // borderRadius: const BorderRadius.only(
         //   bottomLeft: Radius.circular(_logoSize / 2),
         //   bottomRight: Radius.circular(_logoSize / 2),
@@ -312,7 +341,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.white70)),
                           const SizedBox(height: 2),
-                          Text(_storeName ?? '',
+                          Text(_brandReady ? (_storeName ?? '') : '',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(fontFamily: 'Sora',
