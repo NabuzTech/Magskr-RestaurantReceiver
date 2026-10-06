@@ -359,7 +359,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Text('liveSale'.tr, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, fontFamily: "Mulish", color: AppTheme.accent)),
+                  Text('liveSale'.tr, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, fontFamily: 'Sora', color: AppTheme.accent)),
                   Positioned(
                     right: -11, top: 0,
                     child: FadeTransition(
@@ -371,7 +371,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
               ),
               Text(
                 _selectedDate != null ? DateFormat('MMMM y').format(_selectedDate!) : DateFormat('MMMM y').format(DateTime.now()),
-                style: const TextStyle(fontSize: 11, color: Color(0xff757B8F), fontWeight: FontWeight.w600, fontFamily: "Mulish"),
+                style: const TextStyle(fontSize: 11, color: Color(0xff757B8F), fontWeight: FontWeight.w600, fontFamily: 'Sora'),
               ),
             ],
           ),
@@ -402,7 +402,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                 Text(
                   'report_btn'.tr,
                   style: TextStyle(
-                    fontFamily: "Mulish",
+                    fontFamily: 'Sora',
                     fontWeight: FontWeight.w700,
                     fontSize: 13,
                     color: _showGenerateOptions ? Colors.white : AppTheme.accent,
@@ -428,7 +428,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
           },
           child: Row(
             children: [
-              Text('history'.tr, style: const TextStyle(fontFamily: "Mulish", fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xff1F1E1E))),
+              Text('history'.tr, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xff1F1E1E))),
               const SizedBox(width: 5),
               SvgPicture.asset('assets/images/dropdown.svg', height: 5, width: 11),
             ],
@@ -478,7 +478,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
                 _calculateMonthTotal(prevMonth, prevYear);
               }),
             ),
-            Text("${_monthName(displayedMonth)} $displayedYear", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("${_monthName(displayedMonth)} $displayedYear", style: const TextStyle(fontFamily: 'Sora', fontSize: 18, fontWeight: FontWeight.bold)),
             IconButton(
               icon: const Icon(Icons.chevron_right),
               onPressed: () => setState(() {
@@ -495,7 +495,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
           children: [
             Text(
               '${'total_sales'.tr} : ',
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w600, fontSize: 14),
             ),
             _isCalculatingTotal
                 ? const SizedBox(
@@ -508,7 +508,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
             )
                 : Text(
               '${"currency".tr} ${formatAmount(_monthTotalSales)}',
-              style: const TextStyle(
+              style: const TextStyle(fontFamily: 'Sora', 
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
                 color: AppTheme.accent,
@@ -577,13 +577,13 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text("${date.day}",
-                  style: TextStyle(fontWeight: FontWeight.bold,
+                  style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold,
                       color: isCurrentMonth ? Colors.black : Colors.grey[600])),
               const SizedBox(height: 2),
               if (report != null) ...[
                 SvgPicture.asset('assets/images/ic_report.svg', height: 12, width: 12),
                 const SizedBox(height: 2),
-                Text(formatAmount(report.totalSales ?? 0), style: const TextStyle(fontSize: 10, color: AppTheme.accent)),
+                Text(formatAmount(report.totalSales ?? 0), style: const TextStyle(fontFamily: 'Sora', fontSize: 10, color: AppTheme.accent)),
               ]
             ],
           ),
@@ -598,7 +598,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
       children: days.map((day) => Container(
         color: Colors.black,
         padding: const EdgeInsets.symmetric(vertical: 7),
-        child: Center(child: Text(day, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16))),
+        child: Center(child: Text(day, style: const TextStyle(fontFamily: 'Sora', color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16))),
       )).toList(),
     );
   }
@@ -616,41 +616,41 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
           children: [
             Lottie.asset('assets/animations/sales.json', width: 30, height: 30, repeat: true),
             Text(_selectedDate != null ? DateFormat('dd MMMM y').format(_selectedDate!) : "sales".tr,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),
         if (isLiveData && _lastUpdateTime != null) ...[
           const SizedBox(height: 4),
           Text("${"last".tr}: ${DateFormat('HH:mm:ss').format(_lastUpdateTime!)}",
-              style: TextStyle(fontSize: 10, color: Colors.grey[600], fontStyle: FontStyle.italic)),
+              style: TextStyle(fontFamily: 'Sora', fontSize: 10, color: Colors.grey[600], fontStyle: FontStyle.italic)),
         ],
         const SizedBox(height: 8),
         ..._buildDataRows(data['sales']!),
         const SizedBox(height: 12),
         Row(children: [
           Lottie.asset('assets/animations/payment.json', width: 30, height: 30, repeat: true),
-          Text("payment".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          Text("payment".tr, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['payment']!),
         const SizedBox(height: 12),
         Row(children: [
           Lottie.asset('assets/animations/orderType.json', width: 30, height: 30, repeat: true),
-          Text("order_type".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          Text("order_type".tr, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['orderType']!),
         const SizedBox(height: 12),
         Row(children: [
           Lottie.asset('assets/animations/approval.json', width: 30, height: 30, repeat: true),
-          Text("approval".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          Text("approval".tr, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['approval']!),
         const SizedBox(height: 12),
         Row(children: [
           Lottie.asset('assets/animations/tax.json', width: 30, height: 30, repeat: true),
-          Text("tax".tr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          Text("tax".tr, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['tax']!),
@@ -661,7 +661,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: AppTheme.accent),
-              child: Text('view_full'.tr, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, fontFamily: "Mulish", color: Colors.white)),
+              child: Text('view_full'.tr, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, fontFamily: 'Sora', color: Colors.white)),
             ),
           )
         ]
@@ -675,8 +675,8 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
       child: RichText(
         text: TextSpan(
           children: [
-            TextSpan(text: e.key, style: const TextStyle(color: Colors.black)),
-            TextSpan(text: "   ${e.value}", style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.accent)),
+            TextSpan(text: e.key, style: const TextStyle(fontFamily: 'Sora', color: Colors.black)),
+            TextSpan(text: "   ${e.value}", style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, color: AppTheme.accent)),
           ],
         ),
       ),
@@ -761,7 +761,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
             Text(
               'generate_report'.tr,
               style: const TextStyle(
-                fontFamily: "Mulish",
+                fontFamily: 'Sora',
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
                 color: Color(0xff1F1E1E),
@@ -848,7 +848,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
         child: Text(
           label,
           style: const TextStyle(
-            fontFamily: "Mulish",
+            fontFamily: 'Sora',
             fontWeight: FontWeight.w600,
             fontSize: 13,
             color: AppTheme.accent,
@@ -910,7 +910,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
       setState(() => _isGeneratingReport = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${'generate_error'.tr}: $e'),
+          content: Text('${'generate_error'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
@@ -938,7 +938,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
     } catch (e) {
       _closeDialog();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${'during'.tr}: $e'), backgroundColor: Colors.red, duration: const Duration(seconds: 3)),
+        SnackBar(content: Text('${'during'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red, duration: const Duration(seconds: 3)),
       );
     }
   }
@@ -976,13 +976,13 @@ class _CustomDateRangeDialogState extends State<_CustomDateRangeDialog> {
                   children: [
                     Text(
                       _selectingEnd ? 'select_to_date'.tr : 'select_from_date'.tr,
-                      style: const TextStyle(fontSize: 13, color: Colors.grey),
+                      style: const TextStyle(fontFamily: 'Sora', fontSize: 13, color: Colors.grey),
                     ),
                     const SizedBox(height: 4),
                     if (_startDate != null && _selectingEnd)
                       Text(
                         '${DateFormat('dd MMM yyyy').format(_startDate!)} →',
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.accent),
+                        style: const TextStyle(fontFamily: 'Sora', fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.accent),
                       ),
                   ],
                 ),

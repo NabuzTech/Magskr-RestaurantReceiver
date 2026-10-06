@@ -195,7 +195,7 @@ class _DesktopOrderScreenState extends State<DesktopOrderScreen> with TickerProv
       ),
       child: Text(
         '$label: $count',
-        style: const TextStyle(
+        style: const TextStyle(fontFamily: 'Sora', 
           fontWeight: FontWeight.w700,
           fontSize: 13,
           color: Colors.black87,
@@ -305,7 +305,7 @@ class _DesktopOrderScreenState extends State<DesktopOrderScreen> with TickerProv
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 13,
-                                        fontFamily: "Mulish-Regular",
+                                        fontFamily: 'Sora',
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -317,7 +317,7 @@ class _DesktopOrderScreenState extends State<DesktopOrderScreen> with TickerProv
                                           fontWeight: FontWeight.w500,
                                           fontSize: 11,
                                           color: Colors.grey[600],
-                                          fontFamily: "Mulish",
+                                          fontFamily: 'Sora',
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -337,7 +337,7 @@ class _DesktopOrderScreenState extends State<DesktopOrderScreen> with TickerProv
                               time,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w500,
-                                fontFamily: "Mulish",
+                                fontFamily: 'Sora',
                                 fontSize: 11,
                               ),
                             ),
@@ -356,7 +356,7 @@ class _DesktopOrderScreenState extends State<DesktopOrderScreen> with TickerProv
                             '${order['customer']} / ${order['phone']}',
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
-                              fontFamily: "Mulish",
+                              fontFamily: 'Sora',
                               fontSize: 13,
                             ),
                             maxLines: 1,
@@ -369,7 +369,7 @@ class _DesktopOrderScreenState extends State<DesktopOrderScreen> with TickerProv
                           style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 11,
-                            fontFamily: "Mulish",
+                            fontFamily: 'Sora',
                           ),
                         ),
                       ],
@@ -384,7 +384,7 @@ class _DesktopOrderScreenState extends State<DesktopOrderScreen> with TickerProv
                           order['amount'] as String,
                           style: const TextStyle(
                             fontWeight: FontWeight.w800,
-                            fontFamily: "Mulish",
+                            fontFamily: 'Sora',
                             fontSize: 16,
                           ),
                         ),
@@ -394,7 +394,7 @@ class _DesktopOrderScreenState extends State<DesktopOrderScreen> with TickerProv
                               getApprovalStatusText(status),
                               style: TextStyle(
                                 fontWeight: FontWeight.w800,
-                                fontFamily: "Mulish-Regular",
+                                fontFamily: 'Sora',
                                 fontSize: 13,
                                 color: getStatusColor(status),
                               ),

@@ -19,6 +19,7 @@ import '../../models/DailySalesReport.dart'
 import '../../models/Logout.dart';
 import '../../models/PrinterSetting.dart';
 import '../../models/Reservation V2/get_reservation_of_store_byDate.dart';
+import '../../models/Reservation V2/get_reservation_v2_by_date_range.dart';
 import '../../models/Reservation V2/get_today_received_reservationV2_superAdmin.dart';
 import '../../models/Reservation V2/get_today_reservation_V2_of_store.dart';
 import '../../models/Reservation V2/get_today_slot_reservationV2.dart';
@@ -346,7 +347,7 @@ class ApiRepo {
           },
         ),
       );*/
-      final response = await Dio().put(
+      final firstResponse = await Dio().put(
         url,
         data: jsonData,
         options: Options(
@@ -361,7 +362,8 @@ class ApiRepo {
         ),
       );
       print("UrlData $url");
-      print("First call $response");
+      print("First call $firstResponse");
+      var response = firstResponse;
       if (response.statusCode == 307) {
         print("Called 307");
         final redirectedUrl = response.headers.value('location');
@@ -380,6 +382,7 @@ class ApiRepo {
           );
 
           print('Redirected response: ${redirectedResponse.data}');
+          response = redirectedResponse; // parse the redirected result, not the 307
         }
       } else {
         print('Response: ${response.data}');
@@ -4817,6 +4820,37 @@ class CallService extends GetConnect {
       return reservation;
     } else {
       throw Exception("Failed to load order history");
+    }
+  }
+
+  //Get ReservationV2 for a date range (whole month in one call)
+  Future<List<GetReservationV2ByDateRange>> getReservationV2ByDateRange(
+      int storeId, String fromDate, String toDate) async {
+    httpClient.baseUrl = Api.baseUrl;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $accessToken");
+
+    final body = {"store_id": storeId, "from_date": fromDate, "to_date": toDate};
+    print("Reservation V2 Date Range Request Body is : $body");
+
+    var res = await post(
+      'reservations/v2/store/filter',
+      body,
+      headers: {
+        'accept': 'application/json',
+        'Authorization': "Bearer $accessToken",
+      },
+    );
+
+    print("Reservation V2 Date Range Response Code is : ${res.statusCode}");
+    print("Reservation V2 Date Range Response Body is : ${res.body}");
+
+    if (res.statusCode == 200) {
+      List<dynamic> jsonList = res.body;
+      return jsonList.map((e) => GetReservationV2ByDateRange.fromJson(e)).toList();
+    } else {
+      throw Exception("Failed to load reservations by date range: ${res.statusCode}");
     }
   }
 

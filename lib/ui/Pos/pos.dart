@@ -352,7 +352,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                 return Center(
                   child: Text(
                     'No categories to show',
-                    style: TextStyle(fontSize: _responsive(context, 14)),
+                    style: TextStyle(fontFamily: 'Sora', fontSize: _responsive(context, 14)),
                   ),
                 );
               }
@@ -393,7 +393,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                           ),
                           child: Text(
                             category.name ?? '',
-                            style: TextStyle(
+                            style: TextStyle(fontFamily: 'Sora', 
                               fontSize: _responsive(context, 22),
                               fontWeight: FontWeight.w700,
                             ),
@@ -446,7 +446,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
               SizedBox(height: _responsive(context, 16)),
               Text(
                 'No products found',
-                style: TextStyle(
+                style: TextStyle(fontFamily: 'Sora', 
                   fontSize: _responsive(context, 18),
                   fontWeight: FontWeight.w600,
                   color: Colors.grey.shade600,
@@ -455,7 +455,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
               SizedBox(height: _responsive(context, 8)),
               Text(
                 'Try searching with different keywords',
-                style: TextStyle(
+                style: TextStyle(fontFamily: 'Sora', 
                   fontSize: _responsive(context, 14),
                   color: Colors.grey.shade500,
                 ),
@@ -526,7 +526,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                   Text(
                     product.name ?? '',
                     style: TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontWeight: FontWeight.w600,
                       fontSize: _responsive(context, 14),
                     ),
@@ -550,7 +550,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             child: Text(
                               '$quantity',
                               style: TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontWeight: FontWeight.w700,
                                 fontSize: _responsive(context, 15),
                                 color: Colors.white,
@@ -563,7 +563,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             .tryParse(product.price?.toString() ?? '0')
                             ?.toStringAsFixed(2) ?? '0.00'} ${"currency".tr}',
                         style: TextStyle(
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           fontWeight: FontWeight.w700,
                           fontSize: _responsive(context, 18),
                           color: isInCart ? AppColor.borderGreen : Colors.black,
@@ -624,7 +624,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                               contentPadding: const EdgeInsets.only(bottom: 5),
                               hintText: 'Search Item name or ID',
                               hintStyle: TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontWeight: FontWeight.w300,
                                 fontSize: _responsive(context, 14),
                                 fontStyle: FontStyle.italic,
@@ -655,7 +655,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                               ),
                             ),
                             style: TextStyle(
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               fontSize: _responsive(context, 14),
                             ),
                           ),
@@ -698,7 +698,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                           color: Colors.white,
                                           fontSize: 10,
                                           fontWeight: FontWeight.w700,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                         ),
                                       ),
                                     ),
@@ -723,7 +723,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         //       style: TextStyle(
                         //         fontSize: _responsive(context, 12),
                         //         fontWeight: FontWeight.w700,
-                        //         fontFamily: 'Mulish',
+                        //         fontFamily: 'Sora',
                         //         color: const Color(0xff232121),
                         //       ),
                         //     ),
@@ -877,7 +877,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             category.name ?? '',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               fontWeight: FontWeight.w700,
                               fontSize: _responsive(context, 14),
                             ),
@@ -914,7 +914,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                 //     children: [
                 //       Text('OPEN ORDERS [10]',
                 //         style: TextStyle(
-                //         fontFamily: 'Mulish',
+                //         fontFamily: 'Sora',
                 //           fontSize: 14,
                 //           fontWeight: FontWeight.w600,
                 //           decoration: TextDecoration.underline
@@ -923,13 +923,13 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                 //         children: [
                 //           Text('Invoice no : ',
                 //             style: TextStyle(
-                //                 fontFamily: 'Mulish',
+                //                 fontFamily: 'Sora',
                 //                 fontSize: 12,
                 //                 fontWeight: FontWeight.w400
                 //             ),),
                 //           Text('${controller.invoiceNumber.value}',
                 //             style: TextStyle(
-                //                 fontFamily: 'Mulish',
+                //                 fontFamily: 'Sora',
                 //                 fontSize: 13,
                 //                 fontWeight: FontWeight.w800
                 //             ),),
@@ -958,7 +958,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         Text(
                           'Phone Number / Name',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w500,
                             fontSize: _responsive(context, 14),
                             color: const Color(0xff797878),
@@ -1006,7 +1006,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                                 fontSize: _responsive(context, 8),
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w700,
-                                                fontFamily: 'Mulish',
+                                                fontFamily: 'Sora',
                                               ),
                                             ),
                                           ),
@@ -1074,7 +1074,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                         controller.orderNote.value.isEmpty
                                             ? 'Note'
                                             : 'Note: ${controller.orderNote
-                                            .value}',
+                                            .value}', style: const TextStyle(fontFamily: 'Sora'),
                                       ),
                                 )
                               ],
@@ -1097,7 +1097,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                               child: Text(
                                 'No items in cart',
                                 style: TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w500,
                                   fontSize: _responsive(context, 20),
                                   color: const Color(0xff797878),
@@ -1213,7 +1213,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                 //                   style: TextStyle(
                 //                     fontWeight: FontWeight.w700,
                 //                     fontSize: _responsive(context, 15),
-                //                     fontFamily: 'Mulish',
+                //                     fontFamily: 'Sora',
                 //                     color: controller.selectedSaveOption.value == 'save'  // ✅ Text color change
                 //                         ? Colors.white
                 //                         : Color(0xff0B1928),
@@ -1249,7 +1249,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                 //                     style: TextStyle(
                 //                       fontWeight: FontWeight.w700,
                 //                       fontSize: _responsive(context, 15),
-                //                       fontFamily: 'Mulish',
+                //                       fontFamily: 'Sora',
                 //                       color: controller.selectedSaveOption.value == 'save_print'
                 //                           ? Colors.white
                 //                           : Color(0xff0B1928),
@@ -1296,7 +1296,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                   Text(
                     'Saved Drafts',
                     style: TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontWeight: FontWeight.w700,
                       fontSize: _responsive(context, 15),
                     ),
@@ -1321,7 +1321,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         Text(
                           'No saved drafts',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontSize: _responsive(context, 13),
                             color: const Color(0xff797878),
                           ),
@@ -1381,7 +1381,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                   Text(
                                     name,
                                     style: TextStyle(
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                       fontWeight: FontWeight.w600,
                                       fontSize: _responsive(context, 13),
                                     ),
@@ -1392,7 +1392,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                   Text(
                                     '${items.length} item${items.length == 1 ? '' : 's'}  •  $timeStr',
                                     style: TextStyle(
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                       fontSize: _responsive(context, 11),
                                       color: const Color(0xff797878),
                                     ),
@@ -1484,7 +1484,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             Text(
                               product.name ?? '',
                               style: TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontWeight: FontWeight.w700,
                                 fontSize: _responsive(context, 22),
                               ),
@@ -1587,8 +1587,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                                     child: Text(
                                                       variant.name ?? '',
                                                       style: TextStyle(
-                                                        fontFamily:
-                                                        'Mulish',
+                                                        fontFamily: 'Sora',
                                                         fontWeight:
                                                         FontWeight.w700,
                                                         fontSize:
@@ -1603,7 +1602,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                                         100).toStringAsFixed(
                                                         2)}',
                                                     style: TextStyle(
-                                                      fontFamily: 'Mulish',
+                                                      fontFamily: 'Sora',
                                                       fontWeight:
                                                       FontWeight.w700,
                                                       fontSize: _responsive(
@@ -1744,7 +1743,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                                                                   .name ??
                                                                                   '',
                                                                               style: TextStyle(
-                                                                                fontFamily: 'Mulish',
+                                                                                fontFamily: 'Sora',
                                                                                 fontWeight: FontWeight
                                                                                     .w700,
                                                                                 fontSize: _responsive(
@@ -1760,7 +1759,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                                                                 .toStringAsFixed(
                                                                                 2)}',
                                                                             style: TextStyle(
-                                                                              fontFamily: 'Mulish',
+                                                                              fontFamily: 'Sora',
                                                                               fontWeight: FontWeight
                                                                                   .w600,
                                                                               fontSize: _responsive(
@@ -1811,7 +1810,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             'Weiter ${"currency".tr}${_calculateDialogTotal(controller)}',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               fontWeight: FontWeight.w700,
                               fontSize: _responsive(context, 22),
                               color: Colors.white,
@@ -1906,7 +1905,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   color: isSelected ? Colors.white : const Color(0xff0B1928),
                 ),
               )
@@ -1969,7 +1968,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                           child: Text(
                             item['name'],
                             style: TextStyle(
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               fontWeight: FontWeight.w700,
                               fontSize: _responsive(context, 12),
                             ),
@@ -2020,7 +2019,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             Text(
                               '${item['quantity']}',
                               style: TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontWeight: FontWeight.w700,
                                 fontSize: _responsive(context, 16),
                                 color: const Color(0xff0B1928),
@@ -2055,7 +2054,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                           '${"currency".tr} ${(item['price'] * item['quantity'])
                               .toStringAsFixed(2)}',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w700,
                             fontSize: _responsive(context, 15),
                             color: const Color(0xff0B1928),
@@ -2078,7 +2077,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                               child: Text(
                                 '1× $topping',
                                 style: TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w500,
                                   fontSize: _responsive(context, 12),
                                   color: const Color(0xff797878),
@@ -2101,7 +2100,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             Text(
                               'Note: ',
                               style: TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontWeight: FontWeight.w700,
                                 fontSize: _responsive(context, 12),
                               ),
@@ -2110,7 +2109,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                               child: Text(
                                 item['item_note'],
                                 style: TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                   fontSize: _responsive(context, 11),
                                   color: const Color(0xff797878),
@@ -2163,7 +2162,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: _responsive(context, 16),
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                       Text(
@@ -2172,7 +2171,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: _responsive(context, 16),
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -2186,7 +2185,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: _responsive(context, 16),
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: const Color(0xff00B10E),
                         ),
                       ),
@@ -2196,7 +2195,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: _responsive(context, 16),
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -2210,7 +2209,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: _responsive(context, 20),
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: const Color(0xff00B10E),
                         ),
                       ),
@@ -2220,7 +2219,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: _responsive(context, 20),
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -2284,7 +2283,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                 style: TextStyle(
                   fontSize: _responsive(context, 15),
                   fontWeight: FontWeight.w800,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                 ),
               ),
             ],
@@ -2395,7 +2394,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
           style: TextStyle(
             fontSize: _responsive(context, 12),
             fontWeight: FontWeight.w600,
-            fontFamily: 'Mulish',
+            fontFamily: 'Sora',
           ),
         ),
         SizedBox(height: _responsive(context, 4)),
@@ -2416,13 +2415,13 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
           },
           style: TextStyle(
             fontSize: _responsive(context, 18),
-            fontFamily: 'Mulish',
+            fontFamily: 'Sora',
           ),
           decoration: InputDecoration(
             hintText: label.split('*')[0].trim(),
             hintStyle: TextStyle(
               fontSize: _responsive(context, 15),
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
               fontWeight: FontWeight.w500,
               color: Colors.grey.shade400,
             ),
@@ -2479,7 +2478,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: _responsive(context, 14),
                           fontWeight: FontWeight.w800,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -2540,7 +2539,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
           style: TextStyle(
             fontSize: _responsive(context, 11),
             fontWeight: FontWeight.w700,
-            fontFamily: 'Mulish',
+            fontFamily: 'Sora',
             color: const Color(0xff797878),
           ),
         ),
@@ -2550,7 +2549,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
             style: TextStyle(
               fontSize: _responsive(context, 11),
               fontWeight: FontWeight.w600,
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
               color: const Color(0xff0B1928),
             ),
           ),
@@ -2615,7 +2614,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: _responsive(context, 14),
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: const Color(0xff0B1928),
                         ),
                       ),
@@ -2649,7 +2648,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                     style: TextStyle(
                       fontSize: _responsive(context, 12),
                       fontWeight: FontWeight.w500,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: const Color(0xff0B1928),
                     ),
                   ),
@@ -2708,7 +2707,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: _responsive(context, 14),
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: const Color(0xff0B1928),
                         ),
                       ),
@@ -2746,7 +2745,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: _responsive(context, 12),
                           fontWeight: FontWeight.w500,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: const Color(0xff797878),
                         ),
                       ),
@@ -2794,7 +2793,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             style: TextStyle(
                               fontSize: _responsive(context, 12),
                               fontWeight: FontWeight.w500,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: const Color(0xff797878),
                             ),
                           ),
@@ -2821,7 +2820,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
             style: TextStyle(
               fontSize: _responsive(context, 13),
               fontWeight: FontWeight.w700,
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
               color: const Color(0xff0B1928),
             ),
           ),
@@ -2852,7 +2851,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                       style: TextStyle(
                         fontSize: _responsive(context, 11),
                         fontWeight: FontWeight.w700,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         color: const Color(0xffE31E24),
                       ),
                     ),
@@ -2884,7 +2883,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                     style: TextStyle(
                       fontSize: _responsive(context, 11),
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.white,
                     ),
                   ),
@@ -2933,7 +2932,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                       Text(
                         'Draft',
                         style: TextStyle(
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           fontWeight: FontWeight.w700,
                           fontSize: _responsive(context, 13),
                           color: Colors.white,
@@ -2964,7 +2963,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                     child: Text(
                       controller.customerDetails.isEmpty ? 'Weiter' : 'Place Order',
                       style: TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontWeight: FontWeight.w700,
                         fontSize: _responsive(context, 14),
                         color: Colors.white,
@@ -3046,7 +3045,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: _responsive(context, 18),
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -3091,14 +3090,14 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                           style: TextStyle(
                             fontSize: _responsive(context, 18),
                             fontWeight: FontWeight.w700,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                         SizedBox(height: _responsive(context, 8)),
                         Text(
                           'Please use "Vorbestellen" to schedule your order',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: TextStyle(fontFamily: 'Sora', 
                             fontSize: _responsive(context, 14),
                             color: Colors.grey,
                           ),
@@ -3107,7 +3106,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                           SizedBox(height: _responsive(context, 12)),
                           Text(
                             'Opens at: ${controller.storeOpeningTime.value!.hour.toString().padLeft(2, '0')}:${controller.storeOpeningTime.value!.minute.toString().padLeft(2, '0')}',
-                            style: TextStyle(
+                            style: TextStyle(fontFamily: 'Sora', 
                               fontSize: _responsive(context, 16),
                               fontWeight: FontWeight.w600,
                               color: const Color(0xff0C831F),
@@ -3123,7 +3122,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                     padding: EdgeInsets.all(_responsive(context, 12)),
                     child: Text(
                       'No time slots available',
-                      style: TextStyle(
+                      style: TextStyle(fontFamily: 'Sora', 
                         fontSize: _responsive(context, 16),
                         color: Colors.grey,
                       ),
@@ -3166,7 +3165,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                   style: TextStyle(
                                     fontSize: _responsive(context, 18),
                                     fontWeight: FontWeight.w700,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     color: controller.selectedTimeSlot.value ==
                                         'sofort'
                                         ? Colors.white
@@ -3216,7 +3215,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                     style: TextStyle(
                                       fontSize: _responsive(context, 16),
                                       fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                       color: isSelected
                                           ? Colors.white
                                           : const Color(0xff0B1928),
@@ -3282,7 +3281,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             style: TextStyle(
                               fontSize: _responsive(context, 20),
                               fontWeight: FontWeight.w700,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                           const SizedBox(width: 5),
@@ -3293,7 +3292,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                             style: TextStyle(
                               fontSize: _responsive(context, 18),
                               fontWeight: FontWeight.w400,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: const Color(0xff0C831F),
                             ),
                           ),
@@ -3345,7 +3344,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                   style: TextStyle(
                                     fontSize: _responsive(context, 14),
                                     fontWeight: FontWeight.w700,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     color: Colors.white,
                                   ),
                                 ),
@@ -3424,7 +3423,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                         style: TextStyle(
                                           fontSize: _responsive(context, 14),
                                           fontWeight: FontWeight.w600,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                           color: isPastDate
                                               ? Colors.grey.shade500
                                               : (isSelected
@@ -3487,7 +3486,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         Text(
                           'Select Postcode',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w700,
                             fontSize: _responsive(context, 18),
                           ),
@@ -3541,7 +3540,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                         Text(
                                           postcodeItem.postcode ?? '',
                                           style: TextStyle(
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                             fontWeight: FontWeight.w700,
                                             fontSize: _responsive(context, 16),
                                           ),
@@ -3551,7 +3550,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                                           'Delivery: ${postcodeItem
                                               .deliveryTime ?? 0} min',
                                           style: TextStyle(
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                             fontWeight: FontWeight.w500,
                                             fontSize: _responsive(context, 12),
                                             color: Colors.grey,
@@ -3637,14 +3636,14 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                     style: TextStyle(
                       fontSize: _responsive(context, 18),
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   Text(
                     DateFormat('d MMMM, y').format(DateTime.now()),
                     style: TextStyle(
                       fontSize: _responsive(context, 14),
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                 ],
@@ -3658,7 +3657,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                 style: TextStyle(
                   fontSize: _responsive(context, 14),
                   fontWeight: FontWeight.w800,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                 ),
               )),
               SizedBox(width: _responsive(context, 8)),
@@ -3748,7 +3747,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
       child: Text(
         text,
         style: TextStyle(
-          fontFamily: 'Mulish',
+          fontFamily: 'Sora',
           fontWeight: FontWeight.w700,
           fontSize: _responsive(context, 11),
           color: Colors.black87,
@@ -3790,7 +3789,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                   fontSize: _responsive(context, 16),
                   fontWeight: FontWeight.w500,
                   color: Colors.grey,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                 ),
               ),
             ],
@@ -3901,7 +3900,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: _responsive(context, 12),
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -3912,7 +3911,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: _responsive(context, 11),
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                         ],
@@ -3928,7 +3927,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: _responsive(context, 12),
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -3946,7 +3945,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: _responsive(context, 13),
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
@@ -3956,7 +3955,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: _responsive(context, 12),
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                 ],
@@ -3973,7 +3972,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: _responsive(context, 18),
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   Row(
@@ -3985,7 +3984,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: _responsive(context, 14),
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                       SizedBox(width: _responsive(context, 4)),

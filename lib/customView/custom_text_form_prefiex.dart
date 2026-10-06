@@ -71,7 +71,7 @@ class CustomTextFormPrefix extends StatelessWidget {
             fontSize: 15,
             color: Colors.grey,
             fontWeight: FontWeight.w500,
-            fontFamily: 'Montserrat',
+            fontFamily: 'Sora',
           ),
         ),
         keyboardType: keyboardType,
@@ -79,7 +79,7 @@ class CustomTextFormPrefix extends StatelessWidget {
           fontSize: 15,
           color: Colors.black,
           fontWeight: FontWeight.w500,
-          fontFamily: 'Montserrat',
+          fontFamily: 'Sora',
         ),
       ),
     );

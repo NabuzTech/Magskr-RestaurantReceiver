@@ -22,7 +22,7 @@ class Invoice {
   factory Invoice.fromJson(Map<String, dynamic> json) => Invoice(
         invoiceNumber: json["invoice_number"],
         totalAmount: (json["total_amount"] as num?)?.toDouble(),
-        issuedAt: DateTime.tryParse(json["issued_at"]),
+        issuedAt: DateTime.tryParse(json["issued_at"] ?? ""),
         storeId: json["store_id"],
         id: json["id"],
         orderId: json["order_id"],

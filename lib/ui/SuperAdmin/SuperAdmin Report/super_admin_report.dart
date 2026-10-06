@@ -70,7 +70,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Store ID not found')),
+          const SnackBar(content: Text('Store ID not found', style: const TextStyle(fontFamily: 'Sora'))),
         );
       }
     }
@@ -111,7 +111,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           isLoading = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load report: $e')),
+          SnackBar(content: Text('Failed to load report: $e', style: const TextStyle(fontFamily: 'Sora'))),
         );
       }
     }
@@ -216,7 +216,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
             Lottie.asset('assets/animations/sales.json',
                 width: 30, height: 30, repeat: true),
             const Text("Monthly Report", // ✅ Changed label
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),
         const SizedBox(height: 8),
@@ -226,7 +226,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           Lottie.asset('assets/animations/payment.json',
               width: 30, height: 30, repeat: true),
           Text("payment".tr,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['payment']!),
@@ -235,7 +235,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           Lottie.asset('assets/animations/orderType.json',
               width: 30, height: 30, repeat: true),
           Text("order_type".tr,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['orderType']!),
@@ -244,7 +244,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           Lottie.asset('assets/animations/approval.json',
               width: 30, height: 30, repeat: true),
           Text("approval".tr,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['approval']!),
@@ -253,7 +253,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           Lottie.asset('assets/animations/tax.json',
               width: 30, height: 30, repeat: true),
           Text("tax".tr,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['tax']!),
@@ -270,7 +270,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
         //           style: TextStyle(
         //               fontWeight: FontWeight.w600,
         //               fontSize: 14,
-        //               fontFamily: "Mulish",
+        //               fontFamily: 'Sora',
         //               color: Colors.white)),
         //     ),
         //   ),
@@ -301,7 +301,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text("${date.day}",
-                  style: TextStyle(
+                  style: TextStyle(fontFamily: 'Sora', 
                       fontWeight: FontWeight.bold,
                       color: isCurrentMonth ? Colors.black : Colors.grey[600])),
               const SizedBox(height: 2),
@@ -309,7 +309,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
                 SvgPicture.asset('assets/images/ic_report.svg', height: 12, width: 12),
                 const SizedBox(height: 2),
                 Text("${"currency".tr}${formatAmount(dailyReport.totalSales ?? 0)}",
-                    style: const TextStyle(fontSize: 10, color: Colors.green)),
+                    style: const TextStyle(fontFamily: 'Sora', fontSize: 10, color: Colors.green)),
               ]
             ],
           ),
@@ -352,7 +352,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
               }),
             ),
             Text("${_monthName(displayedMonth)} $displayedYear",
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                style: const TextStyle(fontFamily: 'Sora', fontSize: 18, fontWeight: FontWeight.bold)),
             IconButton(
               icon: const Icon(Icons.chevron_right),
               onPressed: () => setState(() {
@@ -370,7 +370,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           children: [
             Text(
               '${'total_sales'.tr} : ',
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w600, fontSize: 14),
             ),
             _isCalculatingTotal
                 ? const SizedBox(
@@ -383,7 +383,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
             )
                 : Text(
               '${"currency".tr} ${formatAmount(_monthTotalSales)}',
-              style: const TextStyle(
+              style: const TextStyle(fontFamily: 'Sora', 
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
                 color: Colors.green,
@@ -456,7 +456,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
                       style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
-                          fontFamily: "Mulish",
+                          fontFamily: 'Sora',
                           color: Color(0xff0C831F))),
                   Positioned(
                     right: -11,
@@ -480,7 +480,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
                     fontSize: 11,
                     color: Color(0xff757B8F),
                     fontWeight: FontWeight.w600,
-                    fontFamily: "Mulish"),
+                    fontFamily: 'Sora'),
               ),
             ],
           ),
@@ -499,7 +499,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
             children: [
               Text('history'.tr,
                   style: const TextStyle(
-                      fontFamily: "Mulish",
+                      fontFamily: 'Sora',
                       fontWeight: FontWeight.w800,
                       fontSize: 16,
                       color: Color(0xff1F1E1E))),
@@ -540,7 +540,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
         padding: const EdgeInsets.symmetric(vertical: 7),
         child: Center(
             child: Text(day,
-                style: const TextStyle(
+                style: const TextStyle(fontFamily: 'Sora', 
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 16))),
@@ -559,13 +559,13 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
             TextSpan(
                 text: e.key,
                 style:
-                const TextStyle(color: Colors.black, fontFamily: 'Mulish')),
+                const TextStyle(color: Colors.black, fontFamily: 'Sora')),
             TextSpan(
                 text: "   ${e.value}",
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
-                    fontFamily: 'Mulish')),
+                    fontFamily: 'Sora')),
           ],
         ),
       ),
@@ -632,7 +632,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Failed to load order history: $e'),
+            content: Text('Failed to load order history: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3)),
       );
@@ -719,7 +719,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
                 _selectedDate != null
                     ? DateFormat('dd MMMM y').format(_selectedDate!)
                     : "sales".tr,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),
         const SizedBox(height: 8),
@@ -729,7 +729,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           Lottie.asset('assets/animations/payment.json',
               width: 30, height: 30, repeat: true),
           Text("payment".tr,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['payment']!),
@@ -738,7 +738,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           Lottie.asset('assets/animations/orderType.json',
               width: 30, height: 30, repeat: true),
           Text("order_type".tr,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['orderType']!),
@@ -747,7 +747,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           Lottie.asset('assets/animations/approval.json',
               width: 30, height: 30, repeat: true),
           Text("approval".tr,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['approval']!),
@@ -756,7 +756,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           Lottie.asset('assets/animations/tax.json',
               width: 30, height: 30, repeat: true),
           Text("tax".tr,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 16)),
         ]),
         const SizedBox(height: 8),
         ..._buildDataRows(data['tax']!),
@@ -773,7 +773,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
                   style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      fontFamily: "Mulish",
+                      fontFamily: 'Sora',
                       color: Colors.white)),
             ),
           ),

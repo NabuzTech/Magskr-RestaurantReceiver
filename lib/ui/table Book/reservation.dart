@@ -351,10 +351,10 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
               children: [
                 Icon(Icons.signal_wifi_off, color: Colors.red),
                 SizedBox(width: 8),
-                Text("Connection Error"),
+                Text("Connection Error", style: const TextStyle(fontFamily: 'Sora')),
               ],
             ),
-            content: const Text("Cannot connect to server. Please logout and login again to continue."),
+            content: const Text("Cannot connect to server. Please logout and login again to continue.", style: const TextStyle(fontFamily: 'Sora')),
             actions: [
               ElevatedButton(
                 onPressed: () {
@@ -364,7 +364,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                   _offlineLogout();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text("Logout", style: TextStyle(color: Colors.white)),
+                child: const Text("Logout", style: TextStyle(fontFamily: 'Sora', color: Colors.white)),
               ),
             ],
           ),
@@ -543,7 +543,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('reserv'.tr,
-                            style: const TextStyle(
+                            style: const TextStyle(fontFamily: 'Sora', 
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
                             )),
@@ -555,7 +555,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                             dateSeleted.isEmpty
                                 ? DateFormat('d MMMM, y').format(DateTime.now())
                                 : dateSeleted,
-                            style: const TextStyle(fontSize: 16),
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 16),
                           ),
                         ),
                       ],
@@ -574,7 +574,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                 },
                                 child: Row(
                                   children: [
-                                    Text('history'.tr, style: const TextStyle(fontFamily: "Mulish", fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xff1F1E1E))),
+                                    Text('history'.tr, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xff1F1E1E))),
                                     const SizedBox(width: 5),
                                     SvgPicture.asset('assets/images/dropdown.svg', height: 5, width: 11),
                                   ],
@@ -602,7 +602,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                       SizedBox(width: 4),
                                       Text(
                                         'Today',
-                                        style: TextStyle(
+                                        style: TextStyle(fontFamily: 'Sora', 
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.blue,
@@ -626,7 +626,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                               style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
-                                  fontFamily: "Mulish",
+                                  fontFamily: 'Sora',
                                   color: Colors.black),
                             );
                           }),
@@ -655,7 +655,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                         )),
                       ),
                       child: Text('today_booking'.tr,
-                          style: TextStyle(
+                          style: TextStyle(fontFamily: 'Sora', 
                             fontWeight: _selectedTab == 0 ? FontWeight.w800 : FontWeight.w500,
                           )),
                     ),
@@ -674,7 +674,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                         )),
                       ),
                       child: Text('today_received_booking'.tr,
-                          style: TextStyle(
+                          style: TextStyle(fontFamily: 'Sora', 
                             fontWeight: _selectedTab == 1 ? FontWeight.w800 : FontWeight.w500,
                           )),
                     ),
@@ -694,7 +694,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                     child: Column(
                       children: [
                         Lottie.asset('assets/animations/empty.json', height: 150, width: 150),
-                        Text('no_reservation'.tr)
+                        Text('no_reservation'.tr, style: const TextStyle(fontFamily: 'Sora'))
                       ],
                     ),
                   );
@@ -750,7 +750,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                               reserv.reservedFor.toString()),
                                           style: const TextStyle(
                                               fontSize: 13,
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                               fontWeight: FontWeight.w700),
                                         ),
                                       ],
@@ -767,7 +767,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                               : '--:--',
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w500,
-                                            fontFamily: "Mulish",
+                                            fontFamily: 'Sora',
                                             fontSize: 10,
                                           ),
                                         )
@@ -788,7 +788,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w700,
                                             fontSize: 13,
-                                            fontFamily: "Mulish"),
+                                            fontFamily: 'Sora'),
                                       ),
                                     ),
                                     Row(
@@ -798,7 +798,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 13,
-                                              fontFamily: "Mulish"),
+                                              fontFamily: 'Sora'),
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
@@ -806,7 +806,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w500,
                                               fontSize: 11,
-                                              fontFamily: "Mulish"),
+                                              fontFamily: 'Sora'),
                                         ),
                                       ],
                                     ),
@@ -828,7 +828,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                         Text(
                                           reserv.guestCount.toString(),
                                           style: const TextStyle(
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                               fontSize: 16,
                                               fontWeight: FontWeight.w800),
                                         )
@@ -840,7 +840,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                           reserv.status.toString(),
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w800,
-                                              fontFamily: "Mulish-Regular",
+                                              fontFamily: 'Sora',
                                               fontSize: 13),
                                         ),
                                         const SizedBox(width: 6),
@@ -912,7 +912,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                             reserv.reservedFor.toString()),
                                         style: const TextStyle(
                                             fontSize: 13,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                             fontWeight: FontWeight.w700),
                                       ),
                                     ],
@@ -929,7 +929,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                             : '--:--',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w500,
-                                          fontFamily: "Mulish",
+                                          fontFamily: 'Sora',
                                           fontSize: 10,
                                         ),
                                       )
@@ -950,7 +950,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 13,
-                                          fontFamily: "Mulish"),
+                                          fontFamily: 'Sora'),
                                     ),
                                   ),
                                   Row(
@@ -960,7 +960,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w700,
                                             fontSize: 13,
-                                            fontFamily: "Mulish"),
+                                            fontFamily: 'Sora'),
                                       ),
                                       const SizedBox(width: 5),
                                       Text(
@@ -968,7 +968,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w500,
                                             fontSize: 11,
-                                            fontFamily: "Mulish"),
+                                            fontFamily: 'Sora'),
                                       ),
                                     ],
                                   ),
@@ -990,7 +990,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                       Text(
                                         reserv.guestCount.toString(),
                                         style: const TextStyle(
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                             fontSize: 16,
                                             fontWeight: FontWeight.w800),
                                       )
@@ -1002,7 +1002,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                         reserv.status.toString(),
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w800,
-                                            fontFamily: "Mulish-Regular",
+                                            fontFamily: 'Sora',
                                             fontSize: 13),
                                       ),
                                       const SizedBox(width: 6),
@@ -1116,7 +1116,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${'error'.tr} - ${'load'.tr}'),
+              content: Text('${'error'.tr} - ${'load'.tr}', style: const TextStyle(fontFamily: 'Sora')),
               backgroundColor: Colors.red,
               duration: const Duration(seconds: 2),
             ),
@@ -1250,7 +1250,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                         color: Colors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ),
@@ -1286,7 +1286,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                   ),
                                 ),
                                 child: Text('cancel'.tr,style: const TextStyle(
-                                  fontFamily: 'Mulish',fontWeight: FontWeight.w700,fontSize: 16,),),
+                                  fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 16,),),
                               ),
                             ),
                             const SizedBox(width: 15),
@@ -1312,7 +1312,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                   ),
                                 ),
                                 child:  Center(child: Text('book'.tr,style: const TextStyle(
-                                  fontFamily: 'Mulish',fontWeight: FontWeight.w700,fontSize: 16,
+                                  fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 16,
                                 ),)),
                               ),
                             ),
@@ -1372,7 +1372,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
           ),
@@ -1390,7 +1390,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
               keyboardType: _getKeyboardType(label),
               onTap: isDateField ? () => _selectNewReservationDateTime(controller) : null,
               style: const TextStyle(
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: Colors.black87,
@@ -1399,7 +1399,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                 hintText: _getHintText(label),
                 hintStyle: TextStyle(
                   color: Colors.grey[500],
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
@@ -1492,7 +1492,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('⚠️ Store timing data not available. Using default timings.'),
+              content: Text('⚠️ Store timing data not available. Using default timings.', style: const TextStyle(fontFamily: 'Sora')),
               backgroundColor: Colors.orange,
               duration: Duration(seconds: 2),
             ),
@@ -1560,7 +1560,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${'closed'.tr} - No available time slots for today'),
+              content: Text('${'closed'.tr} - No available time slots for today', style: const TextStyle(fontFamily: 'Sora')),
               backgroundColor: Colors.red,
               duration: const Duration(seconds: 2),
             ),
@@ -1619,7 +1619,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                         const Spacer(),
@@ -1632,7 +1632,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                     const SizedBox(height: 8),
                     Text(
                       dayInfo,
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                         color: Colors.white70,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -1649,7 +1649,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     color: Colors.orange.shade800,
                   ),
                 ),
@@ -1690,7 +1690,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                               try {
                                 ScaffoldMessenger.of(scaffoldContext).showSnackBar(
                                   SnackBar(
-                                    content: Text('${'time_selected'.tr}: ${slot['time24']}'),
+                                    content: Text('${'time_selected'.tr}: ${slot['time24']}', style: const TextStyle(fontFamily: 'Sora')),
                                     backgroundColor: Colors.green,
                                     duration: const Duration(seconds: 1),
                                   ),
@@ -1725,7 +1725,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.green.shade800,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),
@@ -1884,7 +1884,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'success'.tr} - ${'created'.tr}'),
+            content: Text('${'success'.tr} - ${'created'.tr}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -1907,7 +1907,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'error'.tr} - ${'create_reserv'.tr}: ${e.toString()}'),
+            content: Text('${'error'.tr} - ${'create_reserv'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),

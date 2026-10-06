@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import '../../customView/payment_icon.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:food_receiver/models/today_report.dart' hide TaxBreakdown;
 import 'package:get/get.dart';
@@ -27,12 +28,22 @@ import '../../utils/my_application.dart';
 import '../Login/LoginScreen.dart';
 import '../Pos/pos_controller.dart';
 import 'OrderDetailEnglish.dart';
-import 'package:food_receiver/constants/app_theme.dart';
 
-// Order screen theme lives in AppTheme (constants/app_theme.dart).
-const _kAccent = AppTheme.accent;
-const _kAccentGradient = AppTheme.accentGradient;
-const _kPageGradient = AppTheme.pageGradient;
+// Violet → purple → indigo, like the reference banking-app screen.
+const _kViolet = Color(0xFFA42BF0);
+const _kPurple = Color(0xFF7B52F0);
+const _kIndigo = Color(0xFF5B4FE8);
+const _kBrandGradient = LinearGradient(
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+  colors: [_kViolet, _kPurple, _kIndigo],
+);
+// Light tint of the same gradient so dark text stays readable on the page.
+const _kPageGradient = LinearGradient(
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+  colors: [Color(0xFFF6EEFF), Color(0xFFF0EDFF), Color(0xFFEAEBFF)],
+);
 
 class OrderScreenNew extends StatefulWidget {
   const OrderScreenNew({super.key});
@@ -42,16 +53,13 @@ class OrderScreenNew extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreenNew>
-    with
-        TickerProviderStateMixin,
-        AutomaticKeepAliveClientMixin,
-        WidgetsBindingObserver {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   Color getStatusColor(int status) {
     switch (status) {
       case 1:
         return Colors.orange;
       case 2:
-        return _kAccent;
+        return _kPurple;
       case 3:
         return Colors.red;
       default:
@@ -71,7 +79,6 @@ class _OrderScreenState extends State<OrderScreenNew>
         return Icons.help;
     }
   }
-
   bool _isDisposed = false;
   late SharedPreferences sharedPreferences;
   String? bearerKey;
@@ -107,16 +114,13 @@ class _OrderScreenState extends State<OrderScreenNew>
   String? _storeType;
   bool _isRefreshing = false;
   DateTime? _lastRefreshTime;
-  String delivery = '0',
-      pickUp = '0',
-      pending = '0',
-      accepted = '0',
-      declined = '0';
+  String delivery = '0', pickUp = '0', pending = '0', accepted = '0', declined = '0';
   PosController? _posController;
   // Add these with other state variables at the top
   bool _isSyncingLocalOrders = false;
   List<Order> _localOrders = [];
   String _orderSourceTab = 'all'; // 'all' | 'pos' | 'online'
+  String? _statusFilter; // null | 'accepted' | 'declined' | 'pickup' | 'delivery'
   Timer? _syncTimer;
   late AnimationController _syncRotationController;
   late Animation<double> _syncRotationAnimation;
@@ -207,13 +211,11 @@ class _OrderScreenState extends State<OrderScreenNew>
     _posController = null;
     _blinkController.dispose();
     _syncRotationController.dispose();
-    _orderListController.dispose();
+
 
     super.dispose();
   }
 
-  // Drives the order list scrollbar; _HoverCard zooms the card level with its thumb.
-  final ScrollController _orderListController = ScrollController();
 
   Future<void> _loadAndSyncLocalOrders() async {
     if (_isSyncingLocalOrders) {
@@ -255,9 +257,7 @@ class _OrderScreenState extends State<OrderScreenNew>
       List<Order> localOrdersList = [];
 
       for (var dbOrder in unsyncedOrders) {
-        final orderDetails = await DatabaseHelper().getOrderDetails(
-          dbOrder['id'] as int,
-        );
+        final orderDetails = await DatabaseHelper().getOrderDetails(dbOrder['id'] as int);
 
         if (orderDetails != null) {
           Order order = await _convertDbOrderToOrderModel(orderDetails);
@@ -268,16 +268,15 @@ class _OrderScreenState extends State<OrderScreenNew>
 
       setState(() {
         _localOrders = localOrdersList;
-        _isSyncingLocalOrders = false; // ✅ CRITICAL: Reset flag
+        _isSyncingLocalOrders = false;  // ✅ CRITICAL: Reset flag
       });
 
-      print(
-        '✅ Successfully loaded ${localOrdersList.length} local orders into UI',
-      );
+      print('✅ Successfully loaded ${localOrdersList.length} local orders into UI');
+
     } catch (e) {
       print('❌ Error loading local orders: $e');
       setState(() {
-        _isSyncingLocalOrders = false; // ✅ CRITICAL: Reset flag on error too
+        _isSyncingLocalOrders = false;  // ✅ CRITICAL: Reset flag on error too
       });
     }
   }
@@ -310,9 +309,7 @@ class _OrderScreenState extends State<OrderScreenNew>
       if (_isRefreshing) return;
 
       if (_lastRefreshTime != null) {
-        final timeSinceLastRefresh = DateTime.now().difference(
-          _lastRefreshTime!,
-        );
+        final timeSinceLastRefresh = DateTime.now().difference(_lastRefreshTime!);
         if (timeSinceLastRefresh.inSeconds < 2) return;
       }
 
@@ -354,14 +351,11 @@ class _OrderScreenState extends State<OrderScreenNew>
 
       if (syncTime != null && syncTime.isNotEmpty) {
         int? syncTimeSeconds = int.tryParse(syncTime);
-        if (syncTimeSeconds != null && syncTimeSeconds >= 60) {
-          // ✅ Minimum 60 seconds
+        if (syncTimeSeconds != null && syncTimeSeconds >= 60) { // ✅ Minimum 60 seconds
           if (_autoSyncInterval != syncTimeSeconds) {
             _autoSyncInterval = syncTimeSeconds;
             int minutes = (syncTimeSeconds / 60).round();
-            print(
-              '🔄 Sync interval updated to: $minutes minutes ($syncTimeSeconds seconds)',
-            );
+            print('🔄 Sync interval updated to: $minutes minutes ($syncTimeSeconds seconds)');
 
             // Restart timer with new interval
             _startAutoSync();
@@ -491,13 +485,10 @@ class _OrderScreenState extends State<OrderScreenNew>
 
       if (syncTime != null && syncTime.isNotEmpty) {
         int? syncTimeSeconds = int.tryParse(syncTime);
-        if (syncTimeSeconds != null && syncTimeSeconds >= 60) {
-          // ✅ Minimum 60 seconds (1 minute)
+        if (syncTimeSeconds != null && syncTimeSeconds >= 60) { // ✅ Minimum 60 seconds (1 minute)
           _autoSyncInterval = syncTimeSeconds;
           int minutes = (syncTimeSeconds / 60).round();
-          print(
-            '✅ Loaded sync interval: $minutes minutes ($syncTimeSeconds seconds)',
-          );
+          print('✅ Loaded sync interval: $minutes minutes ($syncTimeSeconds seconds)');
         } else {
           print('⚠️ Invalid sync time in preferences, using default');
           _autoSyncInterval = 1800; // ✅ Default 30 minutes = 1800 seconds
@@ -520,30 +511,19 @@ class _OrderScreenState extends State<OrderScreenNew>
     _autoSyncTimer?.cancel(); // Cancel existing timer
 
     int minutes = (_autoSyncInterval / 60).round();
-    print(
-      '🔄 Starting auto sync with interval: $minutes minutes ($_autoSyncInterval seconds)',
-    );
-    print(
-      '🕐 Next sync will occur at: ${DateTime.now().add(Duration(seconds: _autoSyncInterval))}',
-    );
+    print('🔄 Starting auto sync with interval: $minutes minutes ($_autoSyncInterval seconds)');
+    print('🕐 Next sync will occur at: ${DateTime.now().add(Duration(seconds: _autoSyncInterval))}');
 
-    _autoSyncTimer = Timer.periodic(Duration(seconds: _autoSyncInterval), (
-      timer,
-    ) async {
+    _autoSyncTimer = Timer.periodic(Duration(seconds: _autoSyncInterval), (timer) async {
       int mins = (_autoSyncInterval / 60).round();
-      print(
-        '⏰ Auto sync timer triggered at ${DateTime.now()} - Interval: $mins minutes',
-      );
+      print('⏰ Auto sync timer triggered at ${DateTime.now()} - Interval: $mins minutes');
       await _autoSyncLocalOrders();
     });
   }
 
-  Future<Order> _convertDbOrderToOrderModel(
-    Map<String, dynamic> orderDetails,
-  ) async {
+  Future<Order> _convertDbOrderToOrderModel(Map<String, dynamic> orderDetails) async {
     final orderData = orderDetails['order'] as Map<String, dynamic>;
-    final addressData =
-        orderDetails['shipping_address'] as Map<String, dynamic>?;
+    final addressData = orderDetails['shipping_address'] as Map<String, dynamic>?;
     final itemsData = orderDetails['items'] as List<dynamic>;
     final paymentData = orderDetails['payment'] as Map<String, dynamic>?;
 
@@ -585,6 +565,8 @@ class _OrderScreenState extends State<OrderScreenNew>
       );
     }
 
+
+
     List<OrderItem>? orderItems;
     if (itemsData.isNotEmpty) {
       final itemFutures = itemsData.map((item) async {
@@ -592,9 +574,7 @@ class _OrderScreenState extends State<OrderScreenNew>
         try {
           final productId = item['product_id'] as int?;
           if (productId != null && item['product_name'] == null) {
-            final product = await DatabaseHelper().getProductById(
-              productId.toString(),
-            );
+            final product = await DatabaseHelper().getProductById(productId.toString());
             if (product != null) {
               productName = product.name ?? 'Product';
             }
@@ -605,14 +585,10 @@ class _OrderScreenState extends State<OrderScreenNew>
 
         List<Topping>? toppings;
         if (item['toppings'] != null && item['toppings'] is List) {
-          print(
-            '📖 LOADING - Item has ${(item['toppings'] as List).length} toppings from DB',
-          );
+          print('📖 LOADING - Item has ${(item['toppings'] as List).length} toppings from DB');
 
           toppings = (item['toppings'] as List).map((t) {
-            print(
-              '   🍕 Loading topping: ${t['topping_name']} | id=${t['topping_id']} | price=${t['topping_price']} | qty=${t['topping_quantity']}',
-            );
+            print('   🍕 Loading topping: ${t['topping_name']} | id=${t['topping_id']} | price=${t['topping_price']} | qty=${t['topping_quantity']}');
 
             return Topping(
               toppingId: t['topping_id'] as int?,
@@ -645,7 +621,7 @@ class _OrderScreenState extends State<OrderScreenNew>
           unitPrice: (item['unit_price'] as num?)?.toDouble(),
           variantId: item['variant_id'] as int?,
           note: item['note'] as String? ?? '',
-          variant: variant, // ✅ Now has actual variant data
+          variant: variant,  // ✅ Now has actual variant data
           toppings: toppings ?? [],
         );
       }).toList();
@@ -666,8 +642,7 @@ class _OrderScreenState extends State<OrderScreenNew>
           : null,
       isActive: orderData['isActive'] == 1,
       createdAt: DateTime.fromMillisecondsSinceEpoch(
-        orderData['created_at'] as int,
-        isUtc: true,
+          orderData['created_at'] as int, isUtc: true
       ).toIso8601String(),
       shipping_address: shippingAddress,
       guestShippingJson: guestShippingJson,
@@ -772,10 +747,7 @@ class _OrderScreenState extends State<OrderScreenNew>
         for (int i = 0; i < 5; i++) {
           String? currentRemoteIP = prefs.getString('printer_ip_remote_$i');
           if (currentRemoteIP != null && currentRemoteIP.isNotEmpty) {
-            await prefs.setString(
-              '${userPrefix}printer_ip_remote_$i',
-              currentRemoteIP,
-            );
+            await prefs.setString('${userPrefix}printer_ip_remote_$i', currentRemoteIP);
           }
         }
 
@@ -786,18 +758,12 @@ class _OrderScreenState extends State<OrderScreenNew>
 
         int? selectedRemoteIndex = prefs.getInt('selected_ip_remote_index');
         if (selectedRemoteIndex != null) {
-          await prefs.setInt(
-            '${userPrefix}selected_ip_remote_index',
-            selectedRemoteIndex,
-          );
+          await prefs.setInt('${userPrefix}selected_ip_remote_index', selectedRemoteIndex);
         }
 
         bool? autoOrderAccept = prefs.getBool('auto_order_accept');
         if (autoOrderAccept != null) {
-          await prefs.setBool(
-            '${userPrefix}auto_order_accept',
-            autoOrderAccept,
-          );
+          await prefs.setBool('${userPrefix}auto_order_accept', autoOrderAccept);
         }
 
         bool? autoOrderPrint = prefs.getBool('auto_order_print');
@@ -807,18 +773,12 @@ class _OrderScreenState extends State<OrderScreenNew>
 
         bool? autoRemoteAccept = prefs.getBool('auto_order_remote_accept');
         if (autoRemoteAccept != null) {
-          await prefs.setBool(
-            '${userPrefix}auto_order_remote_accept',
-            autoRemoteAccept,
-          );
+          await prefs.setBool('${userPrefix}auto_order_remote_accept', autoRemoteAccept);
         }
 
         bool? autoRemotePrint = prefs.getBool('auto_order_remote_print');
         if (autoRemotePrint != null) {
-          await prefs.setBool(
-            '${userPrefix}auto_order_remote_print',
-            autoRemotePrint,
-          );
+          await prefs.setBool('${userPrefix}auto_order_remote_print', autoRemotePrint);
         }
       }
     } catch (e) {
@@ -901,16 +861,11 @@ class _OrderScreenState extends State<OrderScreenNew>
               children: [
                 Icon(Icons.signal_wifi_off, color: Colors.red),
                 SizedBox(width: 8),
-                Text(
-                  "Connection Error",
-                  style: const TextStyle(fontFamily: 'Sora'),
-                ),
+                Text("Connection Error", style: const TextStyle(fontFamily: 'Sora')),
               ],
             ),
             content: const Text(
-              "Cannot connect to server. Please logout and login again to continue.",
-              style: const TextStyle(fontFamily: 'Sora'),
-            ),
+                "Cannot connect to server. Please logout and login again to continue.", style: const TextStyle(fontFamily: 'Sora')),
             actions: [
               ElevatedButton(
                 onPressed: () {
@@ -919,10 +874,7 @@ class _OrderScreenState extends State<OrderScreenNew>
                   _offlineLogout();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text(
-                  "Logout",
-                  style: TextStyle(fontFamily: 'Sora', color: Colors.white),
-                ),
+                child: const Text("Logout", style: TextStyle(fontFamily: 'Sora', color: Colors.white)),
               ),
             ],
           ),
@@ -935,9 +887,7 @@ class _OrderScreenState extends State<OrderScreenNew>
 
   void _startInternetMonitoring() {
     _internetCheckTimer?.cancel();
-    _internetCheckTimer = Timer.periodic(const Duration(seconds: 10), (
-      timer,
-    ) async {
+    _internetCheckTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
       final connectivityResult = await Connectivity().checkConnectivity();
       bool hasConnection = connectivityResult != ConnectivityResult.none;
 
@@ -1038,9 +988,7 @@ class _OrderScreenState extends State<OrderScreenNew>
         }
 
         for (int i = 0; i < 5; i++) {
-          String? savedRemoteIP = prefs.getString(
-            '${userPrefix}printer_ip_remote_$i',
-          );
+          String? savedRemoteIP = prefs.getString('${userPrefix}printer_ip_remote_$i');
           if (savedRemoteIP != null && savedRemoteIP.isNotEmpty) {
             await prefs.setString('printer_ip_remote_$i', savedRemoteIP);
           }
@@ -1051,9 +999,7 @@ class _OrderScreenState extends State<OrderScreenNew>
           await prefs.setInt('selected_ip_index', selectedIndex);
         }
 
-        int? selectedRemoteIndex = prefs.getInt(
-          '${userPrefix}selected_ip_remote_index',
-        );
+        int? selectedRemoteIndex = prefs.getInt('${userPrefix}selected_ip_remote_index');
         if (selectedRemoteIndex != null) {
           await prefs.setInt('selected_ip_remote_index', selectedRemoteIndex);
         }
@@ -1068,16 +1014,12 @@ class _OrderScreenState extends State<OrderScreenNew>
           await prefs.setBool('auto_order_print', autoOrderPrint);
         }
 
-        bool? autoRemoteAccept = prefs.getBool(
-          '${userPrefix}auto_order_remote_accept',
-        );
+        bool? autoRemoteAccept = prefs.getBool('${userPrefix}auto_order_remote_accept');
         if (autoRemoteAccept != null) {
           await prefs.setBool('auto_order_remote_accept', autoRemoteAccept);
         }
 
-        bool? autoRemotePrint = prefs.getBool(
-          '${userPrefix}auto_order_remote_print',
-        );
+        bool? autoRemotePrint = prefs.getBool('${userPrefix}auto_order_remote_print');
         if (autoRemotePrint != null) {
           await prefs.setBool('auto_order_remote_print', autoRemotePrint);
         }
@@ -1155,10 +1097,7 @@ class _OrderScreenState extends State<OrderScreenNew>
         });
 
         await sharedPreferences.setString('store_name', fetchedStoreName);
-        await sharedPreferences.setString(
-          valueShared_STORE_NAME,
-          fetchedStoreName,
-        );
+        await sharedPreferences.setString(valueShared_STORE_NAME, fetchedStoreName);
 
         return storeName;
       } else {
@@ -1295,7 +1234,7 @@ class _OrderScreenState extends State<OrderScreenNew>
 
         if (mounted) {
           setState(() {
-            app.appController.setOrders(result, forceReplace: true);
+            app.appController.setOrders(result,forceReplace: true);
           });
         }
         _stopNoOrderTimer();
@@ -1333,10 +1272,7 @@ class _OrderScreenState extends State<OrderScreenNew>
         String? storeID = sharedPreferences.getString(valueShared_STORE_KEY);
         if (storeID != null) {
           final result = await ApiRepo().getStoreData(bearerKey!, storeID);
-          await sharedPreferences.setString(
-            'cached_store_name',
-            result.name.toString(),
-          );
+          await sharedPreferences.setString('cached_store_name', result.name.toString());
         }
       } catch (e) {
         // Handle error
@@ -1369,17 +1305,14 @@ class _OrderScreenState extends State<OrderScreenNew>
     } else {
       if (userMe.store_id != null) {
         dynamicStoreId = userMe.store_id!;
-        sharedPreferences.setString(
-          valueShared_STORE_KEY,
-          dynamicStoreId.toString(),
-        );
+        sharedPreferences.setString(valueShared_STORE_KEY, dynamicStoreId.toString());
       } else {
         return;
       }
     }
 
     _socketService.onSalesUpdate = (data) {
-      if (_isDisposed || !mounted) return;
+      if (_isDisposed || !mounted)  return;
 
       if (data['store_id'] != null &&
           data['store_id'].toString() != dynamicStoreId.toString()) {
@@ -1389,7 +1322,7 @@ class _OrderScreenState extends State<OrderScreenNew>
       _handleSalesUpdate(data, isFromSocket: true);
     };
     _socketService.onConnected = () {
-      if (_isDisposed || !mounted) return;
+      if (_isDisposed || !mounted)  return;
       setState(() => _isLiveDataActive = true);
     };
     _socketService.onDisconnected = () {
@@ -1401,10 +1334,11 @@ class _OrderScreenState extends State<OrderScreenNew>
     };
     _socketService.onNewOrder = (data) {
       if (_isDisposed || !mounted)
-        if (data['store_id'] != null &&
-            data['store_id'].toString() != dynamicStoreId.toString()) {
-          return;
-        }
+
+      if (data['store_id'] != null &&
+          data['store_id'].toString() != dynamicStoreId.toString()) {
+        return;
+      }
 
       _refreshCurrentDayData();
       getLiveSaleReportWithoutLoader();
@@ -1542,11 +1476,8 @@ class _OrderScreenState extends State<OrderScreenNew>
     setState(() => _showNoOrderText = false);
   }
 
-  void _handleSalesUpdate(
-    Map<String, dynamic> salesData, {
-    bool isFromSocket = false,
-  }) {
-    if (_isDisposed || !mounted) return;
+  void _handleSalesUpdate(Map<String, dynamic> salesData, {bool isFromSocket = false}) {
+    if (_isDisposed || !mounted)  return;
 
     if (isFromSocket) {
       SalesCacheHelper.saveSalesData(salesData);
@@ -1578,8 +1509,8 @@ class _OrderScreenState extends State<OrderScreenNew>
         netTotal: (salesData['net_total'] as num?)?.toDouble(),
         topItems: (salesData['top_items'] != null)
             ? (salesData['top_items'] as List)
-                  .map((item) => TopItem.fromJson(item))
-                  .toList()
+            .map((item) => TopItem.fromJson(item))
+            .toList()
             : _currentDateReport!.data?.topItems ?? [],
         totalTax: (salesData['total_tax'] as num?)?.toDouble(),
         cashTotal: (salesData['cash_total'] as num?)?.toDouble() ?? 0.0,
@@ -1605,8 +1536,7 @@ class _OrderScreenState extends State<OrderScreenNew>
         approvalStatuses: salesData['approval_statuses'] != null
             ? Map<String, int>.from(salesData['approval_statuses'])
             : {},
-        totalSalesDelivery: (salesData['total_sales + delivery'] as num?)
-            ?.toDouble(),
+        totalSalesDelivery: (salesData['total_sales + delivery'] as num?)?.toDouble(),
       );
 
       if (mounted) {
@@ -1699,11 +1629,8 @@ class _OrderScreenState extends State<OrderScreenNew>
   }
 
   Future<void> getOrders(
-    String? bearerKey,
-    bool orderType,
-    bool isBellRunning,
-    String? id,
-  ) async {
+      String? bearerKey, bool orderType, bool isBellRunning, String? id) async
+   {
     bool loaderShown = false;
     Timer? timeoutTimer;
 
@@ -1752,17 +1679,12 @@ class _OrderScreenState extends State<OrderScreenNew>
         "offset": 0,
       };
 
-      final result = await ApiRepo()
-          .orderGetApiFilter(bearerKey!, data)
-          .timeout(
-            const Duration(seconds: 6),
-            onTimeout: () {
-              throw TimeoutException(
-                'api_timeout'.tr,
-                const Duration(seconds: 6),
-              );
-            },
-          );
+      final result = await ApiRepo().orderGetApiFilter(bearerKey!, data).timeout(
+        const Duration(seconds: 6),
+        onTimeout: () {
+          throw TimeoutException('api_timeout'.tr, const Duration(seconds: 6));
+        },
+      );
 
       if (loaderShown && (Get.isDialogOpen ?? false)) {
         Get.back();
@@ -1771,7 +1693,7 @@ class _OrderScreenState extends State<OrderScreenNew>
 
       if (result.isNotEmpty && result.first.code == null) {
         setState(() {
-          app.appController.setOrders(result, forceReplace: true);
+          app.appController.setOrders(result,forceReplace: true);
         });
 
         if (result.isNotEmpty) {
@@ -1893,1408 +1815,585 @@ class _OrderScreenState extends State<OrderScreenNew>
       child: DecoratedBox(
         decoration: const BoxDecoration(gradient: _kPageGradient),
         child: Scaffold(
-          resizeToAvoidBottomInset: true,
-          backgroundColor: Colors.transparent,
-          body: Builder(
-            builder: (context) {
-              if (isLoading && _isInitialLoading) {
-                return Center(
-                  child: Lottie.asset(
-                    'assets/animations/burger.json',
-                    width: 150,
-                    height: 150,
-                    repeat: true,
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.transparent,
+        body: Builder(builder: (context) {
+          if (isLoading && _isInitialLoading) {
+            return Center(
+              child: Lottie.asset(
+                'assets/animations/burger.json',
+                width: 150,
+                height: 150,
+                repeat: true,
+              ),
+            );
+          }
+      
+          if (!hasInternet) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.wifi_off, size: 80, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  const Text("No Internet Connection",
+                      style: TextStyle(fontFamily: 'Sora', fontSize: 18, color: Colors.grey)),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () => _showLogoutDialog(),
+                    child: const Text("Show Logout Dialog", style: const TextStyle(fontFamily: 'Sora')),
                   ),
-                );
-              }
-
-              if (!hasInternet) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.wifi_off, size: 80, color: Colors.grey),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "No Internet Connection",
-                        style: TextStyle(
-                          fontFamily: 'Sora',
-                          fontSize: 18,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () => _showLogoutDialog(),
-                        child: const Text(
-                          "Show Logout Dialog",
-                          style: const TextStyle(fontFamily: 'Sora'),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return Padding(
-                padding: const EdgeInsets.all(6),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                ],
+              ),
+            );
+          }
+      
+          return Padding(
+            padding: const EdgeInsets.all(6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // ─── Header Row ───────────────────────────────────────────────
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 6.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _storeType == '1'
-                                  ? _buildSourceTabStrip()
-                                  : const Text(
-                                      'order',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Sora',
-                                      ),
-                                    ),
-                              if (_storeType == '1') const SizedBox(height: 8),
-                              Text(
-                                dateSeleted.isEmpty
-                                    ? DateFormat(
-                                        'd MMMM, y',
-                                      ).format(DateTime.now())
-                                    : dateSeleted,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  fontFamily: 'Sora',
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (_storeType == '1')
-                          _buildRefreshSyncButtons()
-                        else
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      const Color(0xFFA78BFA).withOpacity(0.18),
-                                      const Color(0xFF7FB2FF).withOpacity(0.18),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  '${'total_order'.tr}: ${_getTotalOrders()}',
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w800,
-                                    fontFamily: 'Sora',
-                                    color: _kAccent,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              IconButton(
-                                iconSize: 20,
-                                icon: const Icon(Icons.refresh),
-                                onPressed: _manualRefresh,
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    // ─── Status Filter Chips ──────────────────────────────────────
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
+                    Padding(
+                      padding: const EdgeInsets.only(left: 6.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildStatusContainer(
-                            '${'accepted'.tr} ${_getApprovalStatusCount("accepted")}',
-                            const Color(0xFF7FB2FF).withOpacity(0.15),
-                          ),
-                          const SizedBox(width: 8),
-                          _buildStatusContainer(
-                            '${"decline".tr} ${_getApprovalStatusCount("declined")}',
-                            Colors.red.withOpacity(0.1),
-                          ),
-                          const SizedBox(width: 8),
-                          _buildStatusContainer(
-                            '${"pickup".tr} ${_getOrderTypeCount("pickup")}',
-                            Colors.blue.withOpacity(0.1),
-                          ),
-                          const SizedBox(width: 8),
-                          _buildStatusContainer(
-                            '${"delivery".tr} ${_getOrderTypeCount("delivery")}',
-                            Colors.purple.withOpacity(0.1),
+                          _storeType == '1'
+                              ? _buildSourceTabStrip()
+                              : Text('order'.tr,
+                                  style: const TextStyle(fontFamily: 'Sora', 
+                                      fontSize: 18, fontWeight: FontWeight.bold)),
+                          if (_storeType == '1')
+                            SizedBox(height: 8,),
+                          Text(
+                            dateSeleted.isEmpty
+                                ? DateFormat('d MMMM, y')
+                                .format(DateTime.now())
+                                : dateSeleted,
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 14,fontWeight: FontWeight.w700),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 14),
-
-                    // ─── Order List ───────────────────────────────────────────────
-                    Expanded(
-                      child: MediaQuery.removePadding(
-                        context: context,
-                        removeTop: false,
-                        removeBottom: true,
-                        child: RefreshIndicator(
-                          onRefresh: _handleRefresh,
-                          color: _kAccent,
-                          backgroundColor: Colors.white,
-                          displacement: 60,
-                          child: _isInitialLoading
-                              ? const SizedBox.shrink()
-                              : !hasInternet
-                              ? ListView(
-                                  padding: EdgeInsets.zero,
-                                  physics:
-                                      const AlwaysScrollableScrollPhysics(),
+                    if (_storeType == '1')
+                      _buildRefreshSyncButtons()
+                    else
+                      Row(
+                        children: [
+                          Text(
+                            '${'total_order'.tr}: ${_getTotalOrders()}',
+                            style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                fontFamily: 'Sora',
+                                color: Colors.black),
+                          ),
+                          IconButton(
+                            iconSize: 20,
+                            icon: const Icon(Icons.refresh),
+                            onPressed: _manualRefresh,
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildStatusContainer(
+                        '${'accepted'.tr} ${_getApprovalStatusCount("accepted")}',
+                        _kPurple.withOpacity(0.12),
+                        'accepted',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatusContainer(
+                        '${"decline".tr} ${_getApprovalStatusCount("declined")}',
+                        Colors.red.withOpacity(0.1),
+                        'declined',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatusContainer(
+                        '${"pickup".tr} ${_getOrderTypeCount("pickup")}',
+                        Colors.blue.withOpacity(0.1),
+                        'pickup',
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatusContainer(
+                        '${"delivery".tr} ${_getOrderTypeCount("delivery")}',
+                        Colors.purple.withOpacity(0.1),
+                        'delivery',
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Expanded(
+                    child: MediaQuery.removePadding(
+                      context: context,
+                      removeTop: false,
+                      removeBottom: true,
+                      child: RefreshIndicator(
+                        onRefresh: _handleRefresh,
+                        color: _kPurple,
+                        backgroundColor: Colors.white,
+                        displacement: 60,
+                        child: _isInitialLoading
+                            ? Container()
+                            : !hasInternet
+                            ? ListView(
+                          padding: EdgeInsets.zero,
+                          physics:
+                          const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            const SizedBox(height: 100),
+                            Column(
+                              mainAxisAlignment:
+                              MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.wifi_off,
+                                    size: 80, color: Colors.grey),
+                                const SizedBox(height: 16),
+                                Text("no_internet".tr,
+                                  style: const TextStyle(fontFamily: 'Sora', 
+                                      fontSize: 18,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  "please".tr,
+                                  style: const TextStyle(fontFamily: 'Sora', 
+                                      fontSize: 14,
+                                      color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )
+                            : Obx(() {
+                          List<Order> allOrders = [
+                            ..._localOrders,
+                            ...app.appController.searchResultOrder,
+                          ];
+                          if (_orderSourceTab == 'pos') {
+                            allOrders = allOrders.where((o) => o.source == 'pos').toList();
+                          } else if (_orderSourceTab == 'online') {
+                            allOrders = allOrders.where((o) => o.source != 'pos').toList();
+                          }
+                          switch (_statusFilter) {
+                            case 'accepted':
+                              allOrders = allOrders.where((o) => o.approvalStatus == 2).toList();
+                              break;
+                            case 'declined':
+                              allOrders = allOrders.where((o) => o.approvalStatus == 3).toList();
+                              break;
+                            case 'pickup':
+                              allOrders = allOrders.where((o) => o.orderType == 2).toList();
+                              break;
+                            case 'delivery':
+                              allOrders = allOrders.where((o) => o.orderType == 1).toList();
+                              break;
+                          }
+                          if (allOrders.isEmpty) {
+                            return ListView(
+                              padding: EdgeInsets.zero,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: [
+                                const SizedBox(height: 100),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const SizedBox(height: 100),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.wifi_off,
-                                          size: 80,
-                                          color: Colors.grey.shade300,
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Text(
-                                          "no_internet".tr,
-                                          style: const TextStyle(
-                                            fontFamily: 'Sora',
-                                            fontSize: 18,
-                                            color: Colors.grey,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          "please".tr,
-                                          style: const TextStyle(
-                                            fontFamily: 'Sora',
-                                            fontSize: 14,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
+                                    Lottie.asset('assets/animations/empty.json',
+                                      width: 150,
+                                      height: 150,
+                                    ),
+                                    Text(
+                                      'no_order'.tr,
+                                      style: const TextStyle(fontFamily: 'Sora', 
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey,
+                                      ),
                                     ),
                                   ],
-                                )
-                              : Obx(() {
-                                  List<Order> allOrders = [
-                                    ..._localOrders,
-                                    ...app.appController.searchResultOrder,
-                                  ];
-                                  if (_orderSourceTab == 'pos') {
-                                    allOrders = allOrders
-                                        .where((o) => o.source == 'pos')
-                                        .toList();
-                                  } else if (_orderSourceTab == 'online') {
-                                    allOrders = allOrders
-                                        .where((o) => o.source != 'pos')
-                                        .toList();
+                                ),
+                              ],
+                            );
+                          }
+                          return ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: EdgeInsets.zero,
+                            itemCount: allOrders.length,
+                            itemBuilder: (context, index) {
+                              final order = allOrders[index];
+                              final isLocalOrder = _localOrders.contains(order);
+                              DateTime dateTime;
+                              if (order.isLocalOrder == true) {
+                                // ✅ Handle both milliseconds (int) and ISO string formats
+                                try {
+                                  dateTime = DateTime.fromMillisecondsSinceEpoch(
+                                      int.parse(order.createdAt.toString())
+                                  );
+                                } catch (e) {
+                                  // If parsing as int fails, try parsing as ISO string
+                                  dateTime = DateTime.parse(order.createdAt.toString());
+                                }
+                              } else {
+                                dateTime = DateTime.parse(order.createdAt.toString());
+                              }
+                              String time = DateFormat('hh:mm a').format(dateTime);
+                              String guestAddress = order.guestShippingJson?.zip?.toString() ?? '';
+                              String guestName = order.guestShippingJson?.customerName?.toString() ?? '';
+                              String guestPhone = order.guestShippingJson?.phone?.toString() ?? '';
+                              final String source = order.source.toString();
+                              return AnimatedBuilder(
+                                animation: _opacityAnimation,
+                                builder: (context, child) {
+                                  final bool isPending = (order.approvalStatus ?? 0) == 1;
+                                  Color getContainerColor() {
+      
+                                    if (order.source == 'pos') {
+                                      return const Color(0xffF7F3FF);
+                                    }
+                                    switch (order.approvalStatus) {
+                                      case 2:
+                                        return const Color(0xffF3EEFF);
+                                      case 3:
+                                        return const Color(0xffFFEFEF);
+                                      case 1:
+                                        return Colors.white;
+                                      default:
+                                        return Colors.white;
+                                    }
                                   }
-                                  if (allOrders.isEmpty) {
-                                    return ListView(
-                                      padding: EdgeInsets.zero,
-                                      physics:
-                                          const AlwaysScrollableScrollPhysics(),
-                                      children: [
-                                        const SizedBox(height: 100),
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Lottie.asset(
-                                              'assets/animations/empty.json',
-                                              width: 150,
-                                              height: 150,
-                                            ),
-                                            Text(
-                                              'no_order'.tr,
-                                              style: const TextStyle(
-                                                fontFamily: 'Sora',
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                          ],
+                                  return Opacity(
+                                    opacity: isPending ? _opacityAnimation.value : 1.0,
+                                    child: Container(
+                                      margin: const EdgeInsets.only(bottom: 12),
+                                      decoration: BoxDecoration(
+                                        color: getContainerColor(),
+                                        borderRadius: BorderRadius.circular(7),
+                                        border: Border.all(
+                                          color: (order.source == 'pos')
+                                              ? const Color(0xffB8ABD1)
+                                              : (order.approvalStatus == 2)
+                                              ? const Color(0xffD9CCFB)
+                                              : (order.approvalStatus == 3)
+                                              ? const Color(0xffFFD0D0)
+                                              : Colors.grey.withOpacity(0.2),
+                                          width: 1,
                                         ),
-                                      ],
-                                    );
-                                  }
-                                  return RawScrollbar(
-                                    controller: _orderListController,
-                                    thumbVisibility: true,
-                                    thickness: 4,
-                                    radius: const Radius.circular(4),
-                                    thumbColor: Colors.black.withOpacity(0.15),
-                                    child: ListView.builder(
-                                      controller: _orderListController,
-                                      physics:
-                                          const AlwaysScrollableScrollPhysics(),
-                                      padding: EdgeInsets.zero,
-                                      itemCount: allOrders.length,
-                                      itemBuilder: (context, index) {
-                                        final order = allOrders[index];
-                                        final isLocalOrder = _localOrders
-                                            .contains(order);
-                                        DateTime dateTime;
-                                        if (order.isLocalOrder == true) {
-                                          try {
-                                            dateTime =
-                                                DateTime.fromMillisecondsSinceEpoch(
-                                                  int.parse(
-                                                    order.createdAt.toString(),
-                                                  ),
-                                                );
-                                          } catch (e) {
-                                            dateTime = DateTime.parse(
-                                              order.createdAt.toString(),
-                                            );
-                                          }
-                                        } else {
-                                          dateTime = DateTime.parse(
-                                            order.createdAt.toString(),
-                                          );
-                                        }
-                                        String time = DateFormat(
-                                          'hh:mm a',
-                                        ).format(dateTime);
-                                        String guestAddress =
-                                            order.guestShippingJson?.zip
-                                                ?.toString() ??
-                                            '';
-                                        String guestName =
-                                            order
-                                                .guestShippingJson
-                                                ?.customerName
-                                                ?.toString() ??
-                                            '';
-                                        String guestPhone =
-                                            order.guestShippingJson?.phone
-                                                ?.toString() ??
-                                            '';
-                                        final String source = order.source
-                                            .toString();
-
-                                        return AnimatedBuilder(
-                                          animation: _opacityAnimation,
-                                          builder: (context, child) {
-                                            final bool isPending =
-                                                (order.approvalStatus ?? 0) ==
-                                                1;
-
-                                            // ─── Card Colors ──────────────────
-                                            Color getContainerColor() {
-                                              if (order.source == 'pos') {
-                                                return const Color(0xffF7F3FF);
-                                              }
-                                              switch (order.approvalStatus) {
-                                                case 2:
-                                                  return const Color(
-                                                    0xffEEF3FF,
-                                                  );
-                                                case 3:
-                                                  return const Color(
-                                                    0xffFFEFEF,
-                                                  );
-                                                default:
-                                                  return Colors.white;
-                                              }
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.1),
+                                            spreadRadius: 0,
+                                            blurRadius: 4,
+                                            offset:
+                                            const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 10),
+                                        child: GestureDetector(
+                                          behavior: HitTestBehavior.opaque,
+                                          onLongPress: () {
+                                            if (order.approvalStatus == 2) {
+                                              _showDeliveryTimeDialog(order);
                                             }
-
-                                            Color getBorderColor() {
-                                              if (order.source == 'pos') {
-                                                return const Color(0xffB8ABD1);
-                                              }
-                                              switch (order.approvalStatus) {
-                                                case 2:
-                                                  return const Color(
-                                                    0xffCBD8FB,
-                                                  );
-                                                case 3:
-                                                  return const Color(
-                                                    0xffFFD0D0,
-                                                  );
-                                                default:
-                                                  return Colors.grey
-                                                      .withOpacity(0.15);
-                                              }
-                                            }
-
-                                            return Opacity(
-                                              opacity: isPending
-                                                  ? _opacityAnimation.value
-                                                  : 1.0,
-                                              child: _HoverCard(
-                                                color: getContainerColor(),
-                                                borderColor: getBorderColor(),
-                                                onLongPress: () {
-                                                  if (order.approvalStatus ==
-                                                      2) {
-                                                    _showDeliveryTimeDialog(
-                                                      order,
-                                                    );
-                                                  }
-                                                },
-                                                onTap: () => Get.to(
-                                                  () =>
-                                                      OrderDetailEnglish(order),
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(
-                                                    12,
-                                                  ),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                          },
+                                          onTap: () => Get.to(() => OrderDetailEnglish(order)),
+                                          child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(crossAxisAlignment: CrossAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      // ─── Top Row: Avatar + Address + Source Badge + Time ───
-                                                      Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          // Order type avatar
-                                                          Container(
-                                                            width: 36,
-                                                            height: 36,
-                                                            alignment: Alignment
-                                                                .center,
-                                                            decoration:
-                                                                const BoxDecoration(
-                                                                  shape: BoxShape
-                                                                      .circle,
-                                                                  gradient:
-                                                                      _kAccentGradient,
-                                                                ),
-                                                            child: SvgPicture.asset(
-                                                              order.orderType ==
-                                                                      1
-                                                                  ? 'assets/images/ic_delivery.svg'
-                                                                  : order.orderType ==
-                                                                        2
-                                                                  ? 'assets/images/ic_pickup.svg'
-                                                                  : order.orderType ==
-                                                                        3
-                                                                  ? 'assets/images/table.svg'
-                                                                  : 'assets/images/ic_pickup.svg',
-                                                              height: 15,
-                                                              width: 15,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 10,
-                                                          ),
-
-                                                          // Address / Order info
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                // Address line
-                                                                Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        order.orderType ==
-                                                                                2
-                                                                            ? 'pickup'.tr
-                                                                            : (_storeType ==
-                                                                                      '2'
-                                                                                  ? _getFullAddress(
-                                                                                      order.shipping_address ??
-                                                                                          order.guestShippingJson,
-                                                                                      order.shipping_address ==
-                                                                                          null,
-                                                                                    )
-                                                                                  : (order.shipping_address?.zip?.toString() ??
-                                                                                        guestAddress)),
-                                                                        style: const TextStyle(
-                                                                          fontWeight:
-                                                                              FontWeight.w700,
-                                                                          fontSize:
-                                                                              13,
-                                                                          fontFamily:
-                                                                              'Sora',
-                                                                        ),
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
-                                                                      ),
-                                                                    ),
-                                                                    if (order.deliveryTime !=
-                                                                            null &&
-                                                                        order
-                                                                            .deliveryTime!
-                                                                            .isNotEmpty)
-                                                                      Padding(
-                                                                        padding: const EdgeInsets.only(
-                                                                          left:
-                                                                              6,
-                                                                        ),
-                                                                        child: Text(
-                                                                          '${'time'.tr}: ${_extractTime(order.deliveryTime!)}',
-                                                                          style: const TextStyle(
-                                                                            fontWeight:
-                                                                                FontWeight.w700,
-                                                                            fontSize:
-                                                                                12,
-                                                                            fontFamily:
-                                                                                'Sora',
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                  ],
-                                                                ),
-                                                                // Full address (non-storeType-2)
-                                                                if ((_storeType !=
-                                                                        '2') &&
-                                                                    (order.shipping_address !=
-                                                                            null ||
-                                                                        order.guestShippingJson !=
-                                                                            null) &&
-                                                                    order.orderType ==
-                                                                        1)
-                                                                  Padding(
-                                                                    padding:
-                                                                        const EdgeInsets.only(
-                                                                          top:
-                                                                              2,
-                                                                        ),
-                                                                    child: Text(
-                                                                      order.shipping_address !=
-                                                                              null
-                                                                          ? '${order.shipping_address!.line1!}, ${order.shipping_address!.city!}'
-                                                                          : '${order.guestShippingJson?.line1 ?? ''}, ${order.guestShippingJson?.city ?? ''}',
-                                                                      style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.w400,
-                                                                        fontSize:
-                                                                            11,
-                                                                        fontFamily:
-                                                                            'Sora',
-                                                                        color: Colors
-                                                                            .black54,
-                                                                      ),
-                                                                      maxLines:
-                                                                          1,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                    ),
-                                                                  ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 8,
-                                                          ),
-
-                                                          // Source badge
-                                                          if (source ==
-                                                              "Mobile User App")
-                                                            _buildSourceBadge(
-                                                              "Magskr",
-                                                              const Color(
-                                                                0xFF7C6CF2,
-                                                              ),
-                                                            )
-                                                          else if (source ==
-                                                              "online")
-                                                            _buildSourceBadge(
-                                                              "Website",
-                                                              const Color(
-                                                                0xFF4FA3F7,
-                                                              ),
-                                                            )
-                                                          else if (source
-                                                                  .toLowerCase() ==
-                                                              "pos")
-                                                            _buildSourceBadge(
-                                                              "POS",
-                                                              const Color(
-                                                                0xFF1976D2,
-                                                              ),
-                                                            ),
-                                                          const SizedBox(
-                                                            width: 6,
-                                                          ),
-
-                                                          // Time
-                                                          Row(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              Icon(
-                                                                Icons
-                                                                    .access_time,
-                                                                size: 13,
-                                                                color: Colors
-                                                                    .black45,
-                                                              ),
-                                                              const SizedBox(
-                                                                width: 3,
-                                                              ),
-                                                              Text(
-                                                                time,
-                                                                style: const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  fontFamily:
-                                                                      'Sora',
-                                                                  fontSize: 10,
-                                                                  color: Colors
-                                                                      .black54,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-
-                                                      const SizedBox(
-                                                        height: 10,
-                                                      ),
-
-                                                      // ─── Divider ──────────────────
                                                       Container(
-                                                        height: 1,
-                                                        color: Colors.grey
-                                                            .withOpacity(0.1),
+                                                        width: 34,
+                                                        height: 34,
+                                                        alignment: Alignment.center,
+                                                        decoration: const BoxDecoration(shape: BoxShape.circle, gradient: _kBrandGradient),
+                                                        child:
+                                                        SvgPicture.asset(
+                                                          order.orderType == 1
+                                                              ? 'assets/images/ic_delivery.svg'
+                                                              : order.orderType == 2
+                                                              ? 'assets/images/ic_pickup.svg'
+                                                              : order.orderType == 3
+                                                              ? 'assets/images/table.svg'
+                                                              : 'assets/images/ic_pickup.svg',
+                                                          height: 14,
+                                                          width: 14,
+                                                          color: Colors.white,
+                                                        ),
                                                       ),
-                                                      const SizedBox(
-                                                        height: 10,
-                                                      ),
-
-                                                      // ─── Customer + Order ID Row ───
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
+                                                      const SizedBox(width: 6),
+                                                      Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         children: [
-                                                          Flexible(
-                                                            child: Text(
-                                                              '${order.shipping_address?.customer_name ?? guestName ?? ""} / ${order.shipping_address?.phone ?? guestPhone}',
-                                                              style: const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
-                                                                fontFamily:
-                                                                    'Sora',
-                                                                fontSize: 13,
-                                                              ),
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                          ),
                                                           Container(
-                                                            padding:
-                                                                const EdgeInsets.symmetric(
-                                                                  horizontal: 8,
-                                                                  vertical: 3,
-                                                                ),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                                  color: Colors
-                                                                      .grey
-                                                                      .shade100,
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                        6,
-                                                                      ),
-                                                                ),
-                                                            child: Text(
-                                                              '#${order.orderNumber ?? order.id ?? 'N/A'}',
-                                                              style: const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                fontSize: 10,
-                                                                fontFamily:
-                                                                    'Sora',
-                                                                color: Colors
-                                                                    .black54,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-
-                                                      const SizedBox(
-                                                        height: 10,
-                                                      ),
-
-                                                      // ─── Amount + Status Row ──────
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
-                                                                () {
-                                                                  if (order
-                                                                          .payment ==
-                                                                      null) {
-                                                                    return '${'currency'.tr} ${formatAmount(0)}';
-                                                                  }
-                                                                  final rawAmount =
-                                                                      order
-                                                                          .payment!
-                                                                          .amount ??
-                                                                      0;
-                                                                  final isStripe =
-                                                                      order
-                                                                          .payment!
-                                                                          .paymentMethod ==
-                                                                      'stripe';
-                                                                  final displayAmount =
-                                                                      isStripe
-                                                                      ? rawAmount -
-                                                                            (app.appController.stripeServiceFee.value ??
-                                                                                0)
-                                                                      : rawAmount;
-                                                                  return '${'currency'.tr} ${formatAmount(displayAmount)}';
-                                                                }(),
-                                                                style: const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w800,
-                                                                  fontFamily:
-                                                                      'Sora',
-                                                                  fontSize: 17,
-                                                                ),
-                                                              ),
-                                                              if (_isVorbestellen(
-                                                                order
-                                                                    .deliveryTime,
-                                                              ))
-                                                                Padding(
-                                                                  padding:
-                                                                      const EdgeInsets.only(
-                                                                        top: 4,
-                                                                      ),
-                                                                  child: Container(
-                                                                    padding: const EdgeInsets.symmetric(
-                                                                      horizontal:
-                                                                          7,
-                                                                      vertical:
-                                                                          2,
-                                                                    ),
-                                                                    decoration: BoxDecoration(
-                                                                      color: Colors
-                                                                          .orange,
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                            5,
-                                                                          ),
-                                                                    ),
-                                                                    child: const Text(
-                                                                      'Vorbestellen',
-                                                                      style: TextStyle(
-                                                                        color: Colors
-                                                                            .white,
-                                                                        fontWeight:
-                                                                            FontWeight.w700,
-                                                                        fontFamily:
-                                                                            'Sora',
-                                                                        fontSize:
-                                                                            10,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                            ],
-                                                          ),
-
-                                                          // Status pill
-                                                          Container(
-                                                            padding:
-                                                                const EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      10,
-                                                                  vertical: 5,
-                                                                ),
-                                                            decoration: BoxDecoration(
-                                                              color:
-                                                                  isLocalOrder
-                                                                  ? Colors
-                                                                        .grey
-                                                                        .shade200
-                                                                  : getStatusColor(
-                                                                      order.approvalStatus ??
-                                                                          0,
-                                                                    ).withOpacity(
-                                                                      0.12,
-                                                                    ),
-                                                              borderRadius:
-                                                                  BorderRadius.circular(
-                                                                    20,
-                                                                  ),
-                                                            ),
-                                                            child: Row(
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
+                                                            width: MediaQuery.of(context).size.width * 0.43,
+                                                            child:
+                                                            Row(crossAxisAlignment: CrossAxisAlignment.start,
+                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                               children: [
-                                                                isLocalOrder
-                                                                    ? RotationTransition(
-                                                                        turns:
-                                                                            _syncRotationAnimation,
-                                                                        child: SvgPicture.asset(
-                                                                          'assets/images/sync.svg',
-                                                                          height:
-                                                                              12,
-                                                                          width:
-                                                                              12,
-                                                                        ),
-                                                                      )
-                                                                    : Icon(
-                                                                        getStatusIcon(
-                                                                          order.approvalStatus ??
-                                                                              0,
-                                                                        ),
-                                                                        size:
-                                                                            13,
-                                                                        color: getStatusColor(
-                                                                          order.approvalStatus ??
-                                                                              0,
-                                                                        ),
-                                                                      ),
-                                                                const SizedBox(
-                                                                  width: 5,
-                                                                ),
-                                                                Text(
-                                                                  isLocalOrder
-                                                                      ? "syncing"
-                                                                            .tr
-                                                                      : getApprovalStatusText(
-                                                                          order
-                                                                              .approvalStatus,
-                                                                        ),
-                                                                  style: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600,
-                                                                    fontFamily:
-                                                                        'Sora',
-                                                                    fontSize:
-                                                                        11,
-                                                                    color:
-                                                                        isLocalOrder
-                                                                        ? Colors
-                                                                              .grey
-                                                                              .shade700
-                                                                        : getStatusColor(
-                                                                            order.approvalStatus ??
-                                                                                0,
-                                                                          ),
+                                                                Container(
+                                                                  width: MediaQuery.of(context).size.width * (_storeType == '2' ? 0.35 :
+                                                                  (order.orderType == 2 ? 0.2 : 0.2)),
+                                                                  child: Text(order.orderType == 2 ? 'pickup'.tr : (_storeType == '2'
+                                                                      ? _getFullAddress(
+                                                                      order.shipping_address ?? order.guestShippingJson,
+                                                                      order.shipping_address == null)
+                                                                      : (order.shipping_address?.zip?.toString() ?? guestAddress)),
+                                                                    style: const TextStyle(
+                                                                        fontWeight: FontWeight.w700,
+                                                                        fontSize: 13,
+                                                                        fontFamily: 'Sora'),
                                                                   ),
                                                                 ),
+                                                                if (order.deliveryTime != null && order.deliveryTime!.isNotEmpty)
+                                                                  Container(
+                                                                    width: MediaQuery.of(context).size.width * 0.22,
+                                                                    child: Text(
+                                                                      '${'time'.tr}: ${_extractTime(order.deliveryTime!)}',
+                                                                      style: const TextStyle(fontWeight: FontWeight.w700,
+                                                                          fontSize: 13, fontFamily: 'Sora'),
+                                                                    ),
+                                                                  ),
                                                               ],
                                                             ),
                                                           ),
+                                                          Visibility(
+                                                            visible: (_storeType != '2') && (order.shipping_address != null || order.guestShippingJson != null),
+                                                            child: Container(
+                                                              width: MediaQuery.of(context).size.width * 0.4,
+                                                              child: Text(
+                                                                order.orderType == 1 ? (order.shipping_address != null
+                                                                    ? '${order.shipping_address!.line1!}, ${order.shipping_address!.city!}'
+                                                                    : '${order.guestShippingJson?.line1 ?? ''}, ${order.guestShippingJson?.city ?? ''}')
+                                                                    : '',
+                                                                style: const TextStyle(
+                                                                    fontWeight: FontWeight.w500,
+                                                                    fontSize: 11,
+                                                                    letterSpacing: 0,
+                                                                    height: 0,
+                                                                    fontFamily: 'Sora'),
+                                                              ),
+                                                            ),
+                                                          ),
                                                         ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                  if (source == "Mobile User App")
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: _kIndigo,
+                                                        borderRadius: BorderRadius.circular(6),
+                                                      ),
+                                                      child: const Text(
+                                                        "Magskr",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                          fontFamily: 'Sora',
+                                                          fontSize: 13,
+                                                        ),
+                                                      ),
+                                                    )
+                                                  else if (source == "online")
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(0xFFFFC107),
+                                                        borderRadius: BorderRadius.circular(6),
+                                                      ),
+                                                      child: const Text(
+                                                        "Website",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                          fontFamily: 'Sora',
+                                                          fontSize: 13,
+                                                        ),
+                                                      ),
+                                                    )
+                                                  else if (source.toLowerCase() == "pos")
+                                                      Container(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                                        decoration: BoxDecoration(
+                                                          color: const Color(0xFF1976D2), // Blue
+                                                          borderRadius: BorderRadius.circular(6),
+                                                        ),
+                                                        child: const Text(
+                                                          "POS",
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontFamily: 'Sora',
+                                                            fontSize: 13,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                  Row(
+                                                    children: [
+                                                      const Icon(Icons.access_time, size: 15,),
+                                                      Text(time, style: const TextStyle(
+                                                        fontWeight:
+                                                        FontWeight.w500,
+                                                        fontFamily: 'Sora',
+                                                        fontSize: 10,
+                                                      ),
+                                                      )
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  // ✅ Wrap this SizedBox with Flexible
+                                                  Flexible(
+                                                    child: SizedBox(
+                                                      width: MediaQuery.of(context).size.width * 0.5,
+                                                      child: Text(
+                                                        '${order.shipping_address?.customer_name ?? guestName ?? ""} / ${order.shipping_address?.phone ?? guestPhone}',
+                                                        style: const TextStyle(
+                                                            fontWeight: FontWeight.w700,
+                                                            fontFamily: 'Sora',
+                                                            fontSize: 13),
+                                                        overflow: TextOverflow.ellipsis, // ✅ Add this
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        '${order.orderNumber != null ? 'order_number'.tr : 'Order ID'} : ',
+                                                        style: const TextStyle(
+                                                            fontWeight: FontWeight.w700,
+                                                            fontSize: 11,
+                                                            fontFamily: 'Sora'),
+                                                      ),
+                                                      Text(
+                                                        '${order.orderNumber ?? order.id ?? 'N/A'}',
+                                                        style: const TextStyle(
+                                                            fontWeight: FontWeight.w500,
+                                                            fontSize: 11,
+                                                            fontFamily: 'Sora'),
                                                       ),
                                                     ],
                                                   ),
-                                                ),
+                                                ],
                                               ),
-                                            );
-                                          },
-                                        );
-                                      },
+                                              const SizedBox(height: 8),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Row(children: [
+                                                  Text(
+                                                    () {
+                                                      if (order.payment == null) {
+                                                        return '${'currency'.tr} ${formatAmount(0)}';
+                                                      }
+                                                      final rawAmount = order.payment!.amount ?? 0;
+                                                      final isStripe = order.payment!.paymentMethod == 'stripe';
+                                                      final displayAmount = isStripe
+                                                          ? rawAmount - (app.appController.stripeServiceFee.value ?? 0)
+                                                          : rawAmount;
+                                                      return '${'currency'.tr} ${formatAmount(displayAmount)}';
+                                                    }(),
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                        FontWeight.w800,
+                                                        fontFamily: 'Sora',
+                                                        fontSize: 16),
+                                                  ),
+                                                  if ((order.payment?.paymentMethod ?? '').isNotEmpty) ...[
+                                                    const SizedBox(width: 6),
+                                                    paymentIcon(order.payment!.paymentMethod!),
+                                                  ],
+                                                  ]),
+                                                  if (_isVorbestellen(order.deliveryTime))
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.orange,
+                                                        borderRadius: BorderRadius.circular(6),
+                                                      ),
+                                                      child: const Text(
+                                                        'Vorbestellen',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.w700,
+                                                          fontFamily: 'Sora',
+                                                          fontSize: 11,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        isLocalOrder ? "syncing".tr : getApprovalStatusText(order.approvalStatus),
+                                                        style: const TextStyle(
+                                                            fontWeight: FontWeight.w400,
+                                                            fontFamily: 'Sora',
+                                                            fontSize: 13
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 6),
+                                                      isLocalOrder
+                                                          ? RotationTransition(
+                                                        turns: _syncRotationAnimation,
+                                                        child: SvgPicture.asset('assets/images/sync.svg'),
+                                                      )
+                                                          : CircleAvatar(
+                                                        radius: 14,
+                                                        backgroundColor: getStatusColor(order.approvalStatus ?? 0),
+                                                        child: Icon(
+                                                          getStatusIcon(order.approvalStatus ?? 0),
+                                                          color: Colors.white,
+                                                          size: 16,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   );
-                                }),
-                        ),
+                                },
+                              );
+                            },
+                          );
+                        }),
                       ),
-                    ),
-                  ],
-                ),
-              );
-              //   Padding(
-              //   padding: const EdgeInsets.all(6),
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       Row(crossAxisAlignment: CrossAxisAlignment.start,
-              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //         children: [
-              //           Padding(
-              //             padding: const EdgeInsets.only(left: 6.0),
-              //             child: Column(
-              //               crossAxisAlignment: CrossAxisAlignment.start,
-              //               children: [
-              //                 _storeType == '1'
-              //                     ? _buildSourceTabStrip()
-              //                     : Text('order'.tr,
-              //                         style: const TextStyle(
-              //                             fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Sora', )),
-              //                 if (_storeType == '1')
-              //                   SizedBox(height: 8,),
-              //                 Text(
-              //                   dateSeleted.isEmpty
-              //                       ? DateFormat('d MMMM, y')
-              //                       .format(DateTime.now())
-              //                       : dateSeleted,
-              //                   style: const TextStyle(fontSize: 14,fontWeight: FontWeight.w700, fontFamily: 'Sora',),
-              //                 ),
-              //               ],
-              //             ),
-              //           ),
-              //           if (_storeType == '1')
-              //             _buildRefreshSyncButtons()
-              //           else
-              //             Row(
-              //               children: [
-              //                 Text(
-              //                   '${'total_order'.tr}: ${_getTotalOrders()}',
-              //                   style: const TextStyle(
-              //                       fontSize: 14,
-              //                       fontWeight: FontWeight.w800,
-              //                       // fontFamily: 'Sora',
-              //                       fontFamily: 'Sora',
-              //                       color: Colors.black),
-              //                 ),
-              //                 IconButton(
-              //                   iconSize: 20,
-              //                   icon: const Icon(Icons.refresh),
-              //                   onPressed: _manualRefresh,
-              //                 ),
-              //               ],
-              //             ),
-              //         ],
-              //       ),
-              //       const SizedBox(height: 10),
-              //       SingleChildScrollView(
-              //         scrollDirection: Axis.horizontal,
-              //         child: Row(
-              //           children: [
-              //             _buildStatusContainer(
-              //               '${'accepted'.tr} ${_getApprovalStatusCount("accepted")}',
-              //               const Color(0xFF7FB2FF).withOpacity(0.15),
-              //             ),
-              //             const SizedBox(width: 8),
-              //             _buildStatusContainer(
-              //               '${"decline".tr} ${_getApprovalStatusCount("declined")}',
-              //               Colors.red.withOpacity(0.1),
-              //             ),
-              //             const SizedBox(width: 8),
-              //             _buildStatusContainer(
-              //               '${"pickup".tr} ${_getOrderTypeCount("pickup")}',
-              //               Colors.blue.withOpacity(0.1),
-              //             ),
-              //             const SizedBox(width: 8),
-              //             _buildStatusContainer(
-              //               '${"delivery".tr} ${_getOrderTypeCount("delivery")}',
-              //               Colors.purple.withOpacity(0.1),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //       const SizedBox(height: 15),
-              //       Expanded(
-              //           child: MediaQuery.removePadding(
-              //             context: context,
-              //             removeTop: false,
-              //             removeBottom: true,
-              //             child: RefreshIndicator(
-              //               onRefresh: _handleRefresh,
-              //               color: Colors.green,
-              //               backgroundColor: Colors.white,
-              //               displacement: 60,
-              //               child: _isInitialLoading
-              //                   ? Container()
-              //                   : !hasInternet
-              //                   ? ListView(
-              //                 padding: EdgeInsets.zero,
-              //                 physics:
-              //                 const AlwaysScrollableScrollPhysics(),
-              //                 children: [
-              //                   const SizedBox(height: 100),
-              //                   Column(
-              //                     mainAxisAlignment:
-              //                     MainAxisAlignment.center,
-              //                     children: [
-              //                       const Icon(Icons.wifi_off,
-              //                           size: 80, color: Colors.grey),
-              //                       const SizedBox(height: 16),
-              //                       Text("no_internet".tr,
-              //                         style: const TextStyle(fontFamily: 'Sora',
-              //                             fontSize: 18,
-              //                             color: Colors.grey,
-              //                             fontWeight: FontWeight.w600),
-              //                       ),
-              //                       const SizedBox(height: 8),
-              //                       Text(
-              //                         "please".tr,
-              //                         style: const TextStyle(fontFamily: 'Sora',
-              //                             fontSize: 14,
-              //                             color: Colors.grey),
-              //                       ),
-              //                     ],
-              //                   ),
-              //                 ],
-              //               )
-              //                   : Obx(() {
-              //                 List<Order> allOrders = [
-              //                   ..._localOrders,
-              //                   ...app.appController.searchResultOrder,
-              //                 ];
-              //                 if (_orderSourceTab == 'pos') {
-              //                   allOrders = allOrders.where((o) => o.source == 'pos').toList();
-              //                 } else if (_orderSourceTab == 'online') {
-              //                   allOrders = allOrders.where((o) => o.source != 'pos').toList();
-              //                 }
-              //                 if (allOrders.isEmpty) {
-              //                   return ListView(
-              //                     padding: EdgeInsets.zero,
-              //                     physics: const AlwaysScrollableScrollPhysics(),
-              //                     children: [
-              //                       const SizedBox(height: 100),
-              //                       Column(
-              //                         mainAxisAlignment: MainAxisAlignment.center,
-              //                         children: [
-              //                           Lottie.asset('assets/animations/empty.json',
-              //                             width: 150,
-              //                             height: 150,
-              //                           ),
-              //                           Text(
-              //                             'no_order'.tr,
-              //                             style: const TextStyle(fontFamily: 'Sora',
-              //                               fontSize: 16,
-              //                               fontWeight: FontWeight.w500,
-              //                               color: Colors.grey,
-              //                             ),
-              //                           ),
-              //                         ],
-              //                       ),
-              //                     ],
-              //                   );
-              //                 }
-              //                 return ListView.builder(
-              //                   physics: const AlwaysScrollableScrollPhysics(),
-              //                   padding: EdgeInsets.zero,
-              //                   itemCount: allOrders.length,
-              //                   itemBuilder: (context, index) {
-              //                     final order = allOrders[index];
-              //                     final isLocalOrder = _localOrders.contains(order);
-              //                     DateTime dateTime;
-              //                     if (order.isLocalOrder == true) {
-              //                       // ✅ Handle both milliseconds (int) and ISO string formats
-              //                       try {
-              //                         dateTime = DateTime.fromMillisecondsSinceEpoch(
-              //                             int.parse(order.createdAt.toString())
-              //                         );
-              //                       } catch (e) {
-              //                         // If parsing as int fails, try parsing as ISO string
-              //                         dateTime = DateTime.parse(order.createdAt.toString());
-              //                       }
-              //                     } else {
-              //                       dateTime = DateTime.parse(order.createdAt.toString());
-              //                     }
-              //                     String time = DateFormat('hh:mm a').format(dateTime);
-              //                     String guestAddress = order.guestShippingJson?.zip?.toString() ?? '';
-              //                     String guestName = order.guestShippingJson?.customerName?.toString() ?? '';
-              //                     String guestPhone = order.guestShippingJson?.phone?.toString() ?? '';
-              //                     final String source = order.source.toString();
-              //                     return AnimatedBuilder(
-              //                       animation: _opacityAnimation,
-              //                       builder: (context, child) {
-              //                         final bool isPending = (order.approvalStatus ?? 0) == 1;
-              //                         Color getContainerColor() {
-              //
-              //                           if (order.source == 'pos') {
-              //                             return const Color(0xffF7F3FF);
-              //                           }
-              //                           switch (order.approvalStatus) {
-              //                             case 2:
-              //                               return const Color(0xffEEF3FF);
-              //                             case 3:
-              //                               return const Color(0xffFFEFEF);
-              //                             case 1:
-              //                               return Colors.white;
-              //                             default:
-              //                               return Colors.white;
-              //                           }
-              //                         }
-              //                         return Opacity(
-              //                           opacity: isPending ? _opacityAnimation.value : 1.0,
-              //                           child: Container(
-              //                             margin: const EdgeInsets.only(bottom: 12),
-              //                             decoration: BoxDecoration(
-              //                               color: getContainerColor(),
-              //                               borderRadius: BorderRadius.circular(7),
-              //                               border: Border.all(
-              //                                 color: (order.source == 'pos')
-              //                                     ? const Color(0xffB8ABD1)
-              //                                     : (order.approvalStatus == 2)
-              //                                     ? const Color(0xffCBD8FB)
-              //                                     : (order.approvalStatus == 3)
-              //                                     ? const Color(0xffFFD0D0)
-              //                                     : Colors.grey.withOpacity(0.2),
-              //                                 width: 1,
-              //                               ),
-              //                               boxShadow: [
-              //                                 BoxShadow(
-              //                                   color: Colors.black.withOpacity(0.1),
-              //                                   spreadRadius: 0,
-              //                                   blurRadius: 4,
-              //                                   offset:
-              //                                   const Offset(0, 2),
-              //                                 ),
-              //                               ],
-              //                             ),
-              //                             child: Padding(
-              //                               padding: const EdgeInsets.all(8),
-              //                               child: GestureDetector(
-              //                                 behavior: HitTestBehavior.opaque,
-              //                                 onLongPress: () {
-              //                                   if (order.approvalStatus == 2) {
-              //                                     _showDeliveryTimeDialog(order);
-              //                                   }
-              //                                 },
-              //                                 onTap: () => Get.to(() => OrderDetailEnglish(order)),
-              //                                 child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-              //                                   children: [
-              //                                     Row(crossAxisAlignment: CrossAxisAlignment.start,
-              //                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //                                       children: [
-              //                                         Row(
-              //                                           crossAxisAlignment: CrossAxisAlignment.start,
-              //                                           children: [
-              //                                             CircleAvatar(
-              //                                               radius: 17,
-              //                                               backgroundColor: Colors.green,
-              //                                               child:
-              //                                               SvgPicture.asset(
-              //                                                 order.orderType == 1
-              //                                                     ? 'assets/images/ic_delivery.svg'
-              //                                                     : order.orderType == 2
-              //                                                     ? 'assets/images/ic_pickup.svg'
-              //                                                     : order.orderType == 3
-              //                                                     ? 'assets/images/table.svg'
-              //                                                     : 'assets/images/ic_pickup.svg',
-              //                                                 height: 14,
-              //                                                 width: 14,
-              //                                                 color: Colors.white,
-              //                                               ),
-              //                                             ),
-              //                                             const SizedBox(width: 6),
-              //                                             Column(crossAxisAlignment: CrossAxisAlignment.start,
-              //                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //                                               children: [
-              //                                                 Container(
-              //                                                   width: MediaQuery.of(context).size.width * 0.43,
-              //                                                   child:
-              //                                                   Row(crossAxisAlignment: CrossAxisAlignment.start,
-              //                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //                                                     children: [
-              //                                                       Container(
-              //                                                         width: MediaQuery.of(context).size.width * (_storeType == '2' ? 0.35 :
-              //                                                         (order.orderType == 2 ? 0.2 : 0.2)),
-              //                                                         child: Text(order.orderType == 2 ? 'pickup'.tr : (_storeType == '2'
-              //                                                             ? _getFullAddress(
-              //                                                             order.shipping_address ?? order.guestShippingJson,
-              //                                                             order.shipping_address == null)
-              //                                                             : (order.shipping_address?.zip?.toString() ?? guestAddress)),
-              //                                                           style: const TextStyle(
-              //                                                               fontWeight: FontWeight.w700,
-              //                                                               fontSize: 13,
-              //                                                               fontFamily: 'Sora'),
-              //                                                         ),
-              //                                                       ),
-              //                                                       if (order.deliveryTime != null && order.deliveryTime!.isNotEmpty)
-              //                                                         Container(
-              //                                                           width: MediaQuery.of(context).size.width * 0.22,
-              //                                                           child: Text(
-              //                                                             '${'time'.tr}: ${_extractTime(order.deliveryTime!)}',
-              //                                                             style: const TextStyle(fontWeight: FontWeight.w700,
-              //                                                                 fontSize: 13, fontFamily: 'Sora'),
-              //                                                           ),
-              //                                                         ),
-              //                                                     ],
-              //                                                   ),
-              //                                                 ),
-              //                                                 Visibility(
-              //                                                   visible: (_storeType != '2') && (order.shipping_address != null || order.guestShippingJson != null),
-              //                                                   child: Container(
-              //                                                     width: MediaQuery.of(context).size.width * 0.4,
-              //                                                     child: Text(
-              //                                                       order.orderType == 1 ? (order.shipping_address != null
-              //                                                           ? '${order.shipping_address!.line1!}, ${order.shipping_address!.city!}'
-              //                                                           : '${order.guestShippingJson?.line1 ?? ''}, ${order.guestShippingJson?.city ?? ''}')
-              //                                                           : '',
-              //                                                       style: const TextStyle(
-              //                                                           fontWeight: FontWeight.w500,
-              //                                                           fontSize: 11,
-              //                                                           letterSpacing: 0,
-              //                                                           height: 0,
-              //                                                           fontFamily: 'Sora'),
-              //                                                     ),
-              //                                                   ),
-              //                                                 ),
-              //                                               ],
-              //                                             )
-              //                                           ],
-              //                                         ),
-              //                                         if (source == "Mobile User App")
-              //                                           Container(
-              //                                             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-              //                                             decoration: BoxDecoration(
-              //                                               color: const Color(0xFF2E7D32),
-              //                                               borderRadius: BorderRadius.circular(6),
-              //                                             ),
-              //                                             child: const Text(
-              //                                               "Magskr",
-              //                                               style: TextStyle(
-              //                                                 color: Colors.white,
-              //                                                 fontWeight: FontWeight.bold,
-              //                                                 fontFamily: 'Sora',
-              //                                                 fontSize: 13,
-              //                                               ),
-              //                                             ),
-              //                                           )
-              //                                         else if (source == "online")
-              //                                           Container(
-              //                                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-              //                                             decoration: BoxDecoration(
-              //                                               color: const Color(0xFFFFC107),
-              //                                               borderRadius: BorderRadius.circular(6),
-              //                                             ),
-              //                                             child: const Text(
-              //                                               "Website",
-              //                                               style: TextStyle(
-              //                                                 color: Colors.white,
-              //                                                 fontWeight: FontWeight.bold,
-              //                                                 fontFamily: 'Sora',
-              //                                                 fontSize: 13,
-              //                                               ),
-              //                                             ),
-              //                                           )
-              //                                         else if (source.toLowerCase() == "pos")
-              //                                             Container(
-              //                                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-              //                                               decoration: BoxDecoration(
-              //                                                 color: const Color(0xFF1976D2), // Blue
-              //                                                 borderRadius: BorderRadius.circular(6),
-              //                                               ),
-              //                                               child: const Text(
-              //                                                 "POS",
-              //                                                 style: TextStyle(
-              //                                                   color: Colors.white,
-              //                                                   fontWeight: FontWeight.bold,
-              //                                                   fontFamily: 'Sora',
-              //                                                   fontSize: 13,
-              //                                                 ),
-              //                                               ),
-              //                                             ),
-              //                                         Row(
-              //                                           children: [
-              //                                             const Icon(Icons.access_time, size: 15,),
-              //                                             Text(time, style: const TextStyle(
-              //                                               fontWeight:
-              //                                               FontWeight.w500,
-              //                                               fontFamily: 'Sora',
-              //                                               fontSize: 10,
-              //                                             ),
-              //                                             )
-              //                                           ],
-              //                                         )
-              //                                       ],
-              //                                     ),
-              //                                     const SizedBox(height: 8),
-              //                                     Row(
-              //                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //                                       children: [
-              //                                         // ✅ Wrap this SizedBox with Flexible
-              //                                         Flexible(
-              //                                           child: SizedBox(
-              //                                             width: MediaQuery.of(context).size.width * 0.5,
-              //                                             child: Text(
-              //                                               '${order.shipping_address?.customer_name ?? guestName ?? ""} / ${order.shipping_address?.phone ?? guestPhone}',
-              //                                               style: const TextStyle(
-              //                                                   fontWeight: FontWeight.w700,
-              //                                                   fontFamily: 'Sora',
-              //                                                   fontSize: 13),
-              //                                               overflow: TextOverflow.ellipsis, // ✅ Add this
-              //                                             ),
-              //                                           ),
-              //                                         ),
-              //                                         Row(
-              //                                           children: [
-              //                                             Text(
-              //                                               '${order.orderNumber != null ? 'order_number'.tr : 'Order ID'} : ',
-              //                                               style: const TextStyle(
-              //                                                   fontWeight: FontWeight.w700,
-              //                                                   fontSize: 11,
-              //                                                   fontFamily: 'Sora'),
-              //                                             ),
-              //                                             Text(
-              //                                               '${order.orderNumber ?? order.id ?? 'N/A'}',
-              //                                               style: const TextStyle(
-              //                                                   fontWeight: FontWeight.w500,
-              //                                                   fontSize: 11,
-              //                                                   fontFamily: 'Sora'),
-              //                                             ),
-              //                                           ],
-              //                                         ),
-              //                                       ],
-              //                                     ),
-              //                                     const SizedBox(height: 8),
-              //                                     Row(
-              //                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //                                       children: [
-              //                                         Text(
-              //                                           () {
-              //                                             if (order.payment == null) {
-              //                                               return '${'currency'.tr} ${formatAmount(0)}';
-              //                                             }
-              //                                             final rawAmount = order.payment!.amount ?? 0;
-              //                                             final isStripe = order.payment!.paymentMethod == 'stripe';
-              //                                             final displayAmount = isStripe
-              //                                                 ? rawAmount - (app.appController.stripeServiceFee.value ?? 0)
-              //                                                 : rawAmount;
-              //                                             return '${'currency'.tr} ${formatAmount(displayAmount)}';
-              //                                           }(),
-              //                                           style: const TextStyle(
-              //                                               fontWeight:
-              //                                               FontWeight.w800,
-              //                                               fontFamily:
-              //                                               'Fraunces',
-              //                                               fontSize: 16),
-              //                                         ),
-              //                                         if (_isVorbestellen(order.deliveryTime))
-              //                                           Container(
-              //                                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              //                                             decoration: BoxDecoration(
-              //                                               color: Colors.orange,
-              //                                               borderRadius: BorderRadius.circular(6),
-              //                                             ),
-              //                                             child: const Text(
-              //                                               'Vorbestellen',
-              //                                               style: TextStyle(
-              //                                                 color: Colors.white,
-              //                                                 fontWeight: FontWeight.w700,
-              //                                                 fontFamily: 'Sora',
-              //                                                 fontSize: 11,
-              //                                               ),
-              //                                             ),
-              //                                           ),
-              //                                         Row(
-              //                                           children: [
-              //                                             Text(
-              //                                               isLocalOrder ? "syncing".tr : getApprovalStatusText(order.approvalStatus),
-              //                                               style: const TextStyle(
-              //                                                   fontWeight: FontWeight.w400,
-              //                                                   fontFamily: 'Sora',
-              //                                                   fontSize: 13
-              //                                               ),
-              //                                             ),
-              //                                             const SizedBox(width: 6),
-              //                                             isLocalOrder
-              //                                                 ? RotationTransition(
-              //                                               turns: _syncRotationAnimation,
-              //                                               child: SvgPicture.asset('assets/images/sync.svg'),
-              //                                             )
-              //                                                 : CircleAvatar(
-              //                                               radius: 14,
-              //                                               backgroundColor: getStatusColor(order.approvalStatus ?? 0),
-              //                                               child: Icon(
-              //                                                 getStatusIcon(order.approvalStatus ?? 0),
-              //                                                 color: Colors.white,
-              //                                                 size: 16,
-              //                                               ),
-              //                                             ),
-              //                                           ],
-              //                                         ),
-              //                                       ],
-              //                                     ),
-              //                                   ],
-              //                                 ),
-              //                               ),
-              //                             ),
-              //                           ),
-              //                         );
-              //                       },
-              //                     );
-              //                   },
-              //                 );
-              //               }),
-              //             ),
-              //           )
-              //       )
-              //     ],
-              //   ),
-              //
-            },
-          ),
-        ),
+                    )
+                )
+              ],
+            ),
+          );
+        }),
+      ),
       ),
     );
   }
 
-  Widget _buildSourceBadge(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'Sora',
-          fontSize: 11,
-        ),
-      ),
-    );
-  }
-
-  Future<void> getOrdersWithoutLoaderSilent(
-    String? bearerKey,
-    String? id,
-  ) async {
+  Future<void> getOrdersWithoutLoaderSilent(String? bearerKey, String? id) async {
     try {
       DateTime formatted = DateTime.now();
       String date = DateFormat('yyyy-MM-dd').format(formatted);
@@ -3340,12 +2439,10 @@ class _OrderScreenState extends State<OrderScreenNew>
     List<String> parts = [];
 
     if (isGuest) {
-      if (shippingAddress.line1 != null &&
-          shippingAddress.line1.toString().isNotEmpty) {
+      if (shippingAddress.line1 != null && shippingAddress.line1.toString().isNotEmpty) {
         parts.add(shippingAddress.line1.toString());
       }
-      if (shippingAddress.city != null &&
-          shippingAddress.city.toString().isNotEmpty) {
+      if (shippingAddress.city != null && shippingAddress.city.toString().isNotEmpty) {
         parts.add(shippingAddress.city.toString());
       }
       if (shippingAddress.zip != null &&
@@ -3353,8 +2450,7 @@ class _OrderScreenState extends State<OrderScreenNew>
           shippingAddress.zip.toString() != '00000') {
         parts.add(shippingAddress.zip.toString());
       }
-      if (shippingAddress.country != null &&
-          shippingAddress.country.toString().isNotEmpty) {
+      if (shippingAddress.country != null && shippingAddress.country.toString().isNotEmpty) {
         parts.add(shippingAddress.country.toString());
       }
     } else {
@@ -3369,8 +2465,7 @@ class _OrderScreenState extends State<OrderScreenNew>
           shippingAddress.zip != '00000') {
         parts.add(shippingAddress.zip!);
       }
-      if (shippingAddress.country != null &&
-          shippingAddress.country!.isNotEmpty) {
+      if (shippingAddress.country != null && shippingAddress.country!.isNotEmpty) {
         parts.add(shippingAddress.country!);
       }
     }
@@ -3379,8 +2474,7 @@ class _OrderScreenState extends State<OrderScreenNew>
   }
 
   Widget _buildRefreshSyncButtons() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
@@ -3393,7 +2487,7 @@ class _OrderScreenState extends State<OrderScreenNew>
           iconSize: 25,
           icon: const Icon(Icons.sync),
           color: Colors.black,
-          onPressed: syncLocalPosOrder,
+          onPressed: syncLocalPosOrder
         ),
         // GestureDetector(
         //   onTap: () async {
@@ -3420,7 +2514,7 @@ class _OrderScreenState extends State<OrderScreenNew>
         //       ),
         //       const Text(
         //         'sync',
-        //         style: TextStyle(fontFamily: 'Sora', fontSize: 12),
+        //         style: TextStyle(fontSize: 12),
         //       ),
         //     ],
         //   ),
@@ -3460,12 +2554,7 @@ class _OrderScreenState extends State<OrderScreenNew>
     });
   }
 
-  Widget _buildSourceTab(
-    String key,
-    String label, {
-    required Color color,
-    int? badgeCount,
-  }) {
+  Widget _buildSourceTab(String key, String label, {required Color color, int? badgeCount}) {
     final bool isSelected = _orderSourceTab == key;
     final Widget pill = AnimatedContainer(
       duration: const Duration(milliseconds: 180),
@@ -3501,10 +2590,7 @@ class _OrderScreenState extends State<OrderScreenNew>
                 Positioned(
                   bottom: -8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 2,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                     decoration: BoxDecoration(
                       color: _darken(color),
                       borderRadius: BorderRadius.circular(12),
@@ -3527,26 +2613,39 @@ class _OrderScreenState extends State<OrderScreenNew>
 
   Color _darken(Color color, [double amount = 0.05]) {
     final hsl = HSLColor.fromColor(color);
-    return hsl
-        .withLightness((hsl.lightness - amount).clamp(0.0, 1.0))
-        .toColor();
+    return hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0)).toColor();
   }
 
-  Widget _buildStatusContainer(String text, Color backgroundColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontFamily: 'Sora',
-          fontWeight: FontWeight.w700,
-          fontSize: 11,
-          color: Colors.black87,
+  // Tap filters the order list by this status; tap again clears the filter.
+  Widget _buildStatusContainer(String text, Color backgroundColor, String filter) {
+    final selected = _statusFilter == filter;
+    return GestureDetector(
+      onTap: () => setState(() => _statusFilter = selected ? null : filter),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? _kPurple : backgroundColor,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+              color: selected ? _kPurple : Colors.grey.withOpacity(0.2)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              text,
+              style: TextStyle(
+                  fontFamily: 'Sora',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 11,
+                  color: selected ? Colors.white : Colors.black87),
+            ),
+            if (selected) ...[
+              const SizedBox(width: 4),
+              const Icon(Icons.close_rounded, size: 13, color: Colors.white),
+            ],
+          ],
         ),
       ),
     );
@@ -3570,8 +2669,7 @@ class _OrderScreenState extends State<OrderScreenNew>
 
     DateTime currentDeliveryTime;
     try {
-      currentDeliveryTime =
-          order.deliveryTime != null && order.deliveryTime!.isNotEmpty
+      currentDeliveryTime = order.deliveryTime != null && order.deliveryTime!.isNotEmpty
           ? DateTime.parse(order.deliveryTime!)
           : DateTime.now().add(const Duration(minutes: 30));
     } catch (e) {
@@ -3586,17 +2684,13 @@ class _OrderScreenState extends State<OrderScreenNew>
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: Text(
-                'update_delivery_time'.tr,
-                style: const TextStyle(fontFamily: 'Sora'),
-              ),
+              title: Text('update_delivery_time'.tr, style: const TextStyle(fontFamily: 'Sora')),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     DateFormat('HH:mm').format(updatedTime),
-                    style: const TextStyle(
-                      fontFamily: 'Sora',
+                    style: const TextStyle(fontFamily: 'Sora', 
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
@@ -3608,30 +2702,18 @@ class _OrderScreenState extends State<OrderScreenNew>
                       IconButton(
                         onPressed: () {
                           setDialogState(() {
-                            updatedTime = updatedTime.subtract(
-                              const Duration(minutes: 15),
-                            );
+                            updatedTime = updatedTime.subtract(const Duration(minutes: 15));
                           });
                         },
-                        icon: const Icon(
-                          Icons.remove_circle,
-                          size: 40,
-                          color: Colors.red,
-                        ),
+                        icon: const Icon(Icons.remove_circle, size: 40, color: Colors.red),
                       ),
                       IconButton(
                         onPressed: () {
                           setDialogState(() {
-                            updatedTime = updatedTime.add(
-                              const Duration(minutes: 15),
-                            );
+                            updatedTime = updatedTime.add(const Duration(minutes: 15));
                           });
                         },
-                        icon: const Icon(
-                          Icons.add_circle,
-                          size: 40,
-                          color: Colors.green,
-                        ),
+                        icon: const Icon(Icons.add_circle, size: 40, color: _kPurple),
                       ),
                     ],
                   ),
@@ -3640,30 +2722,22 @@ class _OrderScreenState extends State<OrderScreenNew>
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    'cancel'.tr,
-                    style: const TextStyle(fontFamily: 'Sora'),
-                  ),
+                  child: Text('cancel'.tr, style: const TextStyle(fontFamily: 'Sora')),
                 ),
                 GestureDetector(
                   onTap: () async {
                     Navigator.pop(context);
                     print('order id is ${order.id}');
-                    await _updateDeliveryTime(order, updatedTime);
+                    await _updateDeliveryTime(
+                        order, updatedTime);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: const Color(0xff14b65f),
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: _kBrandGradient
                     ),
-                    child: Text(
-                      'saved'.tr,
-                      style: const TextStyle(
-                        fontFamily: 'Sora',
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: Text('saved'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.white)),
                   ),
                 ),
               ],
@@ -3716,21 +2790,20 @@ class _OrderScreenState extends State<OrderScreenNew>
       Map<String, dynamic> jsonData = {
         "order_status": 2,
         "approval_status": 2,
-        "delivery_time": newTime.toIso8601String(),
+        "delivery_time": newTime.toIso8601String()
         //"delivery_time": "2025-12-07T00:15:00.000"
       };
       print('map value is $jsonData');
-      final result = await ApiRepo()
-          .orderAcceptDecline(bearerKey!, jsonData, order.id ?? 0)
-          .timeout(
-            const Duration(seconds: 6),
-            onTimeout: () {
-              throw TimeoutException(
-                'Request timeout',
-                const Duration(seconds: 6),
-              );
-            },
-          );
+      final result = await ApiRepo().orderAcceptDecline(
+          bearerKey!,
+          jsonData,
+          order.id ?? 0
+      ).timeout(
+        const Duration(seconds: 6),
+        onTimeout: () {
+          throw TimeoutException('Request timeout', const Duration(seconds: 6));
+        },
+      );
 
       timeoutTimer.cancel();
 
@@ -3773,7 +2846,6 @@ class _OrderScreenState extends State<OrderScreenNew>
       print('❌ Error updating delivery time: $e');
     }
   }
-
   @override
   bool get wantKeepAlive => true;
 
@@ -3804,16 +2876,12 @@ class _OrderScreenState extends State<OrderScreenNew>
       print('📦 Found ${unsyncedOrders.length} unsynced orders');
 
       // ✅ Store order IDs for later verification
-      List<int> localOrderIds = unsyncedOrders
-          .map((o) => o['id'] as int)
-          .toList();
+      List<int> localOrderIds = unsyncedOrders.map((o) => o['id'] as int).toList();
       print('📋 Local Order IDs to sync: $localOrderIds');
 
       List<Map<String, dynamic>> ordersToSync = [];
       for (var dbOrder in unsyncedOrders) {
-        final orderDetails = await DatabaseHelper().getOrderDetails(
-          dbOrder['id'] as int,
-        );
+        final orderDetails = await DatabaseHelper().getOrderDetails(dbOrder['id'] as int);
         if (orderDetails != null) {
           ordersToSync.add(await _buildSyncOrderMap(orderDetails));
         }
@@ -3824,13 +2892,10 @@ class _OrderScreenState extends State<OrderScreenNew>
       SyncLocalOrder model = await CallService().syncLocalOrder(ordersToSync);
 
       print('📡 API Response - Status: ${model.status}');
-      print(
-        '📡 API Response - Synced IDs from server: ${model.syncedOrderIds}',
-      );
+      print('📡 API Response - Synced IDs from server: ${model.syncedOrderIds}');
 
-      if (model.status == 'ok' &&
-          model.syncedOrderIds != null &&
-          model.syncedOrderIds!.isNotEmpty) {
+      if (model.status == 'ok' && model.syncedOrderIds != null && model.syncedOrderIds!.isNotEmpty) {
+
         // ✅ Mark ALL local orders as synced (not just the ones from server response)
         for (int localOrderId in localOrderIds) {
           print('🔄 Marking order $localOrderId as synced...');
@@ -3846,9 +2911,7 @@ class _OrderScreenState extends State<OrderScreenNew>
 
         // ✅ Verify orders are marked as synced
         final stillUnsynced = await DatabaseHelper().getUnsyncedOrders(StoreId);
-        print(
-          '🔍 After marking - Still unsynced orders: ${stillUnsynced.length}',
-        );
+        print('🔍 After marking - Still unsynced orders: ${stillUnsynced.length}');
 
         // ✅ Clear local orders list immediately
         setState(() {
@@ -3870,6 +2933,7 @@ class _OrderScreenState extends State<OrderScreenNew>
         print('❌ Sync failed - Status: ${model.status}');
         return false;
       }
+
     } catch (e) {
       print('❌ Syncing error: $e');
       return false;
@@ -3894,9 +2958,7 @@ class _OrderScreenState extends State<OrderScreenNew>
       List<Map<String, dynamic>> ordersToSync = [];
 
       for (var dbOrder in unsyncedOrders) {
-        final orderDetails = await DatabaseHelper().getOrderDetails(
-          dbOrder['id'] as int,
-        );
+        final orderDetails = await DatabaseHelper().getOrderDetails(dbOrder['id'] as int);
         if (orderDetails != null) {
           ordersToSync.add(await _buildSyncOrderMap(orderDetails));
         }
@@ -3907,9 +2969,7 @@ class _OrderScreenState extends State<OrderScreenNew>
 
         var result = await CallService().syncLocalOrder(ordersToSync);
 
-        if (result.status == 'ok' &&
-            result.syncedOrderIds != null &&
-            result.syncedOrderIds!.isNotEmpty) {
+        if (result.status == 'ok' && result.syncedOrderIds != null && result.syncedOrderIds!.isNotEmpty) {
           print('✅ Auto-sync success - Synced IDs: ${result.syncedOrderIds}');
 
           for (var dbOrder in unsyncedOrders) {
@@ -3927,9 +2987,7 @@ class _OrderScreenState extends State<OrderScreenNew>
 
           // ✅ Update local orders list
           if (mounted) {
-            final newUnsyncedOrders = await DatabaseHelper().getUnsyncedOrders(
-              storeId,
-            );
+            final newUnsyncedOrders = await DatabaseHelper().getUnsyncedOrders(storeId);
             setState(() {
               if (newUnsyncedOrders.isEmpty) {
                 _localOrders.clear();
@@ -3939,7 +2997,7 @@ class _OrderScreenState extends State<OrderScreenNew>
           }
 
           print('✅ Auto-sync completed: ${ordersToSync.length} orders synced');
-        } else {
+        }else {
           print('❌ Auto-sync failed - Status: ${result.status}');
         }
       }
@@ -3973,33 +3031,23 @@ class _OrderScreenState extends State<OrderScreenNew>
     DateTime dstStart = DateTime.utc(year, marchEnd.month, marchEnd.day, 2, 0);
 
     // DST ends at 3:00 AM on last Sunday of October
-    DateTime dstEnd = DateTime.utc(
-      year,
-      octoberEnd.month,
-      octoberEnd.day,
-      3,
-      0,
-    );
+    DateTime dstEnd = DateTime.utc(year, octoberEnd.month, octoberEnd.day, 3, 0);
 
     return dateTime.isAfter(dstStart) && dateTime.isBefore(dstEnd);
   }
 
   Future<Map<String, dynamic>> _buildSyncOrderMap(
-    Map<String, dynamic> orderDetails,
-  ) async {
+      Map<String, dynamic> orderDetails) async
+  {
     final orderData = orderDetails['order'] as Map<String, dynamic>;
     final itemsData = orderDetails['items'] as List<dynamic>;
     final paymentData = orderDetails['payment'] as Map<String, dynamic>?;
-    final addressData =
-        orderDetails['shipping_address'] as Map<String, dynamic>?;
+    final addressData = orderDetails['shipping_address'] as Map<String, dynamic>?;
 
     int storedMillis = orderData['created_at'] as int;
 
     // ✅ Stored as UTC milliseconds, just convert directly to UTC DateTime
-    DateTime utcTime = DateTime.fromMillisecondsSinceEpoch(
-      storedMillis,
-      isUtc: true,
-    );
+    DateTime utcTime = DateTime.fromMillisecondsSinceEpoch(storedMillis, isUtc: true);
 
     // ✅ Format as ISO string (this keeps it as UTC)
     String isoTimestamp = utcTime.toIso8601String();
@@ -4044,7 +3092,7 @@ class _OrderScreenState extends State<OrderScreenNew>
       'created_at': isoTimestamp, // ✅ Send UTC time
       'note': orderData['note'] ?? '',
       'items': items,
-      'delivery_time': orderData['delivery_time'],
+      'delivery_time':orderData['delivery_time'],
       'payment': {
         'payment_method': 'cash',
         'status': 'paid',
@@ -4058,13 +3106,14 @@ class _OrderScreenState extends State<OrderScreenNew>
         "line1": addressData?['line1'],
         "city": addressData?['city'],
         "zip": addressData?['zip'],
-        "country": addressData?['country'],
+        "country": addressData?['country']
       },
     };
 
     print('🔍 Built order map: ${jsonEncode(orderMap)}');
     return orderMap;
   }
+
 }
 
 class SalesCacheHelper {
@@ -4085,14 +3134,10 @@ class SalesCacheHelper {
     final todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final currentStoreId = prefs.getString(valueShared_STORE_KEY);
 
-    final storeSpecificSalesKey = _getUserSpecificKey(
-      _salesDataKey,
-      currentStoreId,
-    );
-    final storeSpecificDateKey = _getUserSpecificKey(
-      _lastDateKey,
-      currentStoreId,
-    );
+    final storeSpecificSalesKey =
+    _getUserSpecificKey(_salesDataKey, currentStoreId);
+    final storeSpecificDateKey =
+    _getUserSpecificKey(_lastDateKey, currentStoreId);
 
     await prefs.setString(storeSpecificSalesKey, jsonEncode(salesData));
     await prefs.setString(storeSpecificDateKey, todayString);
@@ -4105,14 +3150,10 @@ class SalesCacheHelper {
     final currentStoreId = prefs.getString(valueShared_STORE_KEY);
     final cachedStoreId = prefs.getString(_storeIdKey);
 
-    final storeSpecificSalesKey = _getUserSpecificKey(
-      _salesDataKey,
-      currentStoreId,
-    );
-    final storeSpecificDateKey = _getUserSpecificKey(
-      _lastDateKey,
-      currentStoreId,
-    );
+    final storeSpecificSalesKey =
+    _getUserSpecificKey(_salesDataKey, currentStoreId);
+    final storeSpecificDateKey =
+    _getUserSpecificKey(_lastDateKey, currentStoreId);
 
     final cachedDate = prefs.getString(storeSpecificDateKey);
     final cachedData = prefs.getString(storeSpecificSalesKey);
@@ -4133,14 +3174,10 @@ class SalesCacheHelper {
     final currentStoreId = prefs.getString(valueShared_STORE_KEY);
 
     if (currentStoreId != null) {
-      final storeSpecificSalesKey = _getUserSpecificKey(
-        _salesDataKey,
-        currentStoreId,
-      );
-      final storeSpecificDateKey = _getUserSpecificKey(
-        _lastDateKey,
-        currentStoreId,
-      );
+      final storeSpecificSalesKey =
+      _getUserSpecificKey(_salesDataKey, currentStoreId);
+      final storeSpecificDateKey =
+      _getUserSpecificKey(_lastDateKey, currentStoreId);
 
       await prefs.remove(storeSpecificSalesKey);
       await prefs.remove(storeSpecificDateKey);
@@ -4160,119 +3197,5 @@ class SalesCacheHelper {
     final prefs = await SharedPreferences.getInstance();
     final todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
     await prefs.setString(_orderDateKey, todayString);
-  }
-}
-
-// Order list card. Zooms up slightly when the mouse hovers it (web/desktop) or,
-// on touch, when it sits level with the list's scrollbar thumb while scrolling.
-// Thumb position = scroll fraction, so the focus line is viewportHeight * fraction.
-class _HoverCard extends StatefulWidget {
-  final Color color;
-  final Color borderColor;
-  final VoidCallback? onTap;
-  final VoidCallback? onLongPress;
-  final Widget child;
-
-  const _HoverCard({
-    required this.color,
-    required this.borderColor,
-    this.onTap,
-    this.onLongPress,
-    required this.child,
-  });
-
-  @override
-  State<_HoverCard> createState() => _HoverCardState();
-}
-
-class _HoverCardState extends State<_HoverCard> {
-  bool _hovered = false;
-  bool _focused = false;
-  ScrollPosition? _position;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final position = Scrollable.maybeOf(context)?.position;
-    if (position != _position) {
-      _position?.removeListener(_updateFocus);
-      _position = position?..addListener(_updateFocus);
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) => _updateFocus());
-  }
-
-  @override
-  void dispose() {
-    _position?.removeListener(_updateFocus);
-    super.dispose();
-  }
-
-  void _updateFocus() {
-    if (!mounted) return;
-    final position = _position;
-    final box = context.findRenderObject() as RenderBox?;
-    final viewport =
-        position?.context.notificationContext?.findRenderObject() as RenderBox?;
-    bool focused = false;
-    if (position != null &&
-        position.hasContentDimensions &&
-        position.maxScrollExtent > 0 &&
-        box != null &&
-        box.attached &&
-        viewport != null &&
-        viewport.attached) {
-      final fraction = (position.pixels / position.maxScrollExtent).clamp(
-        0.0,
-        1.0,
-      );
-      final focalY = viewport.size.height * fraction;
-      final top = box.localToGlobal(Offset.zero, ancestor: viewport).dy;
-      focused = focalY >= top && focalY <= top + box.size.height;
-    }
-    if (focused != _focused) setState(() => _focused = focused);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final active = _hovered || _focused;
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: AnimatedScale(
-        scale: active ? 1.03 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOut,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-          margin: const EdgeInsets.only(bottom: 12, left: 2, right: 2),
-          decoration: BoxDecoration(
-            color: widget.color,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: active ? const Color(0xFF9CA3AF) : widget.borderColor,
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(active ? 0.10 : 0.04),
-                blurRadius: active ? 16 : 8,
-                offset: Offset(0, active ? 6 : 2),
-              ),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(14),
-              onTap: widget.onTap,
-              onLongPress: widget.onLongPress,
-              child: widget.child,
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }

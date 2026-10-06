@@ -231,10 +231,10 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
               children: [
                 Icon(Icons.signal_wifi_off, color: Colors.red),
                 SizedBox(width: 8),
-                Text("Connection Error"),
+                Text("Connection Error", style: const TextStyle(fontFamily: 'Sora')),
               ],
             ),
-            content: const Text("Cannot connect to server. Please logout and login again to continue."),
+            content: const Text("Cannot connect to server. Please logout and login again to continue.", style: const TextStyle(fontFamily: 'Sora')),
             actions: [
               ElevatedButton(
                 onPressed: () {
@@ -243,7 +243,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                   _offlineLogout();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text("Logout", style: TextStyle(color: Colors.white)),
+                child: const Text("Logout", style: TextStyle(fontFamily: 'Sora', color: Colors.white)),
               ),
             ],
           ),
@@ -388,7 +388,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('reserv'.tr,
-                            style: const TextStyle(
+                            style: const TextStyle(fontFamily: 'Sora', 
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
                             )),
@@ -400,7 +400,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                             dateSeleted.isEmpty
                                 ? DateFormat('d MMMM, y').format(DateTime.now())
                                 : dateSeleted,
-                            style: const TextStyle(fontSize: 16),
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 16),
                           ),
                         ),
                       ],
@@ -421,7 +421,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                                 children: [
                                   Text('history'.tr,
                                       style: const TextStyle(
-                                          fontFamily: "Mulish",
+                                          fontFamily: 'Sora',
                                           fontWeight: FontWeight.w800,
                                           fontSize: 16,
                                           color: Color(0xff1F1E1E))),
@@ -460,7 +460,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                                       SizedBox(width: 4),
                                       Text(
                                         'Today',
-                                        style: TextStyle(
+                                        style: TextStyle(fontFamily: 'Sora', 
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.blue,
@@ -480,7 +480,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                             style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,
-                                fontFamily: "Mulish",
+                                fontFamily: 'Sora',
                                 color: Colors.black),
                           ),
                           IconButton(
@@ -509,7 +509,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                         )),
                       ),
                       child: Text('today_booking'.tr,
-                          style: TextStyle(
+                          style: TextStyle(fontFamily: 'Sora', 
                             fontWeight: _selectedTab == 0 ? FontWeight.w800 : FontWeight.w500,
                           )),
                     ),
@@ -528,7 +528,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                         )),
                       ),
                       child: Text('today_received_booking'.tr,
-                          style: TextStyle(
+                          style: TextStyle(fontFamily: 'Sora', 
                             fontWeight: _selectedTab == 1 ? FontWeight.w800 : FontWeight.w500,
                           )),
                     ),
@@ -545,7 +545,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                     child: Column(
                       children: [
                         Lottie.asset('assets/animations/empty.json', height: 150, width: 150),
-                        Text('no_reservation'.tr)
+                        Text('no_reservation'.tr, style: const TextStyle(fontFamily: 'Sora'))
                       ],
                     ),
                   )
@@ -574,7 +574,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                   child: Column(
                     children: [
                       Lottie.asset('assets/animations/empty.json', height: 150, width: 150),
-                      Text('no_reservation'.tr)
+                      Text('no_reservation'.tr, style: const TextStyle(fontFamily: 'Sora'))
                     ],
                   ),
                 )
@@ -641,7 +641,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                     const SizedBox(width: 10),
                     Text(
                       formatDateTime(reservedFor),
-                      style: const TextStyle(fontSize: 13, fontFamily: 'Mulish', fontWeight: FontWeight.w700),
+                      style: const TextStyle(fontSize: 13, fontFamily: 'Sora', fontWeight: FontWeight.w700),
                     ),
                   ],
                 ),
@@ -651,7 +651,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                     const SizedBox(width: 5),
                     Text(
                       createdAt != null ? DateFormat('HH:mm').format(DateTime.parse(createdAt)) : '--:--',
-                      style: const TextStyle(fontWeight: FontWeight.w500, fontFamily: "Mulish", fontSize: 10),
+                      style: const TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Sora', fontSize: 10),
                     )
                   ],
                 )
@@ -665,14 +665,14 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                   width: MediaQuery.of(context).size.width * 0.5,
                   child: Text(
                     '$customerName/$customerPhone',
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: "Mulish"),
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Sora'),
                   ),
                 ),
                 Row(
                   children: [
-                    Text('${'order_id'.tr} :', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: "Mulish")),
+                    Text('${'order_id'.tr} :', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Sora')),
                     const SizedBox(width: 5),
-                    Text(id, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11, fontFamily: "Mulish")),
+                    Text(id, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11, fontFamily: 'Sora')),
                   ],
                 ),
               ],
@@ -685,12 +685,12 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
                   children: [
                     Image.asset('assets/images/person.png', height: 18, width: 14),
                     const SizedBox(width: 10),
-                    Text(guestCount, style: const TextStyle(fontFamily: 'Mulish', fontSize: 16, fontWeight: FontWeight.w800)),
+                    Text(guestCount, style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w800)),
                   ],
                 ),
                 Row(
                   children: [
-                    Text(status ?? '', style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: "Mulish-Regular", fontSize: 13)),
+                    Text(status ?? '', style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 13)),
                     const SizedBox(width: 6),
                     CircleAvatar(
                         radius: 14,
@@ -751,7 +751,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$title: $message'),
+          content: Text('$title: $message', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.orange,
           duration: const Duration(seconds: 2),
         ),
@@ -885,7 +885,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
       print('❌ Cannot get reservation history: Store ID is null');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Store ID not found. Please login again.'),
+          content: Text('Store ID not found. Please login again.', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
         ),
       );
@@ -958,7 +958,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'gett_history'.tr}: $e'),
+            content: Text('${'gett_history'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
@@ -992,7 +992,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
               ),
               const SizedBox(height: 10),
               const Text('Loading reservations...\nPlease Wait It Will Take SomeTime',
-                  style: TextStyle(fontFamily: 'Mulish')),
+                  style: TextStyle(fontFamily: 'Sora')),
             ],
           ),
         )
@@ -1044,7 +1044,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
             Row(
@@ -1095,7 +1095,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
                         color: Colors.black,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                     TextSpan(
@@ -1104,7 +1104,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
                         color: Colors.green,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ],
@@ -1113,7 +1113,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
               Text(
                 '${'total_reserv'.tr}: $totalReservationsForMonth',
                 style: const TextStyle(
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
@@ -1180,7 +1180,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
             children: [
               Text(
                 "${date.day}",
-                style: TextStyle(
+                style: TextStyle(fontFamily: 'Sora', 
                   fontWeight: FontWeight.bold,
                   color: textColor,
                 ),
@@ -1198,7 +1198,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
                   ),
                   child: Text(
                     '$bookingCount',
-                    style: const TextStyle(
+                    style: const TextStyle(fontFamily: 'Sora', 
                       fontSize: 9,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -1227,7 +1227,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
           ),

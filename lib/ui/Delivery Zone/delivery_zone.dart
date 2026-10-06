@@ -77,7 +77,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                   Text(
                     'delivery_zone'.tr,
                     style: const TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -96,7 +96,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ),
@@ -119,7 +119,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                         style: const TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 12,
-                            fontFamily: 'Mulish')),
+                            fontFamily: 'Sora')),
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.18,
@@ -127,7 +127,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                         style: const TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 12,
-                            fontFamily: 'Mulish')),
+                            fontFamily: 'Sora')),
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.20,
@@ -135,7 +135,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                         style: const TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 12,
-                            fontFamily: 'Mulish')),
+                            fontFamily: 'Sora')),
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.18,
@@ -143,7 +143,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                         style: const TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 12,
-                            fontFamily: 'Mulish')),
+                            fontFamily: 'Sora')),
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.15,
@@ -152,7 +152,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                           style: const TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 12,
-                              fontFamily: 'Mulish')),
+                              fontFamily: 'Sora')),
                     ),
                   ),
                 ],
@@ -168,7 +168,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                         'no_data'.tr,
                         style: TextStyle(
                             fontSize: 14,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             color: Colors.grey[500]),
                       ),
                     ),
@@ -232,7 +232,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ),
                                 SizedBox(
@@ -243,7 +243,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ),
                                 SizedBox(
@@ -254,7 +254,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ),
                                 SizedBox(
@@ -265,7 +265,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ),
                                 SizedBox(
@@ -287,7 +287,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                                             : 'inactive'.tr,
                                         style: TextStyle(
                                           fontSize: 10,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                           fontWeight: FontWeight.w700,
                                           color: (zone.isActive ?? false)
                                               ? const Color(0xFF0C831F)
@@ -366,7 +366,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ],
@@ -421,7 +421,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                                       style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
-                                          fontFamily: 'Mulish')),
+                                          fontFamily: 'Sora')),
                                   Switch(
                                     value: isActive,
                                     activeColor: const Color(0xFFFCAE03),
@@ -447,7 +447,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                                               color: Colors.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w700,
-                                              fontFamily: 'Mulish')),
+                                              fontFamily: 'Sora')),
                                     ),
                                   ),
                                   const SizedBox(width: 15),
@@ -509,7 +509,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                                             color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700,
-                                            fontFamily: 'Mulish'),
+                                            fontFamily: 'Sora'),
                                       ),
                                     ),
                                   ),
@@ -556,7 +556,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
   Widget _buildLabel(String label) {
     return Text(label,
         style: const TextStyle(
-            fontSize: 14, fontWeight: FontWeight.w600, fontFamily: 'Mulish'));
+            fontSize: 14, fontWeight: FontWeight.w600, fontFamily: 'Sora'));
   }
 
   Widget _buildTextField({
@@ -586,7 +586,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
 
   void _showSnack(BuildContext ctx, String msg) {
     ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(content: Text(msg), backgroundColor: Colors.red));
+        SnackBar(content: Text(msg, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red));
   }
 
   // ─── Delete Dialog ────────────────────────────────────────────────────────────
@@ -619,7 +619,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'),
+                          fontFamily: 'Sora'),
                       textAlign: TextAlign.center),
                   const SizedBox(height: 30),
                   Row(
@@ -638,7 +638,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(3))),
                           child: Text('cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                   fontSize: 13, fontWeight: FontWeight.w700)),
                         ),
                       ),
@@ -659,7 +659,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(3))),
                           child: Text('delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                   fontSize: 13, fontWeight: FontWeight.w700)),
                         ),
                       ),
@@ -761,7 +761,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
       await getDeliveryZone(showLoader: false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('zone_created'.tr),
+            content: Text('zone_created'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2)));
       }
@@ -771,7 +771,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
       print('Add Delivery Zone error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('${'failed_create'.tr}: ${e.toString()}'),
+            content: Text('${'failed_create'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2)));
       }
@@ -813,7 +813,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
       await getDeliveryZone(showLoader: false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('zone_updated'.tr),
+            content: Text('zone_updated'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2)));
       }
@@ -823,7 +823,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
       print('Update Delivery Zone error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('${'failed_create'.tr}: ${e.toString()}'),
+            content: Text('${'failed_create'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2)));
       }
@@ -845,7 +845,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
       await getDeliveryZone(showLoader: false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('zone_deleted'.tr),
+            content: Text('zone_deleted'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2)));
       }
@@ -854,7 +854,7 @@ class _DeliveryZoneState extends State<DeliveryZone> {
       print('Delete Delivery Zone error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('zone_delete_failed'.tr),
+            content: Text('zone_delete_failed'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2)));
       }

@@ -136,7 +136,7 @@ class _GroupItemState extends State<GroupItem> {
                       children: [
                         Text('group'.tr,
                             style: const TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold)),
                         GestureDetector(
@@ -155,7 +155,7 @@ class _GroupItemState extends State<GroupItem> {
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   )),
                             ),
                           ),
@@ -173,7 +173,7 @@ class _GroupItemState extends State<GroupItem> {
                           currentPageItems.length} of ${groupItemList.length} ${'entries'.tr}',
                         style: TextStyle(
                           fontSize: 12,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: Colors.grey[600],
                         ),
                       ),
@@ -194,7 +194,7 @@ class _GroupItemState extends State<GroupItem> {
                             style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 13,
-                                fontFamily: 'Mulish'),
+                                fontFamily: 'Sora'),
                           ),
                         ),
                         SizedBox(
@@ -204,7 +204,7 @@ class _GroupItemState extends State<GroupItem> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 13,
-                                    fontFamily: 'Mulish')),
+                                    fontFamily: 'Sora')),
                           ),
                         ),
                         SizedBox(
@@ -214,7 +214,7 @@ class _GroupItemState extends State<GroupItem> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 13,
-                                    fontFamily: 'Mulish')),
+                                    fontFamily: 'Sora')),
                           ),
                         ),
 
@@ -294,7 +294,7 @@ class _GroupItemState extends State<GroupItem> {
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 14,
-                                          fontFamily: 'Mulish'),
+                                          fontFamily: 'Sora'),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -306,7 +306,7 @@ class _GroupItemState extends State<GroupItem> {
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w700,
                                             fontSize: 12,
-                                            fontFamily: 'Mulish'),
+                                            fontFamily: 'Sora'),
                                       ),
                                     ),
                                   ),
@@ -317,7 +317,7 @@ class _GroupItemState extends State<GroupItem> {
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w400,
                                           fontSize: 12,
-                                          fontFamily: 'Mulish'),
+                                          fontFamily: 'Sora'),
                                     ),
                                   ),
                                 ],
@@ -370,7 +370,7 @@ class _GroupItemState extends State<GroupItem> {
                           'previous'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage > 1 ? Colors.black87 : Colors
                                 .grey,
@@ -405,7 +405,7 @@ class _GroupItemState extends State<GroupItem> {
                                 '$pageNum',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                   color: isActive ? Colors.white : Colors
                                       .black87,
@@ -437,7 +437,7 @@ class _GroupItemState extends State<GroupItem> {
                           'next'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage < totalPages
                                 ? Colors.black87
@@ -515,13 +515,13 @@ class _GroupItemState extends State<GroupItem> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                       const SizedBox(height: 20),
 
                       // Select Group Dropdown
-                      Text('select_grp'.tr, style: const TextStyle(fontFamily: 'Mulish')),
+                      Text('select_grp'.tr, style: const TextStyle(fontFamily: 'Sora')),
                       const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -532,12 +532,12 @@ class _GroupItemState extends State<GroupItem> {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             isExpanded: true,
-                            hint: Text('select_grp'.tr),
+                            hint: Text('select_grp'.tr, style: const TextStyle(fontFamily: 'Sora')),
                             value: selectedGroupId,
                             items: toppingGroupList.map((group) {
                               return DropdownMenuItem<String>(
                                 value: group.id.toString(),
-                                child: Text(group.name ?? ''),
+                                child: Text(group.name ?? '', style: const TextStyle(fontFamily: 'Sora')),
                               );
                             }).toList(),
                             onChanged: (value) {
@@ -551,7 +551,7 @@ class _GroupItemState extends State<GroupItem> {
                       const SizedBox(height: 16),
 
                       // Select Topping Dropdown
-                      Text('select_topp'.tr, style: const TextStyle(fontFamily: 'Mulish')),
+                      Text('select_topp'.tr, style: const TextStyle(fontFamily: 'Sora')),
                       const SizedBox(height: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -562,12 +562,12 @@ class _GroupItemState extends State<GroupItem> {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             isExpanded: true,
-                            hint: Text('select_topp'.tr),
+                            hint: Text('select_topp'.tr, style: const TextStyle(fontFamily: 'Sora')),
                             value: selectedToppingId,
                             items: toppingsList.map((topping) {
                               return DropdownMenuItem<String>(
                                 value: topping.id.toString(),
-                                child: Text(topping.name ?? ''),
+                                child: Text(topping.name ?? '', style: const TextStyle(fontFamily: 'Sora')),
                               );
                             }).toList(),
                             onChanged: (value) {
@@ -581,7 +581,7 @@ class _GroupItemState extends State<GroupItem> {
                       const SizedBox(height: 16),
 
                       // Display Order TextField
-                      Text('display'.tr, style: const TextStyle(fontFamily: 'Mulish')),
+                      Text('display'.tr, style: const TextStyle(fontFamily: 'Sora')),
                       const SizedBox(height: 8),
                       TextField(
                         controller: displayOrderController,
@@ -616,7 +616,7 @@ class _GroupItemState extends State<GroupItem> {
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                             ),
@@ -628,7 +628,7 @@ class _GroupItemState extends State<GroupItem> {
                               onPressed: () async {
                                 if (selectedGroupId == null || selectedToppingId == null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('please_select_both'.tr)),
+                                    SnackBar(content: Text('please_select_both'.tr, style: const TextStyle(fontFamily: 'Sora'))),
                                   );
                                   return;
                                 }
@@ -662,7 +662,7 @@ class _GroupItemState extends State<GroupItem> {
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                             ),
@@ -815,7 +815,7 @@ class _GroupItemState extends State<GroupItem> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('grp_create'.tr),
+            content: Text('grp_create'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -841,7 +841,7 @@ class _GroupItemState extends State<GroupItem> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(errorMessage),
+            content: Text(errorMessage, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -879,7 +879,7 @@ class _GroupItemState extends State<GroupItem> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('grp_update'.tr), backgroundColor: Colors.green),
+          SnackBar(content: Text('grp_update'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.green),
         );
       }
 
@@ -890,7 +890,7 @@ class _GroupItemState extends State<GroupItem> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed to update: $e', style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
         );
       }
 
@@ -1050,7 +1050,7 @@ class _GroupItemState extends State<GroupItem> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('grp_delete'.tr),
+            content: Text('grp_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -1064,7 +1064,7 @@ class _GroupItemState extends State<GroupItem> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_grp'.tr),
+            content: Text('failed_grp'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -1104,7 +1104,7 @@ class _GroupItemState extends State<GroupItem> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1128,7 +1128,7 @@ class _GroupItemState extends State<GroupItem> {
                             ),
                             child:  Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1157,7 +1157,7 @@ class _GroupItemState extends State<GroupItem> {
                             ),
                             child:  Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),

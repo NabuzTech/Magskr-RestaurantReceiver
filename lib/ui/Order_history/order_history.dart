@@ -239,7 +239,7 @@ class _OrderHistoryState extends State<OrderHistory> {
         backgroundColor: Colors.white,
         title: Text(
           'order_history'.tr,
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w500,fontSize: 20),
+          style: const TextStyle(fontFamily: 'Sora', color: Colors.black, fontWeight: FontWeight.w500,fontSize: 20),
         ),
         centerTitle: true,
         leading: Row(
@@ -256,7 +256,7 @@ class _OrderHistoryState extends State<OrderHistory> {
               padding: const EdgeInsets.only(right: 16),
               child: Text(
                 DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.targetDate)),
-                style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w500),
+                style: const TextStyle(fontFamily: 'Sora', color: Colors.black, fontSize: 12, fontWeight: FontWeight.w500),
               ),
             ),
           ),
@@ -285,10 +285,10 @@ class _OrderHistoryState extends State<OrderHistory> {
                     focusNode: searchFocusNode,
                     autofocus: false,
                     enableInteractiveSelection: true,
-                    style: const TextStyle(fontSize: 14),
+                    style: const TextStyle(fontFamily: 'Sora', fontSize: 14),
                     decoration: InputDecoration(
                       hintText: 'search_item'.tr,
-                      hintStyle: const TextStyle(fontSize: 14),
+                      hintStyle: const TextStyle(fontFamily: 'Sora', fontSize: 14),
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: EdgeInsets.zero,
@@ -331,7 +331,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                   style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
-                      fontFamily: "Mulish",
+                      fontFamily: 'Sora',
                       color: Colors.black),
                 ),
                 // SizedBox(width: 10)
@@ -353,7 +353,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                       _searchQuery.isEmpty
                           ? 'No orders found for this date'
                           : 'No orders found for "$_searchQuery"',
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey,
@@ -366,7 +366,7 @@ class _OrderHistoryState extends State<OrderHistory> {
           else
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(5),
                 itemCount: _filteredOrders.length,
                 itemBuilder: (context, index) {
                   final order = _filteredOrders[index];
@@ -437,7 +437,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                             child: Row(crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 SizedBox(
-                                                  width: MediaQuery.of(context).size.width * (order.orderType == 2 ? 0.18 : 0.3),
+                                                  width: MediaQuery.of(context).size.width * (order.orderType == 2 ? 0.22 : 0.3),
                                                   child: Text(
                                                     order.orderType == 2
                                                         ? 'pickup'.tr
@@ -453,7 +453,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                                     style: const TextStyle(
                                                         fontWeight: FontWeight.w700,
                                                         fontSize: 13,
-                                                        fontFamily: "Mulish-Regular"
+                                                        fontFamily: 'Sora'
                                                     ),
                                                   ),
                                                 ),
@@ -465,7 +465,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                                       style: const TextStyle(
                                                           fontWeight: FontWeight.w700,
                                                           fontSize: 13,
-                                                          fontFamily: "Mulish-Regular"
+                                                          fontFamily: 'Sora'
                                                       ),
                                                     ),
                                                   ),
@@ -488,7 +488,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                                     fontSize: 11,
                                                     letterSpacing: 0,
                                                     height: 0,
-                                                    fontFamily: "Mulish"
+                                                    fontFamily: 'Sora'
                                                 ),
                                               ),
                                             ),
@@ -506,7 +506,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                       time,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        fontFamily: "Mulish",
+                                        fontFamily: 'Sora',
                                         fontSize: 10,
                                       ),
                                     )
@@ -536,7 +536,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                         '$customerName / $phone',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w700,
-                                          fontFamily: "Mulish",
+                                          fontFamily: 'Sora',
                                           fontSize: 13,
                                         ),
                                       );
@@ -550,7 +550,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 11,
-                                        fontFamily: "Mulish",
+                                        fontFamily: 'Sora',
                                       ),
                                     ),
                                     Text(
@@ -558,7 +558,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 11,
-                                        fontFamily: "Mulish",
+                                        fontFamily: 'Sora',
                                       ),
                                     ),
                                   ],
@@ -576,7 +576,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                   '${"currency".tr}${formatAmount(order.invoice?.totalAmount?.toDouble() ?? 0.0)}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w800,
-                                    fontFamily: "Mulish",
+                                    fontFamily: 'Sora',
                                     fontSize: 16,
                                   ),
                                 ),
@@ -586,7 +586,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                                       getApprovalStatusText(order.approvalStatus),
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w800,
-                                        fontFamily: "Mulish-Regular",
+                                        fontFamily: 'Sora',
                                         fontSize: 13,
                                       ),
                                     ),

@@ -608,7 +608,7 @@ class PosController extends GetxController {
   void showPostcodeSelector(BuildContext context) {
     if (postcode.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Loading postcodes...'), backgroundColor: Colors.orange),
+        const SnackBar(content: Text('Loading postcodes...', style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.orange),
       );
       return;
     }
@@ -806,7 +806,7 @@ class PosController extends GetxController {
                       const Text(
                         'Item Note',
                         style: TextStyle(
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           fontWeight: FontWeight.w700,
                           fontSize: 18,
                           color: Color(0xff0B1928),
@@ -827,7 +827,7 @@ class PosController extends GetxController {
                     decoration: InputDecoration(
                       hintText: 'Enter note for this item...',
                       hintStyle: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: Colors.grey,
@@ -843,7 +843,7 @@ class PosController extends GetxController {
                       contentPadding: const EdgeInsets.all(12),
                     ),
                     style: const TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontSize: 14,
                     ),
                   ),
@@ -856,7 +856,7 @@ class PosController extends GetxController {
                         child: const Text(
                           'Cancel',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                             color: Colors.grey,
@@ -875,7 +875,7 @@ class PosController extends GetxController {
                               content: Text(
                                 'Item note added successfully',
                                 style: TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -896,7 +896,7 @@ class PosController extends GetxController {
                         child: const Text(
                           'Save Note',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
                             color: Colors.white,
@@ -1208,7 +1208,7 @@ class PosController extends GetxController {
               content: Text(
                 'Note added successfully',
                 style: TextStyle(
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
@@ -1231,7 +1231,7 @@ class PosController extends GetxController {
             content: Text(
               'Please add items to cart',
               style: TextStyle(
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
@@ -1348,7 +1348,7 @@ class PosController extends GetxController {
                   child: Text(
                     'Order placed successfully! Order #$orderId',
                     style: const TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                       color: Colors.white,
@@ -1535,7 +1535,7 @@ class PosController extends GetxController {
           content: Text(
             'Store is currently closed. Please select "Vorbestellen" to schedule for later.',
             style: TextStyle(
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
@@ -1827,7 +1827,7 @@ class PosController extends GetxController {
                 content: Text(
                   'Data refreshed successfully',
                   style: TextStyle(
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
@@ -1875,7 +1875,7 @@ class PosController extends GetxController {
                       const Text(
                         'Add Note',
                         style: TextStyle(
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           fontWeight: FontWeight.w700,
                           fontSize: 18,
                           color: Color(0xff0B1928),
@@ -1897,7 +1897,7 @@ class PosController extends GetxController {
                     decoration: InputDecoration(
                       hintText: 'Enter your note here...',
                       hintStyle: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: Colors.grey,
@@ -1913,7 +1913,7 @@ class PosController extends GetxController {
                       contentPadding: const EdgeInsets.all(12),
                     ),
                     style: const TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontSize: 14,
                     ),
                   ),
@@ -1926,7 +1926,7 @@ class PosController extends GetxController {
                         child: const Text(
                           'Cancel',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                             color: Colors.grey,
@@ -1944,7 +1944,7 @@ class PosController extends GetxController {
                               content: Text(
                                 'Note added successfully',
                                 style: TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -1965,7 +1965,7 @@ class PosController extends GetxController {
                         child: const Text(
                           'Add Note',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
                             color: Colors.white,
@@ -2004,7 +2004,7 @@ class PosController extends GetxController {
                     const Text(
                       'Logout',
                       style: TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontWeight: FontWeight.w700,
                         fontSize: 20,
                         color: Color(0xff0B1928),
@@ -2015,7 +2015,7 @@ class PosController extends GetxController {
                       'Are you sure you want to logout?',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: Color(0xff797878),
@@ -2038,7 +2038,7 @@ class PosController extends GetxController {
                               child: const Text(
                                 'Cancel',
                                 style: TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
                                   color: Colors.grey,
@@ -2056,7 +2056,7 @@ class PosController extends GetxController {
                                     content: Text(
                                       'Logged out successfully',
                                       style: TextStyle(
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -2076,7 +2076,7 @@ class PosController extends GetxController {
                               child: const Text(
                                 'Logout',
                                 style: TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
                                   color: Colors.white,

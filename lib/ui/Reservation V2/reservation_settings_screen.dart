@@ -72,7 +72,7 @@ class _ReservationSettingsScreenState extends State<ReservationSettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'load_settings_failed'.tr}: $e'),
+            content: Text('${'load_settings_failed'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
           ),
         );
@@ -121,7 +121,7 @@ class _ReservationSettingsScreenState extends State<ReservationSettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('setting_update'.tr),
+            content: Text('setting_update'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: AppTheme.accent,
             duration: const Duration(seconds: 2),
           ),
@@ -132,7 +132,7 @@ class _ReservationSettingsScreenState extends State<ReservationSettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'failed_update'.tr}: $e'),
+            content: Text('${'failed_update'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -150,7 +150,7 @@ class _ReservationSettingsScreenState extends State<ReservationSettingsScreen> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         title: Text('reservation_settings_title'.tr,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 18)),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -178,7 +178,7 @@ class _ReservationSettingsScreenState extends State<ReservationSettingsScreen> {
                         children: [
                           Expanded(
                             child: Text('reserv'.tr,
-                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                                style: const TextStyle(fontFamily: 'Sora', fontSize: 15, fontWeight: FontWeight.bold)),
                           ),
                           Switch(
                             value: _enabled,
@@ -220,7 +220,7 @@ class _ReservationSettingsScreenState extends State<ReservationSettingsScreen> {
                           ),
                           child: Text(
                             'save_settings_label'.tr,
-                            style: TextStyle(
+                            style: TextStyle(fontFamily: 'Sora', 
                               color: _dirty ? Colors.white : Colors.grey.shade600,
                               fontWeight: FontWeight.w600,
                             ),
@@ -246,11 +246,11 @@ class _ReservationSettingsScreenState extends State<ReservationSettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          Text(label, style: const TextStyle(fontFamily: 'Sora', fontSize: 11, color: Colors.grey)),
           TextField(
             controller: controller,
             keyboardType: TextInputType.number,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
+            style: const TextStyle(fontFamily: 'Sora', fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
             decoration: const InputDecoration(
               isDense: true,
               border: InputBorder.none,

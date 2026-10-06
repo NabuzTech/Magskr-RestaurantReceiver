@@ -179,7 +179,7 @@ class _PosPortraitState extends State<PosPortrait> {
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             color: Color(0xff0B1928),
                           ),
                         ),
@@ -204,7 +204,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     color: Color(0xff0B1928),
                   ),
                 ),
@@ -231,7 +231,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     color: Color(0xff0B1928),
                   ),
                 ),
@@ -338,7 +338,7 @@ class _PosPortraitState extends State<PosPortrait> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   const SizedBox(height: 3),
@@ -346,7 +346,7 @@ class _PosPortraitState extends State<PosPortrait> {
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.grey.shade500,
                     ),
                   ),
@@ -358,7 +358,7 @@ class _PosPortraitState extends State<PosPortrait> {
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
             const SizedBox(width: 8),
@@ -430,7 +430,7 @@ class _PosPortraitState extends State<PosPortrait> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   color: enabled
                       ? const Color(0xff0B1928)
                       : Colors.grey.shade400,
@@ -449,7 +449,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   style: const TextStyle(
                     fontSize: 10,
                     color: Colors.grey,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
               ),
@@ -510,7 +510,7 @@ class _PosPortraitState extends State<PosPortrait> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: selected == 'Lieferzeit'
                               ? Colors.white
                               : Colors.black,
@@ -555,7 +555,7 @@ class _PosPortraitState extends State<PosPortrait> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: selected == 'Abholzeit'
                               ? Colors.white
                               : Colors.black,
@@ -646,14 +646,14 @@ class _PosPortraitState extends State<PosPortrait> {
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       decoration: InputDecoration(
                         hintText: 'search_item'.tr,
                         hintStyle: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w300,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           fontStyle: FontStyle.italic,
                         ),
                         border: InputBorder.none,
@@ -796,7 +796,7 @@ class _PosPortraitState extends State<PosPortrait> {
                               fontWeight: isSelected
                                   ? FontWeight.w700
                                   : FontWeight.w500,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: isSelected
                                   ? const Color(0xff0C831F)
                                   : Colors.black,
@@ -872,14 +872,14 @@ class _PosPortraitState extends State<PosPortrait> {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                         Text(
                           DateFormat('d MMMM, y').format(DateTime.now()),
                           style: const TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                       ],
@@ -894,7 +894,7 @@ class _PosPortraitState extends State<PosPortrait> {
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ),
@@ -974,7 +974,7 @@ class _PosPortraitState extends State<PosPortrait> {
       child: Text(
         text,
         style: const TextStyle(
-          fontFamily: 'Mulish',
+          fontFamily: 'Sora',
           fontWeight: FontWeight.w700,
           fontSize: 12,
           color: Colors.black87,
@@ -1017,7 +1017,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: Colors.grey,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                 ),
               ),
             ],
@@ -1121,7 +1121,7 @@ class _PosPortraitState extends State<PosPortrait> {
                           style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 13,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                         if (order.deliveryTime != null &&
@@ -1130,7 +1130,7 @@ class _PosPortraitState extends State<PosPortrait> {
                             '${'time'.tr}: ${controller.extractTime(order.deliveryTime!)}',
                             style: const TextStyle(
                               fontSize: 11,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                       ],
@@ -1145,7 +1145,7 @@ class _PosPortraitState extends State<PosPortrait> {
                       time,
                       style: const TextStyle(
                         fontSize: 12,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ],
@@ -1162,14 +1162,14 @@ class _PosPortraitState extends State<PosPortrait> {
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 12,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Text(
                   '${'order_hash'.tr}${order.orderNumber ?? order.id ?? 'N/A'}',
-                  style: const TextStyle(fontSize: 11, fontFamily: 'Mulish'),
+                  style: const TextStyle(fontSize: 11, fontFamily: 'Sora'),
                 ),
               ],
             ),
@@ -1182,7 +1182,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 16,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
                 Row(
@@ -1195,7 +1195,7 @@ class _PosPortraitState extends State<PosPortrait> {
                             ),
                       style: const TextStyle(
                         fontSize: 12,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -1256,7 +1256,7 @@ class _PosPortraitState extends State<PosPortrait> {
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey.shade600,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                 ),
               ),
             ],
@@ -1291,7 +1291,7 @@ class _PosPortraitState extends State<PosPortrait> {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
               color: Colors.black,
             ),
           ),
@@ -1374,7 +1374,7 @@ class _PosPortraitState extends State<PosPortrait> {
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                       Row(
@@ -1394,7 +1394,7 @@ class _PosPortraitState extends State<PosPortrait> {
                                   ),
                                   child: Text(
                                     '$totalQuantity',
-                                    style: const TextStyle(
+                                    style: const TextStyle(fontFamily: 'Sora', 
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
@@ -1410,7 +1410,7 @@ class _PosPortraitState extends State<PosPortrait> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: isInCart
                                   ? const Color(0xff0C831F)
                                   : const Color(0xff0B1928),
@@ -1514,7 +1514,7 @@ class _PosPortraitState extends State<PosPortrait> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                       GestureDetector(
@@ -1536,19 +1536,19 @@ class _PosPortraitState extends State<PosPortrait> {
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: nameCtrl,
                     textCapitalization: TextCapitalization.words,
-                    style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
+                    style: const TextStyle(fontSize: 14, fontFamily: 'Sora'),
                     decoration: InputDecoration(
                       hintText: 'item_name_hint'.tr,
                       hintStyle: TextStyle(
                         color: Colors.grey.shade400,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14,
@@ -1574,7 +1574,7 @@ class _PosPortraitState extends State<PosPortrait> {
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -1583,12 +1583,12 @@ class _PosPortraitState extends State<PosPortrait> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    style: const TextStyle(fontSize: 14, fontFamily: 'Mulish'),
+                    style: const TextStyle(fontSize: 14, fontFamily: 'Sora'),
                     decoration: InputDecoration(
                       hintText: '0.00',
                       hintStyle: TextStyle(
                         color: Colors.grey.shade400,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14,
@@ -1626,7 +1626,7 @@ class _PosPortraitState extends State<PosPortrait> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.black87,
                                 ),
                               ),
@@ -1657,7 +1657,7 @@ class _PosPortraitState extends State<PosPortrait> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.white,
                                 ),
                               ),
@@ -1703,7 +1703,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
                 const Spacer(),
@@ -1712,7 +1712,7 @@ class _PosPortraitState extends State<PosPortrait> {
                     '${controller.drafts.length} ${controller.drafts.length == 1 ? 'draft_singular'.tr : 'draft_plural'.tr}',
                     style: const TextStyle(
                       fontSize: 13,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.grey,
                     ),
                   ),
@@ -1739,7 +1739,7 @@ class _PosPortraitState extends State<PosPortrait> {
                         'no_saved_orders'.tr,
                         style: TextStyle(
                           fontSize: 15,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: Colors.grey.shade400,
                         ),
                       ),
@@ -1810,7 +1810,7 @@ class _PosPortraitState extends State<PosPortrait> {
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   ),
                                 ),
                                 const SizedBox(height: 3),
@@ -1818,7 +1818,7 @@ class _PosPortraitState extends State<PosPortrait> {
                                   subtitle,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     color: Colors.grey.shade500,
                                   ),
                                 ),
@@ -1830,7 +1830,7 @@ class _PosPortraitState extends State<PosPortrait> {
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -1944,7 +1944,7 @@ class _PosPortraitState extends State<PosPortrait> {
                                     color: Colors.white,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w800,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   ),
                                 ),
                               ],
@@ -1965,7 +1965,7 @@ class _PosPortraitState extends State<PosPortrait> {
                                 child: Center(
                                   child: Text(
                                     '$count',
-                                    style: const TextStyle(
+                                    style: const TextStyle(fontFamily: 'Sora', 
                                       fontSize: 9,
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -2031,13 +2031,13 @@ class _PosPortraitState extends State<PosPortrait> {
                           },
                           style: const TextStyle(
                             fontSize: 14,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                           decoration: InputDecoration(
                             hintText: 'search_item'.tr,
                             hintStyle: TextStyle(
                               fontSize: 14,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: Colors.grey,
                               fontStyle: FontStyle.italic,
                             ),
@@ -2108,7 +2108,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   label,
                   style: const TextStyle(
                     fontSize: 11,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
                   ),
@@ -2132,7 +2132,7 @@ class _PosPortraitState extends State<PosPortrait> {
                   child: Center(
                     child: Text(
                       '$badge',
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                         fontSize: 9,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -2195,7 +2195,7 @@ class _PosPortraitState extends State<PosPortrait> {
                             color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                         Text(
@@ -2204,7 +2204,7 @@ class _PosPortraitState extends State<PosPortrait> {
                             color: Colors.white,
                             fontSize: 13,
                             fontWeight: FontWeight.w400,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                       ],
@@ -2219,7 +2219,7 @@ class _PosPortraitState extends State<PosPortrait> {
                         color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -2388,7 +2388,7 @@ class CheckoutScreen extends StatelessWidget {
                                       color: Colors.white,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 ],
@@ -2437,7 +2437,7 @@ class CheckoutScreen extends StatelessWidget {
                                       color: Colors.white,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 ],
@@ -2469,7 +2469,7 @@ class CheckoutScreen extends StatelessWidget {
                                     color: Colors.white,
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   ),
                                 ),
                               ),
@@ -2526,7 +2526,7 @@ class CheckoutScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     color: isSelected ? Colors.white : Colors.black,
                   ),
                 ),
@@ -2570,7 +2570,7 @@ class CheckoutScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                       Text(
@@ -2578,7 +2578,7 @@ class CheckoutScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -2592,7 +2592,7 @@ class CheckoutScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: Color(0xff00B10E),
                         ),
                       ),
@@ -2608,21 +2608,21 @@ class CheckoutScreen extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             color: Color(0xff00B10E),
                           ),
                           decoration: InputDecoration(
                             hintText: '0',
                             hintStyle: TextStyle(
                               fontSize: 13,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: Colors.grey.shade400,
                             ),
                             suffixText: '%',
                             suffixStyle: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: Color(0xff00B10E),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
@@ -2658,7 +2658,7 @@ class CheckoutScreen extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             color: Color(0xff00B10E),
                           ),
                         ),
@@ -2673,7 +2673,7 @@ class CheckoutScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                       Row(
@@ -2683,7 +2683,7 @@ class CheckoutScreen extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -2758,7 +2758,7 @@ class CheckoutScreen extends StatelessWidget {
                                 controller.orderNote.value,
                                 style: const TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                   color: Color(0xff5D4037),
                                 ),
@@ -2805,7 +2805,7 @@ class CheckoutScreen extends StatelessWidget {
                   children: [
                     Text(
                       '${item["quantity"]} ×',
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey,
@@ -2816,7 +2816,7 @@ class CheckoutScreen extends StatelessWidget {
                       width: MediaQuery.of(context).size.width * 0.33,
                       child: Text(
                         '${item['name']}',
-                        style: const TextStyle(
+                        style: const TextStyle(fontFamily: 'Sora', 
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Colors.black,
@@ -2826,7 +2826,7 @@ class CheckoutScreen extends StatelessWidget {
                     if (((item["base_price"] ?? item["price"]) as num) > 0)
                       Text(
                         '[${"currency".tr}${((item["base_price"] ?? item["price"]) as num).toStringAsFixed(2)}]',
-                        style: const TextStyle(
+                        style: const TextStyle(fontFamily: 'Sora', 
                           fontSize: 11,
                           color: Colors.grey,
                         ),
@@ -2857,7 +2857,7 @@ class CheckoutScreen extends StatelessWidget {
                     ((item["variant_price"] ?? 0) as num) > 0
                         ? '● ${item["size"]}    [${"currency".tr}${((item["variant_price"] ?? 0) as num).toStringAsFixed(2)}]'
                         : '● ${item["size"]}',
-                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                    style: const TextStyle(fontFamily: 'Sora', fontSize: 11, color: Colors.grey),
                   ),
 
                 // // Toppings
@@ -2872,7 +2872,7 @@ class CheckoutScreen extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 2),
                           child: Text(
                             '${item['extras']}',
-                            style: const TextStyle(
+                            style: const TextStyle(fontFamily: 'Sora', 
                               fontSize: 10,
                               color: Colors.grey,
                             ),
@@ -2889,7 +2889,7 @@ class CheckoutScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       '${'note'.tr}: ${item["item_note"]}',
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
                       ),
@@ -2930,7 +2930,7 @@ class CheckoutScreen extends StatelessWidget {
                       child: Center(
                         child: Text(
                           '${item["quantity"]}',
-                          style: const TextStyle(
+                          style: const TextStyle(fontFamily: 'Sora', 
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -2954,7 +2954,7 @@ class CheckoutScreen extends StatelessWidget {
               SizedBox(height: 5),
               Text(
                 '${"currency".tr} ${((item["quantity"] as int) * (item["price"] as num)).toStringAsFixed(2)}',
-                style: const TextStyle(
+                style: const TextStyle(fontFamily: 'Sora', 
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
@@ -2994,7 +2994,7 @@ class CheckoutScreen extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                 ),
               ),
             ],
@@ -3094,7 +3094,7 @@ class CheckoutScreen extends StatelessWidget {
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Mulish',
+            fontFamily: 'Sora',
           ),
         ),
         const SizedBox(height: 6),
@@ -3118,7 +3118,7 @@ class CheckoutScreen extends StatelessWidget {
             hintStyle: TextStyle(
               fontSize: 13,
               color: Colors.grey.shade400,
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
             ),
             suffixIcon: suffixIcon,
             contentPadding: const EdgeInsets.symmetric(
@@ -3171,7 +3171,7 @@ class CheckoutScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                 ],
@@ -3228,13 +3228,13 @@ class CheckoutScreen extends StatelessWidget {
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            fontFamily: 'Mulish',
+            fontFamily: 'Sora',
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(fontSize: 12, fontFamily: 'Mulish'),
+            style: const TextStyle(fontSize: 12, fontFamily: 'Sora'),
           ),
         ),
       ],
@@ -3263,7 +3263,7 @@ class CheckoutScreen extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
               ],
@@ -3310,7 +3310,7 @@ class CheckoutScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color:
                                   controller.selectedPaymentMethod.value ==
                                       'cash'
@@ -3363,7 +3363,7 @@ class CheckoutScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color:
                                   controller.selectedPaymentMethod.value ==
                                       'card'
@@ -3429,7 +3429,7 @@ class CheckoutScreen extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ],
@@ -3456,7 +3456,7 @@ class CheckoutScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.white,
                     ),
                   ),
@@ -3492,7 +3492,7 @@ class CheckoutScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             color: isSelected ? Colors.white : Colors.black,
                           ),
                         ),
@@ -3532,7 +3532,7 @@ class CheckoutScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                 ],
@@ -3565,7 +3565,7 @@ class CheckoutScreen extends StatelessWidget {
                             : 'select_date'.tr,
                         style: const TextStyle(
                           fontSize: 14,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                       Container(
@@ -3618,7 +3618,7 @@ class CheckoutScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             color: isSelected ? Colors.white : Colors.black,
                           ),
                         ),
@@ -3716,7 +3716,7 @@ class VariantDialog extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),
@@ -3755,7 +3755,7 @@ class VariantDialog extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Color(0xff475569),
                                 ),
                               ),
@@ -3818,7 +3818,7 @@ class VariantDialog extends StatelessWidget {
                                                       fontSize: 13,
                                                       fontWeight:
                                                           FontWeight.w600,
-                                                      fontFamily: 'Mulish',
+                                                      fontFamily: 'Sora',
                                                       color: isSelected
                                                           ? _green
                                                           : const Color(
@@ -3844,7 +3844,7 @@ class VariantDialog extends StatelessWidget {
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w700,
-                                                fontFamily: 'Mulish',
+                                                fontFamily: 'Sora',
                                                 color: isSelected
                                                     ? _green
                                                     : const Color(0xff475569),
@@ -3895,7 +3895,7 @@ class VariantDialog extends StatelessWidget {
                                             style: const TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w700,
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                               color: Color(0xff475569),
                                               letterSpacing: 0.5,
                                             ),
@@ -3921,7 +3921,7 @@ class VariantDialog extends StatelessWidget {
                                                   fontSize: 10,
                                                   color: _green,
                                                   fontWeight: FontWeight.w700,
-                                                  fontFamily: 'Mulish',
+                                                  fontFamily: 'Sora',
                                                 ),
                                               ),
                                             ),
@@ -3935,7 +3935,7 @@ class VariantDialog extends StatelessWidget {
                                             fontSize: 11,
                                             color: Colors.orange.shade700,
                                             fontWeight: FontWeight.w500,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                           ),
                                         ),
                                       ],
@@ -3966,7 +3966,7 @@ class VariantDialog extends StatelessWidget {
                                             style: TextStyle(
                                               color: Colors.red.shade700,
                                               fontSize: 12,
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                             ),
                                           ),
                                         );
@@ -4025,7 +4025,7 @@ class VariantDialog extends StatelessWidget {
                                                       topping.name ?? '',
                                                       style: TextStyle(
                                                         fontSize: 14,
-                                                        fontFamily: 'Mulish',
+                                                        fontFamily: 'Sora',
                                                         fontWeight:
                                                             isToppingSelected
                                                             ? FontWeight.w600
@@ -4041,7 +4041,7 @@ class VariantDialog extends StatelessWidget {
                                                     '${"currency".tr}${(topping.price ?? 0).toStringAsFixed(2)}',
                                                     style: TextStyle(
                                                       fontSize: 14,
-                                                      fontFamily: 'Mulish',
+                                                      fontFamily: 'Sora',
                                                       fontWeight:
                                                           FontWeight.w600,
                                                       color: isToppingSelected
@@ -4096,7 +4096,7 @@ class VariantDialog extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Color(0xff475569),
                               ),
                             ),
@@ -4115,11 +4115,11 @@ class VariantDialog extends StatelessWidget {
                                 maxLines: 2,
                                 style: const TextStyle(
                                   fontSize: 13,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                                 decoration: InputDecoration(
                                   hintText: 'special_request_hint'.tr,
-                                  hintStyle: TextStyle(
+                                  hintStyle: TextStyle(fontFamily: 'Sora', 
                                     color: Colors.grey[400],
                                     fontSize: 13,
                                   ),
@@ -4163,7 +4163,7 @@ class VariantDialog extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.white,
                                 ),
                               ),
@@ -4229,7 +4229,7 @@ class PostcodeDialog extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                           IconButton(
@@ -4254,7 +4254,7 @@ class PostcodeDialog extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   ),
                                 ),
                               ),
@@ -4297,7 +4297,7 @@ class PostcodeDialog extends StatelessWidget {
                                             fontWeight: isSelected
                                                 ? FontWeight.w700
                                                 : FontWeight.w500,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                             color: isSelected
                                                 ? const Color(0xff0C831F)
                                                 : Colors.black,
@@ -4365,7 +4365,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
                 IconButton(
@@ -4406,7 +4406,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             color: controller.isHeuteSelected.value
                                 ? Colors.white
                                 : Colors.black,
@@ -4438,7 +4438,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: controller.isVorbestellenSelected.value
                               ? Colors.white
                               : Colors.black,
@@ -4481,7 +4481,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                 ),
               ),
               const SizedBox(height: 8),
@@ -4490,7 +4490,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 13,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   color: Colors.grey,
                 ),
               ),
@@ -4506,7 +4506,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
             style: const TextStyle(
               fontSize: 14,
               color: Colors.grey,
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
             ),
           ),
         );
@@ -4544,7 +4544,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   color: isSelected ? Colors.white : Colors.black,
                 ),
               ),
@@ -4585,7 +4585,7 @@ class TimeSelectionBottomSheet extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                 ],
@@ -4645,7 +4645,7 @@ class OrderPreviewScreen extends StatelessWidget {
     const style = TextStyle(
       fontSize: 14,
       color: Colors.grey,
-      fontFamily: 'Mulish',
+      fontFamily: 'Sora',
     );
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -4713,7 +4713,7 @@ class OrderPreviewScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ),
@@ -4730,7 +4730,7 @@ class OrderPreviewScreen extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ),
@@ -4740,7 +4740,7 @@ class OrderPreviewScreen extends StatelessWidget {
                       '${'date'.tr}: ${DateFormat('dd-MM-yyyy  HH:mm').format(DateTime.now())}',
                       style: const TextStyle(
                         fontSize: 13,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ),
@@ -4752,7 +4752,7 @@ class OrderPreviewScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ),
@@ -4796,7 +4796,7 @@ class OrderPreviewScreen extends StatelessWidget {
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   ),
                                 ),
                               ),
@@ -4805,7 +4805,7 @@ class OrderPreviewScreen extends StatelessWidget {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                             ],
@@ -4818,7 +4818,7 @@ class OrderPreviewScreen extends StatelessWidget {
                                 '${item['quantity']} × ${item['size']}  [${"currency".tr}${(item['price'] as num).toStringAsFixed(2)}]',
                                 style: const TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.black54,
                                 ),
                               ),
@@ -4831,7 +4831,7 @@ class OrderPreviewScreen extends StatelessWidget {
                                 '+ ${item['extras']}',
                                 style: const TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.black54,
                                 ),
                               ),
@@ -4845,7 +4845,7 @@ class OrderPreviewScreen extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Color(0xff0C831F),
                                 ),
                               ),
@@ -4866,7 +4866,7 @@ class OrderPreviewScreen extends StatelessWidget {
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             color: Colors.green,
                           ),
                         ),
@@ -4875,7 +4875,7 @@ class OrderPreviewScreen extends StatelessWidget {
                             note,
                             style: const TextStyle(
                               fontSize: 13,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                         ),
@@ -4915,7 +4915,7 @@ class OrderPreviewScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
 
@@ -4931,7 +4931,7 @@ class OrderPreviewScreen extends StatelessWidget {
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                         ),
@@ -4943,7 +4943,7 @@ class OrderPreviewScreen extends StatelessWidget {
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),
@@ -4956,7 +4956,7 @@ class OrderPreviewScreen extends StatelessWidget {
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),
@@ -4970,7 +4970,7 @@ class OrderPreviewScreen extends StatelessWidget {
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),
@@ -4989,7 +4989,7 @@ class OrderPreviewScreen extends StatelessWidget {
                                 '${(tax['tax_rate'] ?? 0).toStringAsFixed(0)} %',
                                 style: const TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                             ),
@@ -5000,7 +5000,7 @@ class OrderPreviewScreen extends StatelessWidget {
                                   _fmt(tax['brutto'] ?? 0),
                                   style: const TextStyle(
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   ),
                                 ),
                               ),
@@ -5012,7 +5012,7 @@ class OrderPreviewScreen extends StatelessWidget {
                                   _fmt(tax['netto'] ?? 0),
                                   style: const TextStyle(
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   ),
                                 ),
                               ),
@@ -5025,7 +5025,7 @@ class OrderPreviewScreen extends StatelessWidget {
                                   _fmt(tax['tax_amount'] ?? 0),
                                   style: const TextStyle(
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   ),
                                 ),
                               ),
@@ -5045,7 +5045,7 @@ class OrderPreviewScreen extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 12,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ),
@@ -5056,7 +5056,7 @@ class OrderPreviewScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 12,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ),
@@ -5095,7 +5095,7 @@ class OrderPreviewScreen extends StatelessWidget {
       style: const TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w600,
-        fontFamily: 'Mulish',
+        fontFamily: 'Sora',
       ),
     ),
   );
@@ -5109,7 +5109,7 @@ class OrderPreviewScreen extends StatelessWidget {
     final style = TextStyle(
       fontSize: 13,
       fontWeight: bold ? FontWeight.w800 : FontWeight.w500,
-      fontFamily: 'Mulish',
+      fontFamily: 'Sora',
     );
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),

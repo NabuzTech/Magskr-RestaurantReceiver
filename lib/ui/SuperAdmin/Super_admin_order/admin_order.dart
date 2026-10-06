@@ -128,7 +128,7 @@ class _AdminOrderState extends State<AdminOrder>
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${'during'.tr}: $e'),
+          content: Text('${'during'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
@@ -306,7 +306,7 @@ class _AdminOrderState extends State<AdminOrder>
       child: Text(
         text,
         style: const TextStyle(
-            fontFamily: "Mulish",
+            fontFamily: 'Sora',
             fontWeight: FontWeight.w700,
             fontSize: 11,
             color: Colors.black87),
@@ -338,13 +338,13 @@ class _AdminOrderState extends State<AdminOrder>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('order'.tr,
-                                style: const TextStyle(
+                                style: const TextStyle(fontFamily: 'Sora', 
                                     fontSize: 18, fontWeight: FontWeight.bold)),
                             Text(
                               dateSeleted.isEmpty
                                   ? DateFormat('d MMMM, y').format(DateTime.now())
                                   : dateSeleted,
-                              style: const TextStyle(fontSize: 14),
+                              style: const TextStyle(fontFamily: 'Sora', fontSize: 14),
                             ),
                           ],
                         ),
@@ -356,7 +356,7 @@ class _AdminOrderState extends State<AdminOrder>
                             style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w800,
-                                fontFamily: "Mulish",
+                                fontFamily: 'Sora',
                                 color: Colors.black),
                           ),
                           IconButton(
@@ -424,7 +424,7 @@ class _AdminOrderState extends State<AdminOrder>
                             ),
                             Text(
                               'no_order'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.grey,
@@ -543,7 +543,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                               style: const TextStyle(
                                                                   fontWeight: FontWeight.w700,
                                                                   fontSize: 13,
-                                                                  fontFamily: "Mulish-Regular"),
+                                                                  fontFamily: 'Sora'),
                                                             ),
                                                           ),
                                                           if (order.deliveryTime != null && order.deliveryTime!.isNotEmpty)
@@ -554,7 +554,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                                 style: const TextStyle(
                                                                     fontWeight: FontWeight.w700,
                                                                     fontSize: 13,
-                                                                    fontFamily: "Mulish-Regular"),
+                                                                    fontFamily: 'Sora'),
                                                               ),
                                                             ),
                                                         ],
@@ -576,7 +576,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                               fontSize: 11,
                                                               letterSpacing: 0,
                                                               height: 0,
-                                                              fontFamily: "Mulish"),
+                                                              fontFamily: 'Sora'),
                                                         ),
                                                       ),
                                                     ),
@@ -596,7 +596,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                   style: TextStyle(
                                                     color: Colors.white,
                                                     fontWeight: FontWeight.bold,
-                                                    fontFamily: "Mulish",
+                                                    fontFamily: 'Sora',
                                                     fontSize: 13,
                                                   ),
                                                 ),
@@ -613,7 +613,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                   style: TextStyle(
                                                     color: Colors.white,
                                                     fontWeight: FontWeight.bold,
-                                                    fontFamily: "Mulish",
+                                                    fontFamily: 'Sora',
                                                     fontSize: 13,
                                                   ),
                                                 ),
@@ -625,7 +625,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                   time,
                                                   style: const TextStyle(
                                                     fontWeight: FontWeight.w500,
-                                                    fontFamily: "Mulish",
+                                                    fontFamily: 'Sora',
                                                     fontSize: 10,
                                                   ),
                                                 )
@@ -643,7 +643,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                 '${order.shippingAddress?.customerName ?? guestName ?? ""} / ${order.shippingAddress?.phone ?? guestPhone}',
                                                 style: const TextStyle(
                                                     fontWeight: FontWeight.w700,
-                                                    fontFamily: "Mulish",
+                                                    fontFamily: 'Sora',
                                                     fontSize: 13),
                                               ),
                                             ),
@@ -654,14 +654,14 @@ class _AdminOrderState extends State<AdminOrder>
                                                   style: const TextStyle(
                                                       fontWeight: FontWeight.w700,
                                                       fontSize: 11,
-                                                      fontFamily: "Mulish"),
+                                                      fontFamily: 'Sora'),
                                                 ),
                                                 Text(
                                                   '${order.orderNumber}',
                                                   style: const TextStyle(
                                                       fontWeight: FontWeight.w500,
                                                       fontSize: 11,
-                                                      fontFamily: "Mulish"),
+                                                      fontFamily: 'Sora'),
                                                 ),
                                               ],
                                             ),
@@ -677,7 +677,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                   : '${'currency'.tr} ${formatAmount(0)}',
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w800,
-                                                  fontFamily: "Mulish",
+                                                  fontFamily: 'Sora',
                                                   fontSize: 16),
                                             ),
                                             Row(
@@ -686,7 +686,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                   getApprovalStatusText(order.approvalStatus),
                                                   style: const TextStyle(
                                                       fontWeight: FontWeight.w800,
-                                                      fontFamily: "Mulish-Regular",
+                                                      fontFamily: 'Sora',
                                                       fontSize: 13),
                                                 ),
                                                 const SizedBox(width: 6),
@@ -718,7 +718,7 @@ class _AdminOrderState extends State<AdminOrder>
                                                   style: TextStyle(
                                                     color: Colors.white,
                                                     fontWeight: FontWeight.w700,
-                                                    fontFamily: 'Mulish',
+                                                    fontFamily: 'Sora',
                                                     fontSize: 13,
                                                   ),
                                                 ),

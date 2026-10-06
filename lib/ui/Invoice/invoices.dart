@@ -95,7 +95,8 @@ class _InvoicesState extends State<Invoices> {
       }
 
       setState(() {
-        orderList = result;
+        // Cancelled/declined orders (approval_status 3) have no valid invoice.
+        orderList = result.where((o) => o.approvalStatus != 3).toList();
         isLoading = false;
         _listRebuildNotifier.value++;
       });
@@ -185,7 +186,7 @@ class _InvoicesState extends State<Invoices> {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            fontFamily: 'Mulish',
+            fontFamily: 'Sora',
           ),
         ),
         content: Column(
@@ -202,7 +203,7 @@ class _InvoicesState extends State<Invoices> {
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -218,7 +219,7 @@ class _InvoicesState extends State<Invoices> {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         color: _getPaymentTypeColor(o.payment?.paymentMethod),
                       ),
                     ),
@@ -231,7 +232,7 @@ class _InvoicesState extends State<Invoices> {
               'confirm_delete'.tr,
               style: TextStyle(
                 fontSize: 13,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 color: Colors.grey.shade600,
               ),
             ),
@@ -243,7 +244,7 @@ class _InvoicesState extends State<Invoices> {
             child: Text(
               'cancel'.tr,
               style: TextStyle(
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 color: Colors.grey.shade600,
               ),
             ),
@@ -256,7 +257,7 @@ class _InvoicesState extends State<Invoices> {
             child: const Text(
               'Delete',
               style: TextStyle(
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 color: Color(0xffE25454),
                 fontWeight: FontWeight.w700,
               ),
@@ -278,7 +279,7 @@ class _InvoicesState extends State<Invoices> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            fontFamily: 'Mulish',
+            fontFamily: 'Sora',
           ),
         ),
         content: Column(
@@ -293,7 +294,7 @@ class _InvoicesState extends State<Invoices> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -309,7 +310,7 @@ class _InvoicesState extends State<Invoices> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: _getPaymentTypeColor(order.payment?.paymentMethod),
                     ),
                   ),
@@ -321,7 +322,7 @@ class _InvoicesState extends State<Invoices> {
               'confirm_delete'.tr,
               style: TextStyle(
                 fontSize: 13,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 color: Colors.grey.shade600,
               ),
             ),
@@ -333,7 +334,7 @@ class _InvoicesState extends State<Invoices> {
             child: Text(
               'cancel'.tr,
               style: TextStyle(
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 color: Colors.grey.shade600,
               ),
             ),
@@ -346,7 +347,7 @@ class _InvoicesState extends State<Invoices> {
             child: const Text(
               'Delete',
               style: TextStyle(
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 color: Color(0xffE25454),
                 fontWeight: FontWeight.w700,
               ),
@@ -380,7 +381,7 @@ class _InvoicesState extends State<Invoices> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result.error!),
+              content: Text(result.error!, style: const TextStyle(fontFamily: 'Sora')),
               backgroundColor: Colors.red,
               duration: const Duration(seconds: 2),
             ),
@@ -397,7 +398,7 @@ class _InvoicesState extends State<Invoices> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${result.deleted?.length ?? 0} order(s) deleted'),
+            content: Text('${result.deleted?.length ?? 0} order(s) deleted', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -410,7 +411,7 @@ class _InvoicesState extends State<Invoices> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('Error: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -441,7 +442,7 @@ class _InvoicesState extends State<Invoices> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('payment_updated'.tr),
+            content: Text('payment_updated'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -454,7 +455,7 @@ class _InvoicesState extends State<Invoices> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'update_failed'.tr}: $e'),
+            content: Text('${'update_failed'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -539,7 +540,7 @@ class _InvoicesState extends State<Invoices> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ),
@@ -560,7 +561,7 @@ class _InvoicesState extends State<Invoices> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -594,7 +595,7 @@ class _InvoicesState extends State<Invoices> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: isSelected ? Colors.white : Colors.black87,
                                 ),
                               ),
@@ -622,7 +623,7 @@ class _InvoicesState extends State<Invoices> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.grey.shade600,
                                 ),
                               ),
@@ -653,7 +654,7 @@ class _InvoicesState extends State<Invoices> {
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.white,
                                 ),
                               ),
@@ -681,7 +682,7 @@ class _InvoicesState extends State<Invoices> {
           label,
           style: TextStyle(
             fontSize: 14,
-            fontFamily: 'Mulish',
+            fontFamily: 'Sora',
             fontWeight: FontWeight.w500,
             color: Colors.grey.shade600,
           ),
@@ -692,7 +693,7 @@ class _InvoicesState extends State<Invoices> {
             value,
             style: const TextStyle(
               fontSize: 14,
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -717,7 +718,7 @@ class _InvoicesState extends State<Invoices> {
                 Text(
                   'invoices'.tr,
                   style: const TextStyle(
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -756,7 +757,7 @@ class _InvoicesState extends State<Invoices> {
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Color(0xFF1976D2),
                               ),
                             ),
@@ -791,7 +792,7 @@ class _InvoicesState extends State<Invoices> {
                               'no_invoices_today'.tr,
                               style: TextStyle(
                                 fontSize: 16,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Colors.grey[600],
                                 fontWeight: FontWeight.w500,
                               ),
@@ -940,7 +941,7 @@ class _InvoicesState extends State<Invoices> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Colors.grey.shade600,
                               ),
                             ),
@@ -964,7 +965,7 @@ class _InvoicesState extends State<Invoices> {
                     //           style: const TextStyle(
                     //             fontSize: 14,
                     //             fontWeight: FontWeight.w700,
-                    //             fontFamily: 'Mulish',
+                    //             fontFamily: 'Sora',
                     //             color: Colors.white,
                     //           ),
                     //         ),
@@ -1064,7 +1065,7 @@ class _InvoicesState extends State<Invoices> {
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 3,
@@ -1083,7 +1084,7 @@ class _InvoicesState extends State<Invoices> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   color: _getPaymentTypeColor(paymentMethod),
                 ),
               ),
@@ -1098,7 +1099,7 @@ class _InvoicesState extends State<Invoices> {
               '${"currency".tr}${amount?.toStringAsFixed(2) ?? '0.00'}',
               style: const TextStyle(
                 fontWeight: FontWeight.w800,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 fontSize: 16,
               ),
             ),
@@ -1109,7 +1110,7 @@ class _InvoicesState extends State<Invoices> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 11,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
                 Text(
@@ -1117,7 +1118,7 @@ class _InvoicesState extends State<Invoices> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 11,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
               ],
@@ -1150,7 +1151,7 @@ class _InvoicesState extends State<Invoices> {
       await _fetchOrders();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('zone_updated'.tr),
+            content: Text('zone_updated'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2)));
       }
@@ -1160,7 +1161,7 @@ class _InvoicesState extends State<Invoices> {
       print('Update payment method  error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('${'failed_create'.tr}: ${e.toString()}'),
+            content: Text('${'failed_create'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2)));
       }

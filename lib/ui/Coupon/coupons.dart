@@ -99,7 +99,7 @@ class _CouponState extends State<Coupon> {
                          Text(
                           'coupon'.tr,
                           style: const TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -121,7 +121,7 @@ class _CouponState extends State<Coupon> {
                                   color: Colors.white,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                             ),
@@ -147,7 +147,7 @@ class _CouponState extends State<Coupon> {
                             style: const TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 13,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                         ),
@@ -158,7 +158,7 @@ class _CouponState extends State<Coupon> {
                             style: const TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 13,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                         ),
@@ -169,7 +169,7 @@ class _CouponState extends State<Coupon> {
                             style: const TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 13,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                         ),
@@ -180,7 +180,7 @@ class _CouponState extends State<Coupon> {
                               style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 13,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),
@@ -207,7 +207,7 @@ class _CouponState extends State<Coupon> {
                                 : '${'no_match_found'.tr} "$currentSearchQuery"',
                             style: TextStyle(
                               fontSize: 16,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -284,7 +284,7 @@ class _CouponState extends State<Coupon> {
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -296,7 +296,7 @@ class _CouponState extends State<Coupon> {
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -308,7 +308,7 @@ class _CouponState extends State<Coupon> {
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                       ),
                                     ),
                                   ),
@@ -322,10 +322,7 @@ class _CouponState extends State<Coupon> {
                                           }
                                         },
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
+                                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 6,),
                                           decoration: BoxDecoration(
                                             color: (coupon.isActive ?? false)
                                                 ? const Color(0xff49B27A)
@@ -336,7 +333,7 @@ class _CouponState extends State<Coupon> {
                                             (coupon.isActive ?? false) ? 'Active' : 'Inactive',
                                             style: const TextStyle(
                                               fontSize: 11,
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                               fontWeight: FontWeight.w700,
                                               color: Colors.white,
                                             ),
@@ -410,7 +407,7 @@ class _CouponState extends State<Coupon> {
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ),
@@ -427,13 +424,13 @@ class _CouponState extends State<Coupon> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.black,
                                 ),
                                 children: const [
                                   TextSpan(
                                     text: '*',
-                                    style: TextStyle(color: Colors.red),
+                                    style: TextStyle(fontFamily: 'Sora', color: Colors.red),
                                   ),
                                 ],
                               ),
@@ -457,7 +454,7 @@ class _CouponState extends State<Coupon> {
                                       style: const TextStyle(
                                         color: Colors.grey,
                                         fontSize: 14,
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                       ),
                                     ),
                                   ),
@@ -475,7 +472,7 @@ class _CouponState extends State<Coupon> {
                                           type,
                                           style: const TextStyle(
                                             fontSize: 14,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                           ),
                                         ),
                                       ),
@@ -499,13 +496,13 @@ class _CouponState extends State<Coupon> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.black,
                                 ),
                                 children: const [
                                   TextSpan(
                                     text: '*',
-                                    style: TextStyle(color: Colors.red),
+                                    style: TextStyle(fontFamily: 'Sora', color: Colors.red),
                                   ),
                                 ],
                               ),
@@ -525,7 +522,7 @@ class _CouponState extends State<Coupon> {
                                 hintStyle: const TextStyle(
                                   color: Colors.grey,
                                   fontSize: 14,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -560,13 +557,13 @@ class _CouponState extends State<Coupon> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.black,
                                 ),
                                 children: const [
                                   TextSpan(
                                     text: '*',
-                                    style: TextStyle(color: Colors.red),
+                                    style: TextStyle(fontFamily: 'Sora', color: Colors.red),
                                   ),
                                 ],
                               ),
@@ -586,7 +583,7 @@ class _CouponState extends State<Coupon> {
                                 hintStyle: const TextStyle(
                                   color: Colors.grey,
                                   fontSize: 14,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -620,7 +617,7 @@ class _CouponState extends State<Coupon> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -659,13 +656,13 @@ class _CouponState extends State<Coupon> {
                                           style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                             color: Colors.black,
                                           ),
                                           children: const [
                                             TextSpan(
                                               text: '*',
-                                              style: TextStyle(color: Colors.red),
+                                              style: TextStyle(fontFamily: 'Sora', color: Colors.red),
                                             ),
                                           ],
                                         ),
@@ -685,7 +682,7 @@ class _CouponState extends State<Coupon> {
                                           hintStyle: const TextStyle(
                                             color: Colors.grey,
                                             fontSize: 14,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                           ),
                                           border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
@@ -724,7 +721,7 @@ class _CouponState extends State<Coupon> {
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                         ),
                                       ),
                                       const SizedBox(height: 8),
@@ -735,7 +732,7 @@ class _CouponState extends State<Coupon> {
                                           hintStyle: const TextStyle(
                                             color: Colors.grey,
                                             fontSize: 14,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                           ),
                                           border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
@@ -765,7 +762,7 @@ class _CouponState extends State<Coupon> {
                             //             style: TextStyle(
                             //               fontSize: 14,
                             //               fontWeight: FontWeight.w600,
-                            //               fontFamily: 'Mulish',
+                            //               fontFamily: 'Sora',
                             //             ),
                             //           ),
                             //           const SizedBox(height: 8),
@@ -790,7 +787,7 @@ class _CouponState extends State<Coupon> {
                             //               hintStyle: const TextStyle(
                             //                 color: Colors.grey,
                             //                 fontSize: 14,
-                            //                 fontFamily: 'Mulish',
+                            //                 fontFamily: 'Sora',
                             //               ),
                             //               suffixIcon: const Icon(Icons.calendar_today, size: 18),
                             //               border: OutlineInputBorder(
@@ -815,7 +812,7 @@ class _CouponState extends State<Coupon> {
                             //             style: TextStyle(
                             //               fontSize: 14,
                             //               fontWeight: FontWeight.w600,
-                            //               fontFamily: 'Mulish',
+                            //               fontFamily: 'Sora',
                             //             ),
                             //           ),
                             //           const SizedBox(height: 8),
@@ -840,7 +837,7 @@ class _CouponState extends State<Coupon> {
                             //               hintStyle: const TextStyle(
                             //                 color: Colors.grey,
                             //                 fontSize: 14,
-                            //                 fontFamily: 'Mulish',
+                            //                 fontFamily: 'Sora',
                             //               ),
                             //               suffixIcon: const Icon(Icons.calendar_today, size: 18),
                             //               border: OutlineInputBorder(
@@ -888,7 +885,7 @@ class _CouponState extends State<Coupon> {
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                       color: Colors.white,
                                     ),
                                   ),
@@ -938,7 +935,7 @@ class _CouponState extends State<Coupon> {
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                       color: Colors.white,
                                     ),
                                   ),
@@ -1000,7 +997,7 @@ class _CouponState extends State<Coupon> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Store ID not found'), backgroundColor: Colors.red),
+          const SnackBar(content: Text('Store ID not found', style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
         );
       }
       return false;
@@ -1078,7 +1075,7 @@ class _CouponState extends State<Coupon> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Coupon added successfully'),
+            content: Text('Coupon added successfully', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 2),
           ),
@@ -1101,7 +1098,7 @@ class _CouponState extends State<Coupon> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to add coupon: $e'),
+            content: Text('Failed to add coupon: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -1130,7 +1127,7 @@ class _CouponState extends State<Coupon> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Store ID not found'), backgroundColor: Colors.red),
+          const SnackBar(content: Text('Store ID not found', style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
         );
       }
       return false;
@@ -1195,7 +1192,7 @@ class _CouponState extends State<Coupon> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Coupon updated successfully'),
+            content: Text('Coupon updated successfully', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 2),
           ),
@@ -1217,7 +1214,7 @@ class _CouponState extends State<Coupon> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update coupon: $e'),
+            content: Text('Failed to update coupon: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -1272,7 +1269,7 @@ class _CouponState extends State<Coupon> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ),
@@ -1291,13 +1288,13 @@ class _CouponState extends State<Coupon> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Colors.black,
                               ),
                               children: [
                                 TextSpan(
                                   text: '*',
-                                  style: TextStyle(color: Colors.red),
+                                  style: TextStyle(fontFamily: 'Sora', color: Colors.red),
                                 ),
                               ],
                             ),
@@ -1321,7 +1318,7 @@ class _CouponState extends State<Coupon> {
                                     style: TextStyle(
                                       color: Colors.grey,
                                       fontSize: 14,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 ),
@@ -1339,7 +1336,7 @@ class _CouponState extends State<Coupon> {
                                         type,
                                         style: const TextStyle(
                                           fontSize: 14,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                         ),
                                       ),
                                     ),
@@ -1385,7 +1382,7 @@ class _CouponState extends State<Coupon> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     color: Colors.white,
                                   ),
                                 ),
@@ -1438,7 +1435,7 @@ class _CouponState extends State<Coupon> {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     color: Colors.white,
                                   ),
                                 ),
@@ -1488,7 +1485,7 @@ class _CouponState extends State<Coupon> {
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                       color: Colors.black,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -1513,7 +1510,7 @@ class _CouponState extends State<Coupon> {
                           ),
                           child: const Text(
                             'Cancel',
-                            style: TextStyle(
+                            style: TextStyle(fontFamily: 'Sora', 
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),
@@ -1541,7 +1538,7 @@ class _CouponState extends State<Coupon> {
                           ),
                           child: const Text(
                             'Delete',
-                            style: TextStyle(
+                            style: TextStyle(fontFamily: 'Sora', 
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),
@@ -1661,7 +1658,7 @@ class _CouponState extends State<Coupon> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('ip_delete'.tr),
+            content: Text('ip_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -1675,7 +1672,7 @@ class _CouponState extends State<Coupon> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_delete_ip'.tr),
+            content: Text('failed_delete_ip'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -1714,7 +1711,7 @@ class _CouponState extends State<Coupon> {
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                       color: Colors.black,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -1739,7 +1736,7 @@ class _CouponState extends State<Coupon> {
                           ),
                           child: const Text(
                             'Cancel',
-                            style: TextStyle(
+                            style: TextStyle(fontFamily: 'Sora', 
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),
@@ -1767,7 +1764,7 @@ class _CouponState extends State<Coupon> {
                           ),
                           child: const Text(
                             'Activate',
-                            style: TextStyle(
+                            style: TextStyle(fontFamily: 'Sora', 
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),

@@ -94,7 +94,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
     if (mounted && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: Text(message, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: backgroundColor ?? Colors.red,
           duration: const Duration(seconds: 2),
         ),
@@ -122,7 +122,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
             ),
             Text(
               'details'.tr,
-              style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+              style: const TextStyle(fontFamily: 'Sora', color: Colors.black, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -152,7 +152,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 18,
-                    fontFamily: 'Mulish'),
+                    fontFamily: 'Sora'),
               ),
             ),
             Center(
@@ -161,14 +161,14 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    fontFamily: 'Mulish'),
+                    fontFamily: 'Sora'),
               ),
             ),
             const Divider(color: Color(0xff757B8F)),
             Text(
               '${'customer'.tr} : $customerName',
               style: const TextStyle(
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 15,
                   fontWeight: FontWeight.w600),
             ),
@@ -176,7 +176,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
             Text(
               '${'phone'.tr} : $phone ',
               style: const TextStyle(
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 15,
                   fontWeight: FontWeight.w600),
             ),
@@ -184,7 +184,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
             Text(
               '${'guest'.tr} : $guest',
               style: const TextStyle(
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 15,
                   fontWeight: FontWeight.w600),
             ),
@@ -196,7 +196,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 Text(
                   '${'reservation_date'.tr}:  ${formatDateTime(reservation)}',
                   style: const TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontSize: 15,
                       fontWeight: FontWeight.w600),
                 ),
@@ -208,7 +208,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
             Text(
               '${'note'.tr}:  $note',
               style: const TextStyle(
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 15,
                   fontWeight: FontWeight.w600),
             ),
@@ -227,7 +227,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
               ),
@@ -249,7 +249,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                     child: Center(
                       child: Text(
                         'decline'.tr,
-                        style: const TextStyle(
+                        style: const TextStyle(fontFamily: 'Sora', 
                             fontWeight: FontWeight.w500,
                             fontSize: 15,
                             color: Colors.white),
@@ -271,7 +271,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                     child: Center(
                       child: Text(
                         'accept'.tr,
-                        style: const TextStyle(
+                        style: const TextStyle(fontFamily: 'Sora', 
                             fontWeight: FontWeight.w500,
                             fontSize: 15,
                             color: Colors.white),
@@ -301,7 +301,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                 ),
@@ -571,7 +571,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                         color: Colors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ),
@@ -613,7 +613,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                                 child: Center(
                                   child: Text(
                                     'cancel_reserv'.tr,
-                                    style: const TextStyle(
+                                    style: const TextStyle(fontFamily: 'Sora', 
                                         fontWeight: FontWeight.w500,
                                         fontSize: 15,
                                         color: Colors.white),
@@ -650,7 +650,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                                 child: Center(
                                   child: Text(
                                     'save_reserv'.tr,
-                                    style: const TextStyle(
+                                    style: const TextStyle(fontFamily: 'Sora', 
                                         fontWeight: FontWeight.w500,
                                         fontSize: 15,
                                         color: Colors.white),
@@ -730,7 +730,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
           ),
@@ -749,7 +749,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                   ? () => _selectReservationDateTime(controller)
                   : null,
               style: const TextStyle(
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
                 color: Colors.black87,
@@ -758,7 +758,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 hintText: _getEditHintText(label),
                 hintStyle: TextStyle(
                   color: Colors.grey[500],
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
                 ),
@@ -919,7 +919,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                       const Spacer(),
@@ -932,7 +932,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                   const SizedBox(height: 8),
                   Text(
                     dayInfo,
-                    style: const TextStyle(
+                    style: const TextStyle(fontFamily: 'Sora', 
                       color: Colors.white70,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -948,7 +948,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   color: Colors.blue.shade800,
                 ),
               ),
@@ -1023,7 +1023,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: Colors.green.shade800,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                         ),
@@ -1120,7 +1120,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Colors.black,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1131,7 +1131,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey[600],
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1141,7 +1141,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                       maxLines: 3,
                       decoration: InputDecoration(
                         hintText: 'type_msg_here'.tr,
-                        hintStyle: TextStyle(color: Colors.grey[400], fontFamily: 'Mulish'),
+                        hintStyle: TextStyle(color: Colors.grey[400], fontFamily: 'Sora'),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(color: Colors.grey[300]!),
@@ -1180,7 +1180,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),
@@ -1211,7 +1211,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),

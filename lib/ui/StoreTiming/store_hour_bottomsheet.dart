@@ -64,7 +64,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
   void _showSnackbar(String message, {bool isError = true}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(message, style: const TextStyle(fontFamily: 'Sora')),
         backgroundColor: isError ? Colors.red : Colors.green,
         duration: const Duration(seconds: 3),
       ),
@@ -467,7 +467,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),)
                       ],
                     ),
@@ -479,7 +479,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         color: Colors.black87,
                       ),
                     ),
@@ -490,7 +490,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                         hintText: 'title'.tr,
                         hintStyle: const TextStyle(
                           color: Colors.grey,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                         filled: true,
                         fillColor: const Color(0xFFF8F8F8),
@@ -519,7 +519,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.black87,
                                 ),
                               ),
@@ -532,7 +532,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                                   hintText: '--:--',
                                   hintStyle: const TextStyle(
                                     color: Colors.grey,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   ),
                                   filled: true,
                                   fillColor: const Color(0xFFF8F8F8),
@@ -566,7 +566,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.black87,
                                 ),
                               ),
@@ -579,7 +579,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                                   hintText: '--:--',
                                   hintStyle: const TextStyle(
                                     color: Colors.grey,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   ),
                                   filled: true,
                                   fillColor: const Color(0xFFF8F8F8),
@@ -614,7 +614,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             color: Colors.black87,
                           ),
                         ),
@@ -633,7 +633,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Colors.black87,
                               ),
                             ),
@@ -674,7 +674,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                                   color: day.isSelected ? Colors.white : Colors.black,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                             ),
@@ -704,7 +704,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                               child: Text('cancel'.tr,style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),)),
                         ),
                         const SizedBox(width: 20,),
@@ -734,7 +734,7 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),

@@ -105,7 +105,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
                 color: Colors.black,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
             const SizedBox(height: 20),
@@ -133,7 +133,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
             //           ),
             //         ),
             //         child: Text('cancel'.tr, style: const TextStyle(
-            //           fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 16,),),
+            //           fontFamily: 'Sora', fontWeight: FontWeight.w700, fontSize: 16,),),
             //       ),
             //     ),
             //     const SizedBox(width: 15),
@@ -158,7 +158,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
             //           ),
             //         ),
             //         child: Center(child: Text('book'.tr, style: const TextStyle(
-            //           fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 16,
+            //           fontFamily: 'Sora', fontWeight: FontWeight.w700, fontSize: 16,
             //         ),)),
             //       ),
             //     ),
@@ -175,7 +175,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
                 child: Center(
                   child: Text('Continue',style: TextStyle(
                     fontWeight: FontWeight.w700,
-                      fontFamily: 'Mulish',fontSize: 16,
+                      fontFamily: 'Sora',fontSize: 16,
                     color: Colors.white
                   ),),
                 ),
@@ -203,7 +203,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
           ),
@@ -220,7 +220,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
               keyboardType: _getKeyboardType(label),
               onTap: isDateField ? () => _selectNewReservationDateTime(controller) : null,
               style: const TextStyle(
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: Colors.black87,
@@ -229,7 +229,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
                 hintText: _getHintText(label),
                 hintStyle: TextStyle(
                   color: Colors.grey[500],
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
@@ -330,7 +330,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('⚠️ Store timing data not available. Using default timings.'),
+            content: Text('⚠️ Store timing data not available. Using default timings.', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.orange,
             duration: Duration(seconds: 2),
           ),
@@ -368,7 +368,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${'closed'.tr} - No available time slots for today'),
+              content: Text('${'closed'.tr} - No available time slots for today', style: const TextStyle(fontFamily: 'Sora')),
               backgroundColor: Colors.red,
               duration: const Duration(seconds: 2),
             ),
@@ -419,7 +419,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                     const Spacer(),
@@ -437,7 +437,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     color: Colors.orange.shade800,
                   ),
                 ),
@@ -474,7 +474,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('${'time_selected'.tr}: ${slot['time24']}'),
+                                  content: Text('${'time_selected'.tr}: ${slot['time24']}', style: const TextStyle(fontFamily: 'Sora')),
                                   backgroundColor: Colors.green,
                                   duration: const Duration(seconds: 1),
                                 ),
@@ -499,7 +499,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.green.shade800,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),
@@ -629,7 +629,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'error'.tr} - ${'create_reserv'.tr}: ${e.toString()}'),
+            content: Text('${'error'.tr} - ${'create_reserv'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -689,7 +689,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
 //                       color: Colors.black,
 //                       fontSize: 18,
 //                       fontWeight: FontWeight.w700,
-//                       fontFamily: 'Mulish',
+//                       fontFamily: 'Sora',
 //                     ),
 //                   ),
 //                 ),
@@ -725,7 +725,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
 //                                 ),
 //                               ),
 //                               child: Text('cancel'.tr,style: const TextStyle(
-//                                 fontFamily: 'Mulish',fontWeight: FontWeight.w700,fontSize: 16,),),
+//                                 fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 16,),),
 //                             ),
 //                           ),
 //                           const SizedBox(width: 15),
@@ -751,7 +751,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
 //                                 ),
 //                               ),
 //                               child:  Center(child: Text('book'.tr,style: const TextStyle(
-//                                 fontFamily: 'Mulish',fontWeight: FontWeight.w700,fontSize: 16,
+//                                 fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 16,
 //                               ),)),
 //                             ),
 //                           ),
@@ -810,7 +810,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
 //               fontSize: 16,
 //               fontWeight: FontWeight.w600,
 //               color: Colors.black87,
-//               fontFamily: 'Mulish',
+//               fontFamily: 'Sora',
 //             ),
 //           ),
 //         ),
@@ -828,7 +828,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
 //             keyboardType: _getKeyboardType(label),
 //             onTap: isDateField ? () => _selectNewReservationDateTime(controller) : null,
 //             style: const TextStyle(
-//               fontFamily: 'Mulish',
+//               fontFamily: 'Sora',
 //               fontSize: 13,
 //               fontWeight: FontWeight.w700,
 //               color: Colors.black87,
@@ -837,7 +837,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
 //               hintText: _getHintText(label),
 //               hintStyle: TextStyle(
 //                 color: Colors.grey[500],
-//                 fontFamily: 'Mulish',
+//                 fontFamily: 'Sora',
 //                 fontSize: 13,
 //                 fontWeight: FontWeight.w500,
 //               ),
@@ -1057,7 +1057,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
 //                           color: Colors.white,
 //                           fontSize: 18,
 //                           fontWeight: FontWeight.bold,
-//                           fontFamily: 'Mulish',
+//                           fontFamily: 'Sora',
 //                         ),
 //                       ),
 //                       const Spacer(),
@@ -1087,7 +1087,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
 //                 style: TextStyle(
 //                   fontSize: 16,
 //                   fontWeight: FontWeight.w600,
-//                   fontFamily: 'Mulish',
+//                   fontFamily: 'Sora',
 //                   color: Colors.orange.shade800,
 //                 ),
 //               ),
@@ -1163,7 +1163,7 @@ class _AddReservationScreenState extends State<AddReservationScreen> {
 //                               fontSize: 13,
 //                               fontWeight: FontWeight.w600,
 //                               color: Colors.green.shade800,
-//                               fontFamily: 'Mulish',
+//                               fontFamily: 'Sora',
 //                             ),
 //                           ),
 //                         ),

@@ -121,7 +121,7 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
                           const SizedBox(width: 10),
                           const Text(
                             'Received Reservations Today',
-                            style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Mulish', fontSize: 18),
+                            style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 18),
                           ),
                         ],
                       ),
@@ -139,7 +139,7 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
                               ),
                               child: Text(
                                 'Total: ${totals!.total}',
-                                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w800, fontFamily: 'Mulish', fontSize: 12),
+                                style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 12),
                               ),
                             ),
                         ],
@@ -187,33 +187,33 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
                             children: [
                               Text(
                                 'ID : ${store.storeId}',
-                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, fontFamily: 'Mulish'),
+                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, fontFamily: 'Sora'),
                               ),
                               SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.3,
                                 child: Text(
                                   store.storeName ?? '',
-                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, fontFamily: 'Mulish', color: colors['nameColor']),
+                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, fontFamily: 'Sora', color: colors['nameColor']),
                                 ),
                               ),
                               const Spacer(),
                               Text(
                                 'Total : ${summary?.total ?? 0}',
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Mulish'),
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Sora'),
                               ),
                               Text(
                                 'Booked : ${summary?.booked ?? 0}',
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Mulish'),
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Sora'),
                               ),
                               if ((summary?.pending ?? 0) > 0)
                                 Text(
                                   'Pending : ${summary?.pending}',
-                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Mulish', color: Colors.orange),
+                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Sora', color: Colors.orange),
                                 ),
                               if ((summary?.cancelled ?? 0) > 0)
                                 Text(
                                   'Cancelled : ${summary?.cancelled}',
-                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Mulish', color: Colors.red),
+                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Sora', color: Colors.red),
                                 ),
                             ],
                           ),
@@ -229,7 +229,7 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
                     children: [
                       Text(
                         selectedStore != null ? selectedStore!.storeName ?? '' : 'All stores',
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontFamily: 'Mulish', fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontFamily: 'Sora', fontWeight: FontWeight.w600),
                       ),
                       if (selectedStore != null)
                         GestureDetector(
@@ -239,7 +239,7 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
                             decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(6)),
                             child: const Text(
                               'Show All',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontFamily: 'Mulish', fontSize: 11),
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontFamily: 'Sora', fontSize: 11),
                             ),
                           ),
                         ),
@@ -261,7 +261,7 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
                             const SizedBox(height: 12),
                             Text(
                               'No reservations found',
-                              style: TextStyle(color: Colors.grey.shade600, fontFamily: 'Mulish', fontSize: 15, fontWeight: FontWeight.w600),
+                              style: TextStyle(color: Colors.grey.shade600, fontFamily: 'Sora', fontSize: 15, fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),
@@ -284,10 +284,10 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontFamily: 'Mulish', fontSize: 13, fontWeight: FontWeight.w600)),
+          Text(label, style: const TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w600)),
           Text(
             '${value ?? 0}',
-            style: TextStyle(fontFamily: 'Mulish', fontSize: 13, fontWeight: FontWeight.w800, color: color ?? Colors.black87),
+            style: TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w800, color: color ?? Colors.black87),
           ),
         ],
       ),
@@ -310,7 +310,7 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
         children: [
           Text(
             selectedStore != null ? '${selectedStore!.storeName} Summary' : 'All Stores Summary',
-            style: const TextStyle(fontFamily: 'Mulish', fontSize: 15, fontWeight: FontWeight.w800),
+            style: const TextStyle(fontFamily: 'Sora', fontSize: 15, fontWeight: FontWeight.w800),
           ),
           const Divider(),
           _statRow('Total', detail?.total),

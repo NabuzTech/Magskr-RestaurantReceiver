@@ -119,7 +119,7 @@ class _DiscountState extends State<Discount> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('managee'.tr,
-                  style: const TextStyle(fontSize: 18,fontWeight: FontWeight.w800,fontFamily: 'Mulish'),),
+                  style: const TextStyle(fontSize: 18,fontWeight: FontWeight.w800,fontFamily: 'Sora'),),
                 const SizedBox(height: 20),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -127,7 +127,7 @@ class _DiscountState extends State<Discount> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                        Text('${'delivery_discount'.tr} (%)',
-                          style: const TextStyle(fontFamily: 'Mulish',fontWeight: FontWeight.w700,fontSize: 13),),
+                          style: const TextStyle(fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 13),),
                         const SizedBox(height: 8),
                         Container(
                           width: 150,
@@ -154,7 +154,7 @@ class _DiscountState extends State<Discount> {
                             ],
                             style: const TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w500,fontFamily: 'Mulish'
+                                fontWeight: FontWeight.w500,fontFamily: 'Sora'
                             ),
                             decoration: const InputDecoration(
                               border: InputBorder.none,
@@ -174,7 +174,7 @@ class _DiscountState extends State<Discount> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('${'pickup_discount'.tr} (%)',
-                          style: const TextStyle(fontFamily: 'Mulish',fontWeight: FontWeight.w700,fontSize: 13),),
+                          style: const TextStyle(fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 13),),
                         const SizedBox(height: 8),
                         Container(
                           width: 150,
@@ -201,7 +201,7 @@ class _DiscountState extends State<Discount> {
                             ],
                             style: const TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w500,fontFamily: 'Mulish'
+                                fontWeight: FontWeight.w500,fontFamily: 'Sora'
                             ),
                             decoration: const InputDecoration(
                               border: InputBorder.none,
@@ -221,7 +221,7 @@ class _DiscountState extends State<Discount> {
                 ),
                 const SizedBox(height: 20),
                 Text('expiry'.tr,
-                  style: const TextStyle(fontSize: 13,fontWeight: FontWeight.w700,fontFamily: 'Mulish'),),
+                  style: const TextStyle(fontSize: 13,fontWeight: FontWeight.w700,fontFamily: 'Sora'),),
                 const SizedBox(height: 10),
                 GestureDetector(
                   onTap: _selectDate, // Add tap functionality
@@ -244,7 +244,7 @@ class _DiscountState extends State<Discount> {
                       children: [
                         Text(
                           DateFormat('dd/MM/yyyy').format(_selectedDate), // Format selected date
-                          style: const TextStyle(fontFamily: 'Mulish',fontSize: 15,fontWeight: FontWeight.w500),
+                          style: const TextStyle(fontFamily: 'Sora',fontSize: 15,fontWeight: FontWeight.w500),
                         ),
                         const Icon(Icons.calendar_month_rounded,color: Colors.black,)
                       ],
@@ -264,14 +264,14 @@ class _DiscountState extends State<Discount> {
                     ) ,
                     child:Center(
                       child: Text('saved'.tr,style: const TextStyle(color: Colors.white,
-                        fontWeight: FontWeight.w700,fontSize: 20,fontFamily: 'Mulish',
+                        fontWeight: FontWeight.w700,fontSize: 20,fontFamily: 'Sora',
                       ),),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
                 Text('current'.tr,
-                  style: const TextStyle(fontSize: 14,fontWeight: FontWeight.w800,fontFamily: 'Mulish'),),
+                  style: const TextStyle(fontSize: 14,fontWeight: FontWeight.w800,fontFamily: 'Sora'),),
                 const SizedBox(height: 10),
                 Column(
                   children: [
@@ -285,11 +285,11 @@ class _DiscountState extends State<Discount> {
                           SizedBox(
                             width: MediaQuery.of(context).size.width*0.5,
                             child:  Text('type'.tr,style: const TextStyle(
-                                fontWeight: FontWeight.w700,fontSize: 13,fontFamily: 'Mulish'
+                                fontWeight: FontWeight.w700,fontSize: 13,fontFamily: 'Sora'
                             ),),
                           ) ,
                           Text('value'.tr,style: const TextStyle(
-                              fontWeight: FontWeight.w700,fontSize: 13,fontFamily: 'Mulish'
+                              fontWeight: FontWeight.w700,fontSize: 13,fontFamily: 'Sora'
                           ),)
                         ],
                       ),
@@ -299,7 +299,7 @@ class _DiscountState extends State<Discount> {
                       Container(
                         padding: const EdgeInsets.all(15),
                         child: Text('no_current'.tr,
-                          style: const TextStyle(fontFamily: 'Mulish', fontSize: 12),
+                          style: const TextStyle(fontFamily: 'Sora', fontSize: 12),
                         ),
                       )
                     else
@@ -312,11 +312,11 @@ class _DiscountState extends State<Discount> {
                                 SizedBox(
                                   width: MediaQuery.of(context).size.width*0.5,
                                   child: Text(discount.code ?? 'Unknown',style: const TextStyle(
-                                      fontWeight: FontWeight.w500,fontSize: 12,fontFamily: 'Mulish'
+                                      fontWeight: FontWeight.w500,fontSize: 12,fontFamily: 'Sora'
                                   ),),
                                 ),
                                 Text('${discount.valueAsInt}%',style: const TextStyle(
-                                    fontWeight: FontWeight.w500,fontSize: 12,fontFamily: 'Mulish'
+                                    fontWeight: FontWeight.w500,fontSize: 12,fontFamily: 'Sora'
                                 ),)
                               ],
                             ),
@@ -404,7 +404,7 @@ class _DiscountState extends State<Discount> {
   Future<void> _saveDiscounts() async {
     if (sharedPreferences == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${'error'.tr}: ${'shared'.tr}')),
+        SnackBar(content: Text('${'error'.tr}: ${'shared'.tr}', style: const TextStyle(fontFamily: 'Sora'))),
       );
       return;
     }
@@ -412,7 +412,7 @@ class _DiscountState extends State<Discount> {
     storeId = sharedPreferences!.getString(valueShared_STORE_KEY);
     if (storeId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${'error'.tr}: ${'storeId'.tr}')),
+        SnackBar(content: Text('${'error'.tr}: ${'storeId'.tr}', style: const TextStyle(fontFamily: 'Sora'))),
       );
       return;
     }
@@ -420,7 +420,7 @@ class _DiscountState extends State<Discount> {
     // Validation - check if at least one field has value
     if (_discountDeliveryController.text.isEmpty && _pickUpDiscountController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${'error'.tr}: ${'at_least'.tr}')),
+        SnackBar(content: Text('${'error'.tr}: ${'at_least'.tr}', style: const TextStyle(fontFamily: 'Sora'))),
       );
       return;
     }
@@ -485,7 +485,7 @@ class _DiscountState extends State<Discount> {
       Get.back();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${'success'.tr}: ${'discoun'.tr}'),
+          content: Text('${'success'.tr}: ${'discoun'.tr}', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.green,
         ),
       );
@@ -499,7 +499,7 @@ class _DiscountState extends State<Discount> {
       print('Save discount error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${'error'.tr}: ${'failed_discoun'.tr} - ${e.toString()}'),
+          content: Text('${'error'.tr}: ${'failed_discoun'.tr} - ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
         ),
       );

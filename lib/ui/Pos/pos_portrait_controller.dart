@@ -507,7 +507,7 @@ class PosPortraitController extends GetxController {
             content: Text(
               'Data refreshed successfully',
               style: TextStyle(
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
@@ -1145,7 +1145,7 @@ class PosPortraitController extends GetxController {
                       const Text(
                         'Notiz bearbeiten',
                         style: TextStyle(
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           fontWeight: FontWeight.w700,
                           fontSize: 18,
                           color: Color(0xff0B1928),
@@ -1168,7 +1168,7 @@ class PosPortraitController extends GetxController {
                     decoration: InputDecoration(
                       hintText: 'Notiz eingeben...',
                       hintStyle: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: Colors.grey,
@@ -1183,7 +1183,7 @@ class PosPortraitController extends GetxController {
                       ),
                       contentPadding: const EdgeInsets.all(12),
                     ),
-                    style: const TextStyle(fontFamily: 'Mulish', fontSize: 14),
+                    style: const TextStyle(fontFamily: 'Sora', fontSize: 14),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -1194,7 +1194,7 @@ class PosPortraitController extends GetxController {
                         child: const Text(
                           'Abbrechen',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                             color: Colors.grey,
@@ -1217,7 +1217,7 @@ class PosPortraitController extends GetxController {
                         child: const Text(
                           'Speichern',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
                             color: Colors.white,
@@ -1270,7 +1270,7 @@ class PosPortraitController extends GetxController {
             content: Text(
               'Please add items to cart',
               style: TextStyle(
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
@@ -1383,7 +1383,7 @@ class PosPortraitController extends GetxController {
                   child: Text(
                     'Order placed successfully! Order #$orderId',
                     style: const TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                       color: Colors.white,
@@ -1497,7 +1497,7 @@ class PosPortraitController extends GetxController {
                       const Text(
                         'Add Note',
                         style: TextStyle(
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           fontWeight: FontWeight.w700,
                           fontSize: 18,
                           color: Color(0xff0B1928),
@@ -1519,7 +1519,7 @@ class PosPortraitController extends GetxController {
                     decoration: InputDecoration(
                       hintText: 'Enter your note here...',
                       hintStyle: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontWeight: FontWeight.w400,
                         fontSize: 14,
                         color: Colors.grey,
@@ -1535,7 +1535,7 @@ class PosPortraitController extends GetxController {
                       contentPadding: const EdgeInsets.all(12),
                     ),
                     style: const TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontSize: 14,
                     ),
                   ),
@@ -1548,7 +1548,7 @@ class PosPortraitController extends GetxController {
                         child: const Text(
                           'Cancel',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                             color: Colors.grey,
@@ -1566,7 +1566,7 @@ class PosPortraitController extends GetxController {
                               content: Text(
                                 'Note added successfully',
                                 style: TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -1587,7 +1587,7 @@ class PosPortraitController extends GetxController {
                         child: const Text(
                           'Add Note',
                           style: TextStyle(
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
                             color: Colors.white,
@@ -1972,7 +1972,7 @@ class PosPortraitController extends GetxController {
         text: cartItems[index]['item_note']?.toString() ?? '');
     Get.dialog(AlertDialog(
       title: const Text('Item Note',
-          style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700)),
+          style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700)),
       content: TextField(
         controller: ctrl,
         maxLines: 3,
@@ -1984,13 +1984,13 @@ class PosPortraitController extends GetxController {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0xffE31E24))),
         ),
-        style: const TextStyle(fontFamily: 'Mulish'),
+        style: const TextStyle(fontFamily: 'Sora'),
       ),
       actions: [
         TextButton(
             onPressed: () => Get.back(),
             child: const Text('Cancel',
-                style: TextStyle(fontFamily: 'Mulish', color: Colors.grey))),
+                style: TextStyle(fontFamily: 'Sora', color: Colors.grey))),
         ElevatedButton(
             onPressed: () {
               updateItemNote(index, ctrl.text);
@@ -2000,7 +2000,7 @@ class PosPortraitController extends GetxController {
                 backgroundColor: const Color(0xff0C831F)),
             child: const Text('Save',
                 style: TextStyle(
-                    fontFamily: 'Mulish', color: Colors.white))),
+                    fontFamily: 'Sora', color: Colors.white))),
       ],
     ));
   }

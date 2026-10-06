@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform;
 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:food_receiver/constants/app_theme.dart';
@@ -34,102 +33,89 @@ class _ItemBottomBarState extends State<ItemBottomBar> {
 
   @override
   Widget build(BuildContext context) {
-    double containerHeight = Platform.isIOS ? 90 : 50;
-    EdgeInsets containerPadding = Platform.isIOS
-        ? const EdgeInsets.symmetric(horizontal: 12,)
-        : const EdgeInsets.symmetric(horizontal: 11);
+    final selected = widget.selected;
     return GestureDetector(
-      onTapDown: (_) {
-        setState(() {
-          _isTapped = true;
-        });
-      },
+      onTapDown: (_) => setState(() => _isTapped = true),
       onTapUp: (_) {
-        setState(() {
-          _isTapped = false;
-        });
+        setState(() => _isTapped = false);
         widget.onPressed();
       },
-      onTapCancel: () {
-        setState(() {
-          _isTapped = false;
-        });
-      },
+      onTapCancel: () => setState(() => _isTapped = false),
       behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 50),
-        height: containerHeight,
-        padding: containerPadding,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: _isTapped
-              ? Colors.grey.withOpacity(0.2)
-              : Colors.transparent,
-          boxShadow: _isTapped ? [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-              spreadRadius: 1,
-            ),
-          ] : [],
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
+      child: AnimatedScale(
+        scale: _isTapped ? 0.92 : 1.0,
+        duration: const Duration(milliseconds: 150),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
+            // Pill behind the icon: filled gradient when active.
+            Stack(
+              clipBehavior: Clip.none,
               children: [
-                AnimatedScale(
-                  scale: _isTapped ? 0.95 : 1.0,
-                  duration: const Duration(milliseconds: 150),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOut,
+                  width: 50,
+                  height: 40,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: selected ? AppTheme.accentGradient : null,
+                    color: selected ? null : Colors.transparent,
+                    boxShadow: selected
+                        ? [
+                            BoxShadow(
+                              color: AppTheme.accent.withOpacity(0.35),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
+                        : null,
+                  ),
                   child: SvgPicture.asset(
                     widget.icon,
                     width: widget.iconWidth,
                     height: widget.iconHeight,
-                    color: widget.selected ? AppTheme.accent : Colors.black,
+                    color: selected ? Colors.white : Colors.black,
                   ),
                 ),
-                const SizedBox(height: 4),
-                AnimatedScale(
-                  scale: _isTapped ? 0.95 : 1.0,
-                  duration: const Duration(milliseconds: 150),
-                  child: Text(
-                    widget.name,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: widget.selected ? AppTheme.accent : Colors.black,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (widget.showBadge && widget.badgeValue > 0)
-              Positioned(
-                top: -6,
-                right: -10,
-                child: IgnorePointer(
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                    decoration: const BoxDecoration(
-                      color: Colors.orange,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${widget.badgeValue}',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                if (widget.showBadge && widget.badgeValue > 0)
+                  Positioned(
+                    top: -4,
+                    right: -6,
+                    child: IgnorePointer(
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                        decoration: BoxDecoration(
+                          color: Colors.orange,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 1.5),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${widget.badgeValue}',
+                            style: const TextStyle(fontFamily: 'Sora',
+                              fontSize: 10,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+              ],
+            ),
+            const SizedBox(height: 3),
+            Text(
+              widget.name,
+              style: TextStyle(fontFamily: 'Sora',
+                fontSize: 11,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                color: selected ? AppTheme.accent : Colors.black,
               ),
+            ),
           ],
         ),
       ),

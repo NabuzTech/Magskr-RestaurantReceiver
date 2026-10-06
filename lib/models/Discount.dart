@@ -19,7 +19,7 @@ class Discount {
     code: json["code"],
     type: json["type"],
     value: (json["value"] as num?)?.toDouble(),
-    expiresAt: DateTime.tryParse(json["expires_at"]),
+    expiresAt: DateTime.tryParse(json["expires_at"] ?? ""),
     storeId: json["store_id"],
     id: json["id"],
   );

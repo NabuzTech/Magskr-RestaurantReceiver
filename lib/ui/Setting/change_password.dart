@@ -35,7 +35,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     if (mounted && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: Text(message, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: backgroundColor ?? Colors.red,
           duration: const Duration(seconds: 2),
         ),
@@ -120,7 +120,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                 // Title
                 Text(
                   'change_password'.tr,
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                     fontSize: 30,
                     color: Colors.black,
                     fontWeight: FontWeight.w700,

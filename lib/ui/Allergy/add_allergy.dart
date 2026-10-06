@@ -152,7 +152,7 @@ class _AddAllergyState extends State<AddAllergy> {
                       children: [
                         Text('allergy'.tr,
                             style: const TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold)),
                         GestureDetector(
@@ -171,7 +171,7 @@ class _AddAllergyState extends State<AddAllergy> {
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   )),
                             ),
                           ),
@@ -189,7 +189,7 @@ class _AddAllergyState extends State<AddAllergy> {
                           currentPageItems.length} of ${allergyList.length} ${'entries'.tr}',
                         style: TextStyle(
                           fontSize: 12,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: Colors.grey[600],
                         ),
                       ),
@@ -210,7 +210,7 @@ class _AddAllergyState extends State<AddAllergy> {
                             style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 13,
-                                fontFamily: 'Mulish'),
+                                fontFamily: 'Sora'),
                           ),
                         ),
                         SizedBox(
@@ -219,7 +219,7 @@ class _AddAllergyState extends State<AddAllergy> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 13,
-                                  fontFamily: 'Mulish')),
+                                  fontFamily: 'Sora')),
                         ),
                       ],
                     ),
@@ -296,7 +296,7 @@ class _AddAllergyState extends State<AddAllergy> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 14,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                     //overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
@@ -307,7 +307,7 @@ class _AddAllergyState extends State<AddAllergy> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w400,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ),
                               ],
@@ -358,7 +358,7 @@ class _AddAllergyState extends State<AddAllergy> {
                           'previous'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage > 1 ? Colors.black87 : Colors
                                 .grey,
@@ -393,7 +393,7 @@ class _AddAllergyState extends State<AddAllergy> {
                                 '$pageNum',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                   color: isActive ? Colors.white : Colors
                                       .black87,
@@ -425,7 +425,7 @@ class _AddAllergyState extends State<AddAllergy> {
                           'next'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage < totalPages
                                 ? Colors.black87
@@ -489,7 +489,7 @@ class _AddAllergyState extends State<AddAllergy> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                     GestureDetector(
@@ -506,7 +506,7 @@ class _AddAllergyState extends State<AddAllergy> {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -514,7 +514,7 @@ class _AddAllergyState extends State<AddAllergy> {
                   controller: _nameController,
                   decoration: InputDecoration(
                     hintText: 'enter_allergy'.tr,
-                    hintStyle: TextStyle(color: Colors.grey[400]),
+                    hintStyle: TextStyle(fontFamily: 'Sora', color: Colors.grey[400]),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: Colors.grey[300]!),
@@ -541,7 +541,7 @@ class _AddAllergyState extends State<AddAllergy> {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -550,7 +550,7 @@ class _AddAllergyState extends State<AddAllergy> {
                   maxLines: 4,
                   decoration: InputDecoration(
                     hintText: 'write_allergy'.tr,
-                    hintStyle: TextStyle(color: Colors.grey[400]),
+                    hintStyle: TextStyle(fontFamily: 'Sora', color: Colors.grey[400]),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: Colors.grey[300]!),
@@ -589,7 +589,7 @@ class _AddAllergyState extends State<AddAllergy> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Colors.black87,
                               ),
                             ),
@@ -630,7 +630,7 @@ class _AddAllergyState extends State<AddAllergy> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Colors.white,
                               ),
                             ),
@@ -758,7 +758,7 @@ class _AddAllergyState extends State<AddAllergy> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('created_allergy'.tr),
+            content: Text('created_allergy'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -774,7 +774,7 @@ class _AddAllergyState extends State<AddAllergy> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'failed_allergy'.tr}: ${e.toString()}'),
+            content: Text('${'failed_allergy'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -815,7 +815,7 @@ class _AddAllergyState extends State<AddAllergy> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('updated_allergy'.tr),
+              content: Text('updated_allergy'.tr, style: const TextStyle(fontFamily: 'Sora')),
               backgroundColor: Colors.green
           ),
         );
@@ -829,7 +829,7 @@ class _AddAllergyState extends State<AddAllergy> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('${'failed_upd'.tr}: $e'),
+              content: Text('${'failed_upd'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
               backgroundColor: Colors.red
           ),
         );
@@ -863,7 +863,7 @@ class _AddAllergyState extends State<AddAllergy> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('delete_allergy'.tr),
+            content: Text('delete_allergy'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -877,7 +877,7 @@ class _AddAllergyState extends State<AddAllergy> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('faile_allergy'.tr),
+            content: Text('faile_allergy'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -917,7 +917,7 @@ class _AddAllergyState extends State<AddAllergy> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -941,7 +941,7 @@ class _AddAllergyState extends State<AddAllergy> {
                             ),
                             child:  Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -970,7 +970,7 @@ class _AddAllergyState extends State<AddAllergy> {
                             ),
                             child:  Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),

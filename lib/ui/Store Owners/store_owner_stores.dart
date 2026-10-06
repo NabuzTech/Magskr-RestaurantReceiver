@@ -487,8 +487,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                   hintStyle: const TextStyle(
                                       color: Color(0xffAEAEAE),
                                       fontSize: 12,
-                                      fontFamily:
-                                          'Mulish-Italic-VariableFont_wght',
+                                      fontFamily: 'Sora',
                                       fontWeight: FontWeight.w300),
                                   prefixIcon: Image.asset(
                                       'assets/images/search.png'),
@@ -550,7 +549,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 ],
@@ -592,7 +591,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                       color: Colors.white,
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 ],
@@ -615,7 +614,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                       style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,
-                          fontFamily: 'Mulish'),
+                          fontFamily: 'Sora'),
                     ),
                   ),
 
@@ -634,7 +633,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                               style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey.shade600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600),
                             ),
                           ],
@@ -692,7 +691,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                           style: const TextStyle(
                                               fontSize: 11,
                                               fontWeight: FontWeight.w800,
-                                              fontFamily: 'Mulish'),
+                                              fontFamily: 'Sora'),
                                         ),
                                         SizedBox(
                                           width: MediaQuery.of(context)
@@ -704,7 +703,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                             style: TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w700,
-                                                fontFamily: 'Mulish',
+                                                fontFamily: 'Sora',
                                                 color: getStoreColors(store
                                                     .storeId)['nameColor']!),
                                           ),
@@ -715,14 +714,14 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                             style: const TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w600,
-                                                fontFamily: 'Mulish'),
+                                                fontFamily: 'Sora'),
                                           ),
                                           Text(
                                             'Sale : ${store.report!.totalSales ?? 0}',
                                             style: const TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w600,
-                                                fontFamily: 'Mulish'),
+                                                fontFamily: 'Sora'),
                                           ),
                                         ],
                                       ],
@@ -747,7 +746,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                           style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey.shade600,
-                              fontFamily: 'Mulish'),
+                              fontFamily: 'Sora'),
                         ),
                       ],
                     ),
@@ -776,7 +775,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                     ? '${DateFormat('dd MMM').format(_startDate)} – ${DateFormat('dd MMM yy').format(_endDate)}'
                                     : 'History',
                                 style: TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w800,
                                   fontSize: 16,
                                   color: _isHistoryMode
@@ -807,7 +806,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontSize: 12),
                             ),
                           ),
@@ -873,7 +872,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                               style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.grey.shade600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600),
                             ),
                           ],
@@ -971,8 +970,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                                 fontWeight:
                                                     FontWeight.w700,
                                                 fontSize: 13,
-                                                fontFamily:
-                                                    "Mulish-Regular"),
+                                                fontFamily: 'Sora'),
                                           ),
                                         ),
                                       ],
@@ -993,7 +991,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
-                                          fontFamily: "Mulish",
+                                          fontFamily: 'Sora',
                                           fontSize: 13),
                                     ),
                                   )
@@ -1011,7 +1009,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
-                                          fontFamily: "Mulish",
+                                          fontFamily: 'Sora',
                                           fontSize: 13),
                                     ),
                                   ),
@@ -1023,7 +1021,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                       time,
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w500,
-                                          fontFamily: "Mulish",
+                                          fontFamily: 'Sora',
                                           fontSize: 10),
                                     ),
                                   ],
@@ -1044,7 +1042,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                     '${order.shippingAddress?.customerName ?? guestName} / ${order.shippingAddress?.phone ?? guestPhone}',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
-                                        fontFamily: "Mulish",
+                                        fontFamily: 'Sora',
                                         fontSize: 13),
                                   ),
                                 ),
@@ -1055,14 +1053,14 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 11,
-                                          fontFamily: "Mulish"),
+                                          fontFamily: 'Sora'),
                                     ),
                                     Text(
                                       '${order.orderNumber ?? order.id ?? 'N/A'}',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w500,
                                           fontSize: 11,
-                                          fontFamily: "Mulish"),
+                                          fontFamily: 'Sora'),
                                     ),
                                   ],
                                 ),
@@ -1082,7 +1080,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                       style: const TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w500,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                           color: Colors.grey),
                                     ),
                                   ],
@@ -1099,7 +1097,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                       : '${'currency'.tr} ${formatAmount(0)}',
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w800,
-                                      fontFamily: "Mulish",
+                                      fontFamily: 'Sora',
                                       fontSize: 16),
                                 ),
                                 if (_isVorbestellen(order.deliveryTime))
@@ -1123,7 +1121,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                               color: Colors.white,
                                               fontWeight:
                                                   FontWeight.w700,
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                               fontSize: 13),
                                         ),
                                       ),
@@ -1136,7 +1134,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                                           order.approvalStatus),
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w800,
-                                          fontFamily: "Mulish-Regular",
+                                          fontFamily: 'Sora',
                                           fontSize: 13),
                                     ),
                                     const SizedBox(width: 6),
@@ -1325,7 +1323,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                       color: Colors.black,
-                      fontFamily: 'Mulish'),
+                      fontFamily: 'Sora'),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 30),
@@ -1345,7 +1343,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(3))),
                         child: Text('cancel'.tr,
-                            style: const TextStyle(
+                            style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700)),
                       ),
@@ -1367,7 +1365,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(3))),
                         child: Text('logout'.tr,
-                            style: const TextStyle(
+                            style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700)),
                       ),
@@ -1447,7 +1445,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
               style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
-                  fontFamily: 'Mulish'),
+                  fontFamily: 'Sora'),
             ),
             const SizedBox(height: 6),
             if (_startDate != null)
@@ -1458,7 +1456,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                 style: TextStyle(
                     color: Colors.green.shade700,
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 13),
               ),
             const SizedBox(height: 8),
@@ -1487,16 +1485,16 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                 titleTextStyle: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
-                    fontFamily: 'Mulish'),
+                    fontFamily: 'Sora'),
               ),
               calendarStyle: CalendarStyle(
                 rangeStartDecoration: const BoxDecoration(
                     color: Colors.green, shape: BoxShape.circle),
                 rangeEndDecoration: const BoxDecoration(
                     color: Colors.green, shape: BoxShape.circle),
-                rangeStartTextStyle: const TextStyle(
+                rangeStartTextStyle: const TextStyle(fontFamily: 'Sora', 
                     color: Colors.white, fontWeight: FontWeight.w700),
-                rangeEndTextStyle: const TextStyle(
+                rangeEndTextStyle: const TextStyle(fontFamily: 'Sora', 
                     color: Colors.white, fontWeight: FontWeight.w700),
                 withinRangeDecoration: BoxDecoration(
                     color: Colors.green.shade100,
@@ -1505,7 +1503,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                 todayDecoration: BoxDecoration(
                     color: Colors.green.shade200,
                     shape: BoxShape.circle),
-                todayTextStyle: const TextStyle(
+                todayTextStyle: const TextStyle(fontFamily: 'Sora', 
                     color: Colors.black87, fontWeight: FontWeight.w600),
               ),
             ),
@@ -1531,7 +1529,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontSize: 15),
                   ),
                 ),

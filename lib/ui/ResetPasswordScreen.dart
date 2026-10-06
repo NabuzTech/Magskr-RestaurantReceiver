@@ -84,7 +84,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                         offset: const Offset(-10, 25), // Move up by 10 pixels
                         child: const Text(
                           "Reset Password!",
-                          style: TextStyle(
+                          style: TextStyle(fontFamily: 'Sora', 
                             fontSize: 30,
                             color: Colors.black,
                             fontWeight: FontWeight.w700,

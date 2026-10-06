@@ -123,7 +123,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       print('Store ID not found');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Store ID not found'),
+          content: Text('Store ID not found', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: Duration(milliseconds: 1500),
         ));
@@ -146,7 +146,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       if (Get.isDialogOpen == true) Get.back();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Manual override updated successfully'),
+          content: Text('Manual override updated successfully', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.green,
           duration: Duration(milliseconds: 1500),
         ));
@@ -157,7 +157,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       if (Get.isDialogOpen == true) Get.back();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to update: ${e.toString()}'),
+          content: Text('Failed to update: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 2),
         ));
@@ -183,7 +183,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
   void _editIpAddress(int index) {
     TextEditingController editController = TextEditingController(text: _ipAddresses[index].ip);
     Get.dialog(AlertDialog(
-      title: const Text('Edit IP Address'),
+      title: const Text('Edit IP Address', style: const TextStyle(fontFamily: 'Sora')),
       content: TextField(
         controller: editController,
         decoration: const InputDecoration(
@@ -196,7 +196,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       actions: [
         TextButton(
           onPressed: () => Get.back(),
-          child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          child: const Text('Cancel', style: TextStyle(fontFamily: 'Sora', color: Colors.grey)),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -212,7 +212,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
             } else {
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Unable to edit. Please refresh and try again.'),
+                  content: Text('Unable to edit. Please refresh and try again.', style: const TextStyle(fontFamily: 'Sora')),
                   backgroundColor: Colors.red,
                   duration: Duration(seconds: 2),
                 ));
@@ -220,7 +220,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
             }
           },
           style: ElevatedButton.styleFrom(backgroundColor: Colors.green[300], foregroundColor: Colors.black),
-          child: const Text('Save'),
+          child: const Text('Save', style: const TextStyle(fontFamily: 'Sora')),
         ),
       ],
     ));
@@ -254,7 +254,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
     if (syncTime.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('please_enter_sync'.tr),
+          content: Text('please_enter_sync'.tr, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(milliseconds: 1500),
         ));
@@ -265,7 +265,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
     if (syncTimeMinutes == null || syncTimeMinutes < 1) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Sync time must be at least 1 minute'),
+          content: Text('Sync time must be at least 1 minute', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: Duration(milliseconds: 1500),
         ));
@@ -278,7 +278,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       if (mounted) {
         _syncTimeFocusNode.unfocus();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('${'sync_time_saved'.tr}: $syncTimeMinutes minutes'),
+          content: Text('${'sync_time_saved'.tr}: $syncTimeMinutes minutes', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.green,
           duration: const Duration(seconds: 2),
         ));
@@ -287,7 +287,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       print('Error saving sync time: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('failed_save_sync'.tr),
+          content: Text('failed_save_sync'.tr, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(milliseconds: 1500),
         ));
@@ -326,7 +326,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
         ),
         child: Text(
           label,
-          style: TextStyle(
+          style: TextStyle(fontFamily: 'Sora', 
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: isSelected ? Colors.black : Colors.white,
@@ -357,7 +357,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                         children: [
                           Expanded(
                             child: Text('is_manual'.tr,
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+                                style: TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
                           ),
                           Container(
                             padding: const EdgeInsets.all(2),
@@ -395,7 +395,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                           children: [
                              Expanded(
                               child: Text('manual'.tr,
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+                                  style: TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
                             ),
                             Container(
                               padding: const EdgeInsets.all(2),
@@ -417,7 +417,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                                         borderRadius: const BorderRadius.horizontal(left: Radius.circular(2)),
                                       ),
                                       child: Text('open'.tr,
-                                          style: TextStyle(
+                                          style: TextStyle(fontFamily: 'Sora', 
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
                                               color: _isManualStart ? Colors.black : Colors.white)),
@@ -435,7 +435,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                                         borderRadius: const BorderRadius.horizontal(right: Radius.circular(2)),
                                       ),
                                       child: Text('close'.tr,
-                                          style: TextStyle(
+                                          style: TextStyle(fontFamily: 'Sora', 
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
                                               color: _isManualStart ? Colors.white : Colors.black)),
@@ -457,7 +457,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                     children: [
                       Expanded(
                         child: Text('auto_order'.tr,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
                       ),
                       Switch(
                         value: _autoRemoteOrderrAccept,
@@ -480,7 +480,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                     children: [
                       Expanded(
                         child: Text('auto_Reserv'.tr,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
                       ),
                       Switch(
                         value: _autotableBook,
@@ -501,7 +501,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                     children: [
                       Expanded(
                         child: Text('delivery_avail'.tr,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
                       ),
                       Switch(
                         value: deliveryAvailable,
@@ -521,7 +521,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                     children: [
                       Expanded(
                         child: Text('pickup_enabled'.tr,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
                       ),
                       Switch(
                         value: pickupEnabled,
@@ -541,7 +541,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                     children: [
                       Expanded(
                         child: Text('reservation_enabled'.tr,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
                       ),
                       Switch(
                         value: reservationEnabled,
@@ -814,7 +814,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       print('Store ID not found in SharedPreferences');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('storeId'.tr), backgroundColor: Colors.red));
+            SnackBar(content: Text('storeId'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red));
       }
       return false;
     }
@@ -846,7 +846,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
         _loadSettings();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('ip_added'.tr),
+            content: Text('ip_added'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(milliseconds: 100),
           ));
@@ -862,7 +862,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('${'failed_ip'.tr}: $e'.tr),
+          content: Text('${'failed_ip'.tr}: $e'.tr, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(milliseconds: 100),
         ));
@@ -904,7 +904,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
         }
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('auth'.tr),
+            content: Text('auth'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(milliseconds: 100),
           ));
@@ -924,7 +924,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
         _autoAcceptUserModified = false;
         if (showDialog && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('setting_update'.tr),
+            content: Text('setting_update'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(milliseconds: 100),
           ));
@@ -932,7 +932,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       } else {
         if (showDialog && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('request'.tr),
+            content: Text('request'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.orange,
             duration: const Duration(milliseconds: 100),
           ));
@@ -946,7 +946,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       print("Error: $e");
       if (showDialog && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('${'failed_update'.tr}: $e'),
+          content: Text('${'failed_update'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(milliseconds: 100),
         ));
@@ -962,7 +962,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       await getPrinterIp(showLoader: false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('ip_delete'.tr),
+          content: Text('ip_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.green,
           duration: const Duration(seconds: 2),
         ));
@@ -972,7 +972,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       print('${'error_delete'.tr}: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('failed_delete_ip'.tr),
+          content: Text('failed_delete_ip'.tr, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 2),
         ));
@@ -1000,7 +1000,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                   const SizedBox(height: 20),
                   Text(
                     '${'are'.tr} "$ip"  ?',
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Colors.black, fontFamily: 'Mulish'),
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Colors.black, fontFamily: 'Sora'),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30),
@@ -1056,7 +1056,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
           ),
-          child: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+          child: Text(label, style: const TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w700)),
         ),
       );
 
@@ -1066,7 +1066,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       print('Store ID not found in SharedPreferences');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('storeId'.tr),
+          content: Text('storeId'.tr, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(milliseconds: 100),
         ));
@@ -1101,7 +1101,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
         _loadSettings();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('update_ip'.tr),
+            content: Text('update_ip'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(milliseconds: 100),
           ));
@@ -1117,7 +1117,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('${'failed_update_ip'.tr}: $e'.tr),
+          content: Text('${'failed_update_ip'.tr}: $e'.tr, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(milliseconds: 100),
         ));

@@ -97,22 +97,22 @@ class _SettingsState extends State<Settings> {
                         // Title
                         const Text(
                           'Reset Password',
-                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17, fontFamily: 'Mulish', color: Colors.black),
+                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17, fontFamily: 'Sora', color: Colors.black),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           store.storeName ?? '',
-                          style: const TextStyle(fontSize: 12, fontFamily: 'Mulish', color: Colors.black54, fontWeight: FontWeight.w600),
+                          style: const TextStyle(fontSize: 12, fontFamily: 'Sora', color: Colors.black54, fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 18),
                         // Password field
                         TextFormField(
                           controller: passwordController,
                           obscureText: obscure,
-                          style: const TextStyle(fontFamily: 'Mulish', fontSize: 14),
+                          style: const TextStyle(fontFamily: 'Sora', fontSize: 14),
                           decoration: InputDecoration(
                             labelText: 'New Password',
-                            labelStyle: const TextStyle(fontFamily: 'Mulish', fontSize: 13),
+                            labelStyle: const TextStyle(fontFamily: 'Sora', fontSize: 13),
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -146,7 +146,7 @@ class _SettingsState extends State<Settings> {
                                   side: BorderSide(color: Colors.grey.shade300),
                                 ),
                               ),
-                              child: const Text('Cancel', style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 13)),
+                              child: const Text('Cancel', style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700, fontSize: 13)),
                             ),
                             const SizedBox(width: 10),
                             // Save
@@ -163,7 +163,7 @@ class _SettingsState extends State<Settings> {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                                 elevation: 0,
                               ),
-                              child: const Text('Save', style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 13)),
+                              child: const Text('Save', style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700, fontSize: 13)),
                             ),
                           ],
                         ),
@@ -222,16 +222,16 @@ class _SettingsState extends State<Settings> {
                         // Title
                         const Text(
                           'Log Out',
-                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17, fontFamily: 'Mulish', color: Colors.black),
+                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17, fontFamily: 'Sora', color: Colors.black),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           store.storeName ?? '',
-                          style: const TextStyle(fontSize: 12, fontFamily: 'Mulish', color: Colors.black54, fontWeight: FontWeight.w600),
+                          style: const TextStyle(fontSize: 12, fontFamily: 'Sora', color: Colors.black54, fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 18),
                         Text('Are You Sure You Want To LogOut \n Store ${store.storeName}',
-                          style: const TextStyle(fontSize: 12, fontFamily: 'Mulish', color: Colors.black54, fontWeight: FontWeight.w600),
+                          style: const TextStyle(fontSize: 12, fontFamily: 'Sora', color: Colors.black54, fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 24),
                         // Buttons
@@ -249,7 +249,7 @@ class _SettingsState extends State<Settings> {
                                   side: BorderSide(color: Colors.grey.shade300),
                                 ),
                               ),
-                              child: const Text('Cancel', style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 13)),
+                              child: const Text('Cancel', style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700, fontSize: 13)),
                             ),
                             const SizedBox(width: 10),
                             // Save
@@ -266,7 +266,7 @@ class _SettingsState extends State<Settings> {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                                 elevation: 0,
                               ),
-                              child: const Text('Logout', style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 13)),
+                              child: const Text('Logout', style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700, fontSize: 13)),
                             ),
                           ],
                         ),
@@ -388,7 +388,7 @@ class _SettingsState extends State<Settings> {
                 const SizedBox(width: 12),
                 const Text(
                   'Settings',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Mulish', fontSize: 18),
+                  style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 18),
                 ),
               ],
             ),
@@ -405,7 +405,7 @@ class _SettingsState extends State<Settings> {
                           children: [
                             Icon(Icons.store_outlined, size: 56, color: Colors.grey.shade300),
                             const SizedBox(height: 10),
-                            Text('No stores found', style: TextStyle(fontFamily: 'Mulish', fontSize: 14, color: Colors.grey.shade500)),
+                            Text('No stores found', style: TextStyle(fontFamily: 'Sora', fontSize: 14, color: Colors.grey.shade500)),
                           ],
                         ),
                       )
@@ -434,14 +434,14 @@ class _SettingsState extends State<Settings> {
                                   children: [
                                     Text(
                                       'ID : ${store.storeId}',
-                                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, fontFamily: 'Mulish', color: Colors.black54),
+                                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, fontFamily: 'Sora', color: Colors.black54),
                                     ),
                                     const SizedBox(height: 2),
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width*0.4,
                                       child: Text(
                                         store.storeName ?? '',
-                                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, fontFamily: 'Mulish', color: colors['nameColor']),
+                                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, fontFamily: 'Sora', color: colors['nameColor']),
                                       ),
                                     ),
                                   ],
@@ -457,7 +457,7 @@ class _SettingsState extends State<Settings> {
                                           children: [
                                             Text(
                                               'Reset Password',
-                                              style: TextStyle(fontSize: 13, fontFamily: 'Mulish', fontWeight: FontWeight.w600, color: colors['nameColor']),
+                                              style: TextStyle(fontSize: 13, fontFamily: 'Sora', fontWeight: FontWeight.w600, color: colors['nameColor']),
                                             ),
                                             const SizedBox(width: 6),
                                             Icon(Icons.lock_reset_outlined, color: colors['nameColor'], size: 18),
@@ -474,7 +474,7 @@ class _SettingsState extends State<Settings> {
                                           children: [
                                             Text(
                                               'LogOut',
-                                              style: TextStyle(fontSize: 13, fontFamily: 'Mulish', fontWeight: FontWeight.w600, color: colors['nameColor']),
+                                              style: TextStyle(fontSize: 13, fontFamily: 'Sora', fontWeight: FontWeight.w600, color: colors['nameColor']),
                                             ),
                                             const SizedBox(width: 6),
                                             Icon(Icons.logout_outlined, color: colors['nameColor'], size: 18),

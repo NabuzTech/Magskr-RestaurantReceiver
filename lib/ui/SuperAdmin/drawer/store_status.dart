@@ -80,7 +80,7 @@ class _StoreStatusState extends State<StoreStatus> {
           child: Text(
             label,
             style: TextStyle(
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
               fontWeight: FontWeight.w700,
               fontSize: 13,
               color: selected ? Colors.black : Colors.black54,
@@ -99,7 +99,7 @@ class _StoreStatusState extends State<StoreStatus> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        title: const Text('Store Status', style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700)),
+        title: const Text('Store Status', style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700)),
         actions: [
           IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
         ],
@@ -127,7 +127,7 @@ class _StoreStatusState extends State<StoreStatus> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : list.isEmpty
-                    ? const Center(child: Text('No stores found', style: TextStyle(fontFamily: 'Mulish')))
+                    ? const Center(child: Text('No stores found', style: TextStyle(fontFamily: 'Sora')))
                     : RefreshIndicator(
                         onRefresh: _load,
                         child: ListView.builder(
@@ -159,9 +159,9 @@ class _StoreStatusState extends State<StoreStatus> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(s.name ?? '-',
-                                            style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Mulish', fontSize: 14)),
+                                            style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 14)),
                                         Text('ID: ${s.id ?? '-'}',
-                                            style: const TextStyle(fontFamily: 'Mulish', fontSize: 12, color: Colors.blueGrey)),
+                                            style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.blueGrey)),
                                         if ((s.address ?? '').isNotEmpty)
                                           Padding(
                                             padding: const EdgeInsets.only(top: 2),
@@ -172,7 +172,7 @@ class _StoreStatusState extends State<StoreStatus> {
                                                 Expanded(
                                                   child: Text(
                                                     s.address ?? '',
-                                                    style: TextStyle(fontFamily: 'Mulish', fontSize: 11, color: Colors.grey.shade600),
+                                                    style: TextStyle(fontFamily: 'Sora', fontSize: 11, color: Colors.grey.shade600),
                                                     maxLines: 1,
                                                     overflow: TextOverflow.ellipsis,
                                                   ),
@@ -194,7 +194,7 @@ class _StoreStatusState extends State<StoreStatus> {
                                         ),
                                         child: Text(
                                           isActive ? 'Visible' : 'Hidden',
-                                          style: const TextStyle(fontFamily: 'Mulish', fontSize: 11, fontWeight: FontWeight.w600),
+                                          style: const TextStyle(fontFamily: 'Sora', fontSize: 11, fontWeight: FontWeight.w600),
                                         ),
                                       ),
                                       const SizedBox(height: 4),

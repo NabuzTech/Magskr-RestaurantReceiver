@@ -106,16 +106,16 @@ class _StoreConfigState extends State<StoreConfig> {
   void _confirmDelete(GetStoreConfigModel c) {
     Get.dialog(
       AlertDialog(
-        title: const Text('Delete Config'),
-        content: Text('Delete config for "${c.appName ?? c.domain}"?'),
+        title: const Text('Delete Config', style: const TextStyle(fontFamily: 'Sora')),
+        content: Text('Delete config for "${c.appName ?? c.domain}"?', style: const TextStyle(fontFamily: 'Sora')),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel', style: const TextStyle(fontFamily: 'Sora'))),
           TextButton(
             onPressed: () {
               Get.back();
               _delete(c);
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete', style: TextStyle(fontFamily: 'Sora', color: Colors.red)),
           ),
         ],
       ),
@@ -148,8 +148,8 @@ class _StoreConfigState extends State<StoreConfig> {
   Widget _tag(String label, String value) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: 10, color: Colors.grey.shade600, fontFamily: 'Mulish')),
-          Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Mulish')),
+          Text(label, style: TextStyle(fontSize: 10, color: Colors.grey.shade600, fontFamily: 'Sora')),
+          Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Sora')),
         ],
       );
 
@@ -160,7 +160,7 @@ class _StoreConfigState extends State<StoreConfig> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        title: const Text('Store Domain Config', style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700)),
+        title: const Text('Store Domain Config', style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700)),
         actions: [
           IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
         ],
@@ -188,7 +188,7 @@ class _StoreConfigState extends State<StoreConfig> {
                   onPressed: () => _openForm(),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   icon: const Icon(Icons.add, color: Colors.white, size: 18),
-                  label: const Text('Add', style: TextStyle(color: Colors.white)),
+                  label: const Text('Add', style: TextStyle(fontFamily: 'Sora', color: Colors.white)),
                 ),
               ],
             ),
@@ -197,7 +197,7 @@ class _StoreConfigState extends State<StoreConfig> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filtered.isEmpty
-                    ? const Center(child: Text('No configs found', style: TextStyle(fontFamily: 'Mulish')))
+                    ? const Center(child: Text('No configs found', style: TextStyle(fontFamily: 'Sora')))
                     : RefreshIndicator(
                         onRefresh: _load,
                         child: ListView.builder(
@@ -232,14 +232,14 @@ class _StoreConfigState extends State<StoreConfig> {
                                           children: [
                                             Text(
                                               '#${c.storeId ?? '-'}  ${c.appName ?? ''}',
-                                              style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Mulish', fontSize: 14),
+                                              style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 14),
                                             ),
                                             const SizedBox(height: 2),
                                             GestureDetector(
                                               onTap: () => launchUrl(Uri.parse('https://${_link(c)}'), mode: LaunchMode.externalApplication),
                                               child: Text(
                                                 _link(c),
-                                                style: const TextStyle(color: Colors.orange, fontFamily: 'Mulish', fontSize: 12),
+                                                style: const TextStyle(color: Colors.orange, fontFamily: 'Sora', fontSize: 12),
                                               ),
                                             ),
                                           ],

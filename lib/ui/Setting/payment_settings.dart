@@ -47,7 +47,7 @@ class _PaymentSettingsState extends State<PaymentSettings> {
         }
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load payment settings: $e', backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar('error'.tr, '${'pm_load_error'.tr}: $e', backgroundColor: Colors.red, colorText: Colors.white);
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
@@ -75,7 +75,7 @@ class _PaymentSettingsState extends State<PaymentSettings> {
       await CallService().updatePaymentByOrderType(body, storeId!, selectedType);
     } catch (e) {
       setState(() => _setFlagValue(flags, field, previous));
-      Get.snackbar('Error', 'Failed to update payment setting: $e', backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar('error'.tr, '${'pm_update_error'.tr}: $e', backgroundColor: Colors.red, colorText: Colors.white);
     } finally {
       if (mounted) setState(() => isSaving = false);
     }
@@ -131,7 +131,7 @@ class _PaymentSettingsState extends State<PaymentSettings> {
           child: Text(
             label,
             style: TextStyle(
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
               fontWeight: FontWeight.w700,
               fontSize: 14,
               color: selected ? Colors.black : Colors.black54,
@@ -170,8 +170,8 @@ class _PaymentSettingsState extends State<PaymentSettings> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Mulish', fontSize: 14)),
-                Text(subtitle, style: TextStyle(fontFamily: 'Mulish', fontSize: 11, color: Colors.grey.shade600)),
+                Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 14)),
+                Text(subtitle, style: TextStyle(fontFamily: 'Sora', fontSize: 11, color: Colors.grey.shade600)),
               ],
             ),
           ),
@@ -195,7 +195,7 @@ class _PaymentSettingsState extends State<PaymentSettings> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-        title: const Text('Payment by Order Type', style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700)),
+        title: Text('pm_title'.tr, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700)),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -204,9 +204,9 @@ class _PaymentSettingsState extends State<PaymentSettings> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  const Text(
-                    'Override the store default for a specific order type.',
-                    style: TextStyle(fontFamily: 'Mulish', fontSize: 12, color: Colors.grey),
+                  Text(
+                    'pm_override_hint'.tr,
+                    style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -214,32 +214,32 @@ class _PaymentSettingsState extends State<PaymentSettings> {
                     decoration: BoxDecoration(color: const Color(0xffF3F3F3), borderRadius: BorderRadius.circular(10)),
                     child: Row(
                       children: [
-                        _tab('delivery', 'Delivery'),
-                        _tab('collection', 'Collection'),
+                        _tab('delivery', 'pm_delivery'.tr),
+                        _tab('collection', 'pm_collection'.tr),
                       ],
                     ),
                   ),
                   const SizedBox(height: 16),
                   if (current?.isOverride == true)
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 10),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
                       child: Text(
-                        'Using custom settings for this order type.',
-                        style: TextStyle(fontFamily: 'Mulish', fontSize: 12, color: Colors.orange, fontWeight: FontWeight.w600),
+                        'pm_custom'.tr,
+                        style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.orange, fontWeight: FontWeight.w600),
                       ),
                     ),
                   if (flags == null)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 40),
-                      child: Center(child: Text('No payment settings found', style: TextStyle(fontFamily: 'Mulish'))),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Center(child: Text('pm_none'.tr, style: const TextStyle(fontFamily: 'Sora'))),
                     )
                   else ...[
                     _paymentTile(
                       icon: Icons.payments_outlined,
                       iconColor: Colors.green,
                       iconBg: const Color(0xffEBFAF2),
-                      title: 'Cash',
-                      subtitle: 'Accept cash payments on delivery or pickup',
+                      title: 'pm_cash'.tr,
+                      subtitle: 'pm_cash_sub'.tr,
                       value: flags.cashEnabled ?? false,
                       field: 'cash_enabled',
                     ),
@@ -248,7 +248,7 @@ class _PaymentSettingsState extends State<PaymentSettings> {
                       iconColor: Colors.purple,
                       iconBg: const Color(0xffF3EEFB),
                       title: 'Stripe',
-                      subtitle: 'Accept online payments via Stripe',
+                      subtitle: 'pm_stripe_sub'.tr,
                       value: flags.stripeEnabled ?? false,
                       field: 'stripe_enabled',
                     ),
@@ -257,7 +257,7 @@ class _PaymentSettingsState extends State<PaymentSettings> {
                       iconColor: Colors.blue,
                       iconBg: const Color(0xffEAF3FE),
                       title: 'PayPal',
-                      subtitle: 'Accept payments via PayPal',
+                      subtitle: 'pm_paypal_sub'.tr,
                       value: flags.paypalEnabled ?? false,
                       field: 'paypal_enabled',
                     ),
@@ -265,8 +265,8 @@ class _PaymentSettingsState extends State<PaymentSettings> {
                       icon: Icons.credit_card,
                       iconColor: Colors.orange,
                       iconBg: const Color(0xffFFF1E8),
-                      title: 'EC',
-                      subtitle: 'Accept EC payments',
+                      title: 'pm_ec'.tr,
+                      subtitle: 'pm_ec_sub'.tr,
                       value: flags.ecEnabled ?? false,
                       field: 'ec_enabled',
                     ),

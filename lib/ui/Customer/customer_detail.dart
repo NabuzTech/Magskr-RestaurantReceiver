@@ -90,7 +90,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
         child: Text(
           'No customer details found',
           style: TextStyle(
-            fontFamily: 'Mulish',
+            fontFamily: 'Sora',
             fontSize: 16,
             color: Colors.grey,
           ),
@@ -108,7 +108,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                   'custom_order'.tr,
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 16,
                   ),
                 ),
@@ -157,7 +157,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                 Text(
                   customerDetails!.customerName ?? 'N/A',
                   style: const TextStyle(
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),
@@ -172,7 +172,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                 Text(
                   customerDetails!.phone ?? 'N/A',
                   style: const TextStyle(
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: Color(0xff797878),
@@ -190,7 +190,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                   child: Text(
                     customerDetails!.email ?? 'N/A',
                     style: const TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: Color(0xff797878),
@@ -205,7 +205,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
               child: Text(
                 '${'joined'.tr} ${_formatDate(customerDetails!.createdAt ?? '')}',
                 style: const TextStyle(
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 11,
                   color: Color(0xff797878),
                   fontWeight: FontWeight.w600,
@@ -286,7 +286,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                 child: Text(
                   '$count',
                   style: const TextStyle(
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -298,7 +298,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
             Text(
               label,
               style: TextStyle(
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: isSelected ? color : Colors.black,
@@ -323,7 +323,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey.shade600,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
           ],
@@ -368,7 +368,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey.shade600,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
           ],
@@ -437,7 +437,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                     // Text(
                     //   'Pickup : 15:00',
                     //   style: TextStyle(
-                    //     fontFamily: 'Mulish',
+                    //     fontFamily: 'Sora',
                     //     fontSize: 14,
                     //     fontWeight: FontWeight.w700,
                     //   ),
@@ -446,7 +446,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                     Text(
                       '${customerDetails!.customerName} / ${customerDetails!.phone ?? 'N/A'}',
                       style: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: Color(0xff0B043A),
@@ -456,7 +456,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                     // Text(
                     //   '€5,90',
                     //   style: TextStyle(
-                    //     fontFamily: 'Mulish',
+                    //     fontFamily: 'Sora',
                     //     fontSize: 14,
                     //     fontWeight: FontWeight.w700,
                     //   ),
@@ -472,7 +472,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                     Text(
                       '${'order_id'.tr} :',
                       style: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: Color(0xff0B043A),
@@ -481,7 +481,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                     Text(
                       '${order.orderId ?? 'N/A'}',
                       style: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                         color: Color(0xff0B043A),
@@ -495,7 +495,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                     Text(
                       'order_placed'.tr,
                       style: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: Color(0xff0B043A),
@@ -504,7 +504,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                     Text(
                       order.orderDate ?? 'N/A',
                       style: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                         color: Color(0xff797878),
@@ -552,7 +552,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                   Text(
                     '${'table'.tr} ${reservation.tableNumber}',
                     style: const TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
@@ -561,7 +561,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                 Text(
                   '${'guests'.tr}: ${reservation.guestCount ?? 0}',
                   style: const TextStyle(
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: Color(0xff797878),
@@ -571,7 +571,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
                 Text(
                   _formatDate(reservation.reservationDate ?? ''),
                   style: const TextStyle(
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: Color(0xff797878),
@@ -583,7 +583,7 @@ class _CustomerDetailState extends State<CustomerDetail> with SingleTickerProvid
           Text(
               '${'id'.tr}: ${reservation.reservationId ?? 'N/A'}',
             style: const TextStyle(
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: Color(0xff797878),

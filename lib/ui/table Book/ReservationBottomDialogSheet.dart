@@ -141,7 +141,7 @@ class _ReportScreenBottomState extends State<ReportScreenBottom> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text("Reservations", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text("Reservations", style: TextStyle(fontFamily: 'Sora', fontSize: 18, fontWeight: FontWeight.bold)),
             Row(
               children: [
                 IconButton(
@@ -185,7 +185,7 @@ class _ReportScreenBottomState extends State<ReportScreenBottom> {
                   children: [
                     TextSpan(
                       text: '${DateFormat('MMMM').format(DateTime(year, month))}, ',
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                         color: Colors.black,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -193,7 +193,7 @@ class _ReportScreenBottomState extends State<ReportScreenBottom> {
                     ),
                     TextSpan(
                       text: year.toString(),
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                         color: Colors.green,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -203,7 +203,7 @@ class _ReportScreenBottomState extends State<ReportScreenBottom> {
                 ),
               ),
               Text('${'total_reserv'.tr} : $totalReservationsForMonth',style: const TextStyle(
-                fontFamily: 'Mulish',fontSize: 15,fontWeight: FontWeight.w600
+                fontFamily: 'Sora',fontSize: 15,fontWeight: FontWeight.w600
               ),)
             ],
           ),
@@ -268,7 +268,7 @@ class _ReportScreenBottomState extends State<ReportScreenBottom> {
             children: [
               Text(
                 "${date.day}",
-                style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+                style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, color: textColor),
               ),
               const SizedBox(height: 2),
 
@@ -291,7 +291,7 @@ class _ReportScreenBottomState extends State<ReportScreenBottom> {
                       const SizedBox(height: 2),
                       Text(
                         "${"currency".tr}${formatAmount(report.totalSales ?? 0)}",
-                        style: const TextStyle(fontSize: 10, color: Colors.green),
+                        style: const TextStyle(fontFamily: 'Sora', fontSize: 10, color: Colors.green),
                       ),
                     ],
                   ),
@@ -308,7 +308,7 @@ class _ReportScreenBottomState extends State<ReportScreenBottom> {
                   ),
                   child: Text(
                     '$bookingCount',
-                    style: const TextStyle(
+                    style: const TextStyle(fontFamily: 'Sora', 
                       fontSize: 9,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -333,7 +333,7 @@ class _ReportScreenBottomState extends State<ReportScreenBottom> {
           child: Center(
             child: Text(
               day,
-              style: const TextStyle(
+              style: const TextStyle(fontFamily: 'Sora', 
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -429,7 +429,7 @@ class _ReportScreenBottomState extends State<ReportScreenBottom> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${'gett_history'.tr}: $e'),
+          content: Text('${'gett_history'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,
