@@ -416,15 +416,20 @@ class _HomeScreenState extends State<HomeScreen> {
       return const SizedBox.shrink();
     }
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-    // Floating rounded (pill) bar; SafeArea keeps it above the iOS home indicator.
-    return SafeArea(
-      top: false,
-      child: Container(
-      height: 68,
-      margin: const EdgeInsets.fromLTRB(4, 0, 4, 5),
+    // Floating rounded (pill) bar. The home-indicator inset is painted *inside* the
+    // bar so the white background reaches the screen edge; wrapping in a SafeArea
+    // instead pushed the bar up and left the body showing through the gap on iOS.
+    final bottomInset = MediaQuery.of(context).viewPadding.bottom;
+    return Container(
+      height: 65 + bottomInset,
+      padding: EdgeInsets.only(bottom: bottomInset,top: 5),
+      margin: const EdgeInsets.fromLTRB(4, 0, 4, 0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(34),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(40),
+          topRight: Radius.circular(40)
+        ),
         boxShadow: [
           BoxShadow(
             color: AppTheme.accent.withOpacity(0.18),
@@ -484,7 +489,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
               ],
             )),
-      ),
     );
   }
 
