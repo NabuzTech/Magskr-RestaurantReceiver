@@ -243,6 +243,9 @@ class LoginController extends GetxController {
       await prefs.remove(valueShared_STORE_TYPE);
       await prefs.remove(valueShared_ROLE_ID);
       await prefs.remove(valueShared_STORE_KEY);
+      await prefs.remove(valueShared_STORE_NAME);
+      await prefs.remove(valueShared_STORE_LOGO);
+      await prefs.remove(valueShared_STORE_BRAND_FOR);
       await prefs.remove('last_selected_tab'); // Clear saved tab
 
       // ✅ Restore environment and language
@@ -343,6 +346,9 @@ class LoginController extends GetxController {
   Future<void> _saveCredentials(dynamic result) async {
     await prefs.setString(valueShared_BEARER_KEY, result.access_token!);
     await prefs.setString(valueShared_STORE_TYPE, result.storeType?.toString() ?? '');
+    if (result.storeId != null) {
+      await prefs.setString(valueShared_STORE_KEY, result.storeId.toString());
+    }
 
     // ✅ Save credentials based on role
     if (result.role_id == 1) {

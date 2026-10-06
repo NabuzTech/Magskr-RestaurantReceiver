@@ -1445,6 +1445,9 @@ class _SuperAdminState extends State<SuperAdmin> {
       // Clear SharedPreferences
       await prefs.remove(valueShared_BEARER_KEY);
       await prefs.remove(valueShared_STORE_KEY);
+      await prefs.remove(valueShared_STORE_NAME);
+      await prefs.remove(valueShared_STORE_LOGO);
+      await prefs.remove(valueShared_STORE_BRAND_FOR);
       await prefs.remove(valueShared_ROLE_ID);
       await prefs.remove(valueShared_STORE_TYPE);
       await prefs.remove('auto_order_accept');

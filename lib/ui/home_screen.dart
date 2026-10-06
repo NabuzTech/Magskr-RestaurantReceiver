@@ -79,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _setupFCMListeners();
     _setupLocalNotificationTap();
+    fetchStoreBrand(); // app bar store logo + name
 
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -183,6 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (userMe.store_id != null && userMe.store_id! > 0) {
           storeID = userMe.store_id.toString();
           await prefs.setString(valueShared_STORE_KEY, storeID);
+          fetchStoreBrand(); // store id was only known now
         }
       } catch (e) {
         print("⚠️ Could not resolve store_id for store settings: $e");
@@ -279,6 +281,9 @@ class _HomeScreenState extends State<HomeScreen> {
       // Clear store ID from SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove(valueShared_STORE_KEY);
+      await prefs.remove(valueShared_STORE_NAME);
+      await prefs.remove(valueShared_STORE_LOGO);
+      await prefs.remove(valueShared_STORE_BRAND_FOR);
 
       // ✅ Give time for cleanup
       await Future.delayed(const Duration(milliseconds: 100));

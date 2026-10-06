@@ -180,6 +180,9 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
         List<String> keysToRemove = [
           valueShared_BEARER_KEY,
           valueShared_STORE_KEY,
+          valueShared_STORE_NAME,
+          valueShared_STORE_LOGO,
+          valueShared_STORE_BRAND_FOR,
           'printer_ip_backup',
           'printer_ip_0_backup',
           'last_save_timestamp',
