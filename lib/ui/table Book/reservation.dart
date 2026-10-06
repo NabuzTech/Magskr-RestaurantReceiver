@@ -250,6 +250,9 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
         List<String> keysToRemove = [
           valueShared_BEARER_KEY,
           valueShared_STORE_KEY,
+          valueShared_STORE_NAME,
+          valueShared_STORE_LOGO,
+          valueShared_STORE_BRAND_FOR,
           // ✅ Clear backup IP keys that are created by PrinterSettingsScreen
           'printer_ip_backup',
           'printer_ip_0_backup',

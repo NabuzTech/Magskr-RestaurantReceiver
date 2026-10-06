@@ -21,6 +21,9 @@ String valueShared_STORE_KEY = 'STORE_KEY';
 String valueShared_BASEURL = 'BASEURL_KEY';
 String valueShared_LANGUAGE = 'LANGUAGE_KEY';
 String valueShared_STORE_NAME = 'STORE_NAME_KEY';
+// App bar store logo + which login/store it was fetched for ("<token>|<storeId>").
+String valueShared_STORE_LOGO = 'STORE_LOGO_KEY';
+String valueShared_STORE_BRAND_FOR = 'STORE_BRAND_FOR_KEY';
 String valueShared_STORE_TYPE = 'STORE_TYPE_KEY';
 String valueShared_ROLE_ID = 'role_id';
 

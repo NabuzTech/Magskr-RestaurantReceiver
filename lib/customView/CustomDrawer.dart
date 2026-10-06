@@ -523,6 +523,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
         List<String> keysToRemove = [
           valueShared_BEARER_KEY,
           valueShared_STORE_KEY,
+          valueShared_STORE_NAME,
+          valueShared_STORE_LOGO,
+          valueShared_STORE_BRAND_FOR,
 
           'super_admin_username',
           'super_admin_password',
