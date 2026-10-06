@@ -98,7 +98,7 @@ class _StoreTimingState extends State<StoreTiming> {
                                   color: _selectedTabIndex == 0 ? Colors.white :  Colors.black,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                             ),
@@ -133,7 +133,7 @@ class _StoreTimingState extends State<StoreTiming> {
                   //                 color: _selectedTabIndex == 1 ? Colors.white :Colors.black,
                   //                 fontWeight: FontWeight.bold,
                   //                 fontSize: 14,
-                  //                 fontFamily: 'Mulish',
+                  //                 fontFamily: 'Sora',
                   //               ),
                   //             ),
                   //           ),
@@ -156,7 +156,7 @@ class _StoreTimingState extends State<StoreTiming> {
                   Text(
                     _selectedTabIndex == 0 ? 'store_hour'.tr : 'Holidays',
                     style: const TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -182,7 +182,7 @@ class _StoreTimingState extends State<StoreTiming> {
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                       ),
@@ -204,7 +204,7 @@ class _StoreTimingState extends State<StoreTiming> {
       if (isLoading) {
         return Center(child: Container());
       } else {
-        return const Center(child: Text('No store timing data available'));
+        return const Center(child: Text('No store timing data available', style: const TextStyle(fontFamily: 'Sora')));
       }
     }
 
@@ -259,7 +259,7 @@ class _StoreTimingState extends State<StoreTiming> {
                   style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 13,
-                      fontFamily: 'Mulish'
+                      fontFamily: 'Sora'
                   ),
                 ),
               ),
@@ -268,13 +268,13 @@ class _StoreTimingState extends State<StoreTiming> {
                   Text('open'.tr, style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 13,
-                      fontFamily: 'Mulish'
+                      fontFamily: 'Sora'
                   )),
                   const SizedBox(width: 20),
                   Text('close'.tr, style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 13,
-                      fontFamily: 'Mulish'
+                      fontFamily: 'Sora'
                   )),
                 ],
               )
@@ -312,7 +312,7 @@ class _StoreTimingState extends State<StoreTiming> {
                               color: isSelected ? Colors.white : Colors.black,
                               fontWeight: FontWeight.bold,
                               fontSize: 10,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                         ),
@@ -327,7 +327,7 @@ class _StoreTimingState extends State<StoreTiming> {
                       style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                     ),
                     const SizedBox(width: 15),
@@ -336,7 +336,7 @@ class _StoreTimingState extends State<StoreTiming> {
                       style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                     ),
                     const SizedBox(width: 15),
@@ -374,7 +374,7 @@ class _StoreTimingState extends State<StoreTiming> {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('invalid_timing'.tr),
+                              content: Text('invalid_timing'.tr, style: const TextStyle(fontFamily: 'Sora')),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -404,7 +404,7 @@ class _StoreTimingState extends State<StoreTiming> {
 
   Widget buildHolidayCards() {
     if (holidayList.isEmpty) {
-      return const Center(child: Text('No holidays added'));
+      return const Center(child: Text('No holidays added', style: const TextStyle(fontFamily: 'Sora')));
     }
 
     return Column(
@@ -424,7 +424,7 @@ class _StoreTimingState extends State<StoreTiming> {
                     style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 14,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   Text(
@@ -432,7 +432,7 @@ class _StoreTimingState extends State<StoreTiming> {
                     style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 14,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   Text(
@@ -440,7 +440,7 @@ class _StoreTimingState extends State<StoreTiming> {
                     style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 14,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                 ],
@@ -456,7 +456,7 @@ class _StoreTimingState extends State<StoreTiming> {
                     child: Text(
                       holiday.name ?? '',
                       style: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -467,7 +467,7 @@ class _StoreTimingState extends State<StoreTiming> {
                     child: Text(
                       _extractDate(holiday.date ?? ''),
                       style: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -478,7 +478,7 @@ class _StoreTimingState extends State<StoreTiming> {
                     child: Text(
                       _extractTime(holiday.date ?? ''),
                       style: const TextStyle(
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -675,7 +675,7 @@ class _StoreTimingState extends State<StoreTiming> {
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
                             color: Colors.black,
-                            fontFamily: 'Mulish'
+                            fontFamily: 'Sora'
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -700,7 +700,7 @@ class _StoreTimingState extends State<StoreTiming> {
                               ),
                               child: Text(
                                 'cancel'.tr,
-                                style: const TextStyle(
+                                style: const TextStyle(fontFamily: 'Sora', 
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -728,7 +728,7 @@ class _StoreTimingState extends State<StoreTiming> {
                               ),
                               child: Text(
                                 'delete'.tr,
-                                style: const TextStyle(
+                                style: const TextStyle(fontFamily: 'Sora', 
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -795,7 +795,7 @@ class _StoreTimingState extends State<StoreTiming> {
         Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('del_timing'.tr),
+            content: Text('del_timing'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 1),
           ),
@@ -811,7 +811,7 @@ class _StoreTimingState extends State<StoreTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('delete_timing'.tr),
+            content: Text('delete_timing'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 1),
           ),
@@ -1054,7 +1054,7 @@ class _StoreTimingState extends State<StoreTiming> {
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: Colors.black,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1079,7 +1079,7 @@ class _StoreTimingState extends State<StoreTiming> {
                             ),
                             child: Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1107,7 +1107,7 @@ class _StoreTimingState extends State<StoreTiming> {
                             ),
                             child: Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1169,7 +1169,7 @@ class _StoreTimingState extends State<StoreTiming> {
         Navigator.of(context, rootNavigator: true).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Holiday deleted successfully'),
+            content: Text('Holiday deleted successfully', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 1),
           ),
@@ -1185,7 +1185,7 @@ class _StoreTimingState extends State<StoreTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to delete holiday'),
+            content: Text('Failed to delete holiday', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 1),
           ),

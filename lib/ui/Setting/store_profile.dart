@@ -55,7 +55,7 @@ class _StoreProfileState extends State<StoreProfile> {
 
   void _snack(String msg, {Color color = Colors.red}) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: color));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: color));
   }
 
   Future<void> _loadStore() async {
@@ -83,12 +83,12 @@ class _StoreProfileState extends State<StoreProfile> {
         child: Wrap(children: [
           ListTile(
             leading: const Icon(Icons.camera_alt),
-            title: Text('camera'.tr),
+            title: Text('camera'.tr, style: const TextStyle(fontFamily: 'Sora')),
             onTap: () => Navigator.pop(context, ImageSource.camera),
           ),
           ListTile(
             leading: const Icon(Icons.photo_library),
-            title: const Text('Gallery'),
+            title: const Text('Gallery', style: const TextStyle(fontFamily: 'Sora')),
             onTap: () => Navigator.pop(context, ImageSource.gallery),
           ),
         ]),
@@ -142,7 +142,7 @@ class _StoreProfileState extends State<StoreProfile> {
         leading: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.black), onPressed: () => Get.back()),
         title: Text(
           storeName.isEmpty ? 'Store Profile' : 'Store Profile — $storeName',
-          style: const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontFamily: 'Sora', color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
         ),
         actions: [
           Padding(
@@ -154,7 +154,7 @@ class _StoreProfileState extends State<StoreProfile> {
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              child: const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.w600)),
+              child: const Text('Save Changes', style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w600)),
             ),
           ),
         ],
@@ -181,7 +181,7 @@ class _StoreProfileState extends State<StoreProfile> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            child: Text(title, style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w600)),
           ),
           const Divider(height: 1),
           Padding(padding: const EdgeInsets.all(16), child: child),
@@ -218,7 +218,7 @@ class _StoreProfileState extends State<StoreProfile> {
     return OutlinedButton.icon(
       onPressed: onTap,
       icon: const Icon(Icons.add_photo_alternate_outlined, color: Colors.black87),
-      label: Text(label, style: const TextStyle(color: Colors.black87)),
+      label: Text(label, style: const TextStyle(fontFamily: 'Sora', color: Colors.black87)),
       style: OutlinedButton.styleFrom(
         side: BorderSide(color: Colors.grey[300]!),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -260,9 +260,9 @@ class _StoreProfileState extends State<StoreProfile> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Upload Store Logo', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                const Text('Upload Store Logo', style: TextStyle(fontFamily: 'Sora', fontSize: 15, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 6),
-                Text('Square image recommended for best results.', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                Text('Square image recommended for best results.', style: TextStyle(fontFamily: 'Sora', color: Colors.grey[600], fontSize: 12)),
                 const SizedBox(height: 10),
                 _chooseButton('Choose Image', () => _pick(true)),
               ],
@@ -304,7 +304,7 @@ class _StoreProfileState extends State<StoreProfile> {
           const SizedBox(height: 12),
           _chooseButton('Upload Banner', () => _pick(false)),
           const SizedBox(height: 6),
-          Text('Recommended size: 1200×400 px', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+          Text('Recommended size: 1200×400 px', style: TextStyle(fontFamily: 'Sora', color: Colors.grey[600], fontSize: 12)),
         ],
       ),
     );

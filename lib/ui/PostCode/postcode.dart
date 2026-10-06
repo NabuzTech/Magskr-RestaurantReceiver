@@ -156,7 +156,7 @@ class _PostcodeState extends State<Postcode> {
                       children: [
                         Text('postcode'.tr,
                             style: const TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold)),
                         GestureDetector(
@@ -175,7 +175,7 @@ class _PostcodeState extends State<Postcode> {
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   )),
                             ),
                           ),
@@ -196,7 +196,7 @@ class _PostcodeState extends State<Postcode> {
                             currentPageItems.length} of ${postcode.length} ${'entries'.tr}',
                         style: TextStyle(
                           fontSize: 12,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: Colors.grey[600],
                         ),
                       ),
@@ -219,7 +219,7 @@ class _PostcodeState extends State<Postcode> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 12,
-                                  fontFamily: 'Mulish'),
+                                  fontFamily: 'Sora'),
                             ),
                           ),
                           Container(
@@ -227,7 +227,7 @@ class _PostcodeState extends State<Postcode> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish')),
+                                    fontFamily: 'Sora')),
                           ),
                           const SizedBox(width: 15),
                           SizedBox(
@@ -237,7 +237,7 @@ class _PostcodeState extends State<Postcode> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish'),
+                                    fontFamily: 'Sora'),
                               ),
                             ),
                           ) ,
@@ -248,7 +248,7 @@ class _PostcodeState extends State<Postcode> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish'),
+                                    fontFamily: 'Sora'),
                               ),
                             ),
                           )
@@ -329,7 +329,7 @@ class _PostcodeState extends State<Postcode> {
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 12,
-                                              fontFamily: 'Mulish'),
+                                              fontFamily: 'Sora'),
                                         ),
                                       ),
                                       SizedBox(
@@ -339,7 +339,7 @@ class _PostcodeState extends State<Postcode> {
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 12,
-                                              fontFamily: 'Mulish'),
+                                              fontFamily: 'Sora'),
                                         ),
                                       ),
                                       SizedBox(
@@ -349,7 +349,7 @@ class _PostcodeState extends State<Postcode> {
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 12,
-                                              fontFamily: 'Mulish'),
+                                              fontFamily: 'Sora'),
                                         ),
                                       ),
                                     ],
@@ -361,7 +361,7 @@ class _PostcodeState extends State<Postcode> {
                                     child: Text(currentPageItems[index].deliveryTime.toString(),
                                       style: const TextStyle(
                                           fontSize: 12,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                           fontWeight: FontWeight.w700,
                                           color: Colors.black),
                                     ),
@@ -417,7 +417,7 @@ class _PostcodeState extends State<Postcode> {
                           'previous'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage > 1 ? Colors.black87 : Colors
                                 .grey,
@@ -450,7 +450,7 @@ class _PostcodeState extends State<Postcode> {
                                 '$pageNum',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                   color: isActive ? Colors.white : Colors
                                       .black87,
@@ -482,7 +482,7 @@ class _PostcodeState extends State<Postcode> {
                           'next'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage < totalPages
                                 ? Colors.black87
@@ -559,7 +559,7 @@ class _PostcodeState extends State<Postcode> {
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ],
@@ -577,7 +577,7 @@ class _PostcodeState extends State<Postcode> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -606,7 +606,7 @@ class _PostcodeState extends State<Postcode> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -635,7 +635,7 @@ class _PostcodeState extends State<Postcode> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -664,7 +664,7 @@ class _PostcodeState extends State<Postcode> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -710,7 +710,7 @@ class _PostcodeState extends State<Postcode> {
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                         ),
                                       ),
                                     ),
@@ -724,7 +724,7 @@ class _PostcodeState extends State<Postcode> {
                                         if (postcodeController.text.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
-                                              content: Text('enter_pos'.tr),
+                                              content: Text('enter_pos'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                               backgroundColor: Colors.red,
                                             ),
                                           );
@@ -733,7 +733,7 @@ class _PostcodeState extends State<Postcode> {
                                         if (minimumAmountController.text.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
-                                              content: Text('ent_min'.tr),
+                                              content: Text('ent_min'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                               backgroundColor: Colors.red,
                                             ),
                                           );
@@ -742,7 +742,7 @@ class _PostcodeState extends State<Postcode> {
                                         if (deliveryFeeController.text.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
-                                              content: Text('ent_del'.tr),
+                                              content: Text('ent_del'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                               backgroundColor: Colors.red,
                                             ),
                                           );
@@ -751,7 +751,7 @@ class _PostcodeState extends State<Postcode> {
                                         if (deliveryTimeController.text.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
-                                              content: Text('ent_del_time'.tr),
+                                              content: Text('ent_del_time'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                               backgroundColor: Colors.red,
                                             ),
                                           );
@@ -787,7 +787,7 @@ class _PostcodeState extends State<Postcode> {
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                         ),
                                       ),
                                     ),
@@ -954,7 +954,7 @@ class _PostcodeState extends State<Postcode> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('postcode_create'.tr),
+            content: Text('postcode_create'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -971,7 +971,7 @@ class _PostcodeState extends State<Postcode> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'failed_postcode'.tr}: ${e.toString()}'),
+            content: Text('${'failed_postcode'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -1035,7 +1035,7 @@ class _PostcodeState extends State<Postcode> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('update_postcode'.tr),
+            content: Text('update_postcode'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -1052,7 +1052,7 @@ class _PostcodeState extends State<Postcode> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'failed__upd_postcode'.tr}: ${e.toString()}'),
+            content: Text('${'failed__upd_postcode'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -1087,7 +1087,7 @@ class _PostcodeState extends State<Postcode> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('postcode_delete'.tr),
+            content: Text('postcode_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -1101,7 +1101,7 @@ class _PostcodeState extends State<Postcode> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('postcode_delete_failed'.tr),
+            content: Text('postcode_delete_failed'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -1141,7 +1141,7 @@ class _PostcodeState extends State<Postcode> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1165,7 +1165,7 @@ class _PostcodeState extends State<Postcode> {
                             ),
                             child:  Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1194,7 +1194,7 @@ class _PostcodeState extends State<Postcode> {
                             ),
                             child:  Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),

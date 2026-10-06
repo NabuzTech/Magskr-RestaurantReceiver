@@ -18,10 +18,10 @@ class Payment {
   factory Payment.fromJson(Map<String, dynamic> json) => Payment(
     paymentMethod: json["payment_method"],
     status: json["status"],
-    paidAt: DateTime.tryParse(json["paid_at"]),
+    paidAt: DateTime.tryParse(json["paid_at"] ?? ""),
     id: json["id"],
     orderId: json["order_id"],
-    amount: json["amount"],
+    amount: (json["amount"] as num?)?.toDouble(),
   );
 
   Map<String, dynamic> toJson() => {

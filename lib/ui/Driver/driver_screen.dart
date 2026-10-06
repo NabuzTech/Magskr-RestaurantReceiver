@@ -59,7 +59,7 @@ class _DriverScreenState extends State<DriverScreen> {
                 const Row(
                   children: [
                     Text('23july, 2025',
-                      style: TextStyle(fontSize: 12,fontFamily: 'Mulish',fontWeight: FontWeight.w800),
+                      style: TextStyle(fontSize: 12,fontFamily: 'Sora',fontWeight: FontWeight.w800),
                     ),
                     Icon(Icons.arrow_drop_down,size: 30,)
                   ],
@@ -78,7 +78,7 @@ class _DriverScreenState extends State<DriverScreen> {
                         ) ,
                         child: const Center(
                           child: Text('Delivery Order',style: TextStyle(color: Colors.white,
-                            fontWeight: FontWeight.w700,fontSize: 12,fontFamily: 'Mulish',
+                            fontWeight: FontWeight.w700,fontSize: 12,fontFamily: 'Sora',
                           ),),
                         ),
                       ),
@@ -96,7 +96,7 @@ class _DriverScreenState extends State<DriverScreen> {
                         ) ,
                         child: const Center(
                           child: Text('Create Driver',style: TextStyle(color: Colors.white,
-                            fontWeight: FontWeight.w700,fontSize: 12,fontFamily: 'Mulish',
+                            fontWeight: FontWeight.w700,fontSize: 12,fontFamily: 'Sora',
                           ),),
                         ),
                       ),
@@ -125,7 +125,7 @@ class _DriverScreenState extends State<DriverScreen> {
                     ],
                   ),
                   child: const Text('Total Amount : 20',style: TextStyle(
-                      fontFamily: "Mulish",fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
+                      fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
                   ),),
                 ),
                 const SizedBox(width: 3,),
@@ -144,7 +144,7 @@ class _DriverScreenState extends State<DriverScreen> {
                     ],
                   ),
                   child: const Text('Total Cash : 2',style: TextStyle(
-                      fontFamily: "Mulish",fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
+                      fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
                   ),),
                 ),
                 const SizedBox(width: 3,),
@@ -163,7 +163,7 @@ class _DriverScreenState extends State<DriverScreen> {
                     ],
                   ),
                   child: const Text('Total Online : 2',style: TextStyle(
-                      fontFamily: "Mulish",fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
+                      fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
                   ),),
                 ),
                 const SizedBox(width: 3,),
@@ -188,7 +188,7 @@ class _DriverScreenState extends State<DriverScreen> {
                     ],
                   ),
                   child: const Text('Total Driver : 20',style: TextStyle(
-                      fontFamily: "Mulish",fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
+                      fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
                   ),),
                 ),
                 const SizedBox(width: 3,),
@@ -207,7 +207,7 @@ class _DriverScreenState extends State<DriverScreen> {
                     ],
                   ),
                   child: const Text('Order Delivered : 20',style: TextStyle(
-                      fontFamily: "Mulish",fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
+                      fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
                   ),),
                 ),
                 const SizedBox(width: 3,),
@@ -226,7 +226,7 @@ class _DriverScreenState extends State<DriverScreen> {
                     ],
                   ),
                   child: const Text('Order Pending : 20',style: TextStyle(
-                      fontFamily: "Mulish",fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
+                      fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
                   ),),
                 ),
                 const SizedBox(width: 3,),
@@ -251,7 +251,7 @@ class _DriverScreenState extends State<DriverScreen> {
                     ],
                   ),
                   child: const Text('Order Assigned: 20',style: TextStyle(
-                      fontFamily: "Mulish",fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
+                      fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
                   ),),
                 ),
                 const SizedBox(width: 10,),
@@ -270,7 +270,7 @@ class _DriverScreenState extends State<DriverScreen> {
                     ],
                   ),
                   child: const Text('Delivery Cancelled : 10',style: TextStyle(
-                      fontFamily: "Mulish",fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
+                      fontFamily: 'Sora',fontWeight: FontWeight.w700,fontSize: 10,color: Colors.black
                   ),),
                 ),
                 const SizedBox(width: 3,),
@@ -312,7 +312,7 @@ class _DriverScreenState extends State<DriverScreen> {
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w800,
-                                      fontFamily: "Mulish",
+                                      fontFamily: 'Sora',
                                       height: 0),
                                 ),
                               ),
@@ -335,7 +335,7 @@ class _DriverScreenState extends State<DriverScreen> {
                           children: [
                             const Text('ON THE WAY',style: TextStyle(
                               color: Color(0xFF49B27A),
-                                fontWeight: FontWeight.w800,fontFamily: 'Mulish',fontSize: 10
+                                fontWeight: FontWeight.w800,fontFamily: 'Sora',fontSize: 10
                             ),),
                             const SizedBox(width: 10,),
                             Container(
@@ -358,13 +358,13 @@ class _DriverScreenState extends State<DriverScreen> {
                     const Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('Total Delivery  : 20',style: TextStyle(
-                            fontFamily: "Mulish",fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
+                            fontFamily: 'Sora',fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
                         ),),
                         Text('Delivered  : 15',style: TextStyle(
-                            fontFamily: "Mulish",fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
+                            fontFamily: 'Sora',fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
                         ),),
                         Text('Assigned  : 15',style: TextStyle(
-                            fontFamily: "Mulish",fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
+                            fontFamily: 'Sora',fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
                         ),),
                       ],
                     ),
@@ -372,7 +372,7 @@ class _DriverScreenState extends State<DriverScreen> {
                       padding: EdgeInsets.only(left: 25.0),
                       child: Center(
                         child: Text('Cancelled  : 20',style: TextStyle(
-                            fontFamily: "Mulish",fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
+                            fontFamily: 'Sora',fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
                         ),),
                       ),
                     ),
@@ -380,13 +380,13 @@ class _DriverScreenState extends State<DriverScreen> {
                     const Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text('Total Amount  : 200',style: TextStyle(
-                            fontFamily: "Mulish",fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
+                            fontFamily: 'Sora',fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
                         ),),
                         Text('Cash  : 100',style: TextStyle(
-                            fontFamily: "Mulish",fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
+                            fontFamily: 'Sora',fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
                         ),),
                         Text('Online  : 100',style: TextStyle(
-                            fontFamily: "Mulish",fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
+                            fontFamily: 'Sora',fontWeight: FontWeight.w800,fontSize: 12,color: Colors.black
                         ),),
                       ],
                     ),

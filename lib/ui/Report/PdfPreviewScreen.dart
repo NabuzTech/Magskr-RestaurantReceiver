@@ -63,7 +63,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
           SnackBar(
             content: Text(
               '${'pdf_saved'.tr}:\n$fullPath',
-              maxLines: 3,
+              maxLines: 3, style: const TextStyle(fontFamily: 'Sora'),
             ),
             backgroundColor: AppTheme.accent,
             duration: const Duration(seconds: 5),
@@ -74,7 +74,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'download_error'.tr}: $e'),
+            content: Text('${'download_error'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -104,7 +104,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'share_error'.tr}: $e'),
+            content: Text('${'share_error'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -149,7 +149,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
         title: Text(
           'report_preview'.tr,
           style: const TextStyle(
-            fontFamily: "Mulish",
+            fontFamily: 'Sora',
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -187,7 +187,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                     onError: (error) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('${'error'.tr}: $error'),
+                          content: Text('${'error'.tr}: $error', style: const TextStyle(fontFamily: 'Sora')),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -203,7 +203,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                         '${'page_indicator'.tr} ${_currentPage + 1} ${'of'.tr} $_totalPages',
                         style: const TextStyle(
                           fontSize: 13,
-                          fontFamily: "Mulish",
+                          fontFamily: 'Sora',
                           color: Colors.black54,
                         ),
                       ),
@@ -225,7 +225,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                       //         style: const TextStyle(
                       //           fontSize: 16,
                       //           fontWeight: FontWeight.w700,
-                      //           fontFamily: "Mulish",
+                      //           fontFamily: 'Sora',
                       //           color: Colors.white,
                       //         ),
                       //       ),
@@ -251,7 +251,7 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                fontFamily: "Mulish",
+                                fontFamily: 'Sora',
                                 color: Colors.white,
                               ),
                             ),

@@ -456,16 +456,16 @@ class LoginController extends GetxController {
       AlertDialog(
         title: const Text(
           'Password Reset',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold),
         ),
         content: RichText(
           text: const TextSpan(
-            style: TextStyle(color: Colors.black, fontSize: 14),
+            style: TextStyle(fontFamily: 'Sora', color: Colors.black, fontSize: 14),
             children: [
               TextSpan(text: 'For password reset assistance, please contact our support team at '),
               TextSpan(
                 text: 'support@magskr.com',
-                style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                style: TextStyle(fontFamily: 'Sora', color: Colors.blue, fontWeight: FontWeight.bold),
               ),
               TextSpan(text: ' with your registered email address.'),
             ],
@@ -474,7 +474,7 @@ class LoginController extends GetxController {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('OK', style: TextStyle(color: Colors.blue)),
+            child: const Text('OK', style: TextStyle(fontFamily: 'Sora', color: Colors.blue)),
           ),
         ],
       ),
@@ -491,9 +491,9 @@ class LoginController extends GetxController {
       AlertDialog(
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold),
         ),
-        content: Text(message),
+        content: Text(message, style: const TextStyle(fontFamily: 'Sora')),
         actions: [
           TextButton(
             onPressed: () {
@@ -501,7 +501,7 @@ class LoginController extends GetxController {
                 Navigator.of(Get.overlayContext!).pop();
               }
             },
-            child: const Text('OK', style: TextStyle(color: Colors.blue)),
+            child: const Text('OK', style: TextStyle(fontFamily: 'Sora', color: Colors.blue)),
           ),
         ],
       ),
@@ -514,7 +514,7 @@ class LoginController extends GetxController {
     if (context != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$title: $message'),
+          content: Text('$title: $message', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.black87,
           duration: const Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,

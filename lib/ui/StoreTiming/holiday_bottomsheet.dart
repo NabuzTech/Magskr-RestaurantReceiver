@@ -171,7 +171,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Holiday added successfully'),
+            content: Text('Holiday added successfully', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
           ),
         );
@@ -243,7 +243,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Holiday updated successfully'),
+            content: Text('Holiday updated successfully', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
           ),
         );
@@ -265,7 +265,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
   }
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
+      SnackBar(content: Text(message, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
     );
   }
 
@@ -295,7 +295,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ),
@@ -307,7 +307,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -346,7 +346,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                   Text(
@@ -355,7 +355,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.green,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 ],
@@ -399,7 +399,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                       ),
                                     ),
                                   ),
@@ -426,7 +426,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -466,7 +466,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                         ),
@@ -498,7 +498,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                         ),
@@ -630,7 +630,7 @@ class _AddHolidayBottomSheetState extends State<AddHolidayBottomSheet> {
                     : Colors.grey.shade400,
                 fontWeight: isToday && !isSelected ? FontWeight.bold : FontWeight.normal,
                 fontSize: 14,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
           ),

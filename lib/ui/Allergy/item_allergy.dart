@@ -143,7 +143,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                       children: [
                         Text('allergy'.tr,
                             style: const TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold)),
                         GestureDetector(
@@ -162,7 +162,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   )),
                             ),
                           ),
@@ -180,7 +180,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                           currentPageItems.length} of ${allergyItemLinkList.length} ${'entries'.tr}',
                         style: TextStyle(
                           fontSize: 12,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: Colors.grey[600],
                         ),
                       ),
@@ -201,7 +201,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                             style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 13,
-                                fontFamily: 'Mulish'),
+                                fontFamily: 'Sora'),
                           ),
                         ),
                         SizedBox(
@@ -210,7 +210,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 13,
-                                  fontFamily: 'Mulish')),
+                                  fontFamily: 'Sora')),
                         ),
                       ],
                     ),
@@ -287,7 +287,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 14,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                     //overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
@@ -298,7 +298,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w400,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ),
                               ],
@@ -349,7 +349,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                           'previous'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage > 1 ? Colors.black87 : Colors
                                 .grey,
@@ -384,7 +384,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                                 '$pageNum',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                   color: isActive ? Colors.white : Colors
                                       .black87,
@@ -416,7 +416,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                           'next'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage < totalPages
                                 ? Colors.black87
@@ -472,7 +472,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                     IconButton(
@@ -484,7 +484,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                 const SizedBox(height: 20),
 
                 // Product Dropdown
-                const Text('Select Product *', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                const Text('Select Product *', style: TextStyle(fontFamily: 'Sora', fontSize: 14, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -495,12 +495,12 @@ class _ItemAllergyState extends State<ItemAllergy> {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<GetStoreProducts>(
                       isExpanded: true,
-                      hint: const Text('Choose a product...'),
+                      hint: const Text('Choose a product...', style: const TextStyle(fontFamily: 'Sora')),
                       value: selectedProduct,
                       items: productList.map((product) {
                         return DropdownMenuItem(
                           value: product,
-                          child: Text(product.name ?? 'N/A'),
+                          child: Text(product.name ?? 'N/A', style: const TextStyle(fontFamily: 'Sora')),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -515,7 +515,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                 const SizedBox(height: 16),
 
                 // Allergy Dropdown
-                const Text('Select Allergy *', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                const Text('Select Allergy *', style: TextStyle(fontFamily: 'Sora', fontSize: 14, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -526,12 +526,12 @@ class _ItemAllergyState extends State<ItemAllergy> {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<GetAllergyResponseModel>(
                       isExpanded: true,
-                      hint: const Text('Choose an allergy...'),
+                      hint: const Text('Choose an allergy...', style: const TextStyle(fontFamily: 'Sora')),
                       value: selectedAllergy,
                       items: allergyList.map((allergy) {
                         return DropdownMenuItem(
                           value: allergy,
-                          child: Text(allergy.name ?? 'N/A'),
+                          child: Text(allergy.name ?? 'N/A', style: const TextStyle(fontFamily: 'Sora')),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -551,7 +551,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                   children: [
                     TextButton(
                       onPressed: () => Get.back(),
-                      child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                      child: const Text('Cancel', style: TextStyle(fontFamily: 'Sora', color: Colors.grey)),
                     ),
                     const SizedBox(width: 12),
                     ElevatedButton(
@@ -568,7 +568,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
 
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(message),
+                              content: Text(message, style: const TextStyle(fontFamily: 'Sora')),
                               backgroundColor: Colors.red,
                               duration: const Duration(seconds: 2),
                             ),
@@ -593,7 +593,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                       ),
                       child: Text(
                         isEditMode ? 'Update' : 'Add',
-                        style: const TextStyle(color: Colors.white),
+                        style: const TextStyle(fontFamily: 'Sora', color: Colors.white),
                       ),
                     ),
                   ],
@@ -700,7 +700,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('created_allergy'.tr), backgroundColor: Colors.green),
+          SnackBar(content: Text('created_allergy'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.green),
         );
       }
       return true;
@@ -708,7 +708,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
       Get.back();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('failed_allergy'.tr), backgroundColor: Colors.red),
+          SnackBar(content: Text('failed_allergy'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
         );
       }
       return false;
@@ -733,7 +733,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('updated_allergy'.tr), backgroundColor: Colors.green),
+          SnackBar(content: Text('updated_allergy'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.green),
         );
       }
       return true;
@@ -741,7 +741,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
       Get.back();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('failed_upd'.tr), backgroundColor: Colors.red),
+          SnackBar(content: Text('failed_upd'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
         );
       }
       return false;
@@ -867,7 +867,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('delete_allergy'.tr),
+            content: Text('delete_allergy'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -881,7 +881,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('faile_allergy'.tr),
+            content: Text('faile_allergy'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -921,7 +921,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -945,7 +945,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                             ),
                             child:  Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -974,7 +974,7 @@ class _ItemAllergyState extends State<ItemAllergy> {
                             ),
                             child:  Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),

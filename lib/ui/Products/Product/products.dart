@@ -147,7 +147,7 @@ class _ProductsState extends State<Products> {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
             const SizedBox(height: 20),
@@ -177,7 +177,7 @@ class _ProductsState extends State<Products> {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('failed_capture'.tr),
+                            content: Text('failed_capture'.tr, style: const TextStyle(fontFamily: 'Sora')),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -205,7 +205,7 @@ class _ProductsState extends State<Products> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -234,7 +234,7 @@ class _ProductsState extends State<Products> {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Failed to pick image'),
+                            content: Text('Failed to pick image', style: const TextStyle(fontFamily: 'Sora')),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -262,7 +262,7 @@ class _ProductsState extends State<Products> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -290,7 +290,7 @@ class _ProductsState extends State<Products> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.grey.shade600,
                     ),
                   ),
@@ -527,7 +527,7 @@ class _ProductsState extends State<Products> {
                     children: [
                       Text('product'.tr,
                           style: const TextStyle(
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               fontSize: 18,
                               fontWeight: FontWeight.bold)),
                       Row(
@@ -576,7 +576,7 @@ class _ProductsState extends State<Products> {
                                       color: Colors.white,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 12,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     )),
                               ),
                             ),
@@ -599,7 +599,7 @@ class _ProductsState extends State<Products> {
                         Text(
                           'no_product'.tr,
                           style: TextStyle(
-                            fontSize: 16, fontFamily: 'Mulish',
+                            fontSize: 16, fontFamily: 'Sora',
                             color: Colors.grey[600], fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -617,7 +617,7 @@ class _ProductsState extends State<Products> {
                         Text(
                           '${'no_match'.tr} "$currentSearchQuery"',
                           style: TextStyle(
-                            fontSize: 16, fontFamily: 'Mulish',
+                            fontSize: 16, fontFamily: 'Sora',
                             color: Colors.grey[600], fontWeight: FontWeight.w500,
                           ),
                           textAlign: TextAlign.center,
@@ -692,7 +692,7 @@ class _ProductsState extends State<Products> {
                                             style: const TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 14,
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                             ),
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -702,7 +702,7 @@ class _ProductsState extends State<Products> {
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 13,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                           ),
                                         ),
                                         const SizedBox(width: 10),
@@ -718,7 +718,7 @@ class _ProductsState extends State<Products> {
                                             (category?.isActive == true) ? 'active'.tr : 'inactive'.tr,
                                             style: const TextStyle(
                                               fontSize: 11,
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                               fontWeight: FontWeight.w700,
                                               color: Colors.white,
                                             ),
@@ -839,7 +839,7 @@ class _ProductsState extends State<Products> {
                                                         style: const TextStyle(
                                                           fontWeight: FontWeight.w500,
                                                           fontSize: 13,
-                                                          fontFamily: 'Mulish',
+                                                          fontFamily: 'Sora',
                                                         ),
                                                         overflow: TextOverflow.ellipsis,
                                                       ),
@@ -848,7 +848,7 @@ class _ProductsState extends State<Products> {
                                                       '${"currency".tr}${productPrice?.toStringAsFixed(2) ?? '0.00'}',
                                                       style: const TextStyle(
                                                         fontSize: 13,
-                                                        fontFamily: 'Mulish',
+                                                        fontFamily: 'Sora',
                                                         fontWeight: FontWeight.w700,
                                                       ),
                                                     ),
@@ -1049,7 +1049,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),
@@ -1143,7 +1143,7 @@ class _ProductsState extends State<Products> {
                               'loading'.tr,
                               style: TextStyle(
                                 fontSize: 14,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Colors.grey[600],
                               ),
                             ),
@@ -1161,7 +1161,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -1192,7 +1192,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -1222,7 +1222,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -1233,7 +1233,7 @@ class _ProductsState extends State<Products> {
                               ),
                               child: DropdownButtonFormField<String>(
                                 initialValue: selectedTaxId,
-                                hint: Text('select'.tr),
+                                hint: Text('select'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                 decoration: const InputDecoration(
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -1243,7 +1243,7 @@ class _ProductsState extends State<Products> {
                                 items: storeTaxesList.map((tax) {
                                   return DropdownMenuItem<String>(
                                     value: tax.id.toString(),
-                                    child: Text('${tax.name} (${tax.percentage}%)'),
+                                    child: Text('${tax.name} (${tax.percentage}%)', style: const TextStyle(fontFamily: 'Sora')),
                                   );
                                 }).toList(),
                                 onChanged: (String? newValue) {
@@ -1261,7 +1261,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -1272,7 +1272,7 @@ class _ProductsState extends State<Products> {
                               ),
                               child: DropdownButtonFormField<String>(
                                 initialValue: selectedCategoryId,
-                                hint: Text('select_category'.tr),
+                                hint: Text('select_category'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                 decoration: const InputDecoration(
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -1282,7 +1282,7 @@ class _ProductsState extends State<Products> {
                                 items: productCategoryList.map((category) {
                                   return DropdownMenuItem<String>(
                                     value: category.id.toString(),
-                                    child: Text(category.name ?? 'N/A'),
+                                    child: Text(category.name ?? 'N/A', style: const TextStyle(fontFamily: 'Sora')),
                                   );
                                 }).toList(),
                                 onChanged: (String? newValue) {
@@ -1300,7 +1300,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -1320,7 +1320,7 @@ class _ProductsState extends State<Products> {
                                 items: ['simple'.tr, 'variable'.tr].map((String value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
-                                    child: Text(value),
+                                    child: Text(value, style: const TextStyle(fontFamily: 'Sora')),
                                   );
                                 }).toList(),
                                 onChanged: (String? newValue) {
@@ -1347,7 +1347,7 @@ class _ProductsState extends State<Products> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -1377,7 +1377,7 @@ class _ProductsState extends State<Products> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -1414,7 +1414,7 @@ class _ProductsState extends State<Products> {
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                   if (variants.isEmpty)
@@ -1429,7 +1429,7 @@ class _ProductsState extends State<Products> {
                                         });
                                       },
                                       icon: const Icon(Icons.add, size: 18),
-                                      label: Text('add_variant'.tr),
+                                      label: Text('add_variant'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: const Color(0xff0C831F),
                                         foregroundColor: Colors.white,
@@ -1537,7 +1537,7 @@ class _ProductsState extends State<Products> {
                                               color: Colors.white,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                             ),
                                           ),
                                         ),
@@ -1559,7 +1559,7 @@ class _ProductsState extends State<Products> {
                                       });
                                     },
                                     icon: const Icon(Icons.add, size: 18),
-                                    label: Text('add_variant'.tr),
+                                    label: Text('add_variant'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xff0C831F),
                                       foregroundColor: Colors.white,
@@ -1579,7 +1579,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -1626,7 +1626,7 @@ class _ProductsState extends State<Products> {
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                             color: Colors.grey.shade600,
                                           ),
                                         ),
@@ -1642,7 +1642,7 @@ class _ProductsState extends State<Products> {
                                       if (nameController.text.isEmpty) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text('Please enter product name'),
+                                            content: Text('Please enter product name', style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                             duration: Duration(seconds: 2),
                                           ),
@@ -1652,7 +1652,7 @@ class _ProductsState extends State<Products> {
                                       if (codeController.text.isEmpty) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text('Please enter product code'),
+                                            content: Text('Please enter product code', style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                             duration: Duration(seconds: 2),
                                           ),
@@ -1662,7 +1662,7 @@ class _ProductsState extends State<Products> {
                                       if (selectedTaxId == null) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text('Please select tax'),
+                                            content: Text('Please select tax', style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                             duration: Duration(seconds: 2),
                                           ),
@@ -1672,7 +1672,7 @@ class _ProductsState extends State<Products> {
                                       if (selectedCategoryId == null) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text('Please select category'),
+                                            content: Text('Please select category', style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                             duration: Duration(seconds: 2),
                                           ),
@@ -1682,7 +1682,7 @@ class _ProductsState extends State<Products> {
                                       if (descriptionController.text.isEmpty) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text('Please enter description'),
+                                            content: Text('Please enter description', style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                             duration: Duration(seconds: 2),
                                           ),
@@ -1694,7 +1694,7 @@ class _ProductsState extends State<Products> {
                                         if (priceController.text.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
-                                              content: Text('Please enter price'),
+                                              content: Text('Please enter price', style: const TextStyle(fontFamily: 'Sora')),
                                               backgroundColor: Colors.red,
                                               duration: Duration(seconds: 2),
                                             ),
@@ -1705,7 +1705,7 @@ class _ProductsState extends State<Products> {
                                         if (variants.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
-                                              content: Text('Please add at least one variant'),
+                                              content: Text('Please add at least one variant', style: const TextStyle(fontFamily: 'Sora')),
                                               backgroundColor: Colors.red,
                                               duration: Duration(seconds: 2),
                                             ),
@@ -1717,7 +1717,7 @@ class _ProductsState extends State<Products> {
                                               variant['price'].text.isEmpty) {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               const SnackBar(
-                                                content: Text('Please fill all variant fields'),
+                                                content: Text('Please fill all variant fields', style: const TextStyle(fontFamily: 'Sora')),
                                                 backgroundColor: Colors.red,
                                                 duration: Duration(seconds: 2),
                                               ),
@@ -1780,7 +1780,7 @@ class _ProductsState extends State<Products> {
                                           style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                             color: Colors.white,
                                           ),
                                         ),
@@ -1918,7 +1918,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),
@@ -2061,7 +2061,7 @@ class _ProductsState extends State<Products> {
                               'loading'.tr,
                               style: TextStyle(
                                 fontSize: 14,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Colors.grey[600],
                               ),
                             ),
@@ -2079,7 +2079,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -2108,7 +2108,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -2136,13 +2136,13 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
                             DropdownButtonFormField<String>(
                               initialValue: selectedTaxId,
-                              hint: Text('select'.tr),
+                              hint: Text('select'.tr, style: const TextStyle(fontFamily: 'Sora')),
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -2156,7 +2156,7 @@ class _ProductsState extends State<Products> {
                               items: storeTaxesList.map((tax) {
                                 return DropdownMenuItem<String>(
                                   value: tax.id.toString(),
-                                  child: Text('${tax.name} (${tax.percentage}%)'),
+                                  child: Text('${tax.name} (${tax.percentage}%)', style: const TextStyle(fontFamily: 'Sora')),
                                 );
                               }).toList(),
                               onChanged: (String? newValue) {
@@ -2171,13 +2171,13 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
                             DropdownButtonFormField<String>(
                               initialValue: selectedCategoryId,
-                              hint: Text('select_category'.tr),
+                              hint: Text('select_category'.tr, style: const TextStyle(fontFamily: 'Sora')),
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -2191,7 +2191,7 @@ class _ProductsState extends State<Products> {
                               items: productCategoryList.map((category) {
                                 return DropdownMenuItem<String>(
                                   value: category.id.toString(),
-                                  child: Text(category.name ?? 'N/A'),
+                                  child: Text(category.name ?? 'N/A', style: const TextStyle(fontFamily: 'Sora')),
                                 );
                               }).toList(),
                               onChanged: (String? newValue) {
@@ -2206,7 +2206,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -2225,7 +2225,7 @@ class _ProductsState extends State<Products> {
                               items: ['simple'.tr, 'variable'.tr].map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
-                                  child: Text(value),
+                                  child: Text(value, style: const TextStyle(fontFamily: 'Sora')),
                                 );
                               }).toList(),
                               onChanged: (String? newValue) {
@@ -2249,7 +2249,7 @@ class _ProductsState extends State<Products> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -2279,7 +2279,7 @@ class _ProductsState extends State<Products> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -2311,7 +2311,7 @@ class _ProductsState extends State<Products> {
                                     style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                   if (variants.isEmpty)
@@ -2326,7 +2326,7 @@ class _ProductsState extends State<Products> {
                                         });
                                       },
                                       icon: const Icon(Icons.add, size: 18),
-                                      label: Text('add_variant'.tr),
+                                      label: Text('add_variant'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: const Color(0xff0C831F),
                                         foregroundColor: Colors.white,
@@ -2434,7 +2434,7 @@ class _ProductsState extends State<Products> {
                                               color: Colors.white,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                             ),
                                           ),
                                         ),
@@ -2456,7 +2456,7 @@ class _ProductsState extends State<Products> {
                                       });
                                     },
                                     icon: const Icon(Icons.add, size: 18),
-                                    label: Text('add_variant'.tr),
+                                    label: Text('add_variant'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xff0C831F),
                                       foregroundColor: Colors.white,
@@ -2474,7 +2474,7 @@ class _ProductsState extends State<Products> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -2520,7 +2520,7 @@ class _ProductsState extends State<Products> {
                                         color: Colors.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                       ),
                                     ),
                                   ),
@@ -2533,7 +2533,7 @@ class _ProductsState extends State<Products> {
                                       if (nameController.text.isEmpty) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text('Please enter product name'),
+                                            content: Text('Please enter product name', style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                             duration: Duration(seconds: 2),
                                           ),
@@ -2543,7 +2543,7 @@ class _ProductsState extends State<Products> {
                                       if (codeController.text.isEmpty) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text('Please enter product code'),
+                                            content: Text('Please enter product code', style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                             duration: Duration(seconds: 2),
                                           ),
@@ -2553,7 +2553,7 @@ class _ProductsState extends State<Products> {
                                       if (selectedTaxId == null) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text('Please select tax'),
+                                            content: Text('Please select tax', style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                             duration: Duration(seconds: 2),
                                           ),
@@ -2563,7 +2563,7 @@ class _ProductsState extends State<Products> {
                                       if (selectedCategoryId == null) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text('Please select category'),
+                                            content: Text('Please select category', style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                             duration: Duration(seconds: 2),
                                           ),
@@ -2574,7 +2574,7 @@ class _ProductsState extends State<Products> {
                                         if (priceController.text.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
-                                              content: Text('Please enter price'),
+                                              content: Text('Please enter price', style: const TextStyle(fontFamily: 'Sora')),
                                               backgroundColor: Colors.red,
                                               duration: Duration(seconds: 2),
                                             ),
@@ -2585,7 +2585,7 @@ class _ProductsState extends State<Products> {
                                         if (variants.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
-                                              content: Text('Please add at least one variant'),
+                                              content: Text('Please add at least one variant', style: const TextStyle(fontFamily: 'Sora')),
                                               backgroundColor: Colors.red,
                                               duration: Duration(seconds: 2),
                                             ),
@@ -2596,7 +2596,7 @@ class _ProductsState extends State<Products> {
                                           if (variant['name'].text.isEmpty || variant['price'].text.isEmpty) {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               const SnackBar(
-                                                content: Text('Please fill all variant fields'),
+                                                content: Text('Please fill all variant fields', style: const TextStyle(fontFamily: 'Sora')),
                                                 backgroundColor: Colors.red,
                                                 duration: Duration(seconds: 2),
                                               ),
@@ -2663,7 +2663,7 @@ class _ProductsState extends State<Products> {
                                         color: Colors.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                       ),
                                     ),
                                   ),
@@ -2798,7 +2798,7 @@ class _ProductsState extends State<Products> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('SharedPreferences not initialized'),
+            content: Text('SharedPreferences not initialized', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 2),
           ),
@@ -2812,7 +2812,7 @@ class _ProductsState extends State<Products> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Store ID not found'),
+            content: Text('Store ID not found', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 2),
           ),
@@ -2873,7 +2873,7 @@ class _ProductsState extends State<Products> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('product_created'.tr),
+            content: Text('product_created'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -2893,7 +2893,7 @@ class _ProductsState extends State<Products> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'failed_create'.tr}: ${e.toString()}'),
+            content: Text('${'failed_create'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -2966,7 +2966,7 @@ class _ProductsState extends State<Products> {
         Slidable.of(context)?.close();
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('product_upd'.tr), backgroundColor: Colors.green),
+          SnackBar(content: Text('product_upd'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.green),
         );
       }
 
@@ -2981,7 +2981,7 @@ class _ProductsState extends State<Products> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content:Text('${'failed_upd'.tr}: $e'), backgroundColor: Colors.red),
+          SnackBar(content:Text('${'failed_upd'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
         );
       }
 
@@ -3014,7 +3014,7 @@ class _ProductsState extends State<Products> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('produc_delete'.tr),
+            content: Text('produc_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -3028,7 +3028,7 @@ class _ProductsState extends State<Products> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_delete_product'.tr),
+            content: Text('failed_delete_product'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -3068,7 +3068,7 @@ class _ProductsState extends State<Products> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -3092,7 +3092,7 @@ class _ProductsState extends State<Products> {
                             ),
                             child:  Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -3121,7 +3121,7 @@ class _ProductsState extends State<Products> {
                             ),
                             child:  Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -3193,7 +3193,7 @@ class _ProductsState extends State<Products> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to upload image: $e'),
+            content: Text('Failed to upload image: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
           ),
         );
@@ -3234,7 +3234,7 @@ class _ProductsState extends State<Products> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -3251,7 +3251,7 @@ class _ProductsState extends State<Products> {
                           ),
                           child: TextButton(
                             onPressed: () => Get.back(),
-                            child: Text('cancel'.tr, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                            child: Text('cancel'.tr, style: const TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w700)),
                           ),
                         ),
                         const SizedBox(width: 15),
@@ -3267,7 +3267,7 @@ class _ProductsState extends State<Products> {
                               Get.back();
                               _toggleProductStatus(productId, !currentStatus);
                             },
-                            child: Text('yes'.tr, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
+                            child: Text('yes'.tr, style: const TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
                           ),
                         ),
                       ],
@@ -3300,7 +3300,7 @@ class _ProductsState extends State<Products> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('SharedPreferences not initialized'),
+            content: Text('SharedPreferences not initialized', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 2),
           ),
@@ -3313,7 +3313,7 @@ class _ProductsState extends State<Products> {
     if (storeId == null) {if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Store ID not found'),
+          content: Text('Store ID not found', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 2),
         ),
@@ -3332,7 +3332,7 @@ class _ProductsState extends State<Products> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Product not found'),
+            content: Text('Product not found', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 2),
           ),
@@ -3387,7 +3387,7 @@ class _ProductsState extends State<Products> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(newStatus ? 'product_activated'.tr : 'product_deactivated'.tr),
+            content: Text(newStatus ? 'product_activated'.tr : 'product_deactivated'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -3401,7 +3401,7 @@ class _ProductsState extends State<Products> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_status_change'.tr),
+            content: Text('failed_status_change'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),

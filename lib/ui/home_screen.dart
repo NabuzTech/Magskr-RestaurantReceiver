@@ -1,6 +1,6 @@
-import 'dart:io' show Platform;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:food_receiver/ui/table%20Book/reservation.dart';
@@ -10,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api/repository/api_repository.dart';
 import '../constants/constant.dart';
 import '../constants/item_bottom_bar.dart';
-import '../constants/app_color.dart';
 import '../constants/app_theme.dart';
 import '../customView/CustomAppBar.dart';
 import '../customView/CustomDrawer.dart';
@@ -38,6 +37,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // App bar slides away while scrolling down and comes back on scroll up.
+  bool _appBarVisible = true;
+
+  bool _onScroll(UserScrollNotification n) {
+    if (n.metrics.axis != Axis.vertical) return false;
+    final visible = n.direction == ScrollDirection.reverse
+        ? false
+        : n.direction == ScrollDirection.forward
+            ? true
+            : _appBarVisible;
+    if (visible != _appBarVisible) setState(() => _appBarVisible = visible);
+    return false;
+  }
+
   //static final GlobalKey<_HomeScreenState> homeKey = GlobalKey<_HomeScreenState>();
 
   late PageController _pageController;
@@ -296,12 +309,9 @@ class _HomeScreenState extends State<HomeScreen> {
       // key: homeKey,
       child: Obx(() =>
           Scaffold(
+            backgroundColor: Colors.white,
+              extendBody: true, // page shows behind the floating bottom bar
               drawer: CustomDrawer(onSelectTab: _openTab),
-              // ✅ Hide AppBar when on POS tab (index 3)
-              appBar: app.appController.selectedTabIndex == 3
-                  ? null
-                  :
-              CustomAppBar(roleId: _roleId),
               resizeToAvoidBottomInset: true,
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               floatingActionButton: !_isDataLoaded
@@ -313,13 +323,37 @@ class _HomeScreenState extends State<HomeScreen> {
                 return const SizedBox.shrink();
               }),
               bottomNavigationBar: _buildConditionalBottomBar(),
-              body: _isDataLoaded ? _buildBody() : Center(
+              // ✅ No AppBar on POS tab (index 3)
+              body: app.appController.selectedTabIndex == 3
+                  ? _buildBody()
+                  : SafeArea(
+                      bottom: false,
+                      child: Column(
+                        children: [
+                          ClipRect(
+                            child: AnimatedAlign(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeInOut,
+                              alignment: Alignment.bottomCenter,
+                              heightFactor: _appBarVisible ? 1 : 0,
+                              child: CustomAppBar(roleId: _roleId),
+                            ),
+                          ),
+                          Expanded(
+                            child: NotificationListener<UserScrollNotification>(
+                              onNotification: _onScroll,
+                              child: _isDataLoaded ? _buildBody() : Center(
                   child: Lottie.asset(
                     'assets/animations/burger.json',
                     width: 150,
                     height: 150,
                     repeat: true,
-                  ))
+                  )),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
           )),
     );
   }
@@ -382,24 +416,23 @@ class _HomeScreenState extends State<HomeScreen> {
       return const SizedBox.shrink();
     }
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-    double bottomBarHeight = isLandscape
-        ? (Platform.isIOS ? 100 : 80)
-        : (Platform.isIOS ? 100 : 70);
-    return Container(
-      height: bottomBarHeight,
+    // Floating rounded (pill) bar; SafeArea keeps it above the iOS home indicator.
+    return SafeArea(
+      top: false,
+      child: Container(
+      height: 68,
+      margin: const EdgeInsets.fromLTRB(4, 0, 4, 5),
       decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(34),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-            spreadRadius: 1,
+            color: AppTheme.accent.withOpacity(0.18),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
           ),
         ],
-        color: Colors.grey[100],
       ),
-      child: BottomAppBar(
-        color: appColor.white,
         child: Obx(() =>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -475,17 +508,10 @@ class _HomeScreenState extends State<HomeScreen> {
       controller: _pageController,
       physics: const NeverScrollableScrollPhysics(),
       onPageChanged: (index) {
-        print("Page changedto: $index");
-      },
+        print("Page changed: $index");},
       children: [
         KeepAlivePage(child: isAdmin ? const AdminOrder() : const OrderScreenNew()),
-        KeepAlivePage(
-          child: isAdmin
-              ? const SuperAdminReservation()
-              : (_reservationV2Enabled
-                  ? const ReservationDashboardV2()
-                  : const Reservation()),
-        ),
+        KeepAlivePage(child: isAdmin ? const SuperAdminReservation() : (_reservationV2Enabled ? const ReservationDashboardV2() : const Reservation()),),
         KeepAlivePage(child: isAdmin ? const SuperAdminReport() : const ReportScreen()),
         if (_storeType == '1')
           KeepAlivePage(child: PosPortrait(onNavigateToTab: _openTab)),
@@ -497,6 +523,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (index == 3 && _storeType != '1') {
       return;
     }
+    _appBarVisible = true; // every tab opens with the app bar showing
 
     // Auto-save draft when leaving POS or reset when entering POS
     final currentTab = app.appController.selectedTabIndex;

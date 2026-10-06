@@ -140,7 +140,7 @@ class _ProductGroupState extends State<ProductGroup> {
                       children: [
                         Text('product_grp'.tr,
                             style: const TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold)),
                         GestureDetector(
@@ -159,7 +159,7 @@ class _ProductGroupState extends State<ProductGroup> {
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   )),
                             ),
                           ),
@@ -177,7 +177,7 @@ class _ProductGroupState extends State<ProductGroup> {
                           currentPageItems.length} of ${productGroupList.length} ${'entries'.tr}',
                         style: TextStyle(
                           fontSize: 12,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: Colors.grey[600],
                         ),
                       ),
@@ -198,7 +198,7 @@ class _ProductGroupState extends State<ProductGroup> {
                             style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 13,
-                                fontFamily: 'Mulish'),
+                                fontFamily: 'Sora'),
                           ),
                         ),
                         SizedBox(
@@ -208,7 +208,7 @@ class _ProductGroupState extends State<ProductGroup> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 13,
-                                    fontFamily: 'Mulish')),
+                                    fontFamily: 'Sora')),
                           ),
                         ),
                       ],
@@ -287,7 +287,7 @@ class _ProductGroupState extends State<ProductGroup> {
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 14,
-                                          fontFamily: 'Mulish'),
+                                          fontFamily: 'Sora'),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -299,7 +299,7 @@ class _ProductGroupState extends State<ProductGroup> {
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w700,
                                             fontSize: 12,
-                                            fontFamily: 'Mulish'),
+                                            fontFamily: 'Sora'),
                                       ),
                                     ),
                                   ),
@@ -310,7 +310,7 @@ class _ProductGroupState extends State<ProductGroup> {
                                   //     style: const TextStyle(
                                   //         fontWeight: FontWeight.w400,
                                   //         fontSize: 12,
-                                  //         fontFamily: 'Mulish'),
+                                  //         fontFamily: 'Sora'),
                                   //   ),
                                   // ),
                                 ],
@@ -363,7 +363,7 @@ class _ProductGroupState extends State<ProductGroup> {
                           'previous'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage > 1 ? Colors.black87 : Colors
                                 .grey,
@@ -398,7 +398,7 @@ class _ProductGroupState extends State<ProductGroup> {
                                 '$pageNum',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                   color: isActive ? Colors.white : Colors
                                       .black87,
@@ -430,7 +430,7 @@ class _ProductGroupState extends State<ProductGroup> {
                           'next'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage < totalPages
                                 ? Colors.black87
@@ -489,13 +489,13 @@ class _ProductGroupState extends State<ProductGroup> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                       const SizedBox(height: 20),
 
                       // Group Dropdown
-                      Text('select_grp'.tr, style: const TextStyle(fontSize: 14, fontFamily: 'Mulish')),
+                      Text('select_grp'.tr, style: const TextStyle(fontSize: 14, fontFamily: 'Sora')),
                       const SizedBox(height: 8),
                       Container(
                         decoration: BoxDecoration(
@@ -508,14 +508,14 @@ class _ProductGroupState extends State<ProductGroup> {
                             value: selectedGroupId,
                             hint: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 12),
-                              child: Text('select_grp'.tr, style: const TextStyle(fontFamily: 'Mulish')),
+                              child: Text('select_grp'.tr, style: const TextStyle(fontFamily: 'Sora')),
                             ),
                             items: toppingGroupList.map((group) {
                               return DropdownMenuItem<String>(
                                 value: group.id.toString(),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                                  child: Text(group.name ?? '', style: const TextStyle(fontFamily: 'Mulish')),
+                                  child: Text(group.name ?? '', style: const TextStyle(fontFamily: 'Sora')),
                                 ),
                               );
                             }).toList(),
@@ -530,7 +530,7 @@ class _ProductGroupState extends State<ProductGroup> {
                       const SizedBox(height: 15),
 
                       // Product Dropdown
-                      Text('select_product'.tr, style: const TextStyle(fontSize: 14, fontFamily: 'Mulish')),
+                      Text('select_product'.tr, style: const TextStyle(fontSize: 14, fontFamily: 'Sora')),
                       const SizedBox(height: 8),
                       Container(
                         decoration: BoxDecoration(
@@ -543,14 +543,14 @@ class _ProductGroupState extends State<ProductGroup> {
                             value: selectedProductId,
                             hint: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 12),
-                              child: Text('select_product'.tr, style: const TextStyle(fontFamily: 'Mulish')),
+                              child: Text('select_product'.tr, style: const TextStyle(fontFamily: 'Sora')),
                             ),
                             items: productList.map((product) {
                               return DropdownMenuItem<String>(
                                 value: product.id.toString(),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                                  child: Text(product.name ?? '', style: const TextStyle(fontFamily: 'Mulish')),
+                                  child: Text(product.name ?? '', style: const TextStyle(fontFamily: 'Sora')),
                                 ),
                               );
                             }).toList(),
@@ -576,7 +576,7 @@ class _ProductGroupState extends State<ProductGroup> {
                                 color: Colors.grey.shade400,
                                 borderRadius: BorderRadius.circular(5),
                               ),
-                              child: Text('close'.tr, style: const TextStyle(color: Colors.white, fontFamily: 'Mulish')),
+                              child: Text('close'.tr, style: const TextStyle(color: Colors.white, fontFamily: 'Sora')),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -584,7 +584,7 @@ class _ProductGroupState extends State<ProductGroup> {
                             onTap: () async {
                               if (selectedProductId == null || selectedGroupId == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('please_both'.tr), backgroundColor: Colors.red),
+                                  SnackBar(content: Text('please_both'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
                                 );
                                 return;
                               }
@@ -614,7 +614,7 @@ class _ProductGroupState extends State<ProductGroup> {
                               ),
                               child: Text(
                                 isEditMode ? 'update'.tr : 'save_grp'.tr,
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Mulish'),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Sora'),
                               ),
                             ),
                           ),
@@ -742,7 +742,7 @@ class _ProductGroupState extends State<ProductGroup> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('product_create'.tr),
+            content: Text('product_create'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -768,7 +768,7 @@ class _ProductGroupState extends State<ProductGroup> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(errorMessage),
+            content: Text(errorMessage, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -807,7 +807,7 @@ class _ProductGroupState extends State<ProductGroup> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('product_update'.tr), backgroundColor: Colors.green),
+          SnackBar(content: Text('product_update'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.green),
         );
       }
 
@@ -818,7 +818,7 @@ class _ProductGroupState extends State<ProductGroup> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed to update: $e', style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
         );
       }
 
@@ -985,7 +985,7 @@ class _ProductGroupState extends State<ProductGroup> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1009,7 +1009,7 @@ class _ProductGroupState extends State<ProductGroup> {
                             ),
                             child:  Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1038,7 +1038,7 @@ class _ProductGroupState extends State<ProductGroup> {
                             ),
                             child:  Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1106,7 +1106,7 @@ class _ProductGroupState extends State<ProductGroup> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('product_delete'.tr),
+              content: Text('product_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
               backgroundColor: Colors.green,
               duration: const Duration(seconds: 2),
             ),
@@ -1117,7 +1117,7 @@ class _ProductGroupState extends State<ProductGroup> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('failed_product'.tr),
+              content: Text('failed_product'.tr, style: const TextStyle(fontFamily: 'Sora')),
               backgroundColor: Colors.red,
               duration: const Duration(seconds: 2),
             ),
@@ -1137,7 +1137,7 @@ class _ProductGroupState extends State<ProductGroup> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_product'.tr),
+            content: Text('failed_product'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),

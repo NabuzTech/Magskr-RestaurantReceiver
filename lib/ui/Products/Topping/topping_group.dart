@@ -133,7 +133,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                       children: [
                         Text('topping_group'.tr,
                             style: const TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold)),
                         GestureDetector(
@@ -152,7 +152,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   )),
                             ),
                           ),
@@ -170,7 +170,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                           currentPageItems.length} of ${toppingGroupList.length} ${"entries".tr}',
                         style: TextStyle(
                           fontSize: 12,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: Colors.grey[600],
                         ),
                       ),
@@ -190,7 +190,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                             style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 13,
-                                fontFamily: 'Mulish'),
+                                fontFamily: 'Sora'),
                           ),
                         ),
                         SizedBox(
@@ -200,7 +200,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 13,
-                                    fontFamily: 'Mulish')),
+                                    fontFamily: 'Sora')),
                           ),
                         ),
 
@@ -280,7 +280,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                                      style: const TextStyle(
                                          fontWeight: FontWeight.w700,
                                          fontSize: 14,
-                                         fontFamily: 'Mulish'),
+                                         fontFamily: 'Sora'),
                                      //overflow: TextOverflow.ellipsis,
                                    ),
                                  ),
@@ -305,7 +305,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                                          style: TextStyle(
                                            fontWeight: (item.isActive ?? false) ? FontWeight.w400:FontWeight.w600,
                                            fontSize: 12,
-                                           fontFamily: 'Mulish',
+                                           fontFamily: 'Sora',
                                            color: (item.isActive ?? false) ? Colors.white : Colors.black,
                                          ),
                                        ),
@@ -362,7 +362,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                           'previous'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage > 1 ? Colors.black87 : Colors
                                 .grey,
@@ -397,7 +397,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                                 '$pageNum',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                   color: isActive ? Colors.white : Colors
                                       .black87,
@@ -429,7 +429,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                           'next'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage < totalPages
                                 ? Colors.black87
@@ -476,7 +476,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -485,7 +485,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -527,7 +527,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                           'close'.tr,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -564,7 +564,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                           'save_topping'.tr,
                           style: const TextStyle(
                             color: Colors.white,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -709,7 +709,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('topping_group_create'.tr),
+            content: Text('topping_group_create'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -725,7 +725,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'failed_topping_group'.tr}: ${e.toString()}'),
+            content: Text('${'failed_topping_group'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -777,7 +777,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('topping_group_update'.tr), backgroundColor: Colors.green),
+          SnackBar(content: Text('topping_group_update'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.green),
         );
       }
 
@@ -788,7 +788,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed to update: $e', style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
         );
       }
 
@@ -820,7 +820,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('topping_group_delete'.tr),
+            content: Text('topping_group_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -834,7 +834,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_delete_group'.tr),
+            content: Text('failed_delete_group'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -874,7 +874,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -898,7 +898,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                             ),
                             child:  Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -927,7 +927,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                             ),
                             child:  Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -996,7 +996,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1021,7 +1021,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                             ),
                             child: Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1049,7 +1049,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
                             ),
                             child: Text(
                               'yes'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1144,7 +1144,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(newStatus ? 'group_activated'.tr : 'group_deactivated'.tr),
+            content: Text(newStatus ? 'group_activated'.tr : 'group_deactivated'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -1158,7 +1158,7 @@ class _ToppingGroupState extends State<ToppingGroup> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_status_change'.tr),
+            content: Text('failed_status_change'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),

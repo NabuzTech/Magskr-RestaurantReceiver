@@ -186,7 +186,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                           const SizedBox(width: 10),
                           const Text(
                             'Reservations',
-                            style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Mulish', fontSize: 18),
+                            style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 18),
                           ),
                         ],
                       ),
@@ -207,7 +207,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                                 style: const TextStyle(
                                   color: Colors.green,
                                   fontWeight: FontWeight.w800,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontSize: 12,
                                 ),
                               ),
@@ -230,7 +230,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                                     style: const TextStyle(
                                       color: Colors.green,
                                       fontWeight: FontWeight.w700,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                       fontSize: 11,
                                     ),
                                   ),
@@ -253,7 +253,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     fontSize: 11,
                                   ),
                                 ),
@@ -307,7 +307,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                             children: [
                               Text(
                                 'ID : ${store.storeId}',
-                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, fontFamily: 'Mulish'),
+                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, fontFamily: 'Sora'),
                               ),
                               SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.3,
@@ -316,7 +316,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     color: colors['nameColor'],
                                   ),
                                 ),
@@ -324,21 +324,21 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                               const Spacer(),
                               Text(
                                 'Total : ${store.total ?? 0}',
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Mulish'),
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Sora'),
                               ),
                               Text(
                                 'Booked : ${store.booked ?? 0}',
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Mulish'),
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Sora'),
                               ),
                               if ((store.pending ?? 0) > 0)
                                 Text(
                                   'Pending : ${store.pending}',
-                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Mulish', color: Colors.orange),
+                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Sora', color: Colors.orange),
                                 ),
                               if ((store.cancelled ?? 0) > 0)
                                 Text(
                                   'Cancelled : ${store.cancelled}',
-                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Mulish', color: Colors.red),
+                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Sora', color: Colors.red),
                                 ),
                             ],
                           ),
@@ -356,7 +356,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                         selectedStore != null
                             ? '${selectedStore!.storeName}  •  \n${_currentReservations.length} reservation'
                             : 'All stores  •  ${_currentReservations.length} reservation',
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontFamily: 'Mulish', fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontFamily: 'Sora', fontWeight: FontWeight.w600),
                       ),
                       if (selectedStore != null)
                         GestureDetector(
@@ -369,7 +369,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                             ),
                             child: const Text(
                               'Show All',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontFamily: 'Mulish', fontSize: 11),
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontFamily: 'Sora', fontSize: 11),
                             ),
                           ),
                         ),
@@ -393,7 +393,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                             const SizedBox(height: 12),
                             Text(
                               'No reservations found',
-                              style: TextStyle(color: Colors.grey.shade600, fontFamily: 'Mulish', fontSize: 15, fontWeight: FontWeight.w600),
+                              style: TextStyle(color: Colors.grey.shade600, fontFamily: 'Sora', fontSize: 15, fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),
@@ -499,13 +499,13 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                           width: MediaQuery.of(context).size.width * 0.6,
                           child: Text(
                             res.customerName ?? 'Unknown',
-                            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Mulish'),
+                            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Sora'),
                           ),
                         ),
                         if (storeName.isNotEmpty)
                           Text(
                             storeName,
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Mulish', color: Colors.black45),
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Sora', color: Colors.black45),
                           ),
                       ],
                     ),
@@ -517,7 +517,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                     const SizedBox(width: 2),
                     Text(
                       createdAt != null ? DateFormat('hh:mm a').format(createdAt) : '-',
-                      style: const TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Mulish', fontSize: 10),
+                      style: const TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Sora', fontSize: 10),
                     ),
                   ],
                 ),
@@ -531,13 +531,13 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                   width: MediaQuery.of(context).size.width * 0.5,
                   child: Text(
                     res.customerPhone ?? '-',
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontFamily: 'Mulish', fontSize: 13),
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontFamily: 'Sora', fontSize: 13),
                   ),
                 ),
                 Row(
                   children: [
-                    const Text('ID : ', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 11, fontFamily: 'Mulish')),
-                    Text('#${res.id}', style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11, fontFamily: 'Mulish')),
+                    const Text('ID : ', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 11, fontFamily: 'Sora')),
+                    Text('#${res.id}', style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11, fontFamily: 'Sora')),
                   ],
                 ),
               ],
@@ -552,7 +552,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                     const SizedBox(width: 4),
                     Text(
                       '${res.guestCount ?? 0} guests',
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Mulish', fontSize: 12),
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Sora', fontSize: 12),
                     ),
                   ],
                 ),
@@ -560,7 +560,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                   children: [
                     Text(
                       (res.status ?? '').toUpperCase(),
-                      style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Mulish', fontSize: 13, color: statusColor),
+                      style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 13, color: statusColor),
                     ),
                     const SizedBox(width: 6),
                     CircleAvatar(
@@ -579,7 +579,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                 const SizedBox(width: 4),
                 Text(
                   'For: ${reservedFor != null ? DateFormat('dd MMM yyyy, hh:mm a').format(reservedFor) : '-'}',
-                  style: const TextStyle(fontSize: 11, fontFamily: 'Mulish', fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontSize: 11, fontFamily: 'Sora', fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -598,7 +598,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         fontSize: 13,
                       ),
                     ),
@@ -615,7 +615,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
                   Expanded(
                     child: Text(
                       res.note!,
-                      style: const TextStyle(fontSize: 11, fontFamily: 'Mulish', color: Colors.black54, fontStyle: FontStyle.italic),
+                      style: const TextStyle(fontSize: 11, fontFamily: 'Sora', color: Colors.black54, fontStyle: FontStyle.italic),
                     ),
                   ),
                 ],
@@ -689,7 +689,7 @@ class _SingleDatePickerDialogState extends State<_SingleDatePickerDialog> {
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
             const SizedBox(height: 8),
@@ -712,7 +712,7 @@ class _SingleDatePickerDialogState extends State<_SingleDatePickerDialog> {
                 titleTextStyle: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 15,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                 ),
               ),
               calendarStyle: CalendarStyle(
@@ -720,7 +720,7 @@ class _SingleDatePickerDialogState extends State<_SingleDatePickerDialog> {
                   color: Colors.green,
                   shape: BoxShape.circle,
                 ),
-                selectedTextStyle: const TextStyle(
+                selectedTextStyle: const TextStyle(fontFamily: 'Sora', 
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
                 ),
@@ -728,7 +728,7 @@ class _SingleDatePickerDialogState extends State<_SingleDatePickerDialog> {
                   color: Colors.green.shade200,
                   shape: BoxShape.circle,
                 ),
-                todayTextStyle: const TextStyle(
+                todayTextStyle: const TextStyle(fontFamily: 'Sora', 
                   color: Colors.black87,
                   fontWeight: FontWeight.w600,
                 ),

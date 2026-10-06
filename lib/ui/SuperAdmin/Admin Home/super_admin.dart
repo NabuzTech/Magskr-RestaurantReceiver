@@ -251,7 +251,7 @@ class _SuperAdminState extends State<SuperAdmin> {
       if (Get.context != null) {
         ScaffoldMessenger.of(Get.context!).showSnackBar(
           const SnackBar(
-            content: Text('Failed to load more orders. Please try again.'),
+            content: Text('Failed to load more orders. Please try again.', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 2),
           ),
@@ -459,14 +459,14 @@ class _SuperAdminState extends State<SuperAdmin> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
               ),
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.store_outlined, color: Colors.green),
-                title: const Text('Store Config', style: TextStyle(fontFamily: 'Mulish')),
+                title: const Text('Store Config', style: TextStyle(fontFamily: 'Sora')),
                 onTap: () {
                   Get.back();
                   Get.to(() => const StoreConfig());
@@ -474,7 +474,7 @@ class _SuperAdminState extends State<SuperAdmin> {
               ),
               ListTile(
                 leading: const Icon(Icons.info_outline, color: Colors.green),
-                title: const Text('Store Status', style: TextStyle(fontFamily: 'Mulish')),
+                title: const Text('Store Status', style: TextStyle(fontFamily: 'Sora')),
                 onTap: () {
                   Get.back();
                   Get.to(() => const StoreStatus());
@@ -528,7 +528,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                               hintStyle: const TextStyle(
                                   color: Color(0xffAEAEAE),
                                   fontSize: 12,
-                                  fontFamily: 'Mulish-Italic-VariableFont_wght',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w300),
                               prefixIcon: Image.asset('assets/images/search.png'),
                               suffixIcon: searchController.text.isNotEmpty
@@ -595,7 +595,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                   children: [
                                     Icon(Icons.print_outlined,color: Colors.green,size: 20,),
                                     SizedBox(width: 5,),
-                                    Text('Status',),
+                                    Text('Status', style: const TextStyle(fontFamily: 'Sora'),),
                                   ],
                                 ),
                               ),
@@ -615,7 +615,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                   children: [
                                    Image.asset('assets/images/reservationIcon.png',height: 15,width: 15,),
                                     SizedBox(width: 5,),
-                                    Text('Reservation',),
+                                    Text('Reservation', style: const TextStyle(fontFamily: 'Sora'),),
                                   ],
                                 ),
                               ),
@@ -635,7 +635,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                   children: [
                                    Image.asset('assets/images/reservationIcon.png',height: 15,width: 15,),
                                     SizedBox(width: 5,),
-                                    Text('Reservation V2',),
+                                    Text('Reservation V2', style: const TextStyle(fontFamily: 'Sora'),),
                                   ],
                                 ),
                               ),
@@ -669,7 +669,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                               color: Colors.white,
                                               fontSize: 11,
                                               fontWeight: FontWeight.w700,
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                             ),
                                           ),
                                         ],
@@ -690,7 +690,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ),
@@ -707,7 +707,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade600,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -760,7 +760,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                       style: const TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w800,
-                                          fontFamily: 'Mulish'
+                                          fontFamily: 'Sora'
                                       ),
                                     ),
                                     SizedBox(
@@ -770,7 +770,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                         style: TextStyle(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w700,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                             color: getStoreColors(store.storeId)['nameColor']!  // Changed from store.id
                                         ),
                                       ),
@@ -783,7 +783,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 Text(
@@ -791,7 +791,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                               ],
@@ -812,7 +812,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                       ],
@@ -840,7 +840,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     ? '${DateFormat('dd MMM').format(_startDate)} – ${DateFormat('dd MMM yy').format(_endDate)}'
                                     : 'History',
                                 style: TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w800,
                                   fontSize: 16,
                                   color: _isHistoryMode ? Colors.orange.shade700 : const Color(0xff1F1E1E),
@@ -866,7 +866,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontSize: 12,
                               ),
                             ),
@@ -890,13 +890,13 @@ class _SuperAdminState extends State<SuperAdmin> {
                           children: [
                             Text(
                               '${'total_order'.tr} : ',
-                              style: const TextStyle(fontSize: 12, fontFamily: 'Mulish',
+                              style: const TextStyle(fontSize: 12, fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600, color: Colors.black54),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               _isLoadingTotals ? '...' : '$_totalOrdersCount',
-                              style: const TextStyle(fontSize: 16, fontFamily: 'Mulish', fontWeight: FontWeight.w800, color: Color(0xff029543)),
+                              style: const TextStyle(fontSize: 16, fontFamily: 'Sora', fontWeight: FontWeight.w800, color: Color(0xff029543)),
                             ),
                           ],
                         ),
@@ -913,14 +913,14 @@ class _SuperAdminState extends State<SuperAdmin> {
                           children: [
                             Text(
                               '${'total_sales'.tr} : ',
-                              style: const TextStyle(fontSize: 11, fontFamily: 'Mulish', fontWeight: FontWeight.w600, color: Colors.black54),
+                              style: const TextStyle(fontSize: 11, fontFamily: 'Sora', fontWeight: FontWeight.w600, color: Colors.black54),
                             ),
                             const SizedBox(height: 2),
                             SizedBox(
                               child: Text(
                                 _isLoadingTotals ? '...' : '${'currency'.tr} ${formatAmount(_totalSalesAmount)}',
                                 maxLines: 2,
-                                style: const TextStyle(fontSize: 16, fontFamily: 'Mulish',
+                                style: const TextStyle(fontSize: 16, fontFamily: 'Sora',
                                     fontWeight: FontWeight.w800, color: Color(0xffE64425)),
                               ),
                             ),
@@ -986,7 +986,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey.shade600,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -1082,7 +1082,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 13,
-                                              fontFamily: "Mulish-Regular"),
+                                              fontFamily: 'Sora'),
                                         ),
                                       ),
                                     ],
@@ -1101,7 +1101,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
-                                      fontFamily: "Mulish",
+                                      fontFamily: 'Sora',
                                       fontSize: 13,
                                     ),
                                   ),
@@ -1118,7 +1118,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
-                                      fontFamily: "Mulish",
+                                      fontFamily: 'Sora',
                                       fontSize: 13,
                                     ),
                                   ),
@@ -1130,7 +1130,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     time,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w500,
-                                      fontFamily: "Mulish",
+                                      fontFamily: 'Sora',
                                       fontSize: 10,
                                     ),
                                   )
@@ -1148,7 +1148,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                   '${order.shippingAddress?.customerName ?? guestName ?? ""} / ${order.shippingAddress?.phone ?? guestPhone}',
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w700,
-                                      fontFamily: "Mulish",
+                                      fontFamily: 'Sora',
                                       fontSize: 13),
                                 ),
                               ),
@@ -1159,14 +1159,14 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 11,
-                                        fontFamily: "Mulish"),
+                                        fontFamily: 'Sora'),
                                   ),
                                   Text(
                                     '${order.orderNumber ?? order.id ?? 'N/A'}',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 11,
-                                        fontFamily: "Mulish"),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ],
                               ),
@@ -1184,7 +1184,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     style: const TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w500,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                       color: Colors.grey,
                                     ),
                                   ),
@@ -1201,7 +1201,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     : '${'currency'.tr} ${formatAmount(0)}',
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w800,
-                                    fontFamily: "Mulish",
+                                    fontFamily: 'Sora',
                                     fontSize: 16),
                               ),
                               if (_isVorbestellen(order.deliveryTime))
@@ -1219,7 +1219,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w700,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                           fontSize: 13,
                                         ),
                                       ),
@@ -1232,7 +1232,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                                     getApprovalStatusText(order.approvalStatus),
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w800,
-                                        fontFamily: "Mulish-Regular",
+                                        fontFamily: 'Sora',
                                         fontSize: 13),
                                   ),
                                   const SizedBox(width: 6),
@@ -1470,7 +1470,7 @@ class _SuperAdminState extends State<SuperAdmin> {
       if (context != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Logged out successfully'),
+            content: Text('Logged out successfully', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
@@ -1491,7 +1491,7 @@ class _SuperAdminState extends State<SuperAdmin> {
       if (context != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to logout. Please try again.'),
+            content: Text('Failed to logout. Please try again.', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
@@ -1530,7 +1530,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                       color: Colors.black,
-                      fontFamily: 'Mulish'),
+                      fontFamily: 'Sora'),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 30),
@@ -1554,7 +1554,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                         ),
                         child: Text(
                           'cancel'.tr,
-                          style: const TextStyle(
+                          style: const TextStyle(fontFamily: 'Sora', 
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                           ),
@@ -1582,7 +1582,7 @@ class _SuperAdminState extends State<SuperAdmin> {
                         ),
                         child: Text(
                           'logout'.tr,
-                          style: const TextStyle(
+                          style: const TextStyle(fontFamily: 'Sora', 
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                           ),
@@ -1667,7 +1667,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
             const SizedBox(height: 6),
@@ -1679,7 +1679,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                 style: TextStyle(
                   color: Colors.green.shade700,
                   fontWeight: FontWeight.w600,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 13,
                 ),
               ),
@@ -1709,7 +1709,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                 titleTextStyle: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 15,
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                 ),
               ),
               calendarStyle: CalendarStyle(
@@ -1721,11 +1721,11 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                   color: Colors.green,
                   shape: BoxShape.circle,
                 ),
-                rangeStartTextStyle: const TextStyle(
+                rangeStartTextStyle: const TextStyle(fontFamily: 'Sora', 
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
                 ),
-                rangeEndTextStyle: const TextStyle(
+                rangeEndTextStyle: const TextStyle(fontFamily: 'Sora', 
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
                 ),
@@ -1738,7 +1738,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                   color: Colors.green.shade200,
                   shape: BoxShape.circle,
                 ),
-                todayTextStyle: const TextStyle(
+                todayTextStyle: const TextStyle(fontFamily: 'Sora', 
                   color: Colors.black87,
                   fontWeight: FontWeight.w600,
                 ),
@@ -1767,7 +1767,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontSize: 15,
                     ),
                   ),

@@ -70,18 +70,18 @@ class LoginScreen extends StatelessWidget {
           isDense: true,
           selectedItemBuilder: (BuildContext context) {
             return [
-              const Text('Prod', style: TextStyle(fontSize: 16, color: Colors.black)),
-              const Text('Test', style: TextStyle(fontSize: 16, color: Colors.black)),
+              const Text('Prod', style: TextStyle(fontFamily: 'Sora', fontSize: 16, color: Colors.black)),
+              const Text('Test', style: TextStyle(fontFamily: 'Sora', fontSize: 16, color: Colors.black)),
             ];
           },
           items: const [
             DropdownMenuItem(
               value: 'Prod',
-              child: Text('Prod', style: TextStyle(fontSize: 16)),
+              child: Text('Prod', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
             ),
             DropdownMenuItem(
               value: 'Test',
-              child: Text('Test', style: TextStyle(fontSize: 16)),
+              child: Text('Test', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
             ),
           ],
           onChanged: (value) {
@@ -103,33 +103,33 @@ class LoginScreen extends StatelessWidget {
           isDense: true,
           selectedItemBuilder: (BuildContext context) {
             return const [
-              Text('English (GBP)', style: TextStyle(fontSize: 16)),
-              Text('English (EURO)', style: TextStyle(fontSize: 16)),
-              Text('English (CHF)', style: TextStyle(fontSize: 16)),
-              Text('German (CHF)', style: TextStyle(fontSize: 16)),
-              Text('German (EURO)', style: TextStyle(fontSize: 16)),
+              Text('English (GBP)', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
+              Text('English (EURO)', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
+              Text('English (CHF)', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
+              Text('German (CHF)', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
+              Text('German (EURO)', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
             ];
           },
           items: const [
             DropdownMenuItem(
               value: 'en',
-              child: Text('English (GBP)', style: TextStyle(fontSize: 16)),
+              child: Text('English (GBP)', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
             ),
             DropdownMenuItem(
               value: 'ee',
-              child: Text('English (EURO)', style: TextStyle(fontSize: 16)),
+              child: Text('English (EURO)', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
             ),
             DropdownMenuItem(
               value: 'ec',
-              child: Text('English (CHF)', style: TextStyle(fontSize: 16)),
+              child: Text('English (CHF)', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
             ),
             DropdownMenuItem(
               value: 'ch',
-              child: Text('German (CHF)', style: TextStyle(fontSize: 16)),
+              child: Text('German (CHF)', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
             ),
             DropdownMenuItem(
               value: 'de',
-              child: Text('German (EURO)', style: TextStyle(fontSize: 16)),
+              child: Text('German (EURO)', style: TextStyle(fontFamily: 'Sora', fontSize: 16)),
             ),
           ],
           onChanged: (value) {
@@ -143,7 +143,7 @@ class LoginScreen extends StatelessWidget {
   Widget _buildLoginTitle() {
     return const Text(
       "Login!",
-      style: TextStyle(
+      style: TextStyle(fontFamily: 'Sora', 
         fontSize: 30,
         color: Colors.black,
         fontWeight: FontWeight.w700,
@@ -194,7 +194,7 @@ class LoginScreen extends StatelessWidget {
       onTap: () => controller.showPasswordResetDialog(),
       child: const Text(
         "Forgot Password",
-        style: TextStyle(
+        style: TextStyle(fontFamily: 'Sora', 
           fontSize: 17,
           color: Colors.black,
           fontWeight: FontWeight.w600,

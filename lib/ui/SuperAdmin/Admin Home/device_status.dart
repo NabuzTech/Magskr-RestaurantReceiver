@@ -116,7 +116,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                     style: const TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 18,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                   const Spacer(),
@@ -164,7 +164,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
               labelStyle: const TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
               tabs: const [
                 Tab(text: 'Windows'),
@@ -280,7 +280,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
               style: const TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: 18,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
 
@@ -306,7 +306,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey.shade600,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -355,7 +355,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
               Text(
                 count,
                 style: const TextStyle(
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 24,
                   fontWeight: FontWeight.w800,
                 ),
@@ -363,7 +363,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
               Text(
                 label,
                 style: const TextStyle(
-                  fontFamily: 'Mulish',
+                  fontFamily: 'Sora',
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
                 ),
@@ -415,7 +415,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -424,7 +424,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey.shade600,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
                 if (sinceFormatted != null) ...[
@@ -434,7 +434,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                     style: TextStyle(
                       fontSize: 11,
                       color: Colors.grey.shade500,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                 ],
@@ -453,7 +453,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                 color: isOnline ? const Color(0xff029543) : Colors.grey.shade600,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
           ),
@@ -541,7 +541,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 18,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -562,7 +562,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey.shade600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ],
@@ -613,12 +613,12 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
           children: [
             Text(count,
                 style: const TextStyle(
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 28,
                     fontWeight: FontWeight.w800)),
             Text(label,
                 style: const TextStyle(
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 12,
                     fontWeight: FontWeight.w800)),
           ],
@@ -649,11 +649,11 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
               Icon(Icons.notifications_none, size: 72, color: Colors.grey.shade300),
               const SizedBox(height: 16),
               Text('No notifications',
-                  style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+                  style: TextStyle(fontFamily: 'Sora', color: Colors.grey.shade500, fontSize: 16)),
               const SizedBox(height: 6),
               Text(
                 'Windows App status updates appear here',
-                style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                style: TextStyle(fontFamily: 'Sora', color: Colors.grey.shade400, fontSize: 12),
               ),
             ],
           ),
@@ -666,7 +666,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: controller.clearAll,
-              child: const Text('Clear All', style: TextStyle(color: Colors.red)),
+              child: const Text('Clear All', style: TextStyle(fontFamily: 'Sora', color: Colors.red)),
             ),
           ),
           Expanded(
@@ -707,18 +707,18 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                           style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 14,
-                              fontFamily: 'Mulish')),
+                              fontFamily: 'Sora')),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 3),
                           Text(body,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                   fontSize: 13, color: Colors.black87)),
                           const SizedBox(height: 5),
                           Text(
                             _formatTime(receivedAt),
-                            style: TextStyle(
+                            style: TextStyle(fontFamily: 'Sora', 
                                 fontSize: 11, color: Colors.grey.shade500),
                           ),
                         ],
@@ -769,7 +769,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
 
     if (historyItems.isEmpty) {
       return const Center(
-        child: Text('No History Found'),
+        child: Text('No History Found', style: const TextStyle(fontFamily: 'Sora')),
       );
     }
 
@@ -818,7 +818,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
 
@@ -826,7 +826,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
 
                     Text(
                       item['status'] ?? '',
-                      style: TextStyle(
+                      style: TextStyle(fontFamily: 'Sora', 
                         color: isOnline ? Colors.green : Colors.red,
                         fontWeight: FontWeight.w600,
                       ),
@@ -836,7 +836,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
 
                     Text(
                       _formatHistoryDate(item['occurredAt']),
-                      style: TextStyle(
+                      style: TextStyle(fontFamily: 'Sora', 
                         color: Colors.grey.shade600,
                         fontSize: 12,
                       ),
@@ -897,7 +897,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                   style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.black87)),
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
@@ -905,7 +905,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
                     style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                         color: Colors.black87)),
               ),
             ],
@@ -945,13 +945,13 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
             style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 color: Colors.black87)),
         Text(value,
             style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
                 color: Colors.black87)),
       ],
     );
@@ -1012,7 +1012,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
             style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                fontFamily: 'Mulish')),
+                fontFamily: 'Sora')),
       ],
     );
   }
@@ -1062,7 +1062,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text('failed_dev'.tr), backgroundColor: Colors.red),
+                content: Text('failed_dev'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
           );
         }
       });
@@ -1112,7 +1112,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text('failed_dev'.tr), backgroundColor: Colors.red),
+                content: Text('failed_dev'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
           );
         }
       });

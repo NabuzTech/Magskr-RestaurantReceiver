@@ -16,6 +16,7 @@ import '../../models/print_order_without_ip.dart';
 import '../../utils/log_util.dart';
 import '../../utils/printer_helper_english.dart';
 import '../../utils/contact_launcher.dart';
+import '../../customView/payment_icon.dart';
 
 import 'package:food_receiver/constants/app_theme.dart';
 class OrderDetailEnglish extends StatefulWidget {
@@ -37,6 +38,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
   bool isPrint = false;
   bool isAutoAccept = false;
   bool isLoading = false;
+  String? _loadingAction; // label of the button showing the spinner
   Timer? _orderTimer;
   final _dbHelper = DatabaseHelper();
 
@@ -135,11 +137,23 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
         return;
       }
 
+      // ApiRepo returns Order.withError (id == null) instead of throwing.
+      if (result.id == null) {
+        if (mounted) {
+          Get.snackbar('error'.tr, result.mess ?? 'error'.tr,
+              backgroundColor: Colors.red,
+              colorText: Colors.white,
+              snackPosition: SnackPosition.BOTTOM);
+        }
+        return;
+      }
+
       // ✅ CRITICAL FIX: Always fetch fresh order data after accept/decline
       if (isAccept) {
         try {
           print("🔄 Fetching fresh order data after accept...");
           final refreshedOrder = await ApiRepo().getNewOrderData(bearerKey, updatedOrder.id!);
+          if (refreshedOrder.id == null) throw Exception(refreshedOrder.mess); // use PUT result below
 
           print("📊 Fresh Order Data:");
           print("   - Discount: ${refreshedOrder.invoice?.discount_amount}");
@@ -236,6 +250,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
       if (mounted) {
         setState(() {
           isLoading = false;
+          _loadingAction = null;
         });
       }
     }
@@ -417,7 +432,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
           centerTitle: true,
           title: Text(
             'order_details'.tr,
-            style: const TextStyle(
+            style: const TextStyle(fontFamily: 'Sora', 
                 color: AppTheme.accentDark, fontWeight: FontWeight.w700, fontSize: 18),
           ),
           actions: [
@@ -478,7 +493,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                   const SizedBox(height: 16),
                   Text(
                     '#${updatedOrder.orderNumber ?? ''}',
-                    style: const TextStyle(
+                    style: const TextStyle(fontFamily: 'Sora', 
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
                         fontSize: 32,
@@ -489,7 +504,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     localOrder
                         ? 'POS Order'
                         : '${'invoice_number'.tr}: ${updatedOrder.invoice?.invoiceNumber ?? '-'}',
-                    style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13),
+                    style: TextStyle(fontFamily: 'Sora', color: Colors.white.withOpacity(0.8), fontSize: 13),
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -531,7 +546,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                               Icon(Icons.event_rounded, size: 14, color: Colors.white),
                               SizedBox(width: 6),
                               Text('Vorbestellen',
-                                  style: TextStyle(
+                                  style: TextStyle(fontFamily: 'Sora', 
                                       color: Colors.white,
                                       fontWeight: FontWeight.w700,
                                       fontSize: 12)),
@@ -551,12 +566,12 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('grand_total'.tr,
-                                style: TextStyle(
+                                style: TextStyle(fontFamily: 'Sora', 
                                     color: Colors.white.withOpacity(0.8), fontSize: 12)),
                             const SizedBox(height: 2),
                             Text(
                               "${'currency'.tr} ${formatAmount(grandTotal)}",
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                   color: Colors.white,
                                   fontWeight: FontWeight.w800,
                                   fontSize: 24),
@@ -565,11 +580,24 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                         ),
                       ),
                       if (paymentMethod.isNotEmpty)
-                        _heroPill(
-                          paymentMethod.toLowerCase().tr,
-                          paymentMethod.toLowerCase() == 'cash'
-                              ? Icons.payments_rounded
-                              : Icons.credit_card_rounded,
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              paymentIcon(paymentMethod, size: 16),
+                              const SizedBox(width: 6),
+                              Text(paymentMethod.toLowerCase().tr,
+                                  style: const TextStyle(fontFamily: 'Sora', 
+                                      color: AppTheme.accentDark,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12)),
+                            ],
+                          ),
                         ),
                     ],
                   ),
@@ -591,7 +619,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                           customerName.trim().isEmpty
                               ? '?'
                               : customerName.trim()[0].toUpperCase(),
-                          style: const TextStyle(
+                          style: const TextStyle(fontFamily: 'Sora', 
                               color: AppTheme.accent,
                               fontWeight: FontWeight.w800,
                               fontSize: 18),
@@ -603,11 +631,11 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('customer'.tr,
-                                style: const TextStyle(fontSize: 12, color: Colors.black45)),
+                                style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black45)),
                             const SizedBox(height: 2),
                             Text(
                               customerName.isEmpty ? '-' : customerName,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16,
                                   color: AppTheme.accentDark),
@@ -622,11 +650,11 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.location_on_rounded, size: 18, color: AppTheme.accent),
+                        _navigationIcon(18),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(displayAddress,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                   fontSize: 13, height: 1.35, color: Colors.black87)),
                         ),
                       ],
@@ -643,8 +671,9 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                       if (updatedOrder.orderType == 1 && displayAddress.isNotEmpty) ...[
                         const SizedBox(width: 8),
                         Expanded(
-                          child: _contactButton(Icons.map_rounded, 'address'.tr,
-                              () => launchMapAddress(displayAddress)),
+                          child: _contactButton(null, 'address'.tr,
+                              () => launchMapAddress(displayAddress),
+                              leading: _navigationIcon(20)),
                         ),
                       ],
                       if (displayEmail.isNotEmpty) ...[
@@ -680,13 +709,13 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('note'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                   fontWeight: FontWeight.w700,
                                   fontSize: 13,
                                   color: Color(0xFF8A5A00))),
                           const SizedBox(height: 4),
                           Text(Note,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                   fontSize: 13, height: 1.35, color: Color(0xFF5C3D00))),
                         ],
                       ),
@@ -736,9 +765,10 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     _amountRow('subtotal'.tr, formatAmount(subtotal)),
                     if (discountData != 0.0)
                       _amountRow('discount'.tr, '-${formatAmount(discountData)}',
-                          valueColor: const Color(0xFF16A34A)),
+                          valueColor: const Color(0xFFDC2626)),
                     if (delFee != "0.0")
-                      _amountRow('delivery_fee'.tr, formatAmount(deliveryFee)),
+                      _amountRow('delivery_fee'.tr, formatAmount(deliveryFee),
+                          valueColor: const Color(0xFFEA580C)),
                     if (hasCoupon) _amountRow('Coupon', couponCode),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
@@ -746,7 +776,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     ),
                     _amountRow('grand_total'.tr,
                         "${'currency'.tr} ${formatAmount(grandTotal)}",
-                        bold: true),
+                        bold: true, valueColor: const Color(0xFF16A34A)),
                   ],
                 ),
               ),
@@ -759,7 +789,8 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                   _cardTitle(Icons.account_balance_wallet_rounded, 'payment'.tr),
                   const SizedBox(height: 10),
                   _amountRow('invoice_number'.tr, updatedOrder.invoice?.invoiceNumber ?? '-'),
-                  _amountRow('payment_method'.tr, paymentMethod.isEmpty ? '-' : paymentMethod.toLowerCase().tr),
+                  _amountRow('payment_method'.tr, paymentMethod.isEmpty ? '-' : paymentMethod.toLowerCase().tr,
+                      valueLeading: paymentMethod.isEmpty ? null : paymentIcon(paymentMethod, size: 18)),
                   _amountRow('paid'.tr, formatDateTime(updatedOrder.createdAt ?? '')),
                   if (updatedOrder.brutto_netto_summary?.isNotEmpty ?? false) ...[
                     const SizedBox(height: 12),
@@ -832,7 +863,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
 
   // ─── Order detail layout helpers ───
   static const TextStyle _tableHead =
-      TextStyle(fontWeight: FontWeight.w600, fontSize: 11, color: Colors.black54);
+      TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w600, fontSize: 11, color: Colors.black54);
 
   Widget _roundIconButton(IconData icon, VoidCallback? onTap) {
     return Material(
@@ -867,7 +898,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
           Icon(icon, size: 14, color: Colors.white),
           const SizedBox(width: 6),
           Text(text,
-              style: const TextStyle(
+              style: const TextStyle(fontFamily: 'Sora', 
                   color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12)),
         ],
       ),
@@ -892,7 +923,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 5),
           Text(label,
-              style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 12)),
+              style: TextStyle(fontFamily: 'Sora', color: color, fontWeight: FontWeight.w800, fontSize: 12)),
         ],
       ),
     );
@@ -920,17 +951,17 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                   child: Text(label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 11)),
+                      style: TextStyle(fontFamily: 'Sora', color: Colors.white.withOpacity(0.85), fontSize: 11)),
                 ),
               ],
             ),
             const SizedBox(height: 6),
             Text(dt == null ? '-' : DateFormat('HH:mm').format(dt),
-                style: const TextStyle(
+                style: const TextStyle(fontFamily: 'Sora', 
                     color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20, height: 1)),
             const SizedBox(height: 3),
             Text(dt == null ? '' : DateFormat('dd.MM.yyyy').format(dt),
-                style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 11)),
+                style: TextStyle(fontFamily: 'Sora', color: Colors.white.withOpacity(0.75), fontSize: 11)),
           ],
         ),
       ),
@@ -963,7 +994,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
         Icon(icon, size: 18, color: AppTheme.accent),
         const SizedBox(width: 8),
         Text(title,
-            style: const TextStyle(
+            style: const TextStyle(fontFamily: 'Sora', 
                 fontWeight: FontWeight.w700, fontSize: 15, color: AppTheme.accentDark)),
         if (trailing != null) ...[
           const SizedBox(width: 8),
@@ -974,7 +1005,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(trailing,
-                style: const TextStyle(
+                style: const TextStyle(fontFamily: 'Sora', 
                     color: AppTheme.accent, fontWeight: FontWeight.w800, fontSize: 12)),
           ),
         ],
@@ -982,7 +1013,20 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
     );
   }
 
-  Widget _contactButton(IconData icon, String label, VoidCallback onTap) {
+  // Navigation arrow in a circle, used for the delivery address.
+  Widget _navigationIcon(double size) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: AppTheme.accent, width: 1.5),
+      ),
+      child: Icon(Icons.near_me_outlined, size: size * 0.6, color: AppTheme.accent),
+    );
+  }
+
+  Widget _contactButton(IconData? icon, String label, VoidCallback onTap, {Widget? leading}) {
     return Material(
       color: const Color(0xFFF4F2FE),
       borderRadius: BorderRadius.circular(14),
@@ -993,12 +1037,12 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
             children: [
-              Icon(icon, size: 20, color: AppTheme.accent),
+              leading ?? Icon(icon, size: 20, color: AppTheme.accent),
               const SizedBox(height: 4),
               Text(label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                       fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.accentDark)),
             ],
           ),
@@ -1007,25 +1051,34 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
     );
   }
 
-  Widget _amountRow(String label, String value, {bool bold = false, Color? valueColor}) {
+  Widget _amountRow(String label, String value,
+      {bool bold = false, Color? valueColor, Widget? valueLeading}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label,
-              style: TextStyle(
+              style: TextStyle(fontFamily: 'Sora', 
                   fontWeight: bold ? FontWeight.w800 : FontWeight.w500,
-                  fontSize: bold ? 15 : 13,
-                  color: bold ? AppTheme.accentDark : Colors.black54)),
+                  fontSize: bold ? 18 : 13,
+                  color: valueColor ?? (bold ? AppTheme.accentDark : Colors.black54))),
           const SizedBox(width: 12),
           Flexible(
-            child: Text(value,
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                    fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
-                    fontSize: bold ? 18 : 13,
-                    color: valueColor ?? (bold ? AppTheme.accent : Colors.black87))),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (valueLeading != null) ...[valueLeading, const SizedBox(width: 6)],
+                Flexible(
+                  child: Text(value,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(fontFamily: 'Sora', 
+                          fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
+                          fontSize: bold ? 22 : 13,
+                          color: valueColor ?? (bold ? AppTheme.accent : Colors.black87))),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -1049,7 +1102,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
           Flexible(
             child: Text(text,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: color)),
+                style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w800, fontSize: 14, color: color)),
           ),
         ],
       ),
@@ -1072,6 +1125,36 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
     );
   }
 
+  // Accepted banner + cancel order button.
+  Widget _acceptedRow() {
+    return Row(
+      children: [
+        Expanded(
+          child: _statusBanner("accepted".tr, const Color(0xFF16A34A),
+              Icons.check_circle_rounded),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: SizedBox(
+            height: 50,
+            child: OutlinedButton.icon(
+              onPressed: _showCancelConfirmation,
+              icon: const Icon(Icons.block_rounded, size: 18),
+              label: Text('cancel_order'.tr,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700)),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFFDC2626),
+                side: const BorderSide(color: Color(0xFFFCA5A5)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildActionButtons(BuildContext context, int approvalStatus) {
     if (orderType == 0) {
       if (approvalStatus == 1) {
@@ -1091,7 +1174,8 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
 
         // Hide Accept/Decline buttons for all online payments (show only for cash)
         String paymentMethod = updatedOrder.payment?.paymentMethod?.toLowerCase() ?? '';
-        bool isCashPayment = paymentMethod == 'cash';
+        // Cash and EC card orders are accepted/declined manually.
+        bool isCashPayment = paymentMethod == 'cash' || paymentMethod.startsWith('ec');
         bool localOrder = updatedOrder.isLocalOrder==true;
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -1104,7 +1188,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                 Expanded(
                   child: Text(
                     (updatedOrder.orderType == 2 ? 'collection' : 'delivery_time').tr,
-                    style: const TextStyle(
+                    style: const TextStyle(fontFamily: 'Sora', 
                         fontWeight: FontWeight.w600, fontSize: 14, color: AppTheme.accentDark),
                   ),
                 ),
@@ -1124,7 +1208,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Text(
                     DateFormat('HH:mm').format(currentDeliveryTime),
-                    style: const TextStyle(
+                    style: const TextStyle(fontFamily: 'Sora', 
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: AppTheme.accentDark,
@@ -1166,32 +1250,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
         setState(() {
           isPrint = true;
         });
-        return Row(
-          children: [
-            Expanded(
-              child: _statusBanner("accepted".tr, const Color(0xFF16A34A),
-                  Icons.check_circle_rounded),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: SizedBox(
-                height: 50,
-                child: OutlinedButton.icon(
-                  onPressed: _showCancelConfirmation,
-                  icon: const Icon(Icons.block_rounded, size: 18),
-                  label: Text('cancel_order'.tr,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w700)),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFDC2626),
-                    side: const BorderSide(color: Color(0xFFFCA5A5)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
+        return _acceptedRow();
       }
 
       else if (approvalStatus == 3) {
@@ -1213,7 +1272,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                 ),
                 child: Text(
                   '${'cancel_reason'.tr}: ${updatedOrder.cancelReason}',
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                       fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFFB91C1C)),
                 ),
               ),
@@ -1227,8 +1286,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
         setState(() {
           isPrint = true;
         });
-        return _statusBanner("accepted".tr, const Color(0xFF16A34A),
-            Icons.check_circle_rounded);
+        return _acceptedRow();
       }
       else if (orderType == 2) {  // Manual Decline
         setState(() {
@@ -1270,7 +1328,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
             ),
             child: Text(
               '${item.quantity ?? 0}×',
-              style: const TextStyle(
+              style: const TextStyle(fontFamily: 'Sora', 
                   fontWeight: FontWeight.w800, fontSize: 13, color: AppTheme.accent),
             ),
           ),
@@ -1285,7 +1343,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     Expanded(
                       child: Text(
                         title,
-                        style: const TextStyle(
+                        style: const TextStyle(fontFamily: 'Sora', 
                             fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.accentDark),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
@@ -1294,7 +1352,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     const SizedBox(width: 8),
                     Text(
                       '${'currency'.tr} ${formatAmount(double.parse(price))}',
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                           fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.accentDark),
                     ),
                   ],
@@ -1304,7 +1362,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
                       '${'currency'.tr} ${formatAmount(item.unitPrice ?? 0)} / Stk.',
-                      style: const TextStyle(fontSize: 12, color: Colors.black45),
+                      style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black45),
                     ),
                   ),
 
@@ -1314,7 +1372,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
                       "${item.variant!.name ?? ''} · ${formatAmount(item.variant!.price ?? 0)} ${'currency'.tr}",
-                      style: const TextStyle(fontSize: 12, color: Colors.black54),
+                      style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black54),
                     ),
                   ),
 
@@ -1333,12 +1391,12 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                               Expanded(
                                 child: Text(
                                   "+ ${topping.quantity}× ${topping.name}",
-                                  style: const TextStyle(fontSize: 12, color: Colors.black54),
+                                  style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black54),
                                 ),
                               ),
                               Text(
                                 formatAmount(totalPrice),
-                                style: const TextStyle(fontSize: 12, color: Colors.black45),
+                                style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black45),
                               ),
                             ],
                           ),
@@ -1367,7 +1425,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                         Expanded(
                           child: Text(
                             item.note!,
-                            style: const TextStyle(fontSize: 12, color: Color(0xFF5C3D00)),
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Color(0xFF5C3D00)),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -1384,7 +1442,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
   }
 
   Widget brutoItems(String percentage, String brutto, String netto, String? taxAmount) {
-    const style = TextStyle(fontWeight: FontWeight.w500, fontSize: 13, color: Colors.black87);
+    const style = TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w500, fontSize: 13, color: Colors.black87);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       child: Row(
@@ -1408,6 +1466,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
     return GestureDetector(
       onTap: isLoading ? null : () async {
         if (bearerKey == null) return;
+        setState(() => _loadingAction = label);
 
         if (label == 'accept'.tr) {
           if (mounted) {
@@ -1454,7 +1513,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
               : null,
         ),
         child: Center(
-          child: isLoading
+          child: _loadingAction == label
               ? SizedBox(
                   width: 22,
                   height: 22,
@@ -1474,7 +1533,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                       child: Text(
                         label,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: TextStyle(fontFamily: 'Sora', 
                           color: color == AppTheme.accent ? Colors.white : const Color(0xFFDC2626),
                           fontWeight: FontWeight.w800,
                           fontSize: 15,
@@ -1522,7 +1581,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
   void showSnackbar(String title, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$title: $message'),
+        content: Text('$title: $message', style: const TextStyle(fontFamily: 'Sora')),
       ),
     );
   }
@@ -1570,7 +1629,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
       Get.back();
       ScaffoldMessenger.of(context).showSnackBar(
          SnackBar(
-          content: Text('print'.tr),
+          content: Text('print'.tr, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: AppTheme.accent,
           duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
@@ -1590,7 +1649,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
       // Handle error case
       ScaffoldMessenger.of(context).showSnackBar(
          SnackBar(
-          content: Text('sending'.tr),
+          content: Text('sending'.tr, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,
@@ -1605,12 +1664,12 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('cancel_order'.tr),
-        content: Text('cancel_order_confirm'.tr),
+        title: Text('cancel_order'.tr, style: const TextStyle(fontFamily: 'Sora')),
+        content: Text('cancel_order_confirm'.tr, style: const TextStyle(fontFamily: 'Sora')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('no_'.tr),
+            child: Text('no_'.tr, style: const TextStyle(fontFamily: 'Sora')),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -1618,7 +1677,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
               Navigator.pop(context);
               _showCancelReasonDialog();
             },
-            child: Text('yes'.tr, style: const TextStyle(color: Colors.white)),
+            child: Text('yes'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.white)),
           ),
         ],
       ),
@@ -1634,7 +1693,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
       builder: (_) => StatefulBuilder(
         builder: (ctx, setDialogState) {
           return AlertDialog(
-            title: Text('cancel_reason'.tr),
+            title: Text('cancel_reason'.tr, style: const TextStyle(fontFamily: 'Sora')),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1654,7 +1713,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('cancel'.tr),
+                child: Text('cancel'.tr, style: const TextStyle(fontFamily: 'Sora')),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -1669,7 +1728,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                       }
                     : null,
                 child: Text('continue'.tr,
-                    style: const TextStyle(color: Colors.white)),
+                    style: const TextStyle(fontFamily: 'Sora', color: Colors.white)),
               ),
             ],
           );
@@ -1712,29 +1771,30 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
         }
         return;
       }
-      // Fetch fresh order so cancel_reason is included in response
-      try {
-        final refreshed = await ApiRepo().getNewOrderData(bearerKey!, updatedOrder.id!);
+      // ApiRepo returns Order.withError (id == null) instead of throwing.
+      if (result.id == null) {
         if (mounted) {
-          setState(() {
-            updatedOrder = refreshed;
-            app.appController.updateOrder(refreshed);
-            orderType = 0;
-            isPrint = true;
-          });
+          Get.snackbar('error'.tr, result.mess ?? 'error'.tr,
+              backgroundColor: Colors.red,
+              colorText: Colors.white,
+              snackPosition: SnackPosition.BOTTOM);
         }
-      } catch (_) {
-        if (mounted) {
-          setState(() {
-            updatedOrder = result;
-            if (updatedOrder.cancelReason == null || updatedOrder.cancelReason!.isEmpty) {
-              updatedOrder.cancelReason = reason;
-            }
-            app.appController.updateOrder(updatedOrder);
-            orderType = 0;
-            isPrint = true;
-          });
-        }
+        return;
+      }
+      // Fetch fresh order so cancel_reason is included; fall back to the PUT result.
+      final refreshed = await ApiRepo().getNewOrderData(bearerKey!, updatedOrder.id!);
+      final cancelled = refreshed.id != null ? refreshed : result;
+      cancelled.approvalStatus = 3;
+      if (cancelled.cancelReason == null || cancelled.cancelReason!.isEmpty) {
+        cancelled.cancelReason = reason;
+      }
+      app.appController.updateOrder(cancelled);
+      if (mounted) {
+        setState(() {
+          updatedOrder = cancelled;
+          orderType = 0;
+          isPrint = true;
+        });
       }
     } catch (e) {
       if (mounted && (Get.isDialogOpen == true)) {
@@ -1769,13 +1829,13 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: Text((updatedOrder.orderType == 2 ? 'update_collection_time' : 'update_delivery_time').tr),
+              title: Text((updatedOrder.orderType == 2 ? 'update_collection_time' : 'update_delivery_time').tr, style: const TextStyle(fontFamily: 'Sora')),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     DateFormat('HH:mm').format(updatedTime),
-                    style: const TextStyle(
+                    style: const TextStyle(fontFamily: 'Sora', 
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
@@ -1807,7 +1867,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('cancel'.tr),
+                  child: Text('cancel'.tr, style: const TextStyle(fontFamily: 'Sora')),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -1824,7 +1884,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Delivery time updated',
-                                style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w600)),
+                                style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w600)),
                             backgroundColor: AppTheme.accent,
 
                             duration: Duration(seconds: 2),
@@ -1836,7 +1896,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     }
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accent),
-                  child: Text('saved'.tr, style: const TextStyle(color: Colors.white)),
+                  child: Text('saved'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.white)),
                 ),
               ],
             );
@@ -1859,7 +1919,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
           builder: (context, setDialogState) {
             return AlertDialog(
               title: const Text('Payment Method',
-                  style: TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700, fontSize: 16)),
+                  style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700, fontSize: 16)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -1884,7 +1944,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                           const SizedBox(width: 12),
                           Text('Cash',
                               style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w700, fontFamily: 'Mulish',
+                                  fontSize: 15, fontWeight: FontWeight.w700, fontFamily: 'Sora',
                                   color: selected == 'cash' ? Colors.white : Colors.black87)),
                         ],
                       ),
@@ -1910,7 +1970,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                           const SizedBox(width: 12),
                           Text('Card',
                               style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w700, fontFamily: 'Mulish',
+                                  fontSize: 15, fontWeight: FontWeight.w700, fontFamily: 'Sora',
                                   color: selected == 'card' ? Colors.white : Colors.black87)),
                         ],
                       ),
@@ -1922,7 +1982,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text('cancel'.tr,
-                      style: const TextStyle(fontFamily: 'Mulish', color: Colors.grey)),
+                      style: const TextStyle(fontFamily: 'Sora', color: Colors.grey)),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -1935,7 +1995,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                       ScaffoldMessenger.of(this.context).showSnackBar(
                         SnackBar(
                           content: Text('Payment method changed to ${selected == 'cash' ? 'Cash' : 'Card'}',
-                              style: const TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w600)),
+                              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w600)),
                           backgroundColor: AppTheme.accent,
                           duration: const Duration(seconds: 2),
                         ),
@@ -1943,7 +2003,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     }
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accent),
-                  child: Text('saved'.tr, style: const TextStyle(color: Colors.white, fontFamily: 'Mulish')),
+                  child: Text('saved'.tr, style: const TextStyle(color: Colors.white, fontFamily: 'Sora')),
                 ),
               ],
             );
@@ -2026,7 +2086,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('delivery_time_updated'.tr),
+            content: Text('delivery_time_updated'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: AppTheme.accent,
             duration: const Duration(seconds: 2),
           ),
@@ -2034,7 +2094,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result.mess ?? 'failed'.tr),
+            content: Text(result.mess ?? 'failed'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -2054,7 +2114,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Request timed out. Please try again.'),
+            content: Text('Request timed out. Please try again.', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.orange,
             duration: Duration(seconds: 2),
           ),
@@ -2074,7 +2134,7 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text('Error: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),

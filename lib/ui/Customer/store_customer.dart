@@ -103,7 +103,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                 Text(
                   'custom'.tr,
                   style: const TextStyle(
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                   ),
@@ -120,7 +120,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 12,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                     ),
                   ),
                 ),
@@ -163,7 +163,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey.shade600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                   ],
@@ -232,7 +232,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                                   customer.customerName ?? 'N/A',
                                   maxLines: 2,
                                   style: const TextStyle(
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                     overflow: TextOverflow.ellipsis,
@@ -244,7 +244,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                                 child: Text(
                                   'Joined ${_formatDate(customer.createdAt ?? '')}',
                                   style: const TextStyle(
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     fontSize: 11,
                                     color: Color(0xff797878),
                                     fontWeight: FontWeight.w600
@@ -275,7 +275,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                             child: Text(
                               customer.phone ?? 'N/A',
                               style: const TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: Color(0xff797878)
@@ -294,7 +294,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                             child: Text(
                               customer.email ?? 'N/A',
                               style: const TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: Color(0xff797878)
@@ -322,7 +322,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                                   child: Text(
                                 '${customer.totalReservations ?? 0}',
                                 style: const TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white
@@ -333,7 +333,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                             Text(
                               'rese'.tr,
                               style: const TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -353,7 +353,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                               child: Text(
                                 '${customer.totalOrders ?? 0}',
                                 style: const TextStyle(
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white
@@ -364,7 +364,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                             Text(
                               'order'.tr,
                               style: const TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
 
@@ -396,7 +396,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                       //       child: Text(
                       //         customer.phone ?? 'N/A',
                       //         style: TextStyle(
-                      //             fontFamily: 'Mulish',
+                      //             fontFamily: 'Sora',
                       //             fontSize: 12,
                       //             fontWeight: FontWeight.w600,
                       //             color: Color(0xff797878)
@@ -414,7 +414,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                       //       child: Text(
                       //         customer.email ?? 'N/A',
                       //         style: TextStyle(
-                      //             fontFamily: 'Mulish',
+                      //             fontFamily: 'Sora',
                       //             fontSize: 12,
                       //             fontWeight: FontWeight.w600,
                       //             color: Color(0xff797878)
@@ -433,7 +433,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                   //       Text(
                   //         '€200', // Ye calculate karna padega orders se
                   //         style: TextStyle(
-                  //           fontFamily: 'Mulish',
+                  //           fontFamily: 'Sora',
                   //           fontSize: 20,
                   //           fontWeight: FontWeight.w800,
                   //         ),
@@ -441,7 +441,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                   //       Text(
                   //         'Total Spent',
                   //         style: TextStyle(
-                  //           fontFamily: 'Mulish',
+                  //           fontFamily: 'Sora',
                   //           fontSize: 10,fontWeight: FontWeight.w700,
                   //           color: Colors.grey.shade600,
                   //         ),
@@ -457,7 +457,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                   child: Text(
                     '${'last_placed'.tr}${_formatDate(customer.lastOrderDate ?? '')}',
                     style: TextStyle(
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       fontSize: 10,
                       color: Colors.grey.shade600,
                     ),

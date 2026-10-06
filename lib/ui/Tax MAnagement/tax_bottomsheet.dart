@@ -71,7 +71,7 @@ class _AddTaxBottomSheetState extends State<AddTaxBottomSheet> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(message, style: const TextStyle(fontFamily: 'Sora')),
         backgroundColor: isError ? Colors.red : Colors.green,
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
@@ -333,7 +333,7 @@ class _AddTaxBottomSheetState extends State<AddTaxBottomSheet> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       )
                     ],
@@ -344,7 +344,7 @@ class _AddTaxBottomSheetState extends State<AddTaxBottomSheet> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.black87,
                     ),
                   ),
@@ -355,7 +355,7 @@ class _AddTaxBottomSheetState extends State<AddTaxBottomSheet> {
                       hintText: 'enter'.tr,
                       hintStyle: const TextStyle(
                         color: Colors.grey,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       filled: true,
                       fillColor: const Color(0xFFF8F8F8),
@@ -375,7 +375,7 @@ class _AddTaxBottomSheetState extends State<AddTaxBottomSheet> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.black87,
                     ),
                   ),
@@ -391,7 +391,7 @@ class _AddTaxBottomSheetState extends State<AddTaxBottomSheet> {
                       hintText: 'enter_percent'.tr,
                       hintStyle: const TextStyle(
                         color: Colors.grey,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       filled: true,
                       fillColor: const Color(0xFFF8F8F8),
@@ -407,7 +407,7 @@ class _AddTaxBottomSheetState extends State<AddTaxBottomSheet> {
                         padding: EdgeInsets.all(12.0),
                         child: Text(
                           '%',
-                          style: TextStyle(
+                          style: TextStyle(fontFamily: 'Sora', 
                             color: Colors.grey,
                             fontSize: 16,
                           ),
@@ -440,7 +440,7 @@ class _AddTaxBottomSheetState extends State<AddTaxBottomSheet> {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                         ),
@@ -472,7 +472,7 @@ class _AddTaxBottomSheetState extends State<AddTaxBottomSheet> {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             ),
                           ),
                         ),

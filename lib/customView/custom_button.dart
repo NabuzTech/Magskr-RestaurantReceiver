@@ -39,7 +39,7 @@ class CustomButton extends StatelessWidget {
             ),
             child: Text(
               myText,
-              style: TextStyle(
+              style: TextStyle(fontFamily: 'Sora', 
                 fontSize: 17.0,
                 color: textColor ?? const Color(0xffdb1514),
                 fontWeight: fontWeigt,

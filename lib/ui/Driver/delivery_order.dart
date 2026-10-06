@@ -45,7 +45,7 @@ class _DeliveryOrderState extends State<DeliveryOrder> {
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  fontFamily: 'Mulish'
+                  fontFamily: 'Sora'
               ),
             ),
           ),
@@ -103,7 +103,7 @@ class _DeliveryOrderState extends State<DeliveryOrder> {
                                         style: TextStyle(
                                             fontWeight: FontWeight.w700,
                                             fontSize: 13,
-                                            fontFamily: "Mulish-Regular"),
+                                            fontFamily: 'Sora'),
                                       ),
                                       Text(
                                         'REWE Markt GmbH , Aegidienbe...',
@@ -112,7 +112,7 @@ class _DeliveryOrderState extends State<DeliveryOrder> {
                                             fontSize: 11,
                                             letterSpacing: 0,
                                             height: 0,
-                                            fontFamily: "Mulish"),
+                                            fontFamily: 'Sora'),
                                       ),
                                     ],
                                   )
@@ -128,7 +128,7 @@ class _DeliveryOrderState extends State<DeliveryOrder> {
                                     '10:30',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
-                                      fontFamily: "Mulish",
+                                      fontFamily: 'Sora',
                                       fontSize: 10,
                                     ),
                                   )
@@ -144,7 +144,7 @@ class _DeliveryOrderState extends State<DeliveryOrder> {
                                 'Rakesh Sharma / 49 98787678',
                                 style: TextStyle(
                                     fontWeight: FontWeight.w700,
-                                    fontFamily: "Mulish",
+                                    fontFamily: 'Sora',
                                     fontSize: 13),
                               ),
                               Row(
@@ -154,14 +154,14 @@ class _DeliveryOrderState extends State<DeliveryOrder> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 11,
-                                        fontFamily: "Mulish"),
+                                        fontFamily: 'Sora'),
                                   ),
                                   const Text(
                                     '${2347687}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 11,
-                                        fontFamily: "Mulish"),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ],
                               ),
@@ -181,7 +181,7 @@ class _DeliveryOrderState extends State<DeliveryOrder> {
                                   const Text(
                                     'Mandeep',
                                     style: TextStyle(
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                         fontWeight: FontWeight.w800,
                                         fontSize: 10),
                                   )
@@ -193,7 +193,7 @@ class _DeliveryOrderState extends State<DeliveryOrder> {
                                   const Text(
                                     'Delivered',
                                     style: TextStyle(
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                         fontWeight: FontWeight.w800,
                                         fontSize: 10),
                                   ),

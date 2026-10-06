@@ -134,7 +134,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                       children: [
                         Text('topping'.tr,
                             style: const TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold)),
                         GestureDetector(
@@ -153,7 +153,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   )),
                             ),
                           ),
@@ -171,7 +171,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                             currentPageItems.length} of ${toppingsList.length} ${'entries'.tr}',
                         style: TextStyle(
                           fontSize: 12,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: Colors.grey[600],
                         ),
                       ),
@@ -180,7 +180,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                   const SizedBox(height: 10),
 
                   Container(
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(8),
                     decoration: const BoxDecoration(
                       color: Color(0xFFECF8FF),
                     ),
@@ -192,7 +192,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                             style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 13,
-                                fontFamily: 'Mulish'),
+                                fontFamily: 'Sora'),
                           ),
                         ),
                         Container(
@@ -200,7 +200,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 13,
-                                  fontFamily: 'Mulish')),
+                                  fontFamily: 'Sora')),
                         ),
                         const SizedBox(width: 15),
                         SizedBox(
@@ -210,7 +210,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 13,
-                                  fontFamily: 'Mulish'),
+                                  fontFamily: 'Sora'),
                             ),
                           ),
                         )
@@ -315,7 +315,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: 14,
-                                              fontFamily: 'Mulish'),
+                                              fontFamily: 'Sora'),
                                           //overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -326,7 +326,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                           style: const TextStyle(
                                               fontWeight: FontWeight.w400,
                                               fontSize: 12,
-                                              fontFamily: 'Mulish'),
+                                              fontFamily: 'Sora'),
                                         ),
                                       ),
                                     ],
@@ -340,7 +340,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                           '0.00'}',
                                       style: const TextStyle(
                                           fontSize: 12,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                           fontWeight: FontWeight.w700,
                                           color: Colors.black),
                                     ),
@@ -395,7 +395,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                           'previous'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage > 1 ? Colors.black87 : Colors
                                 .grey,
@@ -430,7 +430,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                 '$pageNum',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                   color: isActive ? Colors.white : Colors
                                       .black87,
@@ -462,7 +462,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                           'next'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage < totalPages
                                 ? Colors.black87
@@ -532,7 +532,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ],
@@ -550,7 +550,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -579,7 +579,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -608,7 +608,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -654,7 +654,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                         ),
                                       ),
                                     ),
@@ -667,13 +667,13 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                         // Validation
                                         if (nameController.text.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('please_enter_topping'.tr), backgroundColor: Colors.red),
+                                            SnackBar(content: Text('please_enter_topping'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
                                           );
                                           return;
                                         }
                                         if (priceController.text.isEmpty) {
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('please_enter_price'.tr), backgroundColor: Colors.red),
+                                            SnackBar(content: Text('please_enter_price'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
                                           );
                                           return;
                                         }
@@ -705,7 +705,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                                           color: Colors.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                         ),
                                       ),
                                     ),
@@ -862,7 +862,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('topping_created'.tr),
+            content: Text('topping_created'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -878,7 +878,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'failed_topping'.tr}: ${e.toString()}'),
+            content: Text('${'failed_topping'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -923,7 +923,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('topping_update'.tr), backgroundColor: Colors.green),
+          SnackBar(content: Text('topping_update'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.green),
         );
       }
 
@@ -934,7 +934,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${"failed_upd".tr}: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${"failed_upd".tr}: $e', style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
         );
       }
 
@@ -966,7 +966,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('topping_delete'.tr),
+            content: Text('topping_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -980,7 +980,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_delete'.tr),
+            content: Text('failed_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -1020,7 +1020,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1044,7 +1044,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                             ),
                             child:  Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1073,7 +1073,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                             ),
                             child:  Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1142,7 +1142,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1167,7 +1167,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                             ),
                             child: Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1195,7 +1195,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
                             ),
                             child: Text(
                               'yes'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1289,7 +1289,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(newStatus ? 'topping_activated'.tr : 'topping_deactivated'.tr),
+            content: Text(newStatus ? 'topping_activated'.tr : 'topping_deactivated'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -1303,7 +1303,7 @@ class _ToppingsScreenState extends State<ToppingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_status_change'.tr),
+            content: Text('failed_status_change'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),

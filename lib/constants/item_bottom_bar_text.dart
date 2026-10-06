@@ -35,10 +35,10 @@ class ItemTextBottomBar extends StatelessWidget {
           ),
           Text(
             name,
-            style: const TextStyle(
-                fontSize: 15.0,
+            style: const TextStyle(fontFamily: 'Sora', 
+                fontSize: 20.0,
                 color: Colors.black,
-                fontWeight: FontWeight.w400),
+                fontWeight: FontWeight.w600),
           )
         ],
       ),

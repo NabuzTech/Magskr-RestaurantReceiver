@@ -222,7 +222,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       )
                           : Text(
                         storeName.toString(),
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                        style: const TextStyle(fontFamily: 'Sora', fontSize: 15, fontWeight: FontWeight.w500),
                       )
                     ],
                   ),
@@ -347,7 +347,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ),
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0),
-                  child: Text('${'version'.tr}: 3.0(2)', style: const TextStyle(
+                  child: Text('${'version'.tr}: 3.0(2)', style: const TextStyle(fontFamily: 'Sora', 
                       fontWeight: FontWeight.w300,
                       fontSize: 15
                   ),),
@@ -369,7 +369,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     double? iconWidth,
   }) {
     return ListTile(
-        title: Text(title, style: const TextStyle(fontSize: 16)),
+        title: Text(title, style: const TextStyle(fontFamily: 'Sora', fontSize: 16)),
         onTap: onTap,
         dense: true,
         leading: SvgPicture.asset(
@@ -621,7 +621,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           leading: SvgPicture.asset('assets/images/product.svg',color: const Color(0xff757B8F),height: 20,width: 25,),
           title: Row(
             children: [
-              Text('menu'.tr, style: const TextStyle(fontSize: 16)),
+              Text('menu'.tr, style: const TextStyle(fontFamily: 'Sora', fontSize: 16)),
               const Spacer(),
               Icon(
                 isMenuExpanded ? Icons.expand_less : Icons.expand_more,
@@ -694,7 +694,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 color: const Color(0xff757B8F),height: 15,width: 25,),
               title: Row(
                 children: [
-                  Text('topping'.tr,  style: const TextStyle(
+                  Text('topping'.tr,  style: const TextStyle(fontFamily: 'Sora', 
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),),
@@ -753,7 +753,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                color: const Color(0xff757B8F),height: 20,width: 25,),
              title: Row(
                children: [
-                 Text('allergy'.tr,  style: const TextStyle(
+                 Text('allergy'.tr,  style: const TextStyle(fontFamily: 'Sora', 
                    fontSize: 14,
                    fontWeight: FontWeight.w400,
                  ),),
@@ -802,7 +802,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
       child: ListTile(
         title: Text(
          '- $title',
-          style: TextStyle(
+          style: TextStyle(fontFamily: 'Sora', 
             fontSize: 14,
             color: Colors.grey[700],
             fontWeight: FontWeight.w400,

@@ -169,23 +169,23 @@ class AppUpdateService {
           return WillPopScope(
             onWillPop: () async => false,
             child: AlertDialog(
-            title: Text('app_update'.tr),
+            title: Text('app_update'.tr, style: const TextStyle(fontFamily: 'Sora')),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('new_version'.tr),
+                Text('new_version'.tr, style: const TextStyle(fontFamily: 'Sora')),
                 const SizedBox(height: 16),
-                Text('${'current_ver'.tr}: $currentVersion'),
-                Text('${'latest_ver'.tr}: $latestVersion'),
+                Text('${'current_ver'.tr}: $currentVersion', style: const TextStyle(fontFamily: 'Sora')),
+                Text('${'latest_ver'.tr}: $latestVersion', style: const TextStyle(fontFamily: 'Sora')),
                 const SizedBox(height: 16),
-                Text('please_update'.tr,),
+                Text('please_update'.tr, style: const TextStyle(fontFamily: 'Sora'),),
               ],
             ),
             actions: [
               ElevatedButton(
                 onPressed: onUpdate,
-                child: Text('update_now'.tr),
+                child: Text('update_now'.tr, style: const TextStyle(fontFamily: 'Sora')),
               ),
             ],
           ),
@@ -208,14 +208,14 @@ class AppUpdateService {
           return WillPopScope(
             onWillPop: () async => false,
             child: AlertDialog(
-              title: const Text('Update Required'),
+              title: const Text('Update Required', style: const TextStyle(fontFamily: 'Sora')),
               content: const Text(
-                'This version of the app is no longer supported. Please update to the latest version to continue.',
+                'This version of the app is no longer supported. Please update to the latest version to continue.', style: const TextStyle(fontFamily: 'Sora'),
               ),
               actions: [
                 ElevatedButton(
                   onPressed: _launchStore,
-                  child: const Text('Update Now'),
+                  child: const Text('Update Now', style: const TextStyle(fontFamily: 'Sora')),
                 ),
               ],
             ),
@@ -253,14 +253,14 @@ class AppUpdateService {
           return WillPopScope(
             onWillPop: () async => false,
             child: AlertDialog(
-              title: const Text('Update Required'),
+              title: const Text('Update Required', style: const TextStyle(fontFamily: 'Sora')),
               content: const Text(
-                'This version of the app is no longer supported. Please update to the latest version to continue.',
+                'This version of the app is no longer supported. Please update to the latest version to continue.', style: const TextStyle(fontFamily: 'Sora'),
               ),
               actions: [
                 ElevatedButton(
                   onPressed: customUpdate ?? () => _launchStore(),
-                  child: const Text('Update Now'),
+                  child: const Text('Update Now', style: const TextStyle(fontFamily: 'Sora')),
                 ),
               ],
             ),

@@ -97,7 +97,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                 color: _selectedTabIndex == 0 ? Colors.white :  Colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                             ),
                           ),
@@ -132,7 +132,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                 //                 color: _selectedTabIndex == 1 ? Colors.white :Colors.black,
                 //                 fontWeight: FontWeight.bold,
                 //                 fontSize: 14,
-                //                 fontFamily: 'Mulish',
+                //                 fontFamily: 'Sora',
                 //               ),
                 //             ),
                 //           ),
@@ -155,7 +155,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                 Text(
                   _selectedTabIndex == 0 ? 'del_time'.tr : 'collection'.tr,
                   style: const TextStyle(
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -177,7 +177,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ),
@@ -238,7 +238,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                             ],
@@ -254,7 +254,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.black87,
                                 ),
                               ),
@@ -285,7 +285,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                     style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 ],
@@ -345,7 +345,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                           color: isSelected ? Colors.white : Colors.black,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 12,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                         ),
                                       ),
                                     ),
@@ -362,7 +362,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Colors.black87,
                               ),
                             ),
@@ -373,7 +373,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                 hintText: 'enter_name_for_all'.tr,
                                 hintStyle: const TextStyle(
                                   color: Colors.grey,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontSize: 12,
                                 ),
                                 filled: true,
@@ -395,7 +395,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 color: Colors.black87,
                               ),
                             ),
@@ -411,7 +411,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                         color: hasText[dayIndex] == true
                                             ? const Color(0xff0C831F)
                                             : const Color(0xFFE25454),
@@ -430,7 +430,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                         hintText: '${'enter_name_for'.tr} ${getDayName(dayIndex)}',
                                         hintStyle: const TextStyle(
                                           color: Colors.grey,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                           fontSize: 12,
                                         ),
                                         filled: true,
@@ -487,7 +487,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     color: Color(0xff0C831F),
                                   ),
                                 ),
@@ -529,7 +529,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                               color: Colors.white,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
-                                              fontFamily: 'Mulish',
+                                              fontFamily: 'Sora',
                                             ),
                                           ),
                                         ],
@@ -565,7 +565,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                 style: const TextStyle(
                                                   fontWeight: FontWeight.w700,
                                                   fontSize: 13,
-                                                  fontFamily: 'Mulish',
+                                                  fontFamily: 'Sora',
                                                 ),
                                               ),
                                               GestureDetector(
@@ -623,14 +623,14 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                                   children: [
                                                                     TextButton(
                                                                       onPressed: () => Navigator.pop(context),
-                                                                      child: Text('cancel'.tr, style: const TextStyle(color: Colors.red, fontSize: 16)),
+                                                                      child: Text('cancel'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.red, fontSize: 16)),
                                                                     ),
                                                                     Text(
                                                                         'select_time'.tr,
                                                                         style: const TextStyle(
                                                                           fontWeight: FontWeight.bold,
                                                                           fontSize: 16,
-                                                                          fontFamily: 'Mulish',
+                                                                          fontFamily: 'Sora',
                                                                         )
                                                                     ),
                                                                     TextButton(
@@ -641,7 +641,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                                         });
                                                                         Navigator.pop(context);
                                                                       },
-                                                                      child: Text('don'.tr, style: const TextStyle(color: Colors.green, fontSize: 16)),
+                                                                      child: Text('don'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.green, fontSize: 16)),
                                                                     ),
                                                                   ],
                                                                 ),
@@ -678,7 +678,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                           style: TextStyle(
                                                             color: allDaysTimeSlots[slotIndex]['startTime']!.isEmpty ? Colors.grey : Colors.black,
                                                             fontSize: 12,
-                                                            fontFamily: 'Mulish',
+                                                            fontFamily: 'Sora',
                                                           ),
                                                         ),
                                                         const Icon(Icons.access_time, size: 16, color: Colors.grey),
@@ -721,9 +721,9 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                                 children: [
                                                                   TextButton(
                                                                     onPressed: () => Navigator.pop(context),
-                                                                    child: Text('cancel'.tr, style: const TextStyle(color: Colors.red)),
+                                                                    child: Text('cancel'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.red)),
                                                                   ),
-                                                                  Text('select_time'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                                                  Text('select_time'.tr, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold)),
                                                                   TextButton(
                                                                     onPressed: () {
                                                                       setModalState(() {
@@ -732,7 +732,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                                       });
                                                                       Navigator.pop(context);
                                                                     },
-                                                                    child: Text('don'.tr, style: const TextStyle(color: Colors.green)),
+                                                                    child: Text('don'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.green)),
                                                                   ),
                                                                 ],
                                                               ),
@@ -769,7 +769,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                           style: TextStyle(
                                                             color: allDaysTimeSlots[slotIndex]['endTime']!.isEmpty ? Colors.grey : Colors.black,
                                                             fontSize: 12,
-                                                            fontFamily: 'Mulish',
+                                                            fontFamily: 'Sora',
                                                           ),
                                                         ),
                                                         const Icon(Icons.access_time, size: 16, color: Colors.grey),
@@ -800,7 +800,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w700,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                           color: Color(0xff0C831F),
                                         ),
                                       ),
@@ -842,7 +842,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                     color: Colors.white,
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.w600,
-                                                    fontFamily: 'Mulish',
+                                                    fontFamily: 'Sora',
                                                   ),
                                                 ),
                                               ],
@@ -880,7 +880,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                       style: const TextStyle(
                                                         fontWeight: FontWeight.w700,
                                                         fontSize: 13,
-                                                        fontFamily: 'Mulish',
+                                                        fontFamily: 'Sora',
                                                       ),
                                                     ),
                                                     GestureDetector(
@@ -939,14 +939,14 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                                         children: [
                                                                           TextButton(
                                                                             onPressed: () => Navigator.pop(context),
-                                                                            child: Text('cancel'.tr, style: const TextStyle(color: Colors.red, fontSize: 16)),
+                                                                            child: Text('cancel'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.red, fontSize: 16)),
                                                                           ),
                                                                           Text(
                                                                               'select_time'.tr,
                                                                               style: const TextStyle(
                                                                                 fontWeight: FontWeight.bold,
                                                                                 fontSize: 16,
-                                                                                fontFamily: 'Mulish',
+                                                                                fontFamily: 'Sora',
                                                                               )
                                                                           ),
                                                                           TextButton(
@@ -958,7 +958,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                                               });
                                                                               Navigator.pop(context);
                                                                             },
-                                                                            child: Text('don'.tr, style: const TextStyle(color: Colors.green, fontSize: 16)),
+                                                                            child: Text('don'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.green, fontSize: 16)),
                                                                           ),
                                                                         ],
                                                                       ),
@@ -997,7 +997,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                                       ? Colors.grey
                                                                       : Colors.black,
                                                                   fontSize: 12,
-                                                                  fontFamily: 'Mulish',
+                                                                  fontFamily: 'Sora',
                                                                 ),
                                                               ),
                                                               const Icon(Icons.access_time, size: 16, color: Colors.grey),
@@ -1041,9 +1041,9 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                                       children: [
                                                                         TextButton(
                                                                           onPressed: () => Navigator.pop(context),
-                                                                          child: Text('cancel'.tr, style: const TextStyle(color: Colors.red)),
+                                                                          child: Text('cancel'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.red)),
                                                                         ),
-                                                                        Text('select_time'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                                                        Text('select_time'.tr, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold)),
                                                                         TextButton(
                                                                           onPressed: () {
                                                                             setModalState(() {
@@ -1053,7 +1053,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                                             });
                                                                             Navigator.pop(context);
                                                                           },
-                                                                          child: Text('don'.tr, style: const TextStyle(color: Colors.green)),
+                                                                          child: Text('don'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.green)),
                                                                         ),
                                                                       ],
                                                                     ),
@@ -1092,7 +1092,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                                       ? Colors.grey
                                                                       : Colors.black,
                                                                   fontSize: 12,
-                                                                  fontFamily: 'Mulish',
+                                                                  fontFamily: 'Sora',
                                                                 ),
                                                               ),
                                                               const Icon(Icons.access_time, size: 16, color: Colors.grey),
@@ -1138,7 +1138,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 ),
@@ -1154,7 +1154,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                       if (allDaysNameController.text.trim().isEmpty) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
-                                            content: Text('please_enter_name'.tr),
+                                            content: Text('please_enter_name'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                           ),
                                         );
@@ -1165,7 +1165,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                           allDaysTimeSlots.any((slot) => slot['startTime']!.isEmpty || slot['endTime']!.isEmpty)) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
-                                            content: Text('please_fill'.tr),
+                                            content: Text('please_fill'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                           ),
                                         );
@@ -1189,7 +1189,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                       if (selectedDays.isEmpty) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
-                                            content: Text('please_select_at'.tr),
+                                            content: Text('please_select_at'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                           ),
                                         );
@@ -1208,7 +1208,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                       if (!allNamesFilled) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
-                                            content: Text('please_enter_name_for'.tr),
+                                            content: Text('please_enter_name_for'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                           ),
                                         );
@@ -1227,7 +1227,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                       if (!allDaysHaveTimeSlots) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
-                                            content: Text('please_add'.tr),
+                                            content: Text('please_add'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                           ),
                                         );
@@ -1249,7 +1249,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                       if (!allTimeSlotsFilled) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
-                                            content: Text('please_fill_all'.tr),
+                                            content: Text('please_fill_all'.tr, style: const TextStyle(fontFamily: 'Sora')),
                                             backgroundColor: Colors.red,
                                           ),
                                         );
@@ -1285,7 +1285,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 ),
@@ -1369,7 +1369,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                 ),
                               ),
                             ],
@@ -1382,7 +1382,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: Colors.black87,
                             ),
                           ),
@@ -1393,7 +1393,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                               hintText: 'enter_name'.tr,
                               hintStyle: const TextStyle(
                                 color: Colors.grey,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                               ),
                               filled: true,
                               fillColor: const Color(0xFFF8F8F8),
@@ -1415,7 +1415,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: Colors.black87,
                             ),
                           ),
@@ -1437,7 +1437,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                             items: List.generate(7, (index) {
                               return DropdownMenuItem(
                                 value: index,
-                                child: Text(getDayName(index)),
+                                child: Text(getDayName(index), style: const TextStyle(fontFamily: 'Sora')),
                               );
                             }),
                             onChanged: (value) {
@@ -1461,7 +1461,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                       style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                         color: Colors.black87,
                                       ),
                                     ),
@@ -1499,15 +1499,15 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                       children: [
                                                         TextButton(
                                                           onPressed: () => Navigator.pop(context),
-                                                          child:  Text('cancel'.tr, style: const TextStyle(color: Colors.red)),
+                                                          child:  Text('cancel'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.red)),
                                                         ),
-                                                         Text('select_time'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                                         Text('select_time'.tr, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold)),
                                                         TextButton(
                                                           onPressed: () {
                                                             startTimeController.text = '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}:00';
                                                             Navigator.pop(context);
                                                           },
-                                                          child:  Text('don'.tr, style: const TextStyle(color: Colors.green)),
+                                                          child:  Text('don'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.green)),
                                                         ),
                                                       ],
                                                     ),
@@ -1532,7 +1532,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                         hintText: '--:--',
                                         hintStyle: const TextStyle(
                                           color: Colors.grey,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                         ),
                                         filled: true,
                                         fillColor: const Color(0xFFF8F8F8),
@@ -1566,7 +1566,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                       style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
-                                        fontFamily: 'Mulish',
+                                        fontFamily: 'Sora',
                                         color: Colors.black87,
                                       ),
                                     ),
@@ -1604,16 +1604,16 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                                       children: [
                                                         TextButton(
                                                           onPressed: () => Navigator.pop(context),
-                                                          child:  const Text('cancel', style: TextStyle(color: Colors.red)),
+                                                          child:  const Text('cancel', style: TextStyle(fontFamily: 'Sora', color: Colors.red)),
                                                         ),
-                                                         const Text('select_time', style: TextStyle(fontWeight: FontWeight.bold)),
+                                                         const Text('select_time', style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold)),
                                                         TextButton(
                                                           onPressed: () {
                                                             endTimeController.text = '${selectedTime.hour.toString().padLeft(2, '0')}:'
                                                                 '${selectedTime.minute.toString().padLeft(2, '0')}:00';
                                                             Navigator.pop(context);
                                                           },
-                                                          child:  const Text('don', style: TextStyle(color: Colors.green)),
+                                                          child:  const Text('don', style: TextStyle(fontFamily: 'Sora', color: Colors.green)),
                                                         ),
                                                       ],
                                                     ),
@@ -1638,7 +1638,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                         hintText: '--:--',
                                         hintStyle: const TextStyle(
                                           color: Colors.grey,
-                                          fontFamily: 'Mulish',
+                                          fontFamily: 'Sora',
                                         ),
                                         filled: true,
                                         fillColor: const Color(0xFFF8F8F8),
@@ -1687,7 +1687,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 ),
@@ -1728,7 +1728,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      fontFamily: 'Mulish',
+                                      fontFamily: 'Sora',
                                     ),
                                   ),
                                 ),
@@ -1834,7 +1834,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${map.length} ${'deli_time'.tr}'),
+            content: Text('${map.length} ${'deli_time'.tr}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
           ),
         );
@@ -1850,7 +1850,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
            SnackBar(
-            content: Text('fail_time'.tr),
+            content: Text('fail_time'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
           ),
         );
@@ -1919,7 +1919,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${map.length} ${'collec_time'.tr}'),
+            content: Text('${map.length} ${'collec_time'.tr}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
           ),
         );
@@ -1935,7 +1935,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
            SnackBar(
-            content: Text('fail_collec'.tr),
+            content: Text('fail_collec'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
           ),
         );
@@ -2103,7 +2103,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
 
                   ),
                 ),
@@ -2115,7 +2115,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
 
                   ),
                   textAlign: TextAlign.center,
@@ -2128,7 +2128,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
 
                   ),
                   textAlign: TextAlign.center,
@@ -2141,7 +2141,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
                   ),
                   textAlign: TextAlign.end,
                 ),
@@ -2239,7 +2239,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 13,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Color(0xFF2D3748),
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -2252,7 +2252,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Color(0xFF4A5568),
                                 ),
                                 textAlign: TextAlign.center,
@@ -2272,7 +2272,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 11,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     color: Color(0xFF0C831F),
                                   ),
                                   textAlign: TextAlign.center,
@@ -2292,7 +2292,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                   time.endTime.toString(),
                                   style: const TextStyle(
                                     fontSize: 11,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     fontWeight: FontWeight.w700,
                                     color: Color(0xFFFCAE03),
                                   ),
@@ -2333,7 +2333,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
 
                   ),
                 ),
@@ -2345,7 +2345,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
 
                   ),
                   textAlign: TextAlign.center,
@@ -2358,7 +2358,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
 
                   ),
                   textAlign: TextAlign.center,
@@ -2371,7 +2371,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
-                    fontFamily: 'Mulish',
+                    fontFamily: 'Sora',
 
                   ),
                   textAlign: TextAlign.end,
@@ -2470,7 +2470,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 13,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Color(0xFF2D3748),
                                 ),
                                 overflow: TextOverflow.ellipsis,
@@ -2483,7 +2483,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Color(0xFF4A5568),
                                 ),
                                 textAlign: TextAlign.center,
@@ -2503,7 +2503,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 11,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     color: Color(0xFF0C831F),
                                   ),
                                   textAlign: TextAlign.center,
@@ -2523,7 +2523,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                                   collectionTime.endTime.toString(),
                                   style: const TextStyle(
                                     fontSize: 11,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                     fontWeight: FontWeight.w700,
                                     color: Color(0xFFFCAE03),
                                   ),
@@ -2601,7 +2601,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Delivery Time added successfully'),
+            content: Text('Delivery Time added successfully', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
           ),
         );
@@ -2617,7 +2617,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to add Delivery Time'),
+            content: Text('Failed to add Delivery Time', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
           ),
         );
@@ -2681,7 +2681,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Collection Time added successfully'),
+            content: Text('Collection Time added successfully', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
           ),
         );
@@ -2697,7 +2697,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to add Collection Time'),
+            content: Text('Failed to add Collection Time', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
           ),
         );
@@ -2761,7 +2761,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Delivery time updated successfully'),
+            content: Text('Delivery time updated successfully', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
           ),
         );
@@ -2778,7 +2778,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to update Delivery Time'),
+            content: Text('Failed to update Delivery Time', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
           ),
         );
@@ -2842,7 +2842,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Collection Time updated successfully'),
+            content: Text('Collection Time updated successfully', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
           ),
         );
@@ -2859,7 +2859,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to update Collection Time'),
+            content: Text('Failed to update Collection Time', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
           ),
         );
@@ -2926,7 +2926,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${map.length} Delivery Times added for all days'),
+            content: Text('${map.length} Delivery Times added for all days', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
           ),
         );
@@ -2942,7 +2942,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to add Delivery Times'),
+            content: Text('Failed to add Delivery Times', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
           ),
         );
@@ -3009,7 +3009,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${map.length} Collection Times added for all days'),
+            content: Text('${map.length} Collection Times added for all days', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
           ),
         );
@@ -3025,7 +3025,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to add Collection Times'),
+            content: Text('Failed to add Collection Times', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
           ),
         );
@@ -3065,7 +3065,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: Colors.black,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -3090,7 +3090,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                             ),
                             child: Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -3118,7 +3118,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
                             ),
                             child: Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -3182,7 +3182,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(isDelivery ? 'Delivery time deleted successfully' : 'Collection time deleted successfully'),
+            content: Text(isDelivery ? 'Delivery time deleted successfully' : 'Collection time deleted successfully', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 1),
           ),
@@ -3202,7 +3202,7 @@ class _DeliveryPickupTimingState extends State<DeliveryPickupTiming> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to delete time'),
+            content: Text('Failed to delete time', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 1),
           ),

@@ -63,7 +63,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(message, style: const TextStyle(fontFamily: 'Sora')),
         backgroundColor: backgroundColor,
         duration: Duration(seconds: isWarning ? 4 : 2),
         behavior: SnackBarBehavior.floating,
@@ -87,7 +87,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
                 children: [
                   Text('manage'.tr,
                       style: const TextStyle(
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           fontSize: 18,
                           fontWeight: FontWeight.bold)),
                   GestureDetector(
@@ -106,7 +106,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
                               color: Colors.white,
                               fontWeight: FontWeight.w700,
                               fontSize: 12,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             )),
                       ),
                     ),
@@ -131,13 +131,13 @@ class _TaxmanagementState extends State<Taxmanagement> {
                             style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 13,
-                                fontFamily: 'Mulish'),
+                                fontFamily: 'Sora'),
                           ),
                           Text('percent'.tr,
                               style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 13,
-                                  fontFamily: 'Mulish')),
+                                  fontFamily: 'Sora')),
                         ],
                       ),
                     ),
@@ -150,7 +150,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
                           style: const TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 13,
-                              fontFamily: 'Mulish'),
+                              fontFamily: 'Sora'),
                         ),
                       ),
                     )
@@ -169,7 +169,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
                     'No taxes found',
                     style: TextStyle(
                       fontSize: 16,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.grey,
                     ),
                   ),
@@ -212,7 +212,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
                                       style: const TextStyle(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 14,
-                                          fontFamily: 'Mulish'),
+                                          fontFamily: 'Sora'),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -225,7 +225,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
                                         style: const TextStyle(
                                             fontWeight: FontWeight.w700,
                                             fontSize: 14,
-                                            fontFamily: 'Mulish'),
+                                            fontFamily: 'Sora'),
                                       ),
                                     ),
                                   ),
@@ -399,7 +399,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
                             color: Colors.black,
-                            fontFamily: 'Mulish'),
+                            fontFamily: 'Sora'),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 30),
@@ -423,7 +423,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
                                 child: Center(
                                   child: Text(
                                     'cancel'.tr,
-                                    style: const TextStyle(
+                                    style: const TextStyle(fontFamily: 'Sora', 
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
                                       color: Colors.white,
@@ -452,7 +452,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
                                 child: Center(
                                   child: Text(
                                     'delete'.tr,
-                                    style: const TextStyle(
+                                    style: const TextStyle(fontFamily: 'Sora', 
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
                                       color: Colors.white,
@@ -539,7 +539,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('tax_delete'.tr),
+            content: Text('tax_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
@@ -561,7 +561,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
             e.toString().contains('referenced by')) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('this'.tr),
+              content: Text('this'.tr, style: const TextStyle(fontFamily: 'Sora')),
               backgroundColor: Colors.orange,
               duration: const Duration(seconds: 4),
               behavior: SnackBarBehavior.floating,
@@ -570,7 +570,7 @@ class _TaxmanagementState extends State<Taxmanagement> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('delete_tax'.tr),
+              content: Text('delete_tax'.tr, style: const TextStyle(fontFamily: 'Sora')),
               backgroundColor: Colors.red,
               duration: const Duration(seconds: 3),
               behavior: SnackBarBehavior.floating,

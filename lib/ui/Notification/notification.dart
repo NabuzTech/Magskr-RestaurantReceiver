@@ -80,7 +80,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Notifications', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: const Text('Notifications', style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w600)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         leading: InkWell(
@@ -95,7 +95,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Obx(() => controller.notifications.isNotEmpty
               ? TextButton(
                   onPressed: controller.clearAll,
-                  child: const Text('Clear All', style: TextStyle(color: Colors.red)),
+                  child: const Text('Clear All', style: TextStyle(fontFamily: 'Sora', color: Colors.red)),
                 )
               : const SizedBox.shrink()),
         ],
@@ -111,11 +111,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 Icon(Icons.notifications_none, size: 72, color: Colors.grey.shade300),
                 const SizedBox(height: 16),
                 Text('No notifications',
-                    style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+                    style: TextStyle(fontFamily: 'Sora', color: Colors.grey.shade500, fontSize: 16)),
                 const SizedBox(height: 6),
                 Text(
                   'Windows App status updates appear here',
-                  style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                  style: TextStyle(fontFamily: 'Sora', color: Colors.grey.shade400, fontSize: 12),
                 ),
               ],
             ),
@@ -156,19 +156,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     child: Icon(_iconForTitle(title), color: color, size: 20),
                   ),
                   title: Text(title,
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                           fontWeight: FontWeight.w600, fontSize: 14)),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 3),
                       Text(body,
-                          style: const TextStyle(
+                          style: const TextStyle(fontFamily: 'Sora', 
                               fontSize: 13, color: Colors.black87)),
                       const SizedBox(height: 5),
                       Text(
                         _formatTime(receivedAt),
-                        style: TextStyle(
+                        style: TextStyle(fontFamily: 'Sora', 
                             fontSize: 11, color: Colors.grey.shade500),
                       ),
                     ],

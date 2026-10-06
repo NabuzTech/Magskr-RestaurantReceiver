@@ -274,7 +274,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
   void _showMessage(String msg, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg),
+        content: Text(msg, style: const TextStyle(fontFamily: 'Sora')),
         backgroundColor: isError ? Colors.red : _kAccentGreen,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
@@ -408,7 +408,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                         ? const Icon(Icons.check, size: 15, color: Colors.white)
                         : Text(
                             '${idx + 1}',
-                            style: TextStyle(
+                            style: TextStyle(fontFamily: 'Sora', 
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                               color: current ? Colors.white : Colors.grey.shade500,
@@ -419,7 +419,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                 const SizedBox(width: 6),
                 Text(
                   _stepTitles[idx],
-                  style: TextStyle(
+                  style: TextStyle(fontFamily: 'Sora', 
                     fontSize: 12,
                     fontWeight: current ? FontWeight.w700 : FontWeight.w500,
                     color: done || current ? _kAccentGreen : Colors.grey.shade500,
@@ -490,9 +490,9 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
           child: Icon(icon, color: _kAccentGreen, size: 26),
         ),
         const SizedBox(height: 4),
-        Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.black87)),
+        Text(title, style: const TextStyle(fontFamily: 'Sora', fontSize: 20, fontWeight: FontWeight.w700, color: Colors.black87)),
         const SizedBox(height: 4),
-        Text(subtitle, style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+        Text(subtitle, style: TextStyle(fontFamily: 'Sora', fontSize: 13, color: Colors.grey.shade600)),
       ],
     );
   }
@@ -521,7 +521,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text('custom_guest_count_label'.tr,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700)),
+                style: TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700)),
           ),
           const SizedBox(height: 8),
           Row(
@@ -583,7 +583,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
         child: Center(
           child: Text(
             label ?? '$value',
-            style: TextStyle(
+            style: TextStyle(fontFamily: 'Sora', 
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: selected ? Colors.white : Colors.black87,
@@ -627,7 +627,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                         }
                       }),
                     ),
-                    Text('${_monthNames[_calMonth]} $_calYear', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                    Text('${_monthNames[_calMonth]} $_calYear', style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w700)),
                     IconButton(
                       icon: const Icon(Icons.chevron_right),
                       onPressed: () => setState(() {
@@ -646,7 +646,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                       .map((d) => Expanded(
                             child: Center(
                               child: Text(d,
-                                  style: TextStyle(
+                                  style: TextStyle(fontFamily: 'Sora', 
                                       fontWeight: FontWeight.w600, color: Colors.grey.shade600, fontSize: 12)),
                             ),
                           ))
@@ -681,7 +681,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                             child: Center(
                               child: Text(
                                 isCurrentMonth ? '$day' : '',
-                                style: TextStyle(
+                                style: TextStyle(fontFamily: 'Sora', 
                                   color: isSelected
                                       ? Colors.white
                                       : disabled
@@ -735,7 +735,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 40),
                     child: Text('no_time_slots_for_date'.tr,
-                        style: TextStyle(color: Colors.grey.shade600)),
+                        style: TextStyle(fontFamily: 'Sora', color: Colors.grey.shade600)),
                   )
                 else
                   GridView.count(
@@ -792,7 +792,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                 const SizedBox(width: 4),
                 Text(
                   s.time ?? '',
-                  style: TextStyle(
+                  style: TextStyle(fontFamily: 'Sora', 
                     fontWeight: FontWeight.w600,
                     decoration: bookable ? null : TextDecoration.lineThrough,
                     color: !bookable ? Colors.grey.shade400 : (selected ? Colors.white : Colors.black87),
@@ -802,7 +802,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
             ),
             Text(
               bookable ? '${s.available ?? 0} ${'slots_free_label'.tr}' : 'fully_booked_label'.tr,
-              style: TextStyle(
+              style: TextStyle(fontFamily: 'Sora', 
                 fontSize: 12,
                 decoration: bookable ? null : TextDecoration.lineThrough,
                 color: !bookable ? Colors.grey.shade400 : (selected ? Colors.white : Colors.grey.shade600),
@@ -849,7 +849,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                     onEditingComplete: () => _noteFocus.unfocus()),
                 if (_error != null) ...[
                   const SizedBox(height: 8),
-                  Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+                  Text(_error!, style: const TextStyle(fontFamily: 'Sora', color: Colors.red, fontSize: 13)),
                 ],
               ],
             ),
@@ -908,10 +908,10 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(r[1] as String,
-                                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                                  style: TextStyle(fontFamily: 'Sora', fontSize: 11, color: Colors.grey.shade600)),
                               const SizedBox(height: 2),
                               Text(r[2] as String,
-                                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                                  style: const TextStyle(fontFamily: 'Sora', fontSize: 15, fontWeight: FontWeight.w600)),
                             ],
                           ),
                         ),
@@ -920,7 +920,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                   ),
                 if (_error != null) ...[
                   const SizedBox(height: 8),
-                  Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+                  Text(_error!, style: const TextStyle(fontFamily: 'Sora', color: Colors.red, fontSize: 13)),
                 ],
               ],
             ),
@@ -955,9 +955,9 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
           RichText(
             text: TextSpan(
               text: label,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
+              style: const TextStyle(fontFamily: 'Sora', fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
               children: required
-                  ? const [TextSpan(text: ' *', style: TextStyle(color: Colors.red))]
+                  ? const [TextSpan(text: ' *', style: TextStyle(fontFamily: 'Sora', color: Colors.red))]
                   : null,
             ),
           ),
@@ -971,7 +971,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
             onEditingComplete: onEditingComplete,
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: TextStyle(color: Colors.grey.shade400),
+              hintStyle: TextStyle(fontFamily: 'Sora', color: Colors.grey.shade400),
               filled: true,
               fillColor: Colors.grey.shade50,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -1008,7 +1008,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                 side: BorderSide(color: Colors.grey.shade300),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: Text('back_label'.tr, style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w600)),
+              child: Text('back_label'.tr, style: const TextStyle(fontFamily: 'Sora', color: Colors.black87, fontWeight: FontWeight.w600)),
             ),
           ),
           const SizedBox(width: 14),
@@ -1023,7 +1023,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                 minimumSize: const Size(0, 50),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: Text(nextLabel, style: const TextStyle(fontWeight: FontWeight.w700)),
+              child: Text(nextLabel, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700)),
             ),
           ),
         ],
@@ -1046,10 +1046,10 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('table_reservation_label'.tr,
-                    style: const TextStyle(color: _kGoldLabel, fontSize: 10, letterSpacing: 1.2, fontWeight: FontWeight.w600)),
+                    style: const TextStyle(fontFamily: 'Sora', color: _kGoldLabel, fontSize: 10, letterSpacing: 1.2, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 2),
                 Text(_storeName,
-                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700)),
+                    style: const TextStyle(fontFamily: 'Sora', color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700)),
               ],
             ),
           ),
@@ -1070,10 +1070,10 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('table_reservation_label'.tr,
-            style: const TextStyle(color: _kGoldLabel, fontSize: 12, letterSpacing: 1.5, fontWeight: FontWeight.w600)),
+            style: const TextStyle(fontFamily: 'Sora', color: _kGoldLabel, fontSize: 12, letterSpacing: 1.5, fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         Text(_storeName,
-            style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontFamily: 'Sora', color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700)),
         const Spacer(),
         _sidebarRow(Icons.people_outline, 'party_size_label'.tr.toUpperCase(),
             _selectedGuests == null ? '—' : '$_selectedGuests ${'guests'.tr}'),
@@ -1104,11 +1104,11 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label,
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                       color: Colors.white70, fontSize: 10, letterSpacing: 1.0, fontWeight: FontWeight.w600)),
               const SizedBox(height: 2),
               Text(value,
-                  style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700)),
+                  style: const TextStyle(fontFamily: 'Sora', color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700)),
             ],
           ),
         ),
@@ -1128,7 +1128,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
         children: [
           Icon(icon, color: Colors.white, size: 14),
           const SizedBox(width: 4),
-          Text(value, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+          Text(value, style: const TextStyle(fontFamily: 'Sora', color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
         ],
       ),
     );

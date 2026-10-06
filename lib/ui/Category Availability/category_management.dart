@@ -175,7 +175,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                       children: [
                         Text('category_availability'.tr,
                             style: const TextStyle(
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold)),
                         GestureDetector(
@@ -194,7 +194,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish',
+                                    fontFamily: 'Sora',
                                   )),
                             ),
                           ),
@@ -213,7 +213,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                         '${'showing'.tr} ${(currentPage - 1) * itemsPerPage + 1} to ${(currentPage - 1) * itemsPerPage + currentPageItems.length} of ${flattenedAvailabilityList.length} ${'entries'.tr}',
                         style: TextStyle(
                           fontSize: 12,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: Colors.grey[600],
                         ),
                       ),
@@ -236,7 +236,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 12,
-                                  fontFamily: 'Mulish'),
+                                  fontFamily: 'Sora'),
                             ),
                           ),
                           SizedBox(
@@ -245,7 +245,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish')),
+                                    fontFamily: 'Sora')),
                           ),
                           const SizedBox(width: 15),
                           SizedBox(
@@ -255,7 +255,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish'),
+                                    fontFamily: 'Sora'),
                               ),
                             ),
                           ),
@@ -266,7 +266,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 12,
-                                    fontFamily: 'Mulish'),
+                                    fontFamily: 'Sora'),
                               ),
                             ),
                           )
@@ -351,7 +351,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ),
                                 SizedBox(
@@ -361,7 +361,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ),
                                 SizedBox(
@@ -372,7 +372,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ),
                                 SizedBox(
@@ -382,7 +382,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                         fontSize: 12,
-                                        fontFamily: 'Mulish'),
+                                        fontFamily: 'Sora'),
                                   ),
                                 ),
                               ],
@@ -429,7 +429,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                           'previous'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage > 1 ? Colors.black87 : Colors.grey,
                           ),
@@ -461,7 +461,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                                 '$pageNum',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   fontWeight: FontWeight.w600,
                                   color: isActive ? Colors.white : Colors.black87,
                                 ),
@@ -488,7 +488,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                           'next'.tr,
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                             fontWeight: FontWeight.w600,
                             color: currentPage < totalPages ? Colors.black87 : Colors.grey,
                           ),
@@ -626,21 +626,21 @@ class _CategoryManagementState extends State<CategoryManagement> {
     // Validation
     if (selectedCategories.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('atleast_one'.tr), backgroundColor: Colors.red),
+        SnackBar(content: Text('atleast_one'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
       );
       return false;
     }
 
     if (selectedDays.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('atleast_day'.tr), backgroundColor: Colors.red),
+        SnackBar(content: Text('atleast_day'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
       );
       return false;
     }
 
     if (openingTimeController.text.isEmpty || closingTimeController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('select_open'.tr), backgroundColor: Colors.red),
+        SnackBar(content: Text('select_open'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
       );
       return false;
     }
@@ -672,7 +672,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('available_added'.tr), backgroundColor: Colors.green),
+          SnackBar(content: Text('available_added'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.green),
         );
       }
       return true;
@@ -680,7 +680,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
       Get.back();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('failed_availablity'.tr), backgroundColor: Colors.red),
+          SnackBar(content: Text('failed_availablity'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
         );
       }
       return false;
@@ -691,14 +691,14 @@ class _CategoryManagementState extends State<CategoryManagement> {
     // Validation
     if (selectedCategories.isEmpty || selectedDays.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('select_day'.tr), backgroundColor: Colors.red),
+        SnackBar(content: Text('select_day'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
       );
       return false;
     }
 
     if (openingTimeController.text.isEmpty || closingTimeController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('select_open'.tr), backgroundColor: Colors.red),
+        SnackBar(content: Text('select_open'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
       );
       return false;
     }
@@ -725,7 +725,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('avalaibe_update'.tr), backgroundColor: Colors.green),
+          SnackBar(content: Text('avalaibe_update'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.green),
         );
       }
       return true;
@@ -733,7 +733,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
       Get.back();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('available_failed'.tr), backgroundColor: Colors.red),
+          SnackBar(content: Text('available_failed'.tr, style: const TextStyle(fontFamily: 'Sora')), backgroundColor: Colors.red),
         );
       }
       return false;
@@ -793,7 +793,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                         IconButton(
@@ -810,7 +810,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -834,7 +834,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                                     : '${selectedCategories.length} ${'selected'.tr}',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: selectedCategories.isEmpty ? Colors.grey : Colors.black,
                                 ),
                               ),
@@ -852,7 +852,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -890,7 +890,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -928,7 +928,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -963,7 +963,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                             'all'.tr,
                             style: const TextStyle(
                               fontSize: 12,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: Colors.blue,
                               fontWeight: FontWeight.w600,
                             ),
@@ -988,7 +988,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                           'active'.tr,
                           style: const TextStyle(
                             fontSize: 14,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                       ],
@@ -1013,7 +1013,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -1042,7 +1042,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
-                                fontFamily: 'Mulish',
+                                fontFamily: 'Sora',
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -1090,7 +1090,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
             day,
             style: TextStyle(
               fontSize: 14,
-              fontFamily: 'Mulish',
+              fontFamily: 'Sora',
               fontWeight: FontWeight.bold,
               color: isSelected ? Colors.white : Colors.black,
             ),
@@ -1108,7 +1108,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: Text('select_categories'.tr),
+              title: Text('select_categories'.tr, style: const TextStyle(fontFamily: 'Sora')),
               content: SizedBox(
                 width: double.maxFinite,
                 child: ListView.builder(
@@ -1120,7 +1120,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                     return CheckboxListTile(
                       title: Text(
                         category.name ?? 'unknown'.tr,
-                        style: const TextStyle(fontFamily: 'Mulish'),
+                        style: const TextStyle(fontFamily: 'Sora'),
                       ),
                       value: isSelected,
                       onChanged: (value) {
@@ -1141,7 +1141,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Done'),
+                  child: const Text('Done', style: const TextStyle(fontFamily: 'Sora')),
                 ),
               ],
             );
@@ -1175,7 +1175,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('availability_deleted'.tr),
+            content: Text('availability_deleted'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -1189,7 +1189,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_available'.tr),
+            content: Text('failed_available'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -1228,7 +1228,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1253,7 +1253,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                             ),
                             child: Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1281,7 +1281,7 @@ class _CategoryManagementState extends State<CategoryManagement> {
                             ),
                             child: Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),

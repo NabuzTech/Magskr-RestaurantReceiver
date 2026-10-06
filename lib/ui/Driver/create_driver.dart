@@ -48,7 +48,7 @@ class _CreateDriverState extends State<CreateDriver> {
               Image.asset('assets/images/driverProfile.png',height: 80,width: 80,),
               const SizedBox(height: 10,),
               const Text('Create New Driver',style: TextStyle(
-                  fontSize: 28,fontFamily: 'Mulish',fontWeight: FontWeight.bold),),
+                  fontSize: 28,fontFamily: 'Sora',fontWeight: FontWeight.bold),),
               CustomTextFormPrefix(
                   myLabelText: 'User Email', 
                   keyboardType: TextInputType.emailAddress, 
@@ -151,7 +151,7 @@ class _CreateDriverState extends State<CreateDriver> {
         // Show success SnackBar
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Driver Registration Successful!'),
+            content: Text('Driver Registration Successful!', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
@@ -162,7 +162,7 @@ class _CreateDriverState extends State<CreateDriver> {
         // Handle failure case
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Registration failed. Please try again.'),
+            content: Text('Registration failed. Please try again.', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
@@ -177,7 +177,7 @@ class _CreateDriverState extends State<CreateDriver> {
       // Handle error case
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('An error occurred during registration.'),
+          content: Text('An error occurred during registration.', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,

@@ -24,7 +24,8 @@ Future<String?> _showCustomerMessageDialog(
   BuildContext context, {
   required String confirmLabel,
   required Color confirmColor,
-}) {
+})
+{
   final ctrl = TextEditingController();
   return showDialog<String?>(
     context: context,
@@ -46,11 +47,11 @@ Future<String?> _showCustomerMessageDialog(
             const Icon(Icons.message_outlined, color: Colors.blue, size: 40),
             const SizedBox(height: 10),
             Text('customer_message'.tr,
-                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                style: const TextStyle(fontFamily: 'Sora', fontSize: 17, fontWeight: FontWeight.w800)),
             const SizedBox(height: 6),
             Text('send_msg_to_customer'.tr,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                style: TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.grey.shade600)),
             const SizedBox(height: 14),
             TextField(
               controller: ctrl,
@@ -76,7 +77,7 @@ Future<String?> _showCustomerMessageDialog(
                     ),
                     child: Text(
                       'skip'.tr,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontFamily: 'Sora', fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
@@ -103,7 +104,7 @@ Future<String?> _showCustomerMessageDialog(
                         maxLines: 1,
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: const TextStyle(fontFamily: 'Sora', 
                           color: Colors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
@@ -244,7 +245,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
             SizedBox(width: 4),
             Text(
               'Today',
-              style: TextStyle(
+              style: TextStyle(fontFamily: 'Sora', 
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: Colors.blue,
@@ -307,7 +308,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('reserv'.tr,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                        style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 18)),
                     Row(
                       children: [
                         GestureDetector(
@@ -315,7 +316,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                           child: Row(
                             children: [
                               Text(_todayLabel(),
-                                  style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                  style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.grey)),
                               const SizedBox(width: 4),
                               const Icon(Icons.expand_more, size: 14, color: Colors.grey),
                             ],
@@ -404,14 +405,14 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title,
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                       fontSize: 15, fontWeight: FontWeight.bold)),
               if (subtitle != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 2),
                   child: Text(subtitle,
                       style:
-                      const TextStyle(fontSize: 12, color: Colors.grey)),
+                      const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.grey)),
                 ),
             ],
           ),
@@ -451,10 +452,10 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text('$total',
-                            style: const TextStyle(
+                            style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 22, fontWeight: FontWeight.bold)),
                         Text('tables_label'.tr,
-                            style: const TextStyle(
+                            style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 10, color: Colors.grey)),
                       ],
                     ),
@@ -513,9 +514,9 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
         ),
         const SizedBox(width: 8),
         Expanded(
-            child: Text(label, style: const TextStyle(fontSize: 13))),
+            child: Text(label, style: const TextStyle(fontFamily: 'Sora', fontSize: 13))),
         Text('$value',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+            style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 13)),
       ],
     );
   }
@@ -541,7 +542,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(label,
-          style: const TextStyle(
+          style: const TextStyle(fontFamily: 'Sora', 
               color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
     );
   }
@@ -672,7 +673,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: Text('no_time_slots_for_date'.tr,
-                  style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                  style: const TextStyle(fontFamily: 'Sora', color: Colors.grey, fontSize: 13)),
             )
           else ...[
             Row(
@@ -768,7 +769,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                       width: _slotColumnWidth,
                       child: Center(
                         child: Text(s.time ?? '',
-                            style: const TextStyle(fontSize: 9, color: Colors.grey)),
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 9, color: Colors.grey)),
                       ),
                     ))
                 .toList(),
@@ -804,7 +805,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
               ],
             ),
             Text('${counts[i]}',
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                style: const TextStyle(fontFamily: 'Sora', fontSize: 11, fontWeight: FontWeight.bold)),
           ],
         ),
       ));
@@ -824,7 +825,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
         ),
         const SizedBox(width: 6),
         Text('${b.reservation.customerName ?? '-'}  ${_formatTime(b.reservation.reservedFor)}',
-            style: const TextStyle(fontSize: 11, color: Colors.black87)),
+            style: const TextStyle(fontFamily: 'Sora', fontSize: 11, color: Colors.black87)),
       ],
     );
   }
@@ -916,7 +917,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
               children: [
                 Expanded(
                   child: Text(r.customerName ?? '-',
-                      style: TextStyle(
+                      style: TextStyle(fontFamily: 'Sora', 
                           color: color, fontWeight: FontWeight.bold, fontSize: 15)),
                 ),
                 Icon(Icons.calendar_month, color: color, size: 18),
@@ -940,7 +941,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                   },
                   icon: const Icon(Icons.edit_outlined, size: 16),
                   label: Text('edit_booking'.tr,
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                      style: const TextStyle(fontFamily: 'Sora', fontSize: 12, fontWeight: FontWeight.w600)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: color,
                     side: BorderSide(color: color),
@@ -969,7 +970,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
           const SizedBox(width: 8),
           Expanded(
             child: Text(text,
-                style: const TextStyle(
+                style: const TextStyle(fontFamily: 'Sora', 
                     color: Colors.black87, fontWeight: FontWeight.w600, fontSize: 13)),
           ),
         ],
@@ -993,12 +994,15 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   }
 
   Widget _bookingTabsRow() {
-    return Row(
-      children: [
-        _bookingTab('today_booking'.tr, 0),
-        const SizedBox(width: 16),
-        _bookingTab('today_received_booking'.tr, 1),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          _bookingTab('today_booking'.tr, 0),
+          const SizedBox(width: 8),
+          _bookingTab('today_received_booking'.tr, 1),
+        ],
+      ),
     );
   }
 
@@ -1017,7 +1021,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
           ),
         ),
         child: Text(label,
-            style: TextStyle(
+            style: TextStyle(fontFamily: 'Sora', 
               fontSize: 13,
               fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
             )),
@@ -1056,6 +1060,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
             Row(
               children: [
                 Expanded(child: _bookingTabsRow()),
+                const SizedBox(width: 8),
                 calendarActions,
               ],
             )
@@ -1066,7 +1071,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: Text('no_bookings_today'.tr,
-                  style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                  style: const TextStyle(fontFamily: 'Sora', color: Colors.grey, fontSize: 13)),
             )
           else
             SlidableAutoCloseBehavior(
@@ -1117,7 +1122,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                   const SizedBox(height: 4),
                   Text('edit_booking'.tr,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                           color: Colors.white,
                           fontSize: 11,
                           fontWeight: FontWeight.w600)),
@@ -1170,7 +1175,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
           /// TOP : TIME + STATUS
           Row(
             children: [
-              Text('Id : ${booking.id} ',style: TextStyle(
+              Text('Id : ${booking.id} ',style: TextStyle(fontFamily: 'Sora', 
                 fontSize: 16,fontWeight: FontWeight.w500
               ),),
               Container(
@@ -1189,7 +1194,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                     const SizedBox(width: 5),
                     Text(
                       _formatTime(booking.reservedFor),
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF2563EB),
@@ -1206,7 +1211,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                   booking.customerName ?? 'Unknown Customer',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF111827),
@@ -1250,7 +1255,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                     textAlign: TextAlign.end,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: const TextStyle(fontFamily: 'Sora', 
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF6B7280),
@@ -1277,7 +1282,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                       icon: const Icon(Icons.cancel_outlined, size: 17),
                       label: Text(
                         'decline'.tr,
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                        style: const TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFFDC2626),
@@ -1300,7 +1305,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                       icon: const Icon(Icons.check_circle_outline, size: 17),
                       label: Text(
                         'accept'.tr,
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                        style: const TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.accent,
@@ -1336,7 +1341,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
         const SizedBox(width: 7),
         Text(
           value,
-          style: const TextStyle(
+          style: const TextStyle(fontFamily: 'Sora', 
             fontSize: 16,
             fontWeight: FontWeight.w700,
             color: Color(0xFF374151),
@@ -1346,7 +1351,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
           const SizedBox(width: 2),
           Text(
             label,
-            style: const TextStyle(
+            style: const TextStyle(fontFamily: 'Sora', 
               fontSize: 10,
               color: Colors.black,
             ),
@@ -1456,7 +1461,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       setState(() => isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('store_not_found'.tr),
+          content: Text('store_not_found'.tr, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
         ),
       );
@@ -1528,7 +1533,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${'gett_history'.tr}: $e'),
+          content: Text('${'gett_history'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,
@@ -1634,7 +1639,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'reservation_status_update_failed'.tr}: $e'),
+            content: Text('${'reservation_status_update_failed'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -1655,7 +1660,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('reserv_update'.tr),
+          content: Text('reserv_update'.tr, style: const TextStyle(fontFamily: 'Sora')),
           backgroundColor: AppTheme.accent,
           duration: const Duration(seconds: 2),
         ),
@@ -1745,7 +1750,7 @@ class _TopSnackBarState extends State<_TopSnackBar> with SingleTickerProviderSta
               ),
               child: Text(
                 widget.message,
-                style: TextStyle(color: widget.textColor, fontWeight: FontWeight.w600, fontSize: 14),
+                style: TextStyle(fontFamily: 'Sora', color: widget.textColor, fontWeight: FontWeight.w600, fontSize: 14),
               ),
             ),
           ),
@@ -1891,7 +1896,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'reserv_update_failed'.tr}: $e'),
+            content: Text('${'reserv_update_failed'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -1926,7 +1931,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'reserv_update_failed'.tr}: $e'),
+            content: Text('${'reserv_update_failed'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -2004,7 +2009,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
                           children: [
                             Text(
                               'edit_reservation'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xFF111827),
@@ -2013,7 +2018,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
                             const SizedBox(height: 4),
                             Text(
                               'Update reservation details',
-                              style: TextStyle(
+                              style: TextStyle(fontFamily: 'Sora', 
                                 fontSize: 12,
                                 color: Colors.grey.shade600,
                               ),
@@ -2142,7 +2147,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
                                   DateFormat(
                                     'MMM d, yyyy',
                                   ).format(_date),
-                                  style: const TextStyle(
+                                  style: const TextStyle(fontFamily: 'Sora', 
                                     fontSize: 13,
                                     fontWeight:
                                     FontWeight.w600,
@@ -2173,7 +2178,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
                                 ),
                                 child: Text(
                                   _time.format(context),
-                                  style: const TextStyle(
+                                  style: const TextStyle(fontFamily: 'Sora', 
                                     fontSize: 13,
                                     fontWeight:
                                     FontWeight.w600,
@@ -2217,7 +2222,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
                             ),
                             child: Text(
                               'cancel_order'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontWeight:
                                 FontWeight.w600,
                               ),
@@ -2236,7 +2241,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
                             ),
                             label: Text(
                               'saved'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontWeight:
                                 FontWeight.w700,
                               ),
@@ -2305,7 +2310,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(
+          style: const TextStyle(fontFamily: 'Sora', 
             fontSize: 13,
             fontWeight: FontWeight.w700,
             color: Color(0xFF374151),
@@ -2324,7 +2329,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: const TextStyle(fontFamily: 'Sora', 
             fontSize: 11,
             fontWeight: FontWeight.w600,
             color: Color(0xFF6B7280),
@@ -2342,7 +2347,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(
+      hintStyle: const TextStyle(fontFamily: 'Sora', 
         color: Color(0xFF9CA3AF),
         fontSize: 13,
       ),
@@ -2419,7 +2424,8 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
   }
 
   Future<void> _loadMonthBookings() async {
-    final storeId = int.tryParse(widget.storeId ?? '');
+    final prefs = await SharedPreferences.getInstance();
+    final storeId = int.tryParse(prefs.getString(valueShared_STORE_KEY) ?? '');
     if (storeId == null) return;
     final requestedYear = _year;
     final requestedMonth = _month;
@@ -2430,21 +2436,21 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
       return;
     }
 
-    final totalDays = DateTime(requestedYear, requestedMonth + 1, 0).day;
-    final results = await Future.wait(List.generate(totalDays, (i) async {
-      final day = i + 1;
-      final dateStr =
-          DateFormat('yyyy-MM-dd').format(DateTime(requestedYear, requestedMonth, day));
-      try {
-        final list = await CallService()
-            .getReservationV2History({"store_id": storeId, "target_date": dateStr, "offset": 0});
-        return list.isNotEmpty ? day : null;
-      } catch (e) {
-        return null;
-      }
-    }));
+    final fmt = DateFormat('yyyy-MM-dd');
+    final fromDate = fmt.format(DateTime(requestedYear, requestedMonth, 1));
+    final toDate = fmt.format(DateTime(requestedYear, requestedMonth + 1, 0));
+    Set<int> days;
+    try {
+      final list = await CallService().getReservationV2ByDateRange(storeId, fromDate, toDate);
+      days = list
+          .map((r) => DateTime.tryParse(r.reservedFor ?? ''))
+          .where((d) => d != null && d.year == requestedYear && d.month == requestedMonth)
+          .map((d) => d!.day)
+          .toSet();
+    } catch (e) {
+      return;
+    }
 
-    final days = results.whereType<int>().toSet();
     _monthCache[key] = days;
     // Only apply if the user hasn't already flipped to a different month.
     if (mounted && _year == requestedYear && _month == requestedMonth) {
@@ -2487,7 +2493,7 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
                   },
                 ),
                 Text('${_monthKeys[_month].tr} $_year',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.bold)),
                 IconButton(
                   icon: const Icon(Icons.chevron_right),
                   onPressed: () {
@@ -2510,7 +2516,7 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
               children: _weekLabels
                   .map((d) => Expanded(
                       child: Center(
-                          child: Text(d, style: const TextStyle(fontWeight: FontWeight.bold)))))
+                          child: Text(d, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold)))))
                   .toList(),
             ),
             const SizedBox(height: 4),
@@ -2549,7 +2555,7 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
                           children: [
                             Text(
                               isCurrentMonth ? '$day' : '',
-                              style: TextStyle(
+                              style: TextStyle(fontFamily: 'Sora', 
                                 color: isSelected ? Colors.white : Colors.black87,
                                 fontWeight:
                                     isToday || isSelected ? FontWeight.bold : FontWeight.normal,
@@ -2666,7 +2672,7 @@ class _ReservationTimeSlotDialogState extends State<_ReservationTimeSlotDialog> 
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('available_times_label'.tr,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.bold)),
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
@@ -2674,7 +2680,7 @@ class _ReservationTimeSlotDialogState extends State<_ReservationTimeSlotDialog> 
                 ],
               ),
               Text(DateFormat('EEE, d MMM yyyy').format(widget.date),
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                  style: TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.grey.shade600)),
               const SizedBox(height: 12),
               Flexible(
                 child: _loading
@@ -2687,7 +2693,7 @@ class _ReservationTimeSlotDialogState extends State<_ReservationTimeSlotDialog> 
                         ? Padding(
                             padding: const EdgeInsets.symmetric(vertical: 40),
                             child: Text('no_time_slots_for_date'.tr,
-                                style: TextStyle(color: Colors.grey.shade600)),
+                                style: TextStyle(fontFamily: 'Sora', color: Colors.grey.shade600)),
                           )
                         // shrinkWrap:false so the grid sizes to the Flexible's
                         // bounded height and scrolls internally, instead of
@@ -2736,7 +2742,7 @@ class _ReservationTimeSlotDialogState extends State<_ReservationTimeSlotDialog> 
                 const SizedBox(width: 4),
                 Text(
                   s.time ?? '',
-                  style: TextStyle(
+                  style: TextStyle(fontFamily: 'Sora', 
                     fontWeight: FontWeight.w600,
                     decoration: bookable ? null : TextDecoration.lineThrough,
                     color: !bookable
@@ -2748,7 +2754,7 @@ class _ReservationTimeSlotDialogState extends State<_ReservationTimeSlotDialog> 
             ),
             Text(
               bookable ? '${s.available ?? 0} ${'slots_free_label'.tr}' : 'fully_booked_label'.tr,
-              style: TextStyle(
+              style: TextStyle(fontFamily: 'Sora', 
                 fontSize: 12,
                 decoration: bookable ? null : TextDecoration.lineThrough,
                 color: !bookable
@@ -2980,7 +2986,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
         ),
         title: Text(
           'details'.tr,
-          style: const TextStyle(
+          style: const TextStyle(fontFamily: 'Sora', 
             color: Color(0xFF111827),
             fontSize: 19,
             fontWeight: FontWeight.w800,
@@ -3041,7 +3047,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                                 ),
                                 child: Text(
                                   '#${booking.id ?? '-'}',
-                                  style: const TextStyle(
+                                  style: const TextStyle(fontFamily: 'Sora', 
                                     color: Colors.white,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
@@ -3073,7 +3079,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                                     const SizedBox(width: 7),
                                     Text(
                                       _titleCase(booking.status ?? '-'),
-                                      style: TextStyle(
+                                      style: TextStyle(fontFamily: 'Sora', 
                                         color: statusColor,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w800,
@@ -3091,7 +3097,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                             customerName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: const TextStyle(fontFamily: 'Sora', 
                               color: Colors.white,
                               fontSize: 25,
                               fontWeight: FontWeight.w800,
@@ -3109,7 +3115,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                                 : status == 'cancelled'
                                 ? 'Reservation cancelled'
                                 : 'Reservation details',
-                            style: TextStyle(
+                            style: TextStyle(fontFamily: 'Sora', 
                               color: Colors.white.withOpacity(0.62),
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
@@ -3283,7 +3289,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                             Expanded(
                               child: Text(
                                 booking.note!,
-                                style: const TextStyle(
+                                style: const TextStyle(fontFamily: 'Sora', 
                                   color: Color(0xFF78350F),
                                   fontSize: 14,
                                   height: 1.5,
@@ -3389,7 +3395,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
+                  style: TextStyle(fontFamily: 'Sora', 
                     color: Colors.white.withOpacity(0.45),
                     fontSize: 9,
                     fontWeight: FontWeight.w700,
@@ -3401,7 +3407,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                   value,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                     color: Colors.white,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -3454,7 +3460,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                     color: Color(0xFF64748B),
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -3463,7 +3469,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                 const SizedBox(height: 3),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                     color: Color(0xFF111827),
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -3502,7 +3508,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
         const SizedBox(width: 9),
         Text(
           title,
-          style: const TextStyle(
+          style: const TextStyle(fontFamily: 'Sora', 
             color: Color(0xFF111827),
             fontSize: 15,
             fontWeight: FontWeight.w800,
@@ -3572,7 +3578,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                     color: Color(0xFF94A3B8),
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
@@ -3584,7 +3590,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                   value,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                     color: Color(0xFF1E293B),
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -3649,7 +3655,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                     const SizedBox(width: 7),
                     Text(
                       'decline'.tr,
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                       ),
@@ -3694,7 +3700,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                     const SizedBox(width: 7),
                     Text(
                       'accept'.tr,
-                      style: const TextStyle(
+                      style: const TextStyle(fontFamily: 'Sora', 
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                       ),
@@ -3750,7 +3756,7 @@ class _BookingDetailsScreenState extends State<_BookingDetailsScreen> {
                 const SizedBox(width: 8),
                 Text(
                   'edit_booking'.tr,
-                  style: const TextStyle(
+                  style: const TextStyle(fontFamily: 'Sora', 
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
                   ),

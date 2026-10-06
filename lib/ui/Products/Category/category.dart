@@ -102,7 +102,7 @@ class _CategoryState extends State<Category> {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                fontFamily: 'Mulish',
+                fontFamily: 'Sora',
               ),
             ),
             const SizedBox(height: 20),
@@ -152,7 +152,7 @@ class _CategoryState extends State<Category> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -201,7 +201,7 @@ class _CategoryState extends State<Category> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                     ],
@@ -229,7 +229,7 @@ class _CategoryState extends State<Category> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.grey.shade600,
                     ),
                   ),
@@ -302,7 +302,7 @@ class _CategoryState extends State<Category> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to upload image: $e'),
+            content: Text('Failed to upload image: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
           ),
         );
@@ -381,7 +381,7 @@ class _CategoryState extends State<Category> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('category'.tr, style: const TextStyle(
-                          fontFamily: 'Mulish', fontSize: 18, fontWeight: FontWeight.bold
+                          fontFamily: 'Sora', fontSize: 18, fontWeight: FontWeight.bold
                       )),
                       GestureDetector(
                         onTap: () {
@@ -398,7 +398,7 @@ class _CategoryState extends State<Category> {
                               color: Colors.white,
                               fontWeight: FontWeight.w700,
                               fontSize: 12,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                             )),
                           ),
                         ),
@@ -424,7 +424,7 @@ class _CategoryState extends State<Category> {
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w800,
                                       fontSize: 13,
-                                      fontFamily: 'Mulish'
+                                      fontFamily: 'Sora'
                                   ),
                                 ),
                               ),
@@ -434,7 +434,7 @@ class _CategoryState extends State<Category> {
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w800,
                                         fontSize: 13,
-                                        fontFamily: 'Mulish'
+                                        fontFamily: 'Sora'
                                     )
                                 ),
                               ),
@@ -449,7 +449,7 @@ class _CategoryState extends State<Category> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 13,
-                                  fontFamily: 'Mulish'
+                                  fontFamily: 'Sora'
                               ),
                             ),
                           ),
@@ -469,7 +469,7 @@ class _CategoryState extends State<Category> {
                         currentSearchQuery.isEmpty ? 'no'.tr : '${'no_categories'.tr} "$currentSearchQuery"',
                         style: const TextStyle(
                           fontSize: 16,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                           color: Colors.grey,
                         ),
                       ),
@@ -534,7 +534,7 @@ class _CategoryState extends State<Category> {
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w700,
                                                   fontSize: 12,
-                                                  fontFamily: 'Mulish'
+                                                  fontFamily: 'Sora'
                                               ),
                                               overflow: TextOverflow.ellipsis,
                                             ),
@@ -542,7 +542,7 @@ class _CategoryState extends State<Category> {
                                               style: const TextStyle(
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 10,
-                                                  fontFamily: 'Mulish'
+                                                  fontFamily: 'Sora'
                                               ),
                                               overflow: TextOverflow.ellipsis,
                                             ),
@@ -558,7 +558,7 @@ class _CategoryState extends State<Category> {
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 14,
-                                                fontFamily: 'Mulish'
+                                                fontFamily: 'Sora'
                                             ),
                                           ),
                                         ),
@@ -583,7 +583,7 @@ class _CategoryState extends State<Category> {
                                         (product.isActive == true) ? 'active'.tr : 'inactive'.tr,
                                         style: const TextStyle(
                                             fontSize: 12,
-                                            fontFamily: 'Mulish',
+                                            fontFamily: 'Sora',
                                             fontWeight: FontWeight.w700,
                                             color: Colors.white
                                         ),
@@ -791,7 +791,7 @@ class _CategoryState extends State<Category> {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Mulish',
+                            fontFamily: 'Sora',
                           ),
                         ),
                       ),
@@ -921,7 +921,7 @@ class _CategoryState extends State<Category> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.black87,
                     ),
                   ),
@@ -933,7 +933,7 @@ class _CategoryState extends State<Category> {
                       hintStyle: TextStyle(
                         color: Colors.grey.shade400,
                         fontSize: 14,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -958,7 +958,7 @@ class _CategoryState extends State<Category> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.black87,
                     ),
                   ),
@@ -975,7 +975,7 @@ class _CategoryState extends State<Category> {
                         style: TextStyle(
                           color: Colors.grey.shade400,
                           fontSize: 14,
-                          fontFamily: 'Mulish',
+                          fontFamily: 'Sora',
                         ),
                       ),
                       decoration: const InputDecoration(
@@ -991,7 +991,7 @@ class _CategoryState extends State<Category> {
                             '${tax.name} (${tax.percentage}%)',
                             style: const TextStyle(
                               fontSize: 14,
-                              fontFamily: 'Mulish',
+                              fontFamily: 'Sora',
                               color: Colors.black87,
                             ),
                           ),
@@ -1015,7 +1015,7 @@ class _CategoryState extends State<Category> {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'Mulish',
+                      fontFamily: 'Sora',
                       color: Colors.black87,
                     ),
                   ),
@@ -1027,7 +1027,7 @@ class _CategoryState extends State<Category> {
                       hintStyle: TextStyle(
                         color: Colors.grey.shade400,
                         fontSize: 14,
-                        fontFamily: 'Mulish',
+                        fontFamily: 'Sora',
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -1071,7 +1071,7 @@ class _CategoryState extends State<Category> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.grey.shade600,
                                 ),
                               ),
@@ -1121,7 +1121,7 @@ class _CategoryState extends State<Category> {
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  fontFamily: 'Mulish',
+                                  fontFamily: 'Sora',
                                   color: Colors.white,
                                 ),
                               ),
@@ -1271,7 +1271,7 @@ class _CategoryState extends State<Category> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('product_category'.tr),
+            content: Text('product_category'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 1),
           ),
@@ -1288,7 +1288,7 @@ class _CategoryState extends State<Category> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'failed_category'.tr}: ${e.toString()}'),
+            content: Text('${'failed_category'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 1),
           ),
@@ -1364,7 +1364,7 @@ class _CategoryState extends State<Category> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1388,7 +1388,7 @@ class _CategoryState extends State<Category> {
                             ),
                             child:  Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1417,7 +1417,7 @@ class _CategoryState extends State<Category> {
                             ),
                             child:  Text(
                               'delete'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1476,7 +1476,7 @@ class _CategoryState extends State<Category> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('category_delete'.tr),
+            content: Text('category_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 1),
           ),
@@ -1491,7 +1491,7 @@ class _CategoryState extends State<Category> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_category_delete'.tr),
+            content: Text('failed_category_delete'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 1),
           ),
@@ -1567,7 +1567,7 @@ class _CategoryState extends State<Category> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('category_update'.tr),
+            content: Text('category_update'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 1),
           ),
@@ -1586,7 +1586,7 @@ class _CategoryState extends State<Category> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'upd_category'.tr}: ${e.toString()}'),
+            content: Text('${'upd_category'.tr}: ${e.toString()}', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 1),
           ),
@@ -1627,7 +1627,7 @@ class _CategoryState extends State<Category> {
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Colors.black,
-                          fontFamily: 'Mulish'
+                          fontFamily: 'Sora'
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -1652,7 +1652,7 @@ class _CategoryState extends State<Category> {
                             ),
                             child: Text(
                               'cancel'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1680,7 +1680,7 @@ class _CategoryState extends State<Category> {
                             ),
                             child: Text(
                               'yes'.tr,
-                              style: const TextStyle(
+                              style: const TextStyle(fontFamily: 'Sora', 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1781,7 +1781,7 @@ class _CategoryState extends State<Category> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(newStatus ? 'category_activated'.tr : 'category_deactivated'.tr),
+            content: Text(newStatus ? 'category_activated'.tr : 'category_deactivated'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 1),
           ),
@@ -1797,7 +1797,7 @@ class _CategoryState extends State<Category> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('failed_status_change'.tr),
+            content: Text('failed_status_change'.tr, style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 1),
           ),

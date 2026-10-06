@@ -101,8 +101,8 @@ class _AddEditStoreConfigState extends State<AddEditStoreConfig> {
         child: RichText(
           text: TextSpan(
             text: text,
-            style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w700, fontFamily: 'Mulish', fontSize: 13),
-            children: required ? const [TextSpan(text: ' *', style: TextStyle(color: Colors.red))] : null,
+            style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w700, fontFamily: 'Sora', fontSize: 13),
+            children: required ? const [TextSpan(text: ' *', style: TextStyle(fontFamily: 'Sora', color: Colors.red))] : null,
           ),
         ),
       );
@@ -112,8 +112,8 @@ class _AddEditStoreConfigState extends State<AddEditStoreConfig> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(width: 130, child: Text(label, style: TextStyle(color: Colors.grey.shade600, fontFamily: 'Mulish', fontSize: 12))),
-            Expanded(child: Text(value, style: const TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w600, fontSize: 12))),
+            SizedBox(width: 130, child: Text(label, style: TextStyle(color: Colors.grey.shade600, fontFamily: 'Sora', fontSize: 12))),
+            Expanded(child: Text(value, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w600, fontSize: 12))),
           ],
         ),
       );
@@ -127,7 +127,7 @@ class _AddEditStoreConfigState extends State<AddEditStoreConfig> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         title: Text(isEdit ? 'Edit Store Config' : 'Add Store Config',
-            style: const TextStyle(fontFamily: 'Mulish', fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700)),
       ),
       body: Form(
         key: _formKey,
@@ -145,7 +145,7 @@ class _AddEditStoreConfigState extends State<AddEditStoreConfig> {
                 padding: EdgeInsets.only(top: 4),
                 child: Text(
                   'Enter the domain used to identify this config in the update request.',
-                  style: TextStyle(fontSize: 11, color: Colors.grey, fontFamily: 'Mulish'),
+                  style: TextStyle(fontSize: 11, color: Colors.grey, fontFamily: 'Sora'),
                 ),
               ),
 
@@ -186,8 +186,8 @@ class _AddEditStoreConfigState extends State<AddEditStoreConfig> {
               initialValue: language,
               decoration: _decoration(''),
               items: const [
-                DropdownMenuItem(value: 'en', child: Text('English (en)')),
-                DropdownMenuItem(value: 'de', child: Text('German (de)')),
+                DropdownMenuItem(value: 'en', child: Text('English (en)', style: const TextStyle(fontFamily: 'Sora'))),
+                DropdownMenuItem(value: 'de', child: Text('German (de)', style: const TextStyle(fontFamily: 'Sora'))),
               ],
               onChanged: (v) => setState(() => language = v ?? 'en'),
             ),
@@ -197,11 +197,11 @@ class _AddEditStoreConfigState extends State<AddEditStoreConfig> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Footer Links', style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Mulish', fontSize: 14)),
+                  const Text('Footer Links', style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 14)),
                   TextButton.icon(
                     onPressed: () => setState(() => footerLinks.add(Footer(label: '', link: ''))),
                     icon: const Icon(Icons.add, size: 18),
-                    label: const Text('Add Link'),
+                    label: const Text('Add Link', style: const TextStyle(fontFamily: 'Sora')),
                   ),
                 ],
               ),
@@ -209,7 +209,7 @@ class _AddEditStoreConfigState extends State<AddEditStoreConfig> {
             if (footerLinks.isEmpty)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),
-                child: Text('No footer links yet.', style: TextStyle(color: Colors.grey, fontFamily: 'Mulish')),
+                child: Text('No footer links yet.', style: TextStyle(color: Colors.grey, fontFamily: 'Sora')),
               ),
             ...footerLinks.asMap().entries.map((entry) {
               final i = entry.key;
@@ -248,7 +248,7 @@ class _AddEditStoreConfigState extends State<AddEditStoreConfig> {
 
             if (isEdit) ...[
               const SizedBox(height: 24),
-              const Text('Current Store Info', style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Mulish', fontSize: 14)),
+              const Text('Current Store Info', style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 14)),
               const Divider(),
               _infoRow('Country', e?.country ?? '-'),
               _infoRow('Distance Delivery', (e?.useDistanceDelivery ?? false) ? 'Enabled' : 'Disabled'),
@@ -273,7 +273,7 @@ class _AddEditStoreConfigState extends State<AddEditStoreConfig> {
                       )
                     : Text(
                         isEdit ? 'Update Config' : 'Create Config',
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontFamily: 'Mulish', fontSize: 15),
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontFamily: 'Sora', fontSize: 15),
                       ),
               ),
             ),
