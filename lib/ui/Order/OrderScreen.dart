@@ -2150,9 +2150,8 @@ class _OrderScreenState extends State<OrderScreenNew>
                                                               children: [
                                                                 Container(
                                                                   width: MediaQuery.of(context).size.width * (_storeType == '2' ? 0.35 :
-                                                                  (order.orderType == 2 ? 0.2 : 0.2)),
-                                                                  child: Text(order.orderType == 2 ? 'pickup'.tr : (_storeType == '2'
-                                                                      ? _getFullAddress(
+                                                                  (order.orderType == 2 ? 0.19 : 0.17)),
+                                                                  child: Text(order.orderType == 2 ? 'pickup'.tr : (_storeType == '2' ? _getFullAddress(
                                                                       order.shipping_address ?? order.guestShippingJson,
                                                                       order.shipping_address == null)
                                                                       : (order.shipping_address?.zip?.toString() ?? guestAddress)),
@@ -2164,7 +2163,7 @@ class _OrderScreenState extends State<OrderScreenNew>
                                                                 ),
                                                                 if (order.deliveryTime != null && order.deliveryTime!.isNotEmpty)
                                                                   Container(
-                                                                    width: MediaQuery.of(context).size.width * 0.22,
+                                                                    width: MediaQuery.of(context).size.width * 0.24,
                                                                     child: Text(
                                                                       '${'time'.tr}: ${_extractTime(order.deliveryTime!)}',
                                                                       style: const TextStyle(fontWeight: FontWeight.w700,

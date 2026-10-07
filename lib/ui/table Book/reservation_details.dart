@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:food_receiver/constants/app_theme.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -11,6 +13,7 @@ import '../../constants/constant.dart';
 import '../../models/reservation/accept_decline_reservation_response_model.dart';
 import '../../models/reservation/edit_reservation_details_response_model.dart';
 import '../../models/reservation/get_reservation_table_full_details.dart';
+import '../../utils/contact_launcher.dart';
 
 class ReservationDetails extends StatefulWidget {
   final String id;
@@ -65,7 +68,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
         return Colors.orange;
       case 'booked':
       case 'accepted':
-        return Colors.green;
+        return AppTheme.accent;
       case 'cancelled':
       case 'decline':
       case 'declined':
@@ -104,210 +107,470 @@ class _ReservationDetailsState extends State<ReservationDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Image.asset(
-                'assets/images/reservationIcon.png',
-                height: 20,
-                width: 20,
-              ),
-            ),
-            Text(
-              'details'.tr,
-              style: const TextStyle(fontFamily: 'Sora', color: Colors.black, fontWeight: FontWeight.w500),
-            ),
-          ],
+    final s = status.toLowerCase();
+    final isPending = s == 'pending' || s.isEmpty;
+    final hasNote = note.trim().isNotEmpty && note != 'null';
+    final hasEmail = email.trim().isNotEmpty && email != 'null';
+    final hasPhone = phone.trim().isNotEmpty && phone != 'null';
+    final name = (customerName == 'null' ? '' : customerName).trim();
+
+    return AppGradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          leadingWidth: 64,
+          leading: Center(
+            child: _roundIconButton(Icons.arrow_back_rounded, () => Get.back()),
+          ),
+          centerTitle: true,
+          title: Text(
+            'details'.tr,
+            style: const TextStyle(fontFamily: 'Sora',
+                color: AppTheme.accentDark, fontWeight: FontWeight.w700, fontSize: 18),
+          ),
+          actions: const [SizedBox(width: 64)],
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
+        body: isLoading
+            ? Center(
+                child: Lottie.asset(
+                  'assets/animations/burger.json',
+                  width: 150,
+                  height: 150,
+                  repeat: true,
+                ),
+              )
+            : ListView(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                children: [
+                  // ─── Hero: id, status, created + reserved-for, guests ───
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFF6D5DF6), Color(0xFF4F8DF7)],
+                      ),
+                      borderRadius: BorderRadius.circular(22),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF6D5DF6).withOpacity(0.22),
+                          blurRadius: 24,
+                          spreadRadius: -6,
+                          offset: const Offset(0, 12),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            _heroPill('reserv'.tr, Icons.table_restaurant_rounded),
+                            const Spacer(),
+                            _statusPill(s),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          '#$orderId',
+                          style: const TextStyle(fontFamily: 'Sora',
+                              color: Colors.white, fontWeight: FontWeight.w800, fontSize: 32, height: 1),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(child: _heroTile(Icons.receipt_long_rounded, 'date'.tr, date)),
+                            const SizedBox(width: 10),
+                            Expanded(
+                                child: _heroTile(Icons.event_rounded, 'reservation_date'.tr, reservation)),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Container(height: 1, color: Colors.white.withOpacity(0.18)),
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            const Icon(Icons.group_rounded, color: Colors.white, size: 22),
+                            const SizedBox(width: 8),
+                            Text('guest'.tr,
+                                style: TextStyle(fontFamily: 'Sora',
+                                    color: Colors.white.withOpacity(0.8), fontSize: 13)),
+                            const Spacer(),
+                            Text(guest,
+                                style: const TextStyle(fontFamily: 'Sora',
+                                    color: Colors.white, fontWeight: FontWeight.w800, fontSize: 24)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // ─── Customer ───
+                  _card(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundColor: AppTheme.accentLight,
+                              child: Text(
+                                name.isEmpty ? '?' : name[0].toUpperCase(),
+                                style: const TextStyle(fontFamily: 'Sora',
+                                    color: AppTheme.accent, fontWeight: FontWeight.w800, fontSize: 18),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('customer'.tr,
+                                      style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black45)),
+                                  const SizedBox(height: 2),
+                                  Text(name.isEmpty ? '-' : name,
+                                      style: const TextStyle(fontFamily: 'Sora',
+                                          fontWeight: FontWeight.w700, fontSize: 16, color: AppTheme.accentDark)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (hasPhone || hasEmail) ...[
+                          const SizedBox(height: 14),
+                          Row(
+                            children: [
+                              if (hasPhone)
+                                Expanded(child: _contactButton(Icons.call_rounded, phone, () => launchPhone(phone))),
+                              if (hasPhone && hasEmail) const SizedBox(width: 8),
+                              if (hasEmail)
+                                Expanded(child: _contactButton(Icons.mail_rounded, email, () => launchEmail(email))),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+
+                  // ─── Note ───
+                  if (hasNote)
+                    Container(
+                      margin: const EdgeInsets.only(top: 14),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF7E6),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: const Color(0xFFFFE2A8)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.sticky_note_2_rounded, size: 20, color: Color(0xFFE09A00)),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('note'.tr,
+                                    style: const TextStyle(fontFamily: 'Sora',
+                                        fontWeight: FontWeight.w700, fontSize: 13, color: Color(0xFF8A5A00))),
+                                const SizedBox(height: 4),
+                                Text(note,
+                                    style: const TextStyle(fontFamily: 'Sora',
+                                        fontSize: 13, height: 1.35, color: Color(0xFF5C3D00))),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+        bottomNavigationBar: isLoading
+            ? null
+            : Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.accent.withOpacity(0.10),
+                      blurRadius: 20,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                    child: _isSuperAdmin
+                        ? _statusBanner(status.capitalizeFirst ?? status, getStatusColor(status),
+                            Icons.info_rounded)
+                        : isPending
+                        ? Row(
+                            children: [
+                              Expanded(
+                                child: _actionButton(Icons.close_rounded, 'decline'.tr, false,
+                                    () => _showCustomerMessagePopup(actionType: 'cancelled')),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                flex: 2,
+                                child: _actionButton(Icons.check_rounded, 'accept'.tr, true,
+                                    () => _showCustomerMessagePopup(actionType: 'booked')),
+                              ),
+                            ],
+                          )
+                        : s == 'booked'
+                            ? Row(
+                                children: [
+                                  Expanded(
+                                    child: _statusBanner('accepted'.tr, AppTheme.accent,
+                                        Icons.check_circle_rounded),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: SizedBox(
+                                      height: 50,
+                                      child: OutlinedButton.icon(
+                                        onPressed: _showEditBottomSheet,
+                                        icon: const Icon(Icons.edit_rounded, size: 18),
+                                        label: Text('edit_reservation'.tr,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700)),
+                                        style: OutlinedButton.styleFrom(
+                                          foregroundColor: AppTheme.accent,
+                                          side: const BorderSide(color: Color(0xFFD9D2FB)),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : _statusBanner(status.capitalizeFirst ?? status, getStatusColor(status),
+                                Icons.cancel_rounded),
+                  ),
+                ),
+              ),
+      ),
+    );
+  }
+
+  // ─── Detail layout helpers (same look as order details) ───
+  Widget _roundIconButton(IconData icon, VoidCallback? onTap) {
+    return Material(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: const BorderSide(color: Color(0xFFE7E4FA)),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: SizedBox(
+          width: 42,
+          height: 42,
+          child: Icon(icon, size: 20, color: onTap == null ? Colors.black26 : AppTheme.accentDark),
         ),
       ),
-      body: isLoading
-          ? Center(
-        child: Lottie.asset(
-          'assets/animations/burger.json',
-          width: 150,
-          height: 150,
-          repeat: true,
+    );
+  }
+
+  Widget _heroPill(String text, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.18),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: Colors.white),
+          const SizedBox(width: 6),
+          Text(text,
+              style: const TextStyle(fontFamily: 'Sora',
+                  color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget _statusPill(String s) {
+    final (String label, IconData icon) = switch (s) {
+      'booked' || 'accepted' => ('accepted'.tr, Icons.check_circle_rounded),
+      'cancelled' || 'decline' || 'declined' => ('decline'.tr, Icons.cancel_rounded),
+      _ => ('pending'.tr, Icons.hourglass_top_rounded),
+    };
+    final color = s.isEmpty ? Colors.orange : getStatusColor(s);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 5),
+          Text(label,
+              style: TextStyle(fontFamily: 'Sora', color: color, fontWeight: FontWeight.w800, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  // Time large, date small underneath.
+  Widget _heroTile(IconData icon, String label, String? iso) {
+    final dt = DateTime.tryParse(iso ?? '');
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.14),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 14, color: Colors.white.withOpacity(0.85)),
+              const SizedBox(width: 5),
+              Expanded(
+                child: Text(label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontFamily: 'Sora', color: Colors.white.withOpacity(0.85), fontSize: 11)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(dt == null ? '-' : DateFormat('HH:mm').format(dt),
+              style: const TextStyle(fontFamily: 'Sora',
+                  color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20, height: 1)),
+          const SizedBox(height: 3),
+          Text(dt == null ? '' : DateFormat('dd.MM.yyyy').format(dt),
+              style: TextStyle(fontFamily: 'Sora', color: Colors.white.withOpacity(0.75), fontSize: 11)),
+        ],
+      ),
+    );
+  }
+
+  Widget _card({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 14),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.accent.withOpacity(0.07),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  // Tap copies the value.
+  Widget _contactButton(IconData icon, String value, VoidCallback onTap) {
+    return Material(
+      color: const Color(0xFFF4F2FE),
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        onLongPress: () {
+          Clipboard.setData(ClipboardData(text: value));
+          showSnackbar('', value, backgroundColor: AppTheme.accent);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+          child: Column(
+            children: [
+              Icon(icon, size: 20, color: AppTheme.accent),
+              const SizedBox(height: 4),
+              Text(value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontFamily: 'Sora',
+                      fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.accentDark)),
+            ],
+          ),
         ),
-      )
-          : Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+    );
+  }
+
+  Widget _statusBanner(String text, Color color, IconData icon) {
+    return Container(
+      height: 50,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 20, color: color),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(text,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w800, fontSize: 14, color: color)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Accept = theme gradient, decline = soft red outline.
+  Widget _actionButton(IconData icon, String label, bool primary, VoidCallback onTap) {
+    final fg = primary ? Colors.white : const Color(0xFFDC2626);
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 52,
+        decoration: BoxDecoration(
+          gradient: primary
+              ? const LinearGradient(colors: [Color(0xFF6D5DF6), Color(0xFF4F8DF7)])
+              : null,
+          color: primary ? null : const Color(0xFFFEF2F2),
+          borderRadius: BorderRadius.circular(14),
+          border: primary ? null : Border.all(color: const Color(0xFFFCA5A5)),
+          boxShadow: primary
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFF6D5DF6).withOpacity(0.35),
+                    blurRadius: 14,
+                    offset: const Offset(0, 6),
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Divider(color: Color(0xff757B8F)),
-            Center(
-              child: Text(
-                '${'order_id'.tr}: $orderId',
-                style: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
-                    fontFamily: 'Sora'),
-              ),
+            Icon(icon, size: 20, color: fg),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(label,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontFamily: 'Sora', color: fg, fontWeight: FontWeight.w800, fontSize: 15)),
             ),
-            Center(
-              child: Text(
-                '${'date'.tr}: ${formatDateTime(date)}',
-                style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    fontFamily: 'Sora'),
-              ),
-            ),
-            const Divider(color: Color(0xff757B8F)),
-            Text(
-              '${'customer'.tr} : $customerName',
-              style: const TextStyle(
-                  fontFamily: 'Sora',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              '${'phone'.tr} : $phone ',
-              style: const TextStyle(
-                  fontFamily: 'Sora',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              '${'guest'.tr} : $guest',
-              style: const TextStyle(
-                  fontFamily: 'Sora',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 5),
-            const Divider(color: Color(0xff757B8F)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${'reservation_date'.tr}:  ${formatDateTime(reservation)}',
-                  style: const TextStyle(
-                      fontFamily: 'Sora',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-            const SizedBox(height: 5),
-            const Divider(color: Color(0xff757B8F)),
-            const SizedBox(height: 5),
-            Text(
-              '${'note'.tr}:  $note',
-              style: const TextStyle(
-                  fontFamily: 'Sora',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600),
-            ),
-            const Spacer(),
-            _isSuperAdmin
-                ? Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                decoration: BoxDecoration(
-                  color: getStatusColor(status),
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Text(
-                  'Status: ${status.toUpperCase()}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                    fontFamily: 'Sora',
-                  ),
-                ),
-              ),
-            )
-                : status.toLowerCase() == 'pending' || status.isEmpty
-                ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    _showCustomerMessagePopup(actionType: 'cancelled');
-                  },
-                  child: Container(
-                    width: 100,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(5)),
-                    child: Center(
-                      child: Text(
-                        'decline'.tr,
-                        style: const TextStyle(fontFamily: 'Sora', 
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20),
-                GestureDetector(
-                  onTap: () {
-                    _showCustomerMessagePopup(actionType: 'booked');
-                  },
-                  child: Container(
-                    width: 110,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(5)),
-                    child: Center(
-                      child: Text(
-                        'accept'.tr,
-                        style: const TextStyle(fontFamily: 'Sora', 
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
-                : Center(
-              child: InkWell(
-                onLongPress: status.toLowerCase() == 'booked'
-                    ? () {
-                  _showEditBottomSheet();
-                }
-                    : null,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: getStatusColor(status),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Text(
-                    'Status: ${status.toUpperCase()}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                      fontFamily: 'Sora',
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
           ],
         ),
       ),
@@ -407,7 +670,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
         showSnackbar(
           'success'.tr,
           '${'reserv'.tr} ${statusToUpdate == 'booked' ? 'accepted'.tr : 'decline'.tr} ${'successfully'.tr}',
-          backgroundColor: statusToUpdate == 'booked' ? Colors.green : Colors.red,
+          backgroundColor: statusToUpdate == 'booked' ? AppTheme.accent : Colors.red,
         );
       }
     } catch (e) {
@@ -494,7 +757,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
         showSnackbar(
           'success'.tr,
           'reserv_update'.tr,
-          backgroundColor: Colors.green,
+          backgroundColor: AppTheme.accent,
         );
       }
     } catch (e) {
@@ -645,7 +908,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                                 width: 130,
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                    color: Colors.green,
+                                    color: AppTheme.accent,
                                     borderRadius: BorderRadius.circular(5)),
                                 child: Center(
                                   child: Text(
@@ -736,9 +999,9 @@ class _ReservationDetailsState extends State<ReservationDetails> {
           ),
           Container(
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: const Color(0xFFF6F5FD),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[300]!, width: 1),
+              border: Border.all(color: const Color(0xFFE7E4FA), width: 1),
             ),
             child: TextFormField(
               controller: controller,
@@ -766,7 +1029,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                   padding: const EdgeInsets.all(12),
                   child: Icon(
                     icon,
-                    color: Colors.grey[600],
+                    color: AppTheme.accent,
                     size: 22,
                   ),
                 ),
@@ -778,7 +1041,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 enabledBorder: InputBorder.none,
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.blue.shade600, width: 2),
+                  borderSide: BorderSide(color: AppTheme.accent, width: 2),
                 ),
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 16,
@@ -821,7 +1084,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Colors.blue.shade600,
+              primary: AppTheme.accent,
               onPrimary: Colors.white,
               onSurface: Colors.black,
             ),
@@ -898,7 +1161,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue.shade600, Colors.blue.shade800],
+                  colors: const [Color(0xFF6D5DF6), Color(0xFF4F8DF7)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -949,7 +1212,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   fontFamily: 'Sora',
-                  color: Colors.blue.shade800,
+                  color: AppTheme.accentDark,
                 ),
               ),
             ),
@@ -991,7 +1254,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                             showSnackbar(
                               'time_selected'.tr,
                               '${"updated".tr} $selectedTime',
-                              backgroundColor: Colors.green,
+                              backgroundColor: AppTheme.accent,
                             );
                           }
                         });
@@ -1000,17 +1263,17 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.green.shade100,
-                              Colors.green.shade200
+                              AppTheme.accentLight,
+                              const Color(0xFFD9D2FB)
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.green.shade300),
+                          border: Border.all(color: const Color(0xFFD9D2FB)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.green.withOpacity(0.2),
+                              color: AppTheme.accent.withOpacity(0.2),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -1022,7 +1285,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: Colors.green.shade800,
+                              color: AppTheme.accentDark,
                               fontFamily: 'Sora',
                             ),
                           ),
@@ -1112,7 +1375,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const SizedBox(height: 10),
-                    const Icon(Icons.message_outlined, color: Colors.blue, size: 45),
+                    const Icon(Icons.message_outlined, color: AppTheme.accent, size: 45),
                     const SizedBox(height: 12),
                     Text(
                       'customer_message'.tr,
@@ -1148,7 +1411,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.blue),
+                          borderSide: const BorderSide(color: AppTheme.accent),
                         ),
                         contentPadding: const EdgeInsets.all(12),
                       ),
@@ -1199,7 +1462,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black87,
+                              backgroundColor: AppTheme.accent,
                               foregroundColor: Colors.white,
                               minimumSize: const Size(0, 45),
                               shape: RoundedRectangleBorder(

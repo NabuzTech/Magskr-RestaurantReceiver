@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:food_receiver/constants/app_theme.dart';
 import 'package:food_receiver/ui/table%20Book/reservation_details.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -43,7 +43,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
       case 'pending':
         return Colors.orange;
       case 'booked':
-        return Colors.green;
+        return AppTheme.accent;
       case 'cancelled':
         return Colors.red;
       default:
@@ -530,505 +530,350 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return AppGradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ─── Header: title, date, total, refresh (pinned, does not scroll) ───
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+              child: Row(
                 children: [
-                  GestureDetector(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('reserv'.tr,
-                            style: const TextStyle(fontFamily: 'Sora', 
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                            )),
-                        GestureDetector(
-                          onTap: () {
-                            openCalendarScreen();
-                          },
-                          child: Text(
-                            dateSeleted.isEmpty
-                                ? DateFormat('d MMMM, y').format(DateTime.now())
-                                : dateSeleted,
-                            style: const TextStyle(fontFamily: 'Sora', fontSize: 16),
-                          ),
+                            style: const TextStyle(fontFamily: 'Sora',
+                                fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.accentDark)),
+                        const SizedBox(height: 2),
+                        Text(
+                          dateSeleted.isEmpty
+                              ? DateFormat('d MMMM, y').format(DateTime.now())
+                              : dateSeleted,
+                          style: const TextStyle(fontFamily: 'Sora',
+                              fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black54),
                         ),
                       ],
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                  Column(crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10.0,top: 5),
-                          child: Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  openCalendarScreen();
-                                },
-                                child: Row(
-                                  children: [
-                                    Text('history'.tr, style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xff1F1E1E))),
-                                    const SizedBox(width: 5),
-                                    SvgPicture.asset('assets/images/dropdown.svg', height: 5, width: 11),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 10,),
-                              if (dateSeleted.isNotEmpty && dateSeleted != DateFormat('d MMMM, y').format(DateTime.now()))
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    dateSeleted = "";
-                                  });
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Colors.blue, width: 1),
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.today, size: 14, color: Colors.blue),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        'Today',
-                                        style: TextStyle(fontFamily: 'Sora', 
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.blue,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       Row(
                         children: [
-                          Obx(() {
-                            int filteredCount = app.appController.getFilteredReservationsCount(
-                                dateSeleted.isEmpty ? null : convertDisplayDateToApiFormat(dateSeleted));
-
-                            return Text(
-                              '${'total_reserv'.tr}: $filteredCount',
-                              style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  fontFamily: 'Sora',
-                                  color: Colors.black),
-                            );
-                          }),
-                          IconButton(
-                              iconSize: 24,
-                              icon: const Icon(Icons.refresh),
-                              onPressed: () async {
-                                await getReservationsInBackground();
-                              }),
+                          if (dateSeleted.isNotEmpty && dateSeleted != DateFormat('d MMMM, y').format(DateTime.now()))
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: _pill(Icons.today_rounded, 'Today', onTap: () => setState(() => dateSeleted = "")),
+                            ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: _pill(Icons.history_rounded, 'history'.tr, onTap: openCalendarScreen),
+                          ),
                         ],
                       ),
+                      SizedBox(height: 5,),
+                      Obx(() {
+                        int filteredCount = app.appController.getFilteredReservationsCount(
+                            dateSeleted.isEmpty ? null : convertDisplayDateToApiFormat(dateSeleted));
+                        return _pill(Icons.event_note_rounded, '${'total_reserv'.tr}: $filteredCount');
+                      }),
+                    ],
+                  ),
+                  const SizedBox(width: 8),
+                  InkWell(onTap: (){
+                    getReservationsInBackground();
+                  }, child: Icon(Icons.refresh_rounded,)),
+                ],
+              ),
+            ),
+            // ─── Tabs (pinned) ───
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 14, 12, 0),
+              child: Row(
+                children: [
+                  _tab('today_booking'.tr, 0),
+                  const SizedBox(width: 5),
+                  _tab('today_received_booking'.tr, 1),
+                ],
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(12, 6, 12, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (_selectedTab == 0)
+                Obx(() {
+                  app.appController.reservationsList.length;
+                  List<GetUserReservationDetailsResponseModel> filteredReservations =
+                  app.appController.getFilteredReservations(
+                      dateSeleted.isEmpty ? null : convertDisplayDateToApiFormat(dateSeleted));
+
+                  if (filteredReservations.isEmpty) return _emptyState();
+
+                  return Column(
+                    children: [
+                      for (final reserv in filteredReservations)
+                        _reservationCard(
+                          id: reserv.id,
+                          reservedFor: reserv.reservedFor,
+                          createdAt: reserv.createdAt,
+                          customerName: reserv.customerName,
+                          customerPhone: reserv.customerPhone,
+                          guestCount: reserv.guestCount,
+                          status: reserv.status,
+                        ),
+                    ],
+                  );
+                })
+              else if (receivedBooking.isEmpty)
+                _emptyState()
+              else
+                Column(
+                  children: [
+                    for (final reserv in receivedBooking)
+                      _reservationCard(
+                        id: reserv.id,
+                        reservedFor: reserv.reservedFor,
+                        createdAt: reserv.createdAt,
+                        customerName: reserv.customerName,
+                        customerPhone: reserv.customerPhone,
+                        guestCount: reserv.guestCount,
+                        status: reserv.status,
+                      ),
+                  ],
+                ),
+            ],
+          ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ─── Reservation list layout helpers ───
+  Widget _roundIconButton(IconData icon, VoidCallback onTap) {
+    return Material(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: const BorderSide(color: Color(0xFFE7E4FA)),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: Icon(icon, size: 20, color: AppTheme.accentDark),
+        ),
+      ),
+    );
+  }
+
+  Widget _pill(IconData icon, String text, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: AppTheme.accentLight,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 15, color: AppTheme.accent),
+            const SizedBox(width: 6),
+            Text(text,
+                style: const TextStyle(fontFamily: 'Sora',
+                    fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.accent)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _tab(String label, int index) {
+    final selected = _selectedTab == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() => _selectedTab = index);
+        if (index == 1) getTodayReceivedReservation(showLoader: false);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+        decoration: BoxDecoration(
+          gradient: selected ? AppTheme.accentGradient : null,
+          color: selected ? null : Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: selected ? null : Border.all(color: const Color(0xFFE7E4FA)),
+        ),
+        child: Text(label,
+            style: TextStyle(fontFamily: 'Sora',
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: selected ? Colors.white : AppTheme.accentDark)),
+      ),
+    );
+  }
+
+  Widget _emptyState() {
+    return Center(
+      child: Column(
+        children: [
+          const SizedBox(height: 40),
+          Lottie.asset('assets/animations/empty.json', height: 150, width: 150),
+          Text('no_reservation'.tr,
+              style: const TextStyle(fontFamily: 'Sora', color: Colors.black45, fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+
+  Widget _statusChip(String? status) {
+    final color = getStatusColor(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(getStatusIcon(status), size: 14, color: color),
+          const SizedBox(width: 5),
+          Text((status ?? '-').capitalizeFirst ?? '-',
+              style: TextStyle(fontFamily: 'Sora', color: color, fontWeight: FontWeight.w800, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  // "Today" / "Tomorrow", otherwise the full date.
+  String _dayLabel(DateTime d) {
+    final now = DateTime.now();
+    final days = DateTime(d.year, d.month, d.day)
+        .difference(DateTime(now.year, now.month, now.day))
+        .inDays;
+    if (days == 0) return 'day_today'.tr;
+    if (days == 1) return 'day_tomorrow'.tr;
+    return DateFormat('dd.MM.yyyy').format(d);
+  }
+
+  Widget _reservationCard({
+    required dynamic id,
+    String? reservedFor,
+    String? createdAt,
+    String? customerName,
+    String? customerPhone,
+    dynamic guestCount,
+    String? status,
+  }) {
+    final reservedAt = DateTime.tryParse(reservedFor ?? '');
+    final created = DateTime.tryParse(createdAt ?? '');
+    final name = (customerName ?? '').trim();
+    return GestureDetector(
+      onTap: () async {
+        await Get.to(() => ReservationDetails(id.toString()))?.then((result) async {
+          print("Returned from ReservationDetails, refreshing reservations");
+          await getReservationDetails();
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(top: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.accent.withOpacity(0.07),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Reserved-for time block
+            Container(
+              width: 92,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF6D5DF6), Color(0xFF4F8DF7)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              // Reads top-down as "Today · 17:00".
+              child: Column(
+                children: [
+                  Text(reservedAt == null ? '' : _dayLabel(reservedAt),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontFamily: 'Sora',
+                          color: Colors.white.withOpacity(0.85), fontSize: 11, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text(reservedAt == null ? '--:--' : DateFormat('HH:mm').format(reservedAt),
+                      style: const TextStyle(fontFamily: 'Sora',
+                          color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20, height: 1)),
+                ],
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(name.isEmpty ? '-' : name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontFamily: 'Sora',
+                                fontWeight: FontWeight.w700, fontSize: 15, color: AppTheme.accentDark)),
+                      ),
+                      _statusChip(status),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(customerPhone ?? '',
+                      style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black54)),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Icon(Icons.group_rounded, size: 16, color: AppTheme.accent),
+                      const SizedBox(width: 4),
+                      Text('${guestCount ?? '-'}',
+                          style: const TextStyle(fontFamily: 'Sora',
+                              fontWeight: FontWeight.w800, fontSize: 13, color: AppTheme.accentDark)),
+                      const SizedBox(width: 14),
+                      const Icon(Icons.tag_rounded, size: 15, color: Colors.black38),
+                      Text('$id',
+                          style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black54)),
+                      const Spacer(),
+                      const Icon(Icons.schedule_rounded, size: 14, color: Colors.black38),
+                      const SizedBox(width: 4),
+                      Text(created == null ? '--:--' : DateFormat('HH:mm').format(created),
+                          style: const TextStyle(fontFamily: 'Sora', fontSize: 11, color: Colors.black45)),
                     ],
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => setState(() => _selectedTab = 0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(
-                          color: _selectedTab == 0 ? Colors.black : Colors.transparent,
-                          width: 2,
-                        )),
-                      ),
-                      child: Text('today_booking'.tr,
-                          style: TextStyle(fontFamily: 'Sora', 
-                            fontWeight: _selectedTab == 0 ? FontWeight.w800 : FontWeight.w500,
-                          )),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() => _selectedTab = 1);
-                      getTodayReceivedReservation(showLoader: false);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric( vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(
-                          color: _selectedTab == 1 ? Colors.black : Colors.transparent,
-                          width: 2,
-                        )),
-                      ),
-                      child: Text('today_received_booking'.tr,
-                          style: TextStyle(fontFamily: 'Sora', 
-                            fontWeight: _selectedTab == 1 ? FontWeight.w800 : FontWeight.w500,
-                          )),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              if (_selectedTab == 0)
-                Obx(() {
-                app.appController.reservationsList.length;
-                List<GetUserReservationDetailsResponseModel> filteredReservations =
-                app.appController.getFilteredReservations(
-                    dateSeleted.isEmpty ? null : convertDisplayDateToApiFormat(dateSeleted));
-
-                if (filteredReservations.isEmpty) {
-                  return Center(
-                    child: Column(
-                      children: [
-                        Lottie.asset('assets/animations/empty.json', height: 150, width: 150),
-                        Text('no_reservation'.tr, style: const TextStyle(fontFamily: 'Sora'))
-                      ],
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: filteredReservations.length,
-                    itemBuilder: (context, index) {
-                      var reserv = filteredReservations[index];
-
-                        return GestureDetector(
-                          onTap: () async {
-                            await Get.to(
-                              () => ReservationDetails(reserv.id.toString()),
-                            )?.then((result) async {
-                              print(
-                                  "Returned from ReservationDetails, refreshing reservations");
-                              await getReservationDetails();
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            margin: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(7),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    spreadRadius: 0,
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ]),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/images/reservation.png',
-                                          height: 25,
-                                          width: 25,
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          formatDateTime(
-                                              reserv.reservedFor.toString()),
-                                          style: const TextStyle(
-                                              fontSize: 13,
-                                              fontFamily: 'Sora',
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.access_time, size: 20),
-                                        const SizedBox(width: 5),
-                                        Text(
-                                          reserv.createdAt != null
-                                              ? DateFormat('HH:mm').format(
-                                                  DateTime.parse(
-                                                      reserv.createdAt!))
-                                              : '--:--',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: 'Sora',
-                                            fontSize: 10,
-                                          ),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.5,
-                                      child: Text(
-                                        '${reserv.customerName.toString()}/${reserv.customerPhone.toString()}',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 13,
-                                            fontFamily: 'Sora'),
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          '${'order_id'.tr} :',
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 13,
-                                              fontFamily: 'Sora'),
-                                        ),
-                                        const SizedBox(width: 5),
-                                        Text(
-                                          reserv.id.toString(),
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 11,
-                                              fontFamily: 'Sora'),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Image.asset(
-                                          'assets/images/person.png',
-                                          height: 18,
-                                          width: 14,
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          reserv.guestCount.toString(),
-                                          style: const TextStyle(
-                                              fontFamily: 'Sora',
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w800),
-                                        )
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          reserv.status.toString(),
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.w800,
-                                              fontFamily: 'Sora',
-                                              fontSize: 13),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        CircleAvatar(
-                                            radius: 14,
-                                            backgroundColor:
-                                                getStatusColor(reserv.status),
-                                            child: Icon(
-                                              getStatusIcon(reserv.status),
-                                              color: Colors.white,
-                                              size: 16,
-                                            )),
-                                      ],
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      });
-                })
-              else
-                ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: receivedBooking.length,
-                    itemBuilder: (context, index) {
-                      var reserv = receivedBooking[index];
-                      return GestureDetector(
-                        onTap: () async {
-                          await Get.to(
-                            () => ReservationDetails(reserv.id.toString()),
-                          )?.then((result) async {
-                            print("Returned from ReservationDetails, refreshing reservations");
-                            await getReservationDetails();
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          margin: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(7),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  spreadRadius: 0,
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Image.asset(
-                                        'assets/images/reservation.png',
-                                        height: 25,
-                                        width: 25,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        formatDateTime(
-                                            reserv.reservedFor.toString()),
-                                        style: const TextStyle(
-                                            fontSize: 13,
-                                            fontFamily: 'Sora',
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.access_time, size: 20),
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        reserv.createdAt != null
-                                            ? DateFormat('HH:mm').format(
-                                                DateTime.parse(
-                                                    reserv.createdAt!))
-                                            : '--:--',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'Sora',
-                                          fontSize: 10,
-                                        ),
-                                      )
-                                    ],
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.5,
-                                    child: Text(
-                                      '${reserv.customerName.toString()}/${reserv.customerPhone.toString()}',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 13,
-                                          fontFamily: 'Sora'),
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        '${'order_id'.tr} :',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 13,
-                                            fontFamily: 'Sora'),
-                                      ),
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        reserv.id.toString(),
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 11,
-                                            fontFamily: 'Sora'),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Image.asset(
-                                        'assets/images/person.png',
-                                        height: 18,
-                                        width: 14,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        reserv.guestCount.toString(),
-                                        style: const TextStyle(
-                                            fontFamily: 'Sora',
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w800),
-                                      )
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        reserv.status.toString(),
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w800,
-                                            fontFamily: 'Sora',
-                                            fontSize: 13),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      CircleAvatar(
-                                          radius: 14,
-                                          backgroundColor:
-                                              getStatusColor(reserv.status),
-                                          child: Icon(
-                                            getStatusIcon(reserv.status),
-                                            color: Colors.white,
-                                            size: 16,
-                                          )),
-                                    ],
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    })
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1307,7 +1152,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xff0C831F),
+                                  backgroundColor: AppTheme.accent,
                                   foregroundColor: Colors.white,
                                   minimumSize: const Size(0, 50),
                                   shape: RoundedRectangleBorder(
@@ -1382,9 +1227,9 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
 
           Container(
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: const Color(0xFFF6F5FD),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[300]!, width: 1),
+              border: Border.all(color: const Color(0xFFE7E4FA), width: 1),
             ),
             child: TextFormField(
               controller: controller,
@@ -1410,7 +1255,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                   padding: const EdgeInsets.all(8),
                   child: Icon(
                     icon,
-                    color: Colors.grey[600],
+                    color: AppTheme.accent,
                     size: 18,
                   ),
                 ),
@@ -1694,7 +1539,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                 ScaffoldMessenger.of(scaffoldContext).showSnackBar(
                                   SnackBar(
                                     content: Text('${'time_selected'.tr}: ${slot['time24']}', style: const TextStyle(fontFamily: 'Sora')),
-                                    backgroundColor: Colors.green,
+                                    backgroundColor: AppTheme.accent,
                                     duration: const Duration(seconds: 1),
                                   ),
                                 );
@@ -1707,15 +1552,15 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Colors.green.shade100, Colors.green.shade200],
+                              colors: [AppTheme.accentLight, const Color(0xFFD9D2FB)],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.green.shade300),
+                            border: Border.all(color: const Color(0xFFD9D2FB)),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.green.withOpacity(0.2),
+                                color: AppTheme.accent.withOpacity(0.2),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -1727,7 +1572,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.green.shade800,
+                                color: AppTheme.accentDark,
                                 fontFamily: 'Sora',
                               ),
                             ),
@@ -1888,7 +1733,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${'success'.tr} - ${'created'.tr}', style: const TextStyle(fontFamily: 'Sora')),
-            backgroundColor: Colors.green,
+            backgroundColor: AppTheme.accent,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -2020,29 +1865,29 @@ class TimeSlot {
 //     tables = [
 //       TableData(
 //         tableNumber: '03',
-//         color: Colors.blue,
+//         color: AppTheme.accent,
 //         position: const Offset(50, 100),
 //       ),
 //       TableData(
 //         tableNumber: '04',
 //         capacity: 10,
-//         color: Colors.green,
+//         color: AppTheme.accent,
 //         position: const Offset(250, 100),
 //       ),
 //       TableData(
 //         tableNumber: '05',
-//         color: Colors.blue,
+//         color: AppTheme.accent,
 //         position: const Offset(25, 260),
 //       ),
 //       TableData(
 //         tableNumber: '06',
-//         color: Colors.blue,
+//         color: AppTheme.accent,
 //         width: 150,
 //         position: const Offset(200, 260),
 //       ),
 //       TableData(
 //         tableNumber: '07',
-//         color: Colors.blue,
+//         color: AppTheme.accent,
 //         width: 250,
 //         height: 150,
 //         position: const Offset(80, 420),
@@ -2077,14 +1922,14 @@ class TimeSlot {
 //               child: Container(
 //                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
 //                 decoration: BoxDecoration(
-//                   color: Colors.blue.shade50,
+//                   color: AppTheme.accentLight,
 //                   borderRadius: BorderRadius.circular(20),
 //                 ),
 //                 child: const Text(
 //                   '💡 Long press aur drag karo table ko move karne ke liye',
 //                   style: TextStyle(
 //                     fontSize: 12,
-//                     color: Colors.blue,
+//                     color: AppTheme.accent,
 //                     fontWeight: FontWeight.w500,
 //                   ),
 //                 ),
@@ -2392,12 +2237,12 @@ class TimeSlot {
 //                 children: [
 //                   TableCard(
 //                     tableNumber: '03',
-//                     color: Colors.blue,
+//                     color: AppTheme.accent,
 //                   ),
 //                   TableCard(
 //                     tableNumber: '04',
 //                     capacity: 10,
-//                     color: Colors.green,
+//                     color: AppTheme.accent,
 //                   ),
 //                 ],
 //               ),
@@ -2412,11 +2257,11 @@ class TimeSlot {
 //                 children: [
 //                   TableCard(
 //                     tableNumber: '05',
-//                     color: Colors.blue,
+//                     color: AppTheme.accent,
 //                   ),
 //                   TableCard(
 //                     tableNumber: '06',
-//                     color: Colors.blue,
+//                     color: AppTheme.accent,
 //                     width: 150,
 //                   ),
 //                 ],
@@ -2427,7 +2272,7 @@ class TimeSlot {
 //             // Third Row - Table 07 (Wide)
 //             TableCard(
 //               tableNumber: '07',
-//               color: Colors.blue,
+//               color: AppTheme.accent,
 //               width: 250,
 //               height: 150,
 //             ),
