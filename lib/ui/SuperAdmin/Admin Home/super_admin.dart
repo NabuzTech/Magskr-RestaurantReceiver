@@ -52,6 +52,10 @@ class _SuperAdminState extends State<SuperAdmin> {
   int _totalOrdersCount = 0;
   double _totalSalesAmount = 0.0;
   bool _isLoadingTotals = false;
+  // Remove mode: long-press a store card, tap ✕ to hide that store (and its orders/totals) locally.
+  bool _removeMode = false;
+  final Set<int> _hiddenStoreIds = {};
+  List<AllOrderAdminResponseModel> _totalsOrders = [];
 
   bool _isVorbestellen(String? deliveryTime) {
     if (deliveryTime == null || deliveryTime.isEmpty) return false;
@@ -327,14 +331,18 @@ class _SuperAdminState extends State<SuperAdmin> {
 
   void _filterData() {
     String query = searchController.text.toLowerCase();
+    final visibleStores =
+        (reports ?? []).where((s) => !_hiddenStoreIds.contains(s.storeId)).toList();
+    final visibleOrders =
+        orderList.where((o) => !_hiddenStoreIds.contains(o.storeId)).toList();
 
     setState(() {
       if (query.isEmpty) {
-        filteredStoreList = reports!;
-        filteredOrderList = orderList;
+        filteredStoreList = visibleStores;
+        filteredOrderList = visibleOrders;
       } else {
         // Filter stores
-        filteredStoreList = reports!.where((store) {
+        filteredStoreList = visibleStores.where((store) {
           String storeName = store.storeName?.toLowerCase() ?? '';  // Changed from reports.name
           String storeId = store.storeId?.toString() ?? '';  // Changed from store.id
 
@@ -343,7 +351,7 @@ class _SuperAdminState extends State<SuperAdmin> {
         }).toList();
 
         // Filter orders - keep as is
-        filteredOrderList = orderList.where((order) {
+        filteredOrderList = visibleOrders.where((order) {
           String orderNumber = order.orderNumber?.toString().toLowerCase() ?? '';
           String storeName = order.storeName?.toLowerCase() ?? '';
           String customerName = order.shippingAddress?.customerName?.toLowerCase() ??
@@ -676,6 +684,28 @@ class _SuperAdminState extends State<SuperAdmin> {
                                       ),
                               ),
                             ),
+                            if (_removeMode) ...[
+                              const SizedBox(width: 10),
+                              GestureDetector(
+                                onTap: _exitRemoveMode,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Text(
+                                    'Show all stores${_hiddenStoreIds.isEmpty ? '' : ' (${_hiddenStoreIds.length} hidden)'}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: 'Sora',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ],
                         )
                       ],
@@ -724,7 +754,10 @@ class _SuperAdminState extends State<SuperAdmin> {
                       itemCount: filteredStoreList.length,
                       itemBuilder: (context, index) {
                         var store = filteredStoreList[index];
-                        return InkWell(
+                        return Stack(
+                          children: [
+                        InkWell(
+                          onLongPress: () => setState(() => _removeMode = true),
                           onTap: () async {
                             if (Get.isDialogOpen ?? false) {
                               Get.back();
@@ -797,6 +830,21 @@ class _SuperAdminState extends State<SuperAdmin> {
                               ],
                             ),
                           ),
+                        ),
+                            if (_removeMode)
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: GestureDetector(
+                                  onTap: () => _hideStore(store.storeId),
+                                  child: const CircleAvatar(
+                                    radius: 11,
+                                    backgroundColor: Colors.red,
+                                    child: Icon(Icons.close, size: 14, color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                          ],
                         );
                       },
                                         ),
@@ -1327,19 +1375,38 @@ class _SuperAdminState extends State<SuperAdmin> {
         if (batch.length < batchSize) break;
         offset += batchSize;
       }
-      List<AllOrderAdminResponseModel> acceptedOrders =
-          allOrders.where((o) => o.approvalStatus == 2).toList();
-      int orders = acceptedOrders.length;
-      double sales = acceptedOrders.fold(0.0, (sum, o) => sum + (o.payment?.amount ?? 0));
-      setState(() {
-        _totalOrdersCount = orders;
-        _totalSalesAmount = sales;
-      });
+      _totalsOrders = allOrders;
+      _applyTotals();
     } catch (e) {
       print('Error calculating totals: $e');
     } finally {
       if (mounted) setState(() => _isLoadingTotals = false);
     }
+  }
+
+  // Totals from the cached full order list, skipping hidden stores.
+  void _applyTotals() {
+    final accepted = _totalsOrders
+        .where((o) => o.approvalStatus == 2 && !_hiddenStoreIds.contains(o.storeId))
+        .toList();
+    setState(() {
+      _totalOrdersCount = accepted.length;
+      _totalSalesAmount = accepted.fold(0.0, (sum, o) => sum + (o.payment?.amount ?? 0));
+    });
+  }
+
+  void _hideStore(int? storeId) {
+    if (storeId == null) return;
+    _hiddenStoreIds.add(storeId);
+    _filterData();
+    _applyTotals();
+  }
+
+  void _exitRemoveMode() {
+    _hiddenStoreIds.clear();
+    _removeMode = false;
+    _filterData();
+    _applyTotals();
   }
 
   Future<void> getAllStoreReport({bool showLoader = true}) async {
@@ -1363,11 +1430,9 @@ class _SuperAdminState extends State<SuperAdmin> {
 
       GetAdminReportResponseModel REPORT = await CallService().getAdminReportAllStore();
 
-      setState(() {
-       reports=REPORT.reports;
-       filteredStoreList=reports!;
-       print('AdminReport length is ${reports!.length}');
-      });
+      reports = REPORT.reports ?? [];
+      _filterData();
+      print('AdminReport length is ${reports!.length}');
 
       if (showLoader && (Get.isDialogOpen ?? false)) Get.back();
     } catch (e) {
@@ -1395,9 +1460,9 @@ class _SuperAdminState extends State<SuperAdmin> {
         includePast: _isHistoryMode,
       );
 
+      orderList = order;
+      _filterData();
       setState(() {
-        orderList = order;
-        filteredOrderList = order;
         if (order.length < limit) {
           hasMoreOrders = false;
         }

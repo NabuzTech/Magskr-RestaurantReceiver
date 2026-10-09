@@ -774,7 +774,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
       borderRadius: BorderRadius.circular(10),
       onTap: bookable ? () => setState(() => _selectedSlot = s) : null,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: selected ? _kAccentGreen : Colors.white,
           borderRadius: BorderRadius.circular(10),

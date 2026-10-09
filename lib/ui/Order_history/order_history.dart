@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants/constant.dart';
+import '../../customView/payment_icon.dart';
 import '../../models/order_history_response_model.dart';
 import 'order_history_details.dart';
 
@@ -572,14 +573,20 @@ class _OrderHistoryState extends State<OrderHistory> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  '${"currency".tr}${formatAmount(order.invoice?.totalAmount?.toDouble() ?? 0.0)}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontFamily: 'Sora',
-                                    fontSize: 16,
+                                Row(children: [
+                                  Text(
+                                    '${"currency".tr}${formatAmount(order.invoice?.totalAmount?.toDouble() ?? 0.0)}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontFamily: 'Sora',
+                                      fontSize: 16,
+                                    ),
                                   ),
-                                ),
+                                  if ((order.payment?.paymentMethod ?? '').isNotEmpty) ...[
+                                    const SizedBox(width: 6),
+                                    paymentIcon(order.payment!.paymentMethod!),
+                                  ],
+                                ]),
                                 Row(
                                   children: [
                                     Text(

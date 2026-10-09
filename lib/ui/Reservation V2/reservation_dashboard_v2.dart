@@ -13,6 +13,7 @@ import '../../models/Reservation V2/get_reservation_of_store_byDate.dart';
 import '../../models/Reservation V2/get_today_reservation_V2_of_store.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../models/Reservation V2/get_today_slot_reservationV2.dart';
+import '../../models/Reservation V2/GetAllReservationV2.dart' as all_res;
 
 import '../../utils/my_application.dart';
 import 'reservation_settings_screen.dart';
@@ -140,12 +141,18 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   String? storeID;
   Worker? _syncWorker;
   Worker? _createdWorker;
+  Worker? _searchWorker;
   int? _highlightedReservationId;
   Color? _highlightedColor;
   final ScrollController _coversScrollController = ScrollController();
   final Map<int, GlobalKey> _slotKeys = {};
   Timer? _slotClockTimer;
   OverlayEntry? _bookingOverlay;
+  bool _showAll = false;
+  List<Reservations> allReservationsData = [];
+  bool _allHasMore = true;
+  bool _allLoading = false;
+  static const int _allPageSize = 10;
 
   static const List<Color> _bookingColors = [
     Color(0xFF3B82F6), // blue
@@ -164,6 +171,9 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     _loadTodayReservations();
     _syncWorker = ever(app.appController.syncTimeUpdated, (_) => _refreshForNotification());
     _createdWorker = ever(app.appController.reservationV2Created, (_) => _refreshForNotification(showLoader: true));
+    _searchWorker = ever(app.appController.reservationSearchQuery, (_) {
+      if (mounted) setState(() {});
+    });
     _slotClockTimer = Timer.periodic(const Duration(minutes: 1), (_) => _scrollToCurrentSlot());
   }
 
@@ -171,6 +181,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   void dispose() {
     _syncWorker?.dispose();
     _createdWorker?.dispose();
+    _searchWorker?.dispose();
     _slotClockTimer?.cancel();
     _coversScrollController.dispose();
     _dismissBookingPopup();
@@ -201,6 +212,17 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     }
     getTodayReceivedReservationV2(id, showLoader: false);
     getTodayTimeSlot(id, showLoader: false);
+  }
+
+  bool get _isSearching =>
+      app.appController.reservationSearchQuery.value.trim().isNotEmpty;
+
+  // Same fields as AppController.filterSearchResultsReservation (V1 list).
+  List<Reservations> _applySearch(List<Reservations> list) {
+    final q = app.appController.reservationSearchQuery.value.toLowerCase().trim();
+    if (q.isEmpty) return list;
+    return list.where((r) => [r.id, r.customerName, r.customerPhone, r.partySize, r.status]
+        .any((v) => (v?.toString().toLowerCase() ?? '').contains(q))).toList();
   }
 
   bool _isSameDay(DateTime a, DateTime b) =>
@@ -287,11 +309,16 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       child: Scaffold(
       backgroundColor: Colors.transparent,
       body: RefreshIndicator(
-        onRefresh: ()=> _loadTodayReservations(),
+        onRefresh: () => _showAll ? getAllReservationV2(reset: true) : _loadTodayReservations(),
         child: NotificationListener<ScrollNotification>(
           onNotification: (notification) {
             if (notification is ScrollUpdateNotification) {
               _dismissBookingPopup();
+            }
+            if (_showAll &&
+                notification.metrics.axis == Axis.vertical &&
+                notification.metrics.extentAfter < 200) {
+              getAllReservationV2();
             }
             return false;
           },
@@ -307,8 +334,11 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('reserv'.tr,
-                        style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 18)),
+                    GestureDetector(
+                      onTap: () => _setShowAll(false),
+                      child: Text('reserv'.tr,
+                          style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.bold, fontSize: 18)),
+                    ),
                     Row(
                       children: [
                         GestureDetector(
@@ -335,7 +365,29 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                     padding: const EdgeInsets.only(right: 4),
                     child: Center(
                       child: GestureDetector(
-                        onTap: () => _loadTodayReservations(),
+                        onTap: () => _setShowAll(true),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _showAll ? AppTheme.accent : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppTheme.accent),
+                          ),
+                          child: Text('all_reservations'.tr,
+                              style: TextStyle(
+                                  fontFamily: 'Sora',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: _showAll ? Colors.white : AppTheme.accent)),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () => _showAll ? getAllReservationV2(reset: true) : _loadTodayReservations(),
                         child: const Icon(Icons.refresh_rounded, color: AppTheme.accent),
                       ),
                     ),
@@ -351,22 +403,27 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                   ),
                 ],
               ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                  child: _todaysOverviewCard(),
+              if (!_isSearching)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    child: _todaysOverviewCard(),
+                  ),
                 ),
-              ),
             ],
             body: Padding(
               padding: const EdgeInsets.fromLTRB(8, 12, 8, 0),
               child: ListView(
                 padding: const EdgeInsets.only(bottom: 8),
-                children: [
-                  _coversFilledCard(),
-                  const SizedBox(height: 12),
-                  _todaysBookingsCard(),
-                ],
+                children: _showAll
+                    ? [_allReservationsCard()]
+                    : _isSearching
+                    ? [_todaysBookingsCard()]
+                    : [
+                        _coversFilledCard(),
+                        const SizedBox(height: 12),
+                        _todaysBookingsCard(),
+                      ],
               ),
             ),
           ),
@@ -684,18 +741,10 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                   onPressed: () => _nudgeScroll(-1),
                 ),
                 Expanded(
-                  child: Scrollbar(
+                  child: SingleChildScrollView(
                     controller: _coversScrollController,
-                    thumbVisibility: true,
-                    trackVisibility: true,
-                    thickness: 6,
-                    radius: const Radius.circular(4),
-                    child: SingleChildScrollView(
-                      controller: _coversScrollController,
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _coversTimeline(slots, merged),
-                    ),
+                    scrollDirection: Axis.horizontal,
+                    child: _coversTimeline(slots, merged),
                   ),
                 ),
                 IconButton(
@@ -1032,9 +1081,9 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
   // -------------------- TODAY'S BOOKINGS --------------------
   Widget _todaysBookingsCard() {
     final isToday = _isSameDay(_selectedDate, DateTime.now());
-    final bookings = isToday && _bookingTabIndex == 1
+    final bookings = _applySearch(isToday && _bookingTabIndex == 1
         ? (receivedReservationsData ?? [])
-        : (reservationsData ?? []);
+        : (reservationsData ?? []));
     final calendarActions = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -1403,6 +1452,77 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     }
   }
 
+  // Paged "All reservations" list: reset=true starts from offset 0, otherwise appends the next page.
+  Future<void> getAllReservationV2({bool reset = false}) async {
+    final id = storeID;
+    if (id == null || _allLoading || (!reset && !_allHasMore)) return;
+    setState(() {
+      _allLoading = true;
+      if (reset) {
+        allReservationsData = [];
+        _allHasMore = true;
+      }
+    });
+    try {
+      final all_res.GetAllReservationV2 page = await CallService()
+          .getUpcomingReservationV2(id, limit: _allPageSize, offset: allReservationsData.length);
+      final items = (page.reservations ?? [])
+          .map((e) => Reservations.fromJson(e.toJson()))
+          .toList();
+      if (!mounted) return;
+      setState(() {
+        allReservationsData.addAll(items);
+        _allHasMore = page.hasMore ?? items.length == _allPageSize;
+      });
+    } catch (e) {
+      print('Error getting All Reservation V2: $e');
+    } finally {
+      if (mounted) setState(() => _allLoading = false);
+    }
+  }
+
+  void _setShowAll(bool value) {
+    if (_showAll == value) return;
+    _dismissBookingPopup();
+    setState(() => _showAll = value);
+    if (value) getAllReservationV2(reset: true);
+  }
+
+  Widget _allReservationsCard() {
+    final bookings = _applySearch(allReservationsData);
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _cardTitle('all_reservations'.tr),
+          const SizedBox(height: 12),
+          if (bookings.isEmpty && !_allLoading)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Text('no_bookings_today'.tr,
+                  style: const TextStyle(fontFamily: 'Sora', color: Colors.grey, fontSize: 13)),
+            )
+          else
+            SlidableAutoCloseBehavior(
+              child: Column(
+                children: [
+                  for (final booking in bookings) ...[
+                    _bookingSlidable(booking),
+                    const SizedBox(height: 8),
+                  ],
+                ],
+              ),
+            ),
+          if (_allLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            ),
+        ],
+      ),
+    );
+  }
+
   Future<void> getTodayReceivedReservationV2(String storeID, {bool showLoader = true}) async {
     try {
       if (showLoader && !(Get.isDialogOpen ?? false)) {
@@ -1607,7 +1727,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
       final numericId = int.tryParse(reservationId);
       if (numericId != null && mounted) {
         setState(() {
-          for (final r in [...?reservationsData, ...?receivedReservationsData]) {
+          for (final r in [...?reservationsData, ...?receivedReservationsData, ...allReservationsData]) {
             if (r.id == numericId) r.status = status;
           }
         });

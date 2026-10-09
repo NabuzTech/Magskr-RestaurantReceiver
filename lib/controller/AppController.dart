@@ -500,7 +500,11 @@ class AppController extends GetxController {
     }
   }
 
+  // Top-bar search text for the Reservation tab; ReservationDashboardV2 listens to it.
+  final reservationSearchQuery = ''.obs;
+
   void clearReservationSearch() {
+    reservationSearchQuery.value = '';
     searchResultReservation.assignAll(_reservationsList);
     searchResultReservation.refresh();
     print("🧹 Reservation search cleared, showing all ${searchResultReservation
@@ -514,6 +518,7 @@ class AppController extends GetxController {
   }
 
   void filterSearchResultsReservation(String query) {
+    reservationSearchQuery.value = query;
     print("🔍 Filtering reservations with query: '$query'");
     print("📊 Total reservations available: ${_reservationsList.length}");
 

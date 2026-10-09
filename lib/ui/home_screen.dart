@@ -315,14 +315,17 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Obx(() =>
           Scaffold(
             backgroundColor: Colors.white,
-              extendBody: true, // page shows behind the floating bottom bar
+              // false: body ends above the bottom bar, so list tails aren't hidden under it.
+              extendBody: false,
               drawer: CustomDrawer(onSelectTab: _openTab),
               resizeToAvoidBottomInset: true,
               floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
               floatingActionButton: !_isDataLoaded
                   ? const SizedBox.shrink()
                   : Obx(() {
-                if (app.appController.selectedTabIndex == 1) {
+                // Hidden while the keyboard is open so it doesn't ride up above it.
+                if (app.appController.selectedTabIndex == 1 &&
+                    MediaQuery.viewInsetsOf(context).bottom == 0) {
                   return floatingButton(context);
                 }
                 return const SizedBox.shrink();

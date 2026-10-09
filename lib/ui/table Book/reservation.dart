@@ -43,7 +43,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
       case 'pending':
         return Colors.orange;
       case 'booked':
-        return AppTheme.accent;
+        return const Color(0xFF16A34A);
       case 'cancelled':
         return Colors.red;
       default:

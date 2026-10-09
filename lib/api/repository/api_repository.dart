@@ -18,6 +18,7 @@ import '../../models/DailySalesReport.dart'
     hide PaymentMethods, ApprovalStatuses, TaxBreakdown;
 import '../../models/Logout.dart';
 import '../../models/PrinterSetting.dart';
+import '../../models/Reservation V2/GetAllReservationV2.dart';
 import '../../models/Reservation V2/get_reservation_of_store_byDate.dart';
 import '../../models/Reservation V2/get_reservation_v2_by_date_range.dart';
 import '../../models/Reservation V2/get_today_received_reservationV2_superAdmin.dart';
@@ -5248,6 +5249,26 @@ class CallService extends GetConnect {
     } else {
       throw Exception(
           'Failed to Updating Store profile : ${res.statusCode}');
+    }
+  }
+
+  //For Getting Upcoming  Reservation
+  Future<GetAllReservationV2> getUpcomingReservationV2(String storeId, {int limit = 10, int offset = 0}) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('reservations/v2/store/upcoming?store_id=$storeId&limit=$limit&offset=$offset',headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Upcoming Reservation V2  body is :${res.statusCode}");
+      return GetAllReservationV2.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load Getting Upcoming Reservation V2 : ${res.statusCode}');
     }
   }
 
