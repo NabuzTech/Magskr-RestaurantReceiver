@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 
 import '../../../api/repository/api_repository.dart';
 import '../../../models/get_admin_report_response_model.dart';
+import 'delete_order.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -15,6 +16,15 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   bool isLoading = false;
   List<Reports> stores = [];
+  String searchQuery = '';
+
+  List<Reports> get filteredStores {
+    final q = searchQuery.trim().toLowerCase();
+    if (q.isEmpty) return stores;
+    return stores
+        .where((s) => (s.storeName ?? '').toLowerCase().contains(q) || '${s.storeId}'.contains(q))
+        .toList();
+  }
 
   @override
   void initState() {
@@ -393,12 +403,28 @@ class _SettingsState extends State<Settings> {
               ],
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+            child: TextField(
+              onChanged: (v) => setState(() => searchQuery = v),
+              style: const TextStyle(fontFamily: 'Sora', fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'Search store by name or ID',
+                hintStyle: TextStyle(fontFamily: 'Sora', fontSize: 13, color: Colors.grey.shade500),
+                prefixIcon: const Icon(Icons.search),
+                isDense: true,
+                filled: true,
+                fillColor: Colors.grey.shade100,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+              ),
+            ),
+          ),
           const Divider(height: 1),
           // Store list
           Expanded(
             child: isLoading
                 ? const SizedBox()
-                : stores.isEmpty
+                : filteredStores.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -411,11 +437,16 @@ class _SettingsState extends State<Settings> {
                       )
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        itemCount: stores.length,
+                        itemCount: filteredStores.length,
                         itemBuilder: (context, index) {
-                          final store = stores[index];
+                          final store = filteredStores[index];
                           final colors = _storeColors(store.storeId);
-                          return Container(
+                          return GestureDetector(
+                            onTap: () {
+                              if (store.storeId == null) return;
+                              Get.to(() => DeleteOrder(storeId: store.storeId!, storeName: store.storeName));
+                            },
+                            child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                             margin: const EdgeInsets.only(bottom: 10),
                             decoration: BoxDecoration(
@@ -486,6 +517,7 @@ class _SettingsState extends State<Settings> {
                                 ),
                               ],
                             ),
+                          ),
                           );
                         },
                       ),

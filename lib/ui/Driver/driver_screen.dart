@@ -344,11 +344,8 @@ class _DriverScreenState extends State<DriverScreen> {
                                 color: Colors.black,
                                 shape: BoxShape.circle,
                               ),
-                              child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SvgPicture.asset('assets/images/call.svg',),
-                                  )
+                              child: const Center(
+                                  child: Icon(Icons.call, color: Colors.white, size: 16),
                               ),
                             )
                           ],

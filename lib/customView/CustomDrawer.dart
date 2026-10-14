@@ -25,6 +25,7 @@ import '../ui/Coupon/coupons.dart';
 import '../ui/Customer/store_customer.dart';
 import '../ui/Delivery Zone/delivery_zone.dart';
 import '../ui/Discount/discount.dart';
+import '../ui/Driver/driver_screen.dart';
 import '../ui/Login/LoginScreen.dart';
 import '../ui/Products/Category/category.dart';
 import '../ui/Products/Group Item/group_item.dart';
@@ -313,6 +314,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     Get.to(() => const Invoices(),
                     );
                   }),
+                  if (_roleId != 1 && _roleId != 5)
+                    _drawerItem('Driver','assets/images/ic_delivery.svg', onTap: () {
+                      Navigator.of(context).pop();
+                      Get.to(() => const DriverScreen());
+                    }),
                   if (_roleId != 5)
                     _drawerItem('change_password'.tr,'assets/images/password.svg', onTap: () {
                       Navigator.of(context).pop();

@@ -819,9 +819,7 @@ class CallService extends GetConnect {
   }
 
   //For Getting Specific Store Driver
-  Future<GetSpecificStoreDeliveryDriverResponseModel> getDeliveryDriver(
-      String storeId) async
-  {
+  Future<GetSpecificStoreDeliveryDriverResponseModel> getDeliveryDriver(String storeId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
     print("User Access Token Value is : $accessToken");
@@ -900,16 +898,13 @@ class CallService extends GetConnect {
   }
 
   //For Changing Discount Percentage
-  Future<ChangeDiscountPercentageResponseModel> changeDiscount(dynamic body, String id) async
-  {
+  Future<ChangeDiscountPercentageResponseModel> changeDiscount(dynamic body, String id) async {
     httpClient.baseUrl = Api.baseUrl;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
     debugPrint('api call in save discount is ${Api.baseUrl}discounts/$id');
     print("User Access Token Value is : $accessToken");
-    var res = await put(
-      'discounts/$id',
-      body,
+    var res = await put('discounts/$id', body,
       headers: {
         'accept': 'application/json',
         'Authorization': "Bearer $accessToken",
@@ -939,12 +934,9 @@ class CallService extends GetConnect {
 
     if (res.statusCode == 200) {
       print("Getting Discount response is :${res.statusCode.toString()}");
-
       // Parse the response as a List
       List<dynamic> jsonList = res.body;
-      return jsonList
-          .map((json) => GetDiscountPercentageResponseModel.fromJson(json))
-          .toList();
+      return jsonList.map((json) => GetDiscountPercentageResponseModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load discounts: ${res.statusCode}');
     }
@@ -1890,9 +1882,7 @@ class CallService extends GetConnect {
     }
   }
 
-  Future<List<GetStoreProducts>> getProductsbylimit(
-      String storeId, int limit, int offset) async
-  {
+  Future<List<GetStoreProducts>> getProductsbylimit(String storeId, int limit, int offset) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
     print("User Access Token Value is : $accessToken");
@@ -4622,9 +4612,7 @@ class CallService extends GetConnect {
   }
 
   //For Generate Report
-  Future<List<int>> generateReport({required String fromDate, required String toDate,
-    required int storeId, String language = 'De',}) async
-  {
+  Future<List<int>> generateReport({required String fromDate, required String toDate, required int storeId, String language = 'De',}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
 
@@ -4825,8 +4813,7 @@ class CallService extends GetConnect {
   }
 
   //Get ReservationV2 for a date range (whole month in one call)
-  Future<List<GetReservationV2ByDateRange>> getReservationV2ByDateRange(
-      int storeId, String fromDate, String toDate) async {
+  Future<List<GetReservationV2ByDateRange>> getReservationV2ByDateRange(int storeId, String fromDate, String toDate) async {
     httpClient.baseUrl = Api.baseUrl;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString(valueShared_BEARER_KEY);
