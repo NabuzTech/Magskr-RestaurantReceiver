@@ -314,11 +314,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     Get.to(() => const Invoices(),
                     );
                   }),
-                  if (_roleId != 1 && _roleId != 5)
-                    _drawerItem('Driver','assets/images/ic_delivery.svg', onTap: () {
-                      Navigator.of(context).pop();
-                      Get.to(() => const DriverScreen());
-                    }),
+                //  if (_roleId != 1 && _roleId != 5)
+                  //  _drawerItem('Driver','assets/images/ic_delivery.svg', onTap: () {
+                    //  Navigator.of(context).pop();
+                      //Get.to(() => const DriverScreen());
+                    //}),
                   if (_roleId != 5)
                     _drawerItem('change_password'.tr,'assets/images/password.svg', onTap: () {
                       Navigator.of(context).pop();
@@ -353,7 +353,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ),
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0),
-                  child: Text('${'version'.tr}: 5.0(1)', style: const TextStyle(fontFamily: 'Sora',
+                  child: Text('${'version'.tr}: 5.1(1)', style: const TextStyle(fontFamily: 'Sora',
                       fontWeight: FontWeight.w300,
                       fontSize: 15
                   ),),
