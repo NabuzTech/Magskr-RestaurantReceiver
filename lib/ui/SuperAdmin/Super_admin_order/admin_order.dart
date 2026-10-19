@@ -7,10 +7,26 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../api/repository/api_repository.dart';
+import '../../../customView/payment_icon.dart';
 import '../../../constants/constant.dart';
 import '../../../models/order_history_response_model.dart';
 import '../../../utils/my_application.dart';
 import '../../Order_history/order_history_details.dart';
+
+// Same palette as OrderScreenNew.
+const _kViolet = Color(0xFFA42BF0);
+const _kPurple = Color(0xFF7B52F0);
+const _kIndigo = Color(0xFF5B4FE8);
+const _kBrandGradient = LinearGradient(
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+  colors: [_kViolet, _kPurple, _kIndigo],
+);
+const _kPageGradient = LinearGradient(
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+  colors: [Color(0xFFF6EEFF), Color(0xFFF0EDFF), Color(0xFFEAEBFF)],
+);
 
 class AdminOrder extends StatefulWidget {
   const AdminOrder({super.key});
@@ -32,6 +48,7 @@ class _AdminOrderState extends State<AdminOrder>
   DateTime? _lastRefreshTime;
 
   List<orderHistoryResponseModel> ordersList = [];
+  String? _statusFilter; // null | 'accepted' | 'declined' | 'pickup' | 'delivery'
   String delivery = '0', pickUp = '0', pending = '0', accepted = '0', declined = '0';
 
   @override
@@ -193,7 +210,7 @@ class _AdminOrderState extends State<AdminOrder>
       case 1:
         return Colors.orange;
       case 2:
-        return Colors.green;
+        return _kPurple;
       case 3:
         return Colors.red;
       default:
@@ -295,32 +312,66 @@ class _AdminOrderState extends State<AdminOrder>
     return parts.join(', ');
   }
 
-  Widget _buildStatusContainer(String text, Color backgroundColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-            fontFamily: 'Sora',
-            fontWeight: FontWeight.w700,
-            fontSize: 11,
-            color: Colors.black87),
+  // Tap filters the order list by this status; tap again clears the filter.
+  Widget _buildStatusContainer(String text, Color backgroundColor, String filter) {
+    final selected = _statusFilter == filter;
+    return GestureDetector(
+      onTap: () => setState(() => _statusFilter = selected ? null : filter),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? _kPurple : backgroundColor,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+              color: selected ? _kPurple : Colors.grey.withOpacity(0.2)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              text,
+              style: TextStyle(
+                  fontFamily: 'Sora',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 11,
+                  color: selected ? Colors.white : Colors.black87),
+            ),
+            if (selected) ...[
+              const SizedBox(width: 4),
+              const Icon(Icons.close_rounded, size: 13, color: Colors.white),
+            ],
+          ],
+        ),
       ),
     );
+  }
+
+  List<orderHistoryResponseModel> get _filteredOrders {
+    switch (_statusFilter) {
+      case 'accepted':
+        return ordersList.where((o) => o.approvalStatus == 2).toList();
+      case 'declined':
+        return ordersList.where((o) => o.approvalStatus == 3).toList();
+      case 'pickup':
+        return ordersList.where((o) => o.orderType == 2).toList();
+      case 'delivery':
+        return ordersList.where((o) => o.orderType == 1).toList();
+      default:
+        return ordersList;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Scaffold(
+    final orders = _filteredOrders;
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: _kPageGradient),
+      child: Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Colors.transparent,
       body: Builder(builder: (context) {
         return Padding(
           padding: const EdgeInsets.all(6),
@@ -333,7 +384,8 @@ class _AdminOrderState extends State<AdminOrder>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      GestureDetector(
+                      Padding(
+                        padding: const EdgeInsets.only(left: 6.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -344,7 +396,7 @@ class _AdminOrderState extends State<AdminOrder>
                               dateSeleted.isEmpty
                                   ? DateFormat('d MMMM, y').format(DateTime.now())
                                   : dateSeleted,
-                              style: const TextStyle(fontFamily: 'Sora', fontSize: 14),
+                              style: const TextStyle(fontFamily: 'Sora', fontSize: 14, fontWeight: FontWeight.w700),
                             ),
                           ],
                         ),
@@ -360,7 +412,7 @@ class _AdminOrderState extends State<AdminOrder>
                                 color: Colors.black),
                           ),
                           IconButton(
-                            iconSize: 30,
+                            iconSize: 20,
                             icon: const Icon(Icons.refresh),
                             onPressed: _handleRefresh,
                           ),
@@ -375,22 +427,26 @@ class _AdminOrderState extends State<AdminOrder>
                       children: [
                         _buildStatusContainer(
                           '${'accepted'.tr} $accepted',
-                          Colors.green.withOpacity(0.1),
+                          _kPurple.withOpacity(0.12),
+                          'accepted',
                         ),
                         const SizedBox(width: 8),
                         _buildStatusContainer(
                           '${"decline".tr} $declined',
                           Colors.red.withOpacity(0.1),
+                          'declined',
                         ),
                         const SizedBox(width: 8),
                         _buildStatusContainer(
                           '${"pickup".tr} $pickUp',
                           Colors.blue.withOpacity(0.1),
+                          'pickup',
                         ),
                         const SizedBox(width: 8),
                         _buildStatusContainer(
                           '${"delivery".tr} $delivery',
                           Colors.purple.withOpacity(0.1),
+                          'delivery',
                         ),
                       ],
                     ),
@@ -405,10 +461,10 @@ class _AdminOrderState extends State<AdminOrder>
                   removeBottom: true,
                   child: RefreshIndicator(
                     onRefresh: _handleRefresh,
-                    color: Colors.green,
+                    color: _kPurple,
                     backgroundColor: Colors.white,
                     displacement: 60,
-                    child: ordersList.isEmpty
+                    child: orders.isEmpty
                         ? ListView(
                       padding: EdgeInsets.zero,
                       physics: const AlwaysScrollableScrollPhysics(),
@@ -437,9 +493,9 @@ class _AdminOrderState extends State<AdminOrder>
                         : ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
-                      itemCount: ordersList.length,
+                      itemCount: orders.length,
                       itemBuilder: (context, index) {
-                        final order = ordersList[index];
+                        final order = orders[index];
                         DateTime dateTime = DateTime.parse(order.createdAt.toString());
                         String time = DateFormat('hh:mm a').format(dateTime);
                         String guestAddress = order.guestShippingJson?.zip?.toString() ?? '';
@@ -455,7 +511,7 @@ class _AdminOrderState extends State<AdminOrder>
                             Color getContainerColor() {
                               switch (order.approvalStatus) {
                                 case 2:
-                                  return const Color(0xffEBFFF4);
+                                  return const Color(0xffF3EEFF);
                                 case 3:
                                   return const Color(0xffFFEFEF);
                                 case 1:
@@ -474,7 +530,7 @@ class _AdminOrderState extends State<AdminOrder>
                                   borderRadius: BorderRadius.circular(7),
                                   border: Border.all(
                                     color: (order.approvalStatus == 2)
-                                        ? const Color(0xffC3F2D9)
+                                        ? const Color(0xffD9CCFB)
                                         : (order.approvalStatus == 3)
                                         ? const Color(0xffFFD0D0)
                                         : Colors.grey.withOpacity(0.2),
@@ -490,7 +546,7 @@ class _AdminOrderState extends State<AdminOrder>
                                   ],
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
                                   child: GestureDetector(
                                     behavior: HitTestBehavior.opaque,
                                     onTap: () {
@@ -506,14 +562,16 @@ class _AdminOrderState extends State<AdminOrder>
                                             Row(
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                CircleAvatar(
-                                                  radius: 14,
-                                                  backgroundColor: Colors.green,
+                                                Container(
+                                                  width: 34,
+                                                  height: 34,
+                                                  alignment: Alignment.center,
+                                                  decoration: const BoxDecoration(shape: BoxShape.circle, gradient: _kBrandGradient),
                                                   child: SvgPicture.asset(
                                                     order.orderType == 1
                                                         ? 'assets/images/ic_delivery.svg'
-                                                        : order.orderType == 2
-                                                        ? 'assets/images/ic_pickup.svg'
+                                                        : order.orderType == 3
+                                                        ? 'assets/images/table.svg'
                                                         : 'assets/images/ic_pickup.svg',
                                                     height: 14,
                                                     width: 14,
@@ -588,7 +646,7 @@ class _AdminOrderState extends State<AdminOrder>
                                               Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                                                 decoration: BoxDecoration(
-                                                  color: const Color(0xFF2E7D32),
+                                                  color: _kIndigo,
                                                   borderRadius: BorderRadius.circular(6),
                                                 ),
                                                 child: const Text(
@@ -617,6 +675,23 @@ class _AdminOrderState extends State<AdminOrder>
                                                     fontSize: 13,
                                                   ),
                                                 ),
+                                              )
+                                            else if (source.toLowerCase() == "pos")
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFF1976D2),
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: const Text(
+                                                  "POS",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily: 'Sora',
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
                                               ),
                                             Row(
                                               children: [
@@ -637,14 +712,17 @@ class _AdminOrderState extends State<AdminOrder>
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            SizedBox(
-                                              width: MediaQuery.of(context).size.width * 0.5,
-                                              child: Text(
-                                                '${order.shippingAddress?.customerName ?? guestName ?? ""} / ${order.shippingAddress?.phone ?? guestPhone}',
-                                                style: const TextStyle(
-                                                    fontWeight: FontWeight.w700,
-                                                    fontFamily: 'Sora',
-                                                    fontSize: 13),
+                                            Flexible(
+                                              child: SizedBox(
+                                                width: MediaQuery.of(context).size.width * 0.5,
+                                                child: Text(
+                                                  '${order.shippingAddress?.customerName ?? guestName} / ${order.shippingAddress?.phone ?? guestPhone}',
+                                                  style: const TextStyle(
+                                                      fontWeight: FontWeight.w700,
+                                                      fontFamily: 'Sora',
+                                                      fontSize: 13),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
                                               ),
                                             ),
                                             Row(
@@ -671,21 +749,44 @@ class _AdminOrderState extends State<AdminOrder>
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
-                                              order.payment != null
-                                                  ? '${'currency'.tr} ${formatAmount(order.payment!.amount ?? 0)}'
-                                                  : '${'currency'.tr} ${formatAmount(0)}',
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.w800,
-                                                  fontFamily: 'Sora',
-                                                  fontSize: 16),
-                                            ),
+                                            Row(children: [
+                                              Text(
+                                                order.payment != null
+                                                    ? '${'currency'.tr} ${formatAmount(order.payment!.amount ?? 0)}'
+                                                    : '${'currency'.tr} ${formatAmount(0)}',
+                                                style: const TextStyle(
+                                                    fontWeight: FontWeight.w800,
+                                                    fontFamily: 'Sora',
+                                                    fontSize: 16),
+                                              ),
+                                              if ((order.payment?.paymentMethod ?? '').isNotEmpty) ...[
+                                                const SizedBox(width: 6),
+                                                paymentIcon(order.payment!.paymentMethod!),
+                                              ],
+                                            ]),
+                                            if (_isVorbestellen(order.deliveryTime))
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.orange,
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: const Text(
+                                                  'Vorbestellen',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w700,
+                                                    fontFamily: 'Sora',
+                                                    fontSize: 11,
+                                                  ),
+                                                ),
+                                              ),
                                             Row(
                                               children: [
                                                 Text(
                                                   getApprovalStatusText(order.approvalStatus),
                                                   style: const TextStyle(
-                                                      fontWeight: FontWeight.w800,
+                                                      fontWeight: FontWeight.w400,
                                                       fontFamily: 'Sora',
                                                       fontSize: 13),
                                                 ),
@@ -703,28 +804,6 @@ class _AdminOrderState extends State<AdminOrder>
                                             ),
                                           ],
                                         ),
-                                        if (_isVorbestellen(order.deliveryTime))
-                                          Center(
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(top: 6),
-                                              child: Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.orange,
-                                                  borderRadius: BorderRadius.circular(6),
-                                                ),
-                                                child: const Text(
-                                                  'Vorbestellen',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w700,
-                                                    fontFamily: 'Sora',
-                                                    fontSize: 13,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
                                       ],
                                     ),
                                   ),
@@ -742,6 +821,7 @@ class _AdminOrderState extends State<AdminOrder>
           ),
         );
       }),
+    ),
     );
   }
 

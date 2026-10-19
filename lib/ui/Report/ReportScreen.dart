@@ -874,7 +874,7 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
               onSurface: Colors.black,
             ),
           ),
-          child: _CustomDateRangeDialog(
+          child: CustomDateRangeDialog(
             firstDate: twoYearsAgo,
             lastDate: now,
           ),
@@ -944,17 +944,17 @@ class _ReportScreenState extends State<ReportScreen> with SingleTickerProviderSt
   }
 }
 
-class _CustomDateRangeDialog extends StatefulWidget {
+class CustomDateRangeDialog extends StatefulWidget {
   final DateTime firstDate;
   final DateTime lastDate;
 
-  const _CustomDateRangeDialog({required this.firstDate, required this.lastDate});
+  const CustomDateRangeDialog({required this.firstDate, required this.lastDate});
 
   @override
-  State<_CustomDateRangeDialog> createState() => _CustomDateRangeDialogState();
+  State<CustomDateRangeDialog> createState() => CustomDateRangeDialogState();
 }
 
-class _CustomDateRangeDialogState extends State<_CustomDateRangeDialog> {
+class CustomDateRangeDialogState extends State<CustomDateRangeDialog> {
   DateTime? _startDate;
   bool _selectingEnd = false;
 

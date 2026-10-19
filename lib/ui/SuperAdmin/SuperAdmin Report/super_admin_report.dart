@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -11,6 +12,9 @@ import '../../../models/DailySalesReport.dart';
 import '../../../models/get_admin_report_response_model.dart';
 import '../../../models/order_history_response_model.dart';
 import '../../Order_history/order_history.dart';
+import '../../Report/PdfPreviewScreen.dart';
+import '../../Report/ReportScreen.dart' show CustomDateRangeDialog;
+import 'package:food_receiver/constants/app_theme.dart';
 
 class SuperAdminReport extends StatefulWidget {
   const SuperAdminReport({super.key});
@@ -35,6 +39,9 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
 
   bool _isCalculatingTotal = false;
   double _monthTotalSales = 0.0;
+
+  bool _showGenerateOptions = false;
+  bool _isGeneratingReport = false;
 
   @override
   void initState() {
@@ -170,8 +177,9 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return AppGradientBackground(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       body: isLoading
           ? Center(
         child: Lottie.asset(
@@ -187,22 +195,199 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
           children: [
             _buildHeader(),
             const SizedBox(height: 16),
+            _buildGenerateReportOptions(),
             if (showCalendar) ...[
               _calendar(),
               const SizedBox(height: 16),
             ],
             showCalendar && _selectedDate != null
                 ? _buildDailyReportStatus(_selectedDailyReport)
-                : !showCalendar
+                : !showCalendar && !_showGenerateOptions
                 ? _buildMonthlyReportStatus(storeReport)
                 : const SizedBox.shrink(),
             const SizedBox(height: 16),
           ],
         ),
       ),
+    ),
     );
   }
 
+
+  // ─── Generate PDF report (same as ReportScreen) ───
+  Widget _buildGenerateReportOptions() {
+    return AnimatedCrossFade(
+      firstChild: const SizedBox.shrink(),
+      secondChild: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.accentLight),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'generate_report'.tr,
+              style: const TextStyle(
+                fontFamily: 'Sora',
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: Color(0xff1F1E1E),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (_isGeneratingReport)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: CircularProgressIndicator(color: AppTheme.accent),
+                ),
+              )
+            else
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  _reportOptionChip('today_option'.tr, () {
+                    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+                    _callGenerateReport(today, today);
+                  }),
+                  _reportOptionChip('weekly'.tr, () {
+                    final today = DateTime.now();
+                    final monday = today.subtract(Duration(days: today.weekday - 1));
+                    _callGenerateReport(
+                      DateFormat('yyyy-MM-dd').format(monday),
+                      DateFormat('yyyy-MM-dd').format(today),
+                    );
+                  }),
+                  _reportOptionChip('monthly_option'.tr, () {
+                    final today = DateTime.now();
+                    final firstOfMonth = DateTime(today.year, today.month, 1);
+                    _callGenerateReport(
+                      DateFormat('yyyy-MM-dd').format(firstOfMonth),
+                      DateFormat('yyyy-MM-dd').format(today),
+                    );
+                  }),
+                  _reportOptionChip('yearly'.tr, () {
+                    final today = DateTime.now();
+                    final firstOfYear = DateTime(today.year, 1, 1);
+                    _callGenerateReport(
+                      DateFormat('yyyy-MM-dd').format(firstOfYear),
+                      DateFormat('yyyy-MM-dd').format(today),
+                    );
+                  }),
+                  _reportOptionChip('custom_range'.tr, () async {
+                    final result = await _showCustomDateRangePicker();
+                    if (result == null || !mounted) return;
+                    _callGenerateReport(
+                      DateFormat('yyyy-MM-dd').format(result['start']!),
+                      DateFormat('yyyy-MM-dd').format(result['end']!),
+                    );
+                  }),
+                ],
+              ),
+          ],
+        ),
+      ),
+      crossFadeState: _showGenerateOptions
+          ? CrossFadeState.showSecond
+          : CrossFadeState.showFirst,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
+
+  Widget _reportOptionChip(String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(color: AppTheme.accent, width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.accent.withValues(alpha: 0.08),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'Sora',
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
+            color: AppTheme.accent,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<Map<String, DateTime>?> _showCustomDateRangePicker() async {
+    final now = DateTime.now();
+    final twoYearsAgo = DateTime(now.year - 2, now.month, now.day);
+
+    return showDialog<Map<String, DateTime>>(
+      context: context,
+      builder: (context) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppTheme.accent,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: CustomDateRangeDialog(
+            firstDate: twoYearsAgo,
+            lastDate: now,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _callGenerateReport(String fromDate, String toDate) async {
+    setState(() => _isGeneratingReport = true);
+
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int storeId = int.tryParse(prefs.getString(valueShared_STORE_KEY) ?? '') ?? 13;
+
+      final pdfBytes = await CallService().generateReport(
+        fromDate: fromDate,
+        toDate: toDate,
+        storeId: storeId,
+        language: 'De',
+      );
+
+      if (!mounted) return;
+      setState(() => _isGeneratingReport = false);
+
+      Get.to(() => PdfPreviewScreen(
+        pdfBytes: Uint8List.fromList(pdfBytes),
+        fromDate: fromDate,
+        toDate: toDate,
+      ));
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isGeneratingReport = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${'generate_error'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
 
   Widget _buildMonthlyReportStatus(Report? report) {
     final reportToShow = report ?? Report();
@@ -264,7 +449,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
         //     width: double.infinity,
         //     padding: EdgeInsets.all(12),
         //     decoration: BoxDecoration(
-        //         borderRadius: BorderRadius.circular(5), color: Colors.green),
+        //         borderRadius: BorderRadius.circular(5), color: AppTheme.accent),
         //     child: Center(
         //       child: Text('view_full'.tr,
         //           style: TextStyle(
@@ -309,7 +494,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
                 SvgPicture.asset('assets/images/ic_report.svg', height: 12, width: 12),
                 const SizedBox(height: 2),
                 Text("${"currency".tr}${formatAmount(dailyReport.totalSales ?? 0)}",
-                    style: const TextStyle(fontFamily: 'Sora', fontSize: 10, color: Colors.green)),
+                    style: const TextStyle(fontFamily: 'Sora', fontSize: 10, color: AppTheme.accent)),
               ]
             ],
           ),
@@ -378,7 +563,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
               height: 16,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accent),
               ),
             )
                 : Text(
@@ -386,7 +571,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
               style: const TextStyle(fontFamily: 'Sora', 
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
-                color: Colors.green,
+                color: AppTheme.accent,
               ),
             ),
           ],
@@ -445,6 +630,9 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
                 _resetCalendarToCurrentMonth();
               });
             }
+            if (_showGenerateOptions) {
+              setState(() => _showGenerateOptions = false);
+            }
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -457,7 +645,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
                           fontFamily: 'Sora',
-                          color: Color(0xff0C831F))),
+                          color: AppTheme.accent)),
                   Positioned(
                     right: -11,
                     top: 0,
@@ -467,7 +655,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
                           width: 9,
                           height: 9,
                           decoration: const BoxDecoration(
-                              color: Color(0xff0C831F), shape: BoxShape.circle)),
+                              color: AppTheme.accent, shape: BoxShape.circle)),
                     ),
                   ),
                 ],
@@ -488,7 +676,46 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
         GestureDetector(
           onTap: () {
             setState(() {
+              _showGenerateOptions = !_showGenerateOptions;
+              if (_showGenerateOptions) {
+                showCalendar = false;
+                _selectedDailyReport = null;
+                _selectedDate = null;
+              }
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: _showGenerateOptions ? AppTheme.accent : AppTheme.accentLight,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppTheme.accent, width: 1),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.description_outlined, size: 16, color: _showGenerateOptions ? Colors.white : AppTheme.accent),
+                const SizedBox(width: 4),
+                Text(
+                  'report_btn'.tr,
+                  style: TextStyle(
+                    fontFamily: 'Sora',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: _showGenerateOptions ? Colors.white : AppTheme.accent,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            setState(() {
               showCalendar = !showCalendar;
+              if (showCalendar) {
+                _showGenerateOptions = false;
+              }
               if (!showCalendar) {
                 _selectedDate = null;
                 _resetCalendarToCurrentMonth();
@@ -564,7 +791,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
                 text: "   ${e.value}",
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Colors.green,
+                    color: AppTheme.accent,
                     fontFamily: 'Sora')),
           ],
         ),
@@ -767,7 +994,7 @@ class _SuperAdminReportState extends State<SuperAdminReport> with SingleTickerPr
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5), color: Colors.green),
+                borderRadius: BorderRadius.circular(5), color: AppTheme.accent),
             child: Center(
               child: Text('view_full'.tr,
                   style: const TextStyle(

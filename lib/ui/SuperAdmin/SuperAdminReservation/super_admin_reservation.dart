@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:food_receiver/constants/app_theme.dart';
 
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -44,7 +44,7 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
       case 'pending':
         return Colors.orange;
       case 'booked':
-        return Colors.green;
+        return const Color(0xFF16A34A);
       case 'cancelled':
         return Colors.red;
       default:
@@ -375,340 +375,317 @@ class _SuperAdminReservationState extends State<SuperAdminReservation> with Widg
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final filtered = _getFilteredReservations();
+    final list = _selectedTab == 0 ? filtered : null;
+    return AppGradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ─── Header: title, date, total, refresh (pinned, does not scroll) ───
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+              child: Row(
                 children: [
-                  GestureDetector(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('reserv'.tr,
-                            style: const TextStyle(fontFamily: 'Sora', 
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                            )),
-                        GestureDetector(
-                          onTap: () {
-                            openCalendarScreen();
-                          },
-                          child: Text(
-                            dateSeleted.isEmpty
-                                ? DateFormat('d MMMM, y').format(DateTime.now())
-                                : dateSeleted,
-                            style: const TextStyle(fontFamily: 'Sora', fontSize: 16),
-                          ),
+                            style: const TextStyle(fontFamily: 'Sora',
+                                fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.accentDark)),
+                        const SizedBox(height: 2),
+                        Text(
+                          dateSeleted.isEmpty
+                              ? DateFormat('d MMMM, y').format(DateTime.now())
+                              : dateSeleted,
+                          style: const TextStyle(fontFamily: 'Sora',
+                              fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black54),
                         ),
                       ],
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                  Column(crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 10.0, top: 5),
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                openCalendarScreen();
-                              },
-                              child: Row(
-                                children: [
-                                  Text('history'.tr,
-                                      style: const TextStyle(
-                                          fontFamily: 'Sora',
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 16,
-                                          color: Color(0xff1F1E1E))),
-                                  const SizedBox(width: 5),
-                                  SvgPicture.asset('assets/images/dropdown.svg',
-                                      height: 5, width: 11),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            if (dateSeleted.isNotEmpty &&
-                                dateSeleted !=
-                                    DateFormat('d MMMM, y')
-                                        .format(DateTime.now()))
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    dateSeleted = "";
-                                  });
-                                  loadReservationHistory();
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                        color: Colors.blue, width: 1),
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.today,
-                                          size: 14, color: Colors.blue),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        'Today',
-                                        style: TextStyle(fontFamily: 'Sora', 
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.blue,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
                       Row(
                         children: [
-                          Text(
-                            '${'total_reserv'.tr}: ${_selectedTab == 0 ? _getFilteredReservations().length : receivedBooking.length}',
-                            style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w800,
-                                fontFamily: 'Sora',
-                                color: Colors.black),
-                          ),
-                          IconButton(
-                              iconSize: 24,
-                              icon: const Icon(Icons.refresh),
-                              onPressed: () async {
-                                await loadReservationHistory();
+                          if (dateSeleted.isNotEmpty && dateSeleted != DateFormat('d MMMM, y').format(DateTime.now()))
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: _pill(Icons.today_rounded, 'Today', onTap: () {
+                                setState(() => dateSeleted = "");
+                                loadReservationHistory();
                               }),
+                            ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: _pill(Icons.history_rounded, 'history'.tr, onTap: openCalendarScreen),
+                          ),
                         ],
                       ),
+                      const SizedBox(height: 5),
+                      _pill(Icons.event_note_rounded,
+                          '${'total_reserv'.tr}: ${_selectedTab == 0 ? filtered.length : receivedBooking.length}'),
                     ],
                   ),
+                  const SizedBox(width: 8),
+                  InkWell(onTap: loadReservationHistory, child: const Icon(Icons.refresh_rounded)),
                 ],
               ),
-              // ── Tabs ──────────────────────────────────────────────
-              Row(
+            ),
+            // ─── Tabs (pinned) ───
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 14, 12, 0),
+              child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => setState(() => _selectedTab = 0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(
-                          color: _selectedTab == 0 ? Colors.black : Colors.transparent,
-                          width: 2,
-                        )),
-                      ),
-                      child: Text('today_booking'.tr,
-                          style: TextStyle(fontFamily: 'Sora', 
-                            fontWeight: _selectedTab == 0 ? FontWeight.w800 : FontWeight.w500,
-                          )),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() => _selectedTab = 1);
-                      getTodayReceivedReservation(showLoader: false);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(
-                          color: _selectedTab == 1 ? Colors.black : Colors.transparent,
-                          width: 2,
-                        )),
-                      ),
-                      child: Text('today_received_booking'.tr,
-                          style: TextStyle(fontFamily: 'Sora', 
-                            fontWeight: _selectedTab == 1 ? FontWeight.w800 : FontWeight.w500,
-                          )),
-                    ),
-                  ),
+                  _tab('today_booking'.tr, 0),
+                  const SizedBox(width: 5),
+                  _tab('today_received_booking'.tr, 1),
                 ],
               ),
-              const SizedBox(height: 8),
-              // ── Tab 0: Today Booking (same filter as normal reservation.dart) ──
-              if (_selectedTab == 0)
-                Builder(builder: (_) {
-                  final filtered = _getFilteredReservations();
-                  return filtered.isEmpty
-                      ? Center(
-                    child: Column(
-                      children: [
-                        Lottie.asset('assets/animations/empty.json', height: 150, width: 150),
-                        Text('no_reservation'.tr, style: const TextStyle(fontFamily: 'Sora'))
-                      ],
-                    ),
-                  )
-                      : ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: filtered.length,
-                      itemBuilder: (context, index) {
-                        var reserv = filtered[index];
-                        return _buildReservationCard(
-                          id: reserv.id.toString(),
-                          reservedFor: reserv.reservedFor?.toString() ?? '',
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(12, 6, 12, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (list != null)
+                      if (list.isEmpty)
+                        _emptyState()
+                      else
+                        for (final reserv in list)
+                          _reservationCard(
+                            id: reserv.id,
+                            reservedFor: reserv.reservedFor,
+                            createdAt: reserv.createdAt,
+                            customerName: reserv.customerName,
+                            customerPhone: reserv.customerPhone,
+                            guestCount: reserv.guestCount,
+                            status: reserv.status,
+                          )
+                    else if (receivedBooking.isEmpty)
+                      _emptyState()
+                    else
+                      for (final reserv in receivedBooking)
+                        _reservationCard(
+                          id: reserv.id,
+                          reservedFor: reserv.reservedFor,
                           createdAt: reserv.createdAt,
-                          customerName: reserv.customerName?.toString() ?? '',
-                          customerPhone: reserv.customerPhone?.toString() ?? '',
-                          guestCount: reserv.guestCount?.toString() ?? '0',
+                          customerName: reserv.customerName,
+                          customerPhone: reserv.customerPhone,
+                          guestCount: reserv.guestCount,
                           status: reserv.status,
-                          onRefresh: () => getReservationDetails(),
-                        );
-                      });
-                })
-              // ── Tab 1: Today Received Booking ─────────────────────
-              else
-                receivedBooking.isEmpty
-                    ? Center(
-                  child: Column(
-                    children: [
-                      Lottie.asset('assets/animations/empty.json', height: 150, width: 150),
-                      Text('no_reservation'.tr, style: const TextStyle(fontFamily: 'Sora'))
-                    ],
-                  ),
-                )
-                    : ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: receivedBooking.length,
-                    itemBuilder: (context, index) {
-                      var reserv = receivedBooking[index];
-                      return _buildReservationCard(
-                        id: reserv.id.toString(),
-                        reservedFor: reserv.reservedFor?.toString() ?? '',
-                        createdAt: reserv.createdAt,
-                        customerName: reserv.customerName?.toString() ?? '',
-                        customerPhone: reserv.customerPhone?.toString() ?? '',
-                        guestCount: reserv.guestCount?.toString() ?? '0',
-                        status: reserv.status,
-                        onRefresh: () => getReservationDetails(),
-                      );
-                    }),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildReservationCard({
-    required String id,
-    required String reservedFor,
-    required String? createdAt,
-    required String customerName,
-    required String customerPhone,
-    required String guestCount,
-    required String? status,
-    required Future<void> Function() onRefresh,
-  }) {
-    return GestureDetector(
-      onTap: () async {
-        await Get.to(() => ReservationDetails(id))?.then((_) => onRefresh());
-      },
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        margin: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(7),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                spreadRadius: 0,
-                blurRadius: 4,
-                offset: const Offset(0, 2),
+                        ),
+                  ],
+                ),
               ),
-            ]),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Image.asset('assets/images/reservation.png', height: 25, width: 25),
-                    const SizedBox(width: 10),
-                    Text(
-                      formatDateTime(reservedFor),
-                      style: const TextStyle(fontSize: 13, fontFamily: 'Sora', fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.access_time, size: 20),
-                    const SizedBox(width: 5),
-                    Text(
-                      createdAt != null ? DateFormat('HH:mm').format(DateTime.parse(createdAt)) : '--:--',
-                      style: const TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Sora', fontSize: 10),
-                    )
-                  ],
-                )
-              ],
             ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  child: Text(
-                    '$customerName/$customerPhone',
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Sora'),
-                  ),
-                ),
-                Row(
-                  children: [
-                    Text('${'order_id'.tr} :', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Sora')),
-                    const SizedBox(width: 5),
-                    Text(id, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11, fontFamily: 'Sora')),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Image.asset('assets/images/person.png', height: 18, width: 14),
-                    const SizedBox(width: 10),
-                    Text(guestCount, style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w800)),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(status ?? '', style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 13)),
-                    const SizedBox(width: 6),
-                    CircleAvatar(
-                        radius: 14,
-                        backgroundColor: getStatusColor(status),
-                        child: Icon(getStatusIcon(status), color: Colors.white, size: 16)),
-                  ],
-                ),
-              ],
-            )
           ],
         ),
       ),
     );
   }
 
+  // ─── Reservation list layout helpers (same as table Book/reservation.dart) ───
+  Widget _pill(IconData icon, String text, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: AppTheme.accentLight,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 15, color: AppTheme.accent),
+            const SizedBox(width: 6),
+            Text(text,
+                style: const TextStyle(fontFamily: 'Sora',
+                    fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.accent)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _tab(String label, int index) {
+    final selected = _selectedTab == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() => _selectedTab = index);
+        if (index == 1) getTodayReceivedReservation(showLoader: false);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+        decoration: BoxDecoration(
+          gradient: selected ? AppTheme.accentGradient : null,
+          color: selected ? null : Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: selected ? null : Border.all(color: const Color(0xFFE7E4FA)),
+        ),
+        child: Text(label,
+            style: TextStyle(fontFamily: 'Sora',
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: selected ? Colors.white : AppTheme.accentDark)),
+      ),
+    );
+  }
+
+  Widget _emptyState() {
+    return Center(
+      child: Column(
+        children: [
+          const SizedBox(height: 40),
+          Lottie.asset('assets/animations/empty.json', height: 150, width: 150),
+          Text('no_reservation'.tr,
+              style: const TextStyle(fontFamily: 'Sora', color: Colors.black45, fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+
+  Widget _statusChip(String? status) {
+    final color = getStatusColor(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(getStatusIcon(status), size: 14, color: color),
+          const SizedBox(width: 5),
+          Text((status ?? '-').capitalizeFirst ?? '-',
+              style: TextStyle(fontFamily: 'Sora', color: color, fontWeight: FontWeight.w800, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  // "Today" / "Tomorrow", otherwise the full date.
+  String _dayLabel(DateTime d) {
+    final now = DateTime.now();
+    final days = DateTime(d.year, d.month, d.day)
+        .difference(DateTime(now.year, now.month, now.day))
+        .inDays;
+    if (days == 0) return 'day_today'.tr;
+    if (days == 1) return 'day_tomorrow'.tr;
+    return DateFormat('dd.MM.yyyy').format(d);
+  }
+
+  Widget _reservationCard({
+    required dynamic id,
+    String? reservedFor,
+    String? createdAt,
+    String? customerName,
+    String? customerPhone,
+    dynamic guestCount,
+    String? status,
+  }) {
+    final reservedAt = DateTime.tryParse(reservedFor ?? '');
+    final created = DateTime.tryParse(createdAt ?? '');
+    final name = (customerName ?? '').trim();
+    return GestureDetector(
+      onTap: () async {
+        await Get.to(() => ReservationDetails(id.toString()))?.then((_) => getReservationDetails());
+      },
+      child: Container(
+        margin: const EdgeInsets.only(top: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.accent.withOpacity(0.07),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Reserved-for time block
+            Container(
+              width: 92,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF6D5DF6), Color(0xFF4F8DF7)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  Text(reservedAt == null ? '' : _dayLabel(reservedAt),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontFamily: 'Sora',
+                          color: Colors.white.withOpacity(0.85), fontSize: 11, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text(reservedAt == null ? '--:--' : DateFormat('HH:mm').format(reservedAt),
+                      style: const TextStyle(fontFamily: 'Sora',
+                          color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20, height: 1)),
+                ],
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(name.isEmpty ? '-' : name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontFamily: 'Sora',
+                                fontWeight: FontWeight.w700, fontSize: 15, color: AppTheme.accentDark)),
+                      ),
+                      _statusChip(status),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(customerPhone ?? '',
+                      style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black54)),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      const Icon(Icons.group_rounded, size: 16, color: AppTheme.accent),
+                      const SizedBox(width: 4),
+                      Text('${guestCount ?? '-'}',
+                          style: const TextStyle(fontFamily: 'Sora',
+                              fontWeight: FontWeight.w800, fontSize: 13, color: AppTheme.accentDark)),
+                      const SizedBox(width: 14),
+                      const Icon(Icons.tag_rounded, size: 15, color: Colors.black38),
+                      Text('$id',
+                          style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black54)),
+                      const Spacer(),
+                      const Icon(Icons.schedule_rounded, size: 14, color: Colors.black38),
+                      const SizedBox(width: 4),
+                      Text(created == null ? '--:--' : DateFormat('HH:mm').format(created),
+                          style: const TextStyle(fontFamily: 'Sora', fontSize: 11, color: Colors.black45)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   void openCalendarScreen() async {
     final result = await showModalBottomSheet<String>(
@@ -1004,7 +981,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
             if (isLoading) // ✅ Show small indicator during month change
               LinearProgressIndicator(
                 backgroundColor: Colors.grey[200],
-                valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+                valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.accent),
               ),
             _buildCalendar(),
           ],
@@ -1053,7 +1030,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
             Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_left, color: Colors.green),
+                  icon: const Icon(Icons.arrow_left, color: AppTheme.accent),
                   onPressed: isLoading ? null : () async { // ✅ Disable during loading
                     setState(() {
                       if (selectedMonth == 1) {
@@ -1067,7 +1044,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.arrow_right, color: Colors.green),
+                  icon: const Icon(Icons.arrow_right, color: AppTheme.accent),
                   onPressed: isLoading ? null : () async { // ✅ Disable during loading
                     setState(() {
                       if (selectedMonth == 12) {
@@ -1104,7 +1081,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
                     TextSpan(
                       text: year.toString(),
                       style: const TextStyle(
-                        color: Colors.green,
+                        color: AppTheme.accent,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Sora',
@@ -1174,7 +1151,7 @@ class _SuperAdminCalendarDialogState extends State<SuperAdminCalendarDialog> {
                 _selectedDate!.year == date.year &&
                 _selectedDate!.month == date.month &&
                 _selectedDate!.day == date.day
-                ? Colors.green.withOpacity(0.2)
+                ? AppTheme.accent.withOpacity(0.2)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
           ),
