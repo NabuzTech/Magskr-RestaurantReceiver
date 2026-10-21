@@ -636,7 +636,7 @@ class _SuperAdminState extends State<SuperAdmin> {
 
   Widget _orderCard(AllOrderAdminResponseModel order) {
     DateTime dateTime = DateTime.parse(order.createdAt.toString());
-    String time = DateFormat('hh:mm a').format(dateTime);
+    String time = DateFormat('HH:mm').format(dateTime);
     String guestName = order.guestShippingJson?.customerName?.toString() ?? '';
     String guestPhone = order.guestShippingJson?.phone?.toString() ?? '';
     final String source = order.source.toString();

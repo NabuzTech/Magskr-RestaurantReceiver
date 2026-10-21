@@ -3830,7 +3830,7 @@ class _PosLandscapeState extends State<PosLandscape> with TickerProviderStateMix
       dateTime = DateTime.now();
     }
 
-    String time = DateFormat('hh:mm a').format(dateTime);
+    String time = DateFormat('HH:mm').format(dateTime);
     String guestAddress = order.guestShippingJson?.zip?.toString() ?? '';
     String guestName = order.guestShippingJson?.customerName?.toString() ?? '';
     String guestPhone = order.guestShippingJson?.phone?.toString() ?? '';

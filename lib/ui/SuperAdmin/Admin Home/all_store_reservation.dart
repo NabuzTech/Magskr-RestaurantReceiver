@@ -510,7 +510,7 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
                     const Icon(Icons.access_time, size: 14, color: Colors.grey),
                     const SizedBox(width: 2),
                     Text(
-                      createdAt != null ? DateFormat('hh:mm a').format(createdAt) : '-',
+                      createdAt != null ? DateFormat('HH:mm').format(createdAt) : '-',
                       style: const TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Sora', fontSize: 10),
                     ),
                   ],
@@ -575,7 +575,7 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
                 const Icon(Icons.event_outlined, size: 13, color: Colors.grey),
                 const SizedBox(width: 4),
                 Text(
-                  'For: ${reservedFor != null ? DateFormat('dd MMM yyyy, hh:mm a').format(reservedFor) : '-'}',
+                  'For: ${reservedFor != null ? DateFormat('dd MMM yyyy, HH:mm').format(reservedFor) : '-'}',
                   style: const TextStyle(fontSize: 11, fontFamily: 'Sora', fontWeight: FontWeight.w600),
                 ),
               ],

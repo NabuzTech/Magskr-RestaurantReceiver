@@ -858,7 +858,7 @@ class _DeviceStatusScreenState extends State<DeviceStatusScreen> with TickerProv
       final dt = DateTime.parse(value).toLocal();
 
       return DateFormat(
-        'dd MMM yyyy • hh:mm a',
+        'dd MMM yyyy • HH:mm',
       ).format(dt);
     } catch (e) {
       return value;

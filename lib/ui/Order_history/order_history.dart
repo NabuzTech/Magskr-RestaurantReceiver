@@ -374,7 +374,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                   String time = '';
                   if (order.createdAt != null) {
                     DateTime dateTime = DateTime.parse(order.createdAt!);
-                    time = DateFormat('hh:mm a').format(dateTime);
+                    time = DateFormat('HH:mm').format(dateTime);
                   }
 
                   return Container(

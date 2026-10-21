@@ -471,7 +471,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
 
         while (currentSlot.isBefore(endTime) || currentSlot.isAtSameMomentAs(endTime)) {
           String time24 = '${currentSlot.hour.toString().padLeft(2, '0')}:${currentSlot.minute.toString().padLeft(2, '0')}';
-          String time12 = DateFormat('h:mm a').format(currentSlot);
+          String time12 = DateFormat('HH:mm').format(currentSlot);
 
           slots.add({
             'time24': time24,
@@ -1631,7 +1631,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
 
     while (currentSlot.isBefore(endTime) || currentSlot.isAtSameMomentAs(endTime)) {
       String time24 = '${currentSlot.hour.toString().padLeft(2, '0')}:${currentSlot.minute.toString().padLeft(2, '0')}';
-      String time12 = DateFormat('h:mm a').format(currentSlot);
+      String time12 = DateFormat('HH:mm').format(currentSlot);
 
       slots.add({
         'time24': time24,

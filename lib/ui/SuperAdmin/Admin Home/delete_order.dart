@@ -360,7 +360,7 @@ class _DeleteOrderState extends State<DeleteOrder> {
 
   Widget _orderCard(orderHistoryResponseModel order) {
     final isSelected = selectedOrderIds.contains(order.id);
-    final time = DateFormat('hh:mm a').format(DateTime.parse(order.createdAt.toString()));
+    final time = DateFormat('HH:mm').format(DateTime.parse(order.createdAt.toString()));
     final guest = order.guestShippingJson;
     final shipping = order.shippingAddress;
     final source = order.source.toString();

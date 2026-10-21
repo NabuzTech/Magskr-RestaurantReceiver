@@ -82,13 +82,13 @@ class Summary {
 class Reservations {
   int? id;
   int? storeId;
-  Null? userId;
+  int? userId;
   int? partySize;
   String? reservedFor;
   String? reservedUntil;
   int? durationMinutes;
   String? status;
-  Null? tableNumber;
+  dynamic tableNumber;
   String? customerName;
   String? customerPhone;
   String? customerEmail;

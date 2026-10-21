@@ -1048,7 +1048,7 @@ class _PosPortraitState extends State<PosPortrait> {
       dateTime = DateTime.now();
     }
 
-    String time = DateFormat('hh:mm a').format(dateTime);
+    String time = DateFormat('HH:mm').format(dateTime);
     String guestName = order.guestShippingJson?.customerName?.toString() ?? '';
     String guestPhone = order.guestShippingJson?.phone?.toString() ?? '';
     String guestZip = order.guestShippingJson?.zip?.toString() ?? '';

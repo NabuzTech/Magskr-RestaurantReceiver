@@ -1317,7 +1317,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
         currentSlot.isAtSameMomentAs(endTime)) {
       String time24 =
           '${currentSlot.hour.toString().padLeft(2, '0')}:${currentSlot.minute.toString().padLeft(2, '0')}';
-      String time12 = DateFormat('h:mm a').format(currentSlot);
+      String time12 = DateFormat('HH:mm').format(currentSlot);
 
       slots.add(TimeSlot(time24, time12));
       currentSlot = currentSlot.add(const Duration(minutes: 20));

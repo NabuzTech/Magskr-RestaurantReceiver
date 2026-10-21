@@ -1288,7 +1288,7 @@ class MyApp extends StatelessWidget {
       fallbackLocale: const Locale('en'),
       builder: (_, child) => AppUpdateChecker(
         child: MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0), alwaysUse24HourFormat: true),
           child: child ?? const SizedBox.shrink(),
         ),
       ),

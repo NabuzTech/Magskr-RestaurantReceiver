@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:food_receiver/constants/app_theme.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../../api/repository/api_repository.dart';
+import '../../../../models/Reservation V2/GetAllReservationV2.dart';
 import '../../../../models/Reservation V2/get_today_received_reservationV2_superAdmin.dart';
-
-
+import '../../../../models/Reservation V2/get_today_reservation_V2_of_store.dart' as store_res;
+import '../../../Reservation V2/reservation_details_view.dart';
 
 class AllStoreReservationV2 extends StatefulWidget {
   const AllStoreReservationV2({super.key});
@@ -111,10 +114,7 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
                                 border: Border.all(color: Colors.grey, width: 1),
                               ),
                               child: const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.only(left: 5.0),
-                                  child: Icon(Icons.arrow_back_ios, size: 16),
-                                ),
+                                child: Padding(padding: EdgeInsets.only(left: 5.0), child: Icon(Icons.arrow_back_ios, size: 16)),
                               ),
                             ),
                           ),
@@ -173,13 +173,7 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
                             border: Border.all(width: isSelected ? 2 : 1, color: colors['border']!),
                             color: colors['background'],
                             boxShadow: isSelected
-                                ? [
-                                    BoxShadow(
-                                      color: colors['border']!.withValues(alpha: 0.35),
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 2),
-                                    )
-                                  ]
+                                ? [BoxShadow(color: colors['border']!.withValues(alpha: 0.35), blurRadius: 6, offset: const Offset(0, 2))]
                                 : null,
                           ),
                           child: Column(
@@ -193,7 +187,12 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
                                 width: MediaQuery.of(context).size.width * 0.3,
                                 child: Text(
                                   store.storeName ?? '',
-                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, fontFamily: 'Sora', color: colors['nameColor']),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: 'Sora',
+                                    color: colors['nameColor'],
+                                  ),
                                 ),
                               ),
                               const Spacer(),
@@ -208,7 +207,12 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
                               if ((summary?.pending ?? 0) > 0)
                                 Text(
                                   'Pending : ${summary?.pending}',
-                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Sora', color: Colors.orange),
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: 'Sora',
+                                    color: Colors.orange,
+                                  ),
                                 ),
                               if ((summary?.cancelled ?? 0) > 0)
                                 Text(
@@ -253,25 +257,28 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
             child: isLoading
                 ? Center(child: Lottie.asset('assets/animations/burger.json', width: 150, height: 150, repeat: true))
                 : stores.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.event_busy, size: 64, color: Colors.grey.shade300),
-                            const SizedBox(height: 12),
-                            Text(
-                              'No reservations found',
-                              style: TextStyle(color: Colors.grey.shade600, fontFamily: 'Sora', fontSize: 15, fontWeight: FontWeight.w600),
-                            ),
-                          ],
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.event_busy, size: 64, color: Colors.grey.shade300),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No reservations found',
+                          style: TextStyle(color: Colors.grey.shade600, fontFamily: 'Sora', fontSize: 15, fontWeight: FontWeight.w600),
                         ),
-                      )
-                    : ListView(
-                        padding: const EdgeInsets.all(12),
-                        children: [
-                          _summaryCard(detail),
-                        ],
-                      ),
+                      ],
+                    ),
+                  )
+                : ListView(
+                    padding: const EdgeInsets.all(12),
+                    children: [
+                      _summaryCard(detail),
+                      const SizedBox(height: 12),
+                      for (final store in selectedStore != null ? [selectedStore!] : stores)
+                        for (final r in store.reservations ?? <Reservations>[]) _reservationCard(store, r),
+                    ],
+                  ),
           ),
         ],
       ),
@@ -284,7 +291,10 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: const TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w600),
+          ),
           Text(
             '${value ?? 0}',
             style: TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w800, color: color ?? Colors.black87),
@@ -301,9 +311,7 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2)),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,6 +340,174 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
     );
   }
 
+  // Same look as ReservationDashboardV2._bookingTile, plus the store name.
+  String _formatTime(String? iso) {
+    final d = DateTime.tryParse(iso ?? '');
+    return d == null ? '--:--' : DateFormat('HH:mm').format(d);
+  }
+
+  String _formatDate(String? iso) {
+    final d = DateTime.tryParse(iso ?? '');
+    return d == null ? '-' : DateFormat('d MMM yyyy').format(d);
+  }
+
+  Color _statusColor(String? status) {
+    switch ((status ?? '').toLowerCase()) {
+      case 'booked':
+        return AppTheme.accent;
+      case 'pending':
+        return const Color(0xFFF59E0B);
+      case 'cancelled':
+        return const Color(0xFFEF4444);
+      default:
+        return Colors.grey.shade400;
+    }
+  }
+
+  Widget _statusChip(String? status) {
+    final s = status ?? '-';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(color: _statusColor(s), borderRadius: BorderRadius.circular(20)),
+      child: Text(
+        s.isEmpty ? s : s[0].toUpperCase() + s.substring(1).toLowerCase(),
+        style: const TextStyle(fontFamily: 'Sora', color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
+  Widget _bookingInfoItem(IconData icon, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 17, color: const Color(0xFF6B7280)),
+        const SizedBox(width: 7),
+        Text(
+          value,
+          style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF374151)),
+        ),
+      ],
+    );
+  }
+
+  void _showDetails(Reservations r) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: const Color(0xFFF7F8FA),
+        insetPadding: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.85),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 8, 0),
+                child: Row(
+                  children: [
+                    Text(
+                      'details'.tr,
+                      style: const TextStyle(fontFamily: 'Sora', color: Color(0xFF111827), fontSize: 19, fontWeight: FontWeight.w800),
+                    ),
+                    const Spacer(),
+                    IconButton(icon: const Icon(Icons.close_rounded), onPressed: () => Navigator.of(ctx).pop()),
+                  ],
+                ),
+              ),
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
+                  child: ReservationDetailsView(booking: store_res.Reservations.fromJson(r.toJson())),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _reservationCard(Stores store, Reservations r) {
+    final colors = _storeColors(store.storeId);
+    return GestureDetector(
+      onTap: () => _showDetails(r),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 3))],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              store.storeName ?? '',
+              style: TextStyle(fontFamily: 'Sora', fontSize: 11, fontWeight: FontWeight.w700, color: colors['nameColor']),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Text(
+                  'Id : ${r.id} ',
+                  style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.access_time_rounded, size: 15, color: Color(0xFF2563EB)),
+                      const SizedBox(width: 5),
+                      Text(
+                        _formatTime(r.reservedFor),
+                        style: const TextStyle(fontFamily: 'Sora', fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF2563EB)),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    r.customerName ?? 'Unknown Customer',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
+                  ),
+                ),
+                _statusChip(r.status),
+              ],
+            ),
+            const SizedBox(height: 7),
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0),
+              child: Row(
+                children: [
+                  _bookingInfoItem(Icons.people_outline_rounded, '${r.partySize ?? 0}'),
+                  const SizedBox(width: 10),
+                  Container(height: 30, width: 1, color: const Color(0xFFE5E7EB)),
+                  const SizedBox(width: 10),
+                  _bookingInfoItem(Icons.timer_outlined, '${r.durationMinutes ?? 0} ${'min_unit'.tr}'),
+                  Expanded(
+                    child: Text(
+                      _formatDate(r.reservedFor),
+                      textAlign: TextAlign.end,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontFamily: 'Sora', fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF6B7280)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> getReservation() async {
     if (!mounted) return;
     setState(() {
@@ -354,8 +530,13 @@ class _AllStoreReservationV2State extends State<AllStoreReservationV2> {
       setState(() {
         isLoading = false;
       });
-      Get.snackbar('Error', 'Failed to load Store Reservations',
-          backgroundColor: Colors.red, colorText: Colors.white, snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'Failed to load Store Reservations',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 }

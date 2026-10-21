@@ -1,3 +1,5 @@
+import 'GetAllReservationV2.dart';
+
 class GetTodayReceivedReservationV2SuperAdminModel {
   String? date;
   int? storeCount;
@@ -112,14 +114,21 @@ class Stores {
   int? storeId;
   String? storeName;
   Totals? summary;
+  List<Reservations>? reservations;
 
-  Stores({this.storeId, this.storeName, this.summary});
+  Stores({this.storeId, this.storeName, this.summary, this.reservations});
 
   Stores.fromJson(Map<String, dynamic> json) {
     storeId = json['store_id'];
     storeName = json['store_name'];
     summary =
     json['summary'] != null ? new Totals.fromJson(json['summary']) : null;
+    if (json['reservations'] != null) {
+      reservations = <Reservations>[];
+      json['reservations'].forEach((v) {
+        reservations!.add(new Reservations.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -128,6 +137,9 @@ class Stores {
     data['store_name'] = this.storeName;
     if (this.summary != null) {
       data['summary'] = this.summary!.toJson();
+    }
+    if (this.reservations != null) {
+      data['reservations'] = this.reservations!.map((v) => v.toJson()).toList();
     }
     return data;
   }

@@ -497,7 +497,7 @@ class _AdminOrderState extends State<AdminOrder>
                       itemBuilder: (context, index) {
                         final order = orders[index];
                         DateTime dateTime = DateTime.parse(order.createdAt.toString());
-                        String time = DateFormat('hh:mm a').format(dateTime);
+                        String time = DateFormat('HH:mm').format(dateTime);
                         String guestAddress = order.guestShippingJson?.zip?.toString() ?? '';
                         String guestName = order.guestShippingJson?.customerName?.toString() ?? '';
                         String guestPhone = order.guestShippingJson?.phone?.toString() ?? '';

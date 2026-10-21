@@ -189,12 +189,11 @@ class _AddStoreHoursBottomSheetState extends State<AddStoreHoursBottomSheet> {
     }
   }
 
-  // Format time for display (12-hour format)
+  // Format time for display (24-hour format)
   String _formatTimeForDisplay(TimeOfDay time) {
-    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final hour = time.hour.toString().padLeft(2, '0');
     final minute = time.minute.toString().padLeft(2, '0');
-    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
-    return '$hour:$minute $period';
+    return '$hour:$minute';
   }
 
   // Format time for API (24-hour format HH:mm)
