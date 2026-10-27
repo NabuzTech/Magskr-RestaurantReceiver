@@ -119,6 +119,7 @@ import '../../models/reservation/get_user_reservation_details.dart';
 import '../../models/reservation/today_received_booking_model.dart';
 import '../../models/reset_store_password_by_suyperAdmin_model.dart';
 import '../../models/store_owners_store_model.dart';
+import '../../models/store_theme_response_model.dart';
 import '../../models/sync_order_response_model.dart';
 import '../../models/update_holiday_response_model.dart';
 import '../../models/update_store_hour_response_model.dart';
@@ -5256,6 +5257,46 @@ class CallService extends GetConnect {
     } else {
       throw Exception(
           'Failed to load Getting Upcoming Reservation V2 : ${res.statusCode}');
+    }
+  }
+
+  //For getting Theme Of Website
+  Future<GetStoreThemeModel> getTheme(String storeId) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('store-theme/$storeId',headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Store Theme body is :${res.body}");
+      return GetStoreThemeModel.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load  Store Theme : ${res.statusCode}');
+    }
+  }
+
+  //For getting Theme Of Website
+  Future<GetStoreThemeModel> applyNewTheme(dynamic body) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await post('store-theme/',body,headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Store Theme body is :${res.body}");
+      return GetStoreThemeModel.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load  Store Theme : ${res.statusCode}');
     }
   }
 

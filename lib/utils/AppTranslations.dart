@@ -713,6 +713,7 @@ class AppTranslations extends Translations {
           'good_afternoon': 'Good afternoon',
           'good_evening': 'Good evening',
           'good_night': 'Good night',
+          'theme': 'Theme Pallet',
           },
         'ee': {
           'order_details': 'Order Details',
@@ -2854,6 +2855,7 @@ class AppTranslations extends Translations {
           'good_afternoon': 'Guten Tag',
           'good_evening': 'Guten Abend',
           'good_night': 'Gute Nacht',
+          'theme': 'Themenpalette',
         },
 
         'ch': {

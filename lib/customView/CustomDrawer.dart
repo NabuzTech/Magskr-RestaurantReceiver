@@ -9,6 +9,7 @@ import 'package:food_receiver/ui/Setting/PrinterSettingsScreen.dart';
 import 'package:food_receiver/ui/Setting/change_password.dart';
 import 'package:food_receiver/ui/Setting/payment_settings.dart';
 import 'package:food_receiver/ui/Setting/store_profile.dart';
+import 'package:food_receiver/ui/Theme/theme_pallete.dart';
 import 'package:food_receiver/ui/home_screen.dart';
 
 import 'package:get/get.dart';
@@ -323,6 +324,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     _drawerItem('change_password'.tr,'assets/images/password.svg', onTap: () {
                       Navigator.of(context).pop();
                       Get.to(() => const ChangePassword());
+                    }),
+                  _drawerItem('theme'.tr,'assets/images/color_pallet.svg', onTap: () {
+                      Navigator.of(context).pop();
+                      Get.to(() => const ThemePallet());
                     }),
                   // _drawerItem('POS'.tr,'assets/images/pos.svg', onTap: () {
                   //   Navigator.pop(context);
