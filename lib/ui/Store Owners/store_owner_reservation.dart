@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_receiver/constants/app_theme.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -116,7 +117,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
   Color _statusColor(String? status) {
     switch (status) {
       case 'booked':
-        return Colors.green;
+        return AppTheme.accent;
       case 'pending':
         return Colors.orange;
       case 'cancelled':
@@ -145,269 +146,228 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
         .toList();
   }
 
+  // ── Same look as the Super Admin reservation screen ───────────────────
+  Widget _pill(IconData icon, String text, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: AppTheme.accentLight,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 15, color: AppTheme.accent),
+            const SizedBox(width: 6),
+            Text(text,
+                style: const TextStyle(fontFamily: 'Sora', fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.accent)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _statusChip(String? status) {
+    final color = _statusColor(status);
+    final icon = status == 'booked'
+        ? Icons.check_circle_rounded
+        : status == 'pending'
+            ? Icons.access_time_rounded
+            : status == 'cancelled'
+                ? Icons.cancel_rounded
+                : Icons.help_rounded;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(20)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 5),
+          Text((status ?? '-').capitalizeFirst ?? '-',
+              style: TextStyle(fontFamily: 'Sora', color: color, fontWeight: FontWeight.w800, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  // "Today" / "Tomorrow", otherwise the full date.
+  String _dayLabel(DateTime d) {
+    final now = DateTime.now();
+    final days = DateTime(d.year, d.month, d.day).difference(DateTime(now.year, now.month, now.day)).inDays;
+    if (days == 0) return 'day_today'.tr;
+    if (days == 1) return 'day_tomorrow'.tr;
+    return DateFormat('dd.MM.yyyy').format(d);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Container(
-            color: Colors.white,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 40),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return AppGradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ─── Header: back, title, date, total, refresh (pinned) ───
+            Padding(
+              padding: EdgeInsets.fromLTRB(12, MediaQuery.of(context).padding.top + 12, 12, 0),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      margin: const EdgeInsets.only(right: 10),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        boxShadow: [BoxShadow(color: AppTheme.accent.withOpacity(0.15), blurRadius: 8, offset: const Offset(0, 2))],
+                      ),
+                      child: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: AppTheme.accentDark),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Reservations',
+                            style: TextStyle(fontFamily: 'Sora', fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.accentDark)),
+                        const SizedBox(height: 2),
+                        Text(DateFormat('d MMMM, y').format(selectedDate),
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black54)),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Row(
                         children: [
-                          GestureDetector(
-                            onTap: () {
-                              Get.back();
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                border: Border.all(color: Colors.grey, width: 1),
-                              ),
-                              child: const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.only(left: 5.0),
-                                  child: Icon(Icons.arrow_back_ios, size: 16),
-                                ),
-                              ),
+                          if (!_isToday)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: _pill(Icons.today_rounded, 'Today', onTap: _goToToday),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          const Text(
-                            'Reservations',
-                            style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 18),
-                          ),
+                          _pill(Icons.history_rounded, 'History', onTap: _pickDate),
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          if (total != null)
-                            Container(
-                              margin: const EdgeInsets.only(right: 8),
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.green.withValues(alpha: 0.1),
-                                border: Border.all(color: Colors.green, width: 1),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                'Total: $total',
-                                style: const TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.w800,
-                                  fontFamily: 'Sora',
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          GestureDetector(
-                            onTap: _pickDate,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.lightGreen, width: 1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.calendar_month, color: Colors.green, size: 16),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    DateFormat('dd MMM yy').format(selectedDate),
-                                    style: const TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: 'Sora',
-                                      fontSize: 11,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          if (!_isToday) ...[
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: _goToToday,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                decoration: BoxDecoration(
-                                  color: Colors.green,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Text(
-                                  'Today',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                    fontFamily: 'Sora',
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
+                      if (total != null) ...[
+                        const SizedBox(height: 5),
+                        _pill(Icons.event_note_rounded, 'Total: $total'),
+                      ],
                     ],
                   ),
-                ),
-                SizedBox(
-                  height: 165,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.only(left: 5),
-                    itemCount: stores.length,
-                    itemBuilder: (context, index) {
-                      final store = stores[index];
-                      final colors = _storeColors(store.storeId);
-                      final isSelected = selectedStore?.storeId == store.storeId;
-                      return InkWell(
-                        onTap: () {
-                          setState(() {
-                            selectedStore = isSelected ? null : store;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          margin: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                              width: isSelected ? 2 : 1,
-                              color: colors['border']!,
-                            ),
-                            color: colors['background'],
-                            boxShadow: isSelected
-                                ? [
-                                    BoxShadow(
-                                      color: colors['border']!.withValues(alpha: 0.35),
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 2),
-                                    )
-                                  ]
-                                : null,
+                  const SizedBox(width: 8),
+                  InkWell(onTap: getReservation, child: const Icon(Icons.refresh_rounded)),
+                ],
+              ),
+            ),
+            // ─── Store cards ───
+            SizedBox(
+              height: 150,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.fromLTRB(7, 10, 7, 0),
+                itemCount: stores.length,
+                itemBuilder: (context, index) {
+                  final store = stores[index];
+                  final colors = _storeColors(store.storeId);
+                  final isSelected = selectedStore?.storeId == store.storeId;
+                  return InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () => setState(() => selectedStore = isSelected ? null : store),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.36,
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: isSelected ? AppTheme.accent : colors['border']!, width: isSelected ? 2 : 1.2),
+                        boxShadow: [BoxShadow(color: AppTheme.accent.withOpacity(0.10), blurRadius: 8, offset: const Offset(0, 3))],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                            decoration: BoxDecoration(color: colors['background'], borderRadius: BorderRadius.circular(6)),
+                            child: Text('ID : ${store.storeId}',
+                                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, fontFamily: 'Sora', color: colors['nameColor'])),
                           ),
+                          Text(store.storeName ?? '',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, fontFamily: 'Sora', color: colors['nameColor'])),
+                          Text('Total : ${store.total ?? 0}  •  Booked : ${store.booked ?? 0}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Sora')),
+                          if ((store.pending ?? 0) > 0 || (store.cancelled ?? 0) > 0)
+                            Text(
+                                [
+                                  if ((store.pending ?? 0) > 0) 'Pending : ${store.pending}',
+                                  if ((store.cancelled ?? 0) > 0) 'Cancelled : ${store.cancelled}',
+                                ].join('  •  '),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, fontFamily: 'Sora', color: Colors.black54)),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      selectedStore != null
+                          ? '${selectedStore!.storeName}  •  ${_currentReservations.length} reservation'
+                          : 'All stores  •  ${_currentReservations.length} reservation',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 12, color: Colors.black54, fontFamily: 'Sora', fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  if (selectedStore != null)
+                    _pill(Icons.layers_clear_rounded, 'Show All', onTap: () => setState(() => selectedStore = null)),
+                ],
+              ),
+            ),
+            Expanded(
+              child: isLoading
+                  ? Center(child: Lottie.asset('assets/animations/burger.json', width: 150, height: 150, repeat: true))
+                  : _currentReservations.isEmpty
+                      ? Center(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                'ID : ${store.storeId}',
-                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, fontFamily: 'Sora'),
-                              ),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.3,
-                                child: Text(
-                                  store.storeName ?? '',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    fontFamily: 'Sora',
-                                    color: colors['nameColor'],
-                                  ),
-                                ),
-                              ),
-                              const Spacer(),
-                              Text(
-                                'Total : ${store.total ?? 0}',
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Sora'),
-                              ),
-                              Text(
-                                'Booked : ${store.booked ?? 0}',
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, fontFamily: 'Sora'),
-                              ),
-                              if ((store.pending ?? 0) > 0)
-                                Text(
-                                  'Pending : ${store.pending}',
-                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Sora', color: Colors.orange),
-                                ),
-                              if ((store.cancelled ?? 0) > 0)
-                                Text(
-                                  'Cancelled : ${store.cancelled}',
-                                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Sora', color: Colors.red),
-                                ),
+                              Lottie.asset('assets/animations/empty.json', height: 150, width: 150),
+                              const Text('No reservations found',
+                                  style: TextStyle(fontFamily: 'Sora', color: Colors.black45, fontWeight: FontWeight.w600)),
                             ],
                           ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+                          itemCount: _currentReservations.length,
+                          itemBuilder: (context, index) {
+                            final entry = _currentReservations[index];
+                            return _reservationCard(entry.key, entry.value);
+                          },
                         ),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        selectedStore != null
-                            ? '${selectedStore!.storeName}  •  \n${_currentReservations.length} reservation'
-                            : 'All stores  •  ${_currentReservations.length} reservation',
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontFamily: 'Sora', fontWeight: FontWeight.w600),
-                      ),
-                      if (selectedStore != null)
-                        GestureDetector(
-                          onTap: () => setState(() => selectedStore = null),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: const Text(
-                              'Show All',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontFamily: 'Sora', fontSize: 11),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
             ),
-          ),
-          Expanded(
-            child: isLoading
-                ? Center(
-                    child: Lottie.asset('assets/animations/burger.json', width: 150, height: 150, repeat: true),
-                  )
-                : _currentReservations.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.event_busy, size: 64, color: Colors.grey.shade300),
-                            const SizedBox(height: 12),
-                            Text(
-                              'No reservations found',
-                              style: TextStyle(color: Colors.grey.shade600, fontFamily: 'Sora', fontSize: 15, fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                      )
-                    : ListView.builder(
-                        padding: EdgeInsets.zero,
-                        itemCount: _currentReservations.length,
-                        itemBuilder: (context, index) {
-                          final entry = _currentReservations[index];
-                          return _reservationCard(entry.key, entry.value);
-                        },
-                      ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -415,46 +375,7 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
   Widget _reservationCard(Reservations res, String storeName) {
     final reservedFor = res.reservedFor != null ? DateTime.tryParse(res.reservedFor!) : null;
     final createdAt = res.createdAt != null ? DateTime.tryParse(res.createdAt!) : null;
-    final statusColor = _statusColor(res.status);
-
-    Color cardBg() {
-      switch (res.status) {
-        case 'booked':
-          return const Color(0xffEBFFF4);
-        case 'pending':
-          return const Color(0xffFFFBEB);
-        case 'cancelled':
-          return const Color(0xffFFEFEF);
-        default:
-          return Colors.white;
-      }
-    }
-
-    Color borderColor() {
-      switch (res.status) {
-        case 'booked':
-          return const Color(0xffC3F2D9);
-        case 'pending':
-          return const Color(0xffFFE0A3);
-        case 'cancelled':
-          return const Color(0xffFFD0D0);
-        default:
-          return Colors.grey;
-      }
-    }
-
-    IconData statusIcon() {
-      switch (res.status) {
-        case 'booked':
-          return Icons.check;
-        case 'pending':
-          return Icons.access_time;
-        case 'cancelled':
-          return Icons.close;
-        default:
-          return Icons.help;
-      }
-    }
+    final name = (res.customerName ?? '').trim();
 
     return GestureDetector(
       onTap: () async {
@@ -462,165 +383,113 @@ class _StoreOwnerReservationState extends State<StoreOwnerReservation> {
         getReservation();
       },
       child: Container(
-        margin: const EdgeInsets.all(8),
-        padding: const EdgeInsets.all(8),
+        margin: const EdgeInsets.only(top: 12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: cardBg(),
-          borderRadius: BorderRadius.circular(7),
-          border: Border.all(color: borderColor(), width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              spreadRadius: 0,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [BoxShadow(color: AppTheme.accent.withOpacity(0.07), blurRadius: 16, offset: const Offset(0, 6))],
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: 14,
-                      backgroundColor: statusColor,
-                      child: Image.asset('assets/images/reservation.png'),
+                // Reserved-for time block
+                Container(
+                  width: 92,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF6D5DF6), Color(0xFF4F8DF7)],
                     ),
-                    const SizedBox(width: 6),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          child: Text(
-                            res.customerName ?? 'Unknown',
-                            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Sora'),
-                          ),
-                        ),
-                        if (storeName.isNotEmpty)
-                          Text(
-                            storeName,
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Sora', color: Colors.black45),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.access_time, size: 14, color: Colors.grey),
-                    const SizedBox(width: 2),
-                    Text(
-                      createdAt != null ? DateFormat('HH:mm').format(createdAt) : '-',
-                      style: const TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Sora', fontSize: 10),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  child: Text(
-                    res.customerPhone ?? '-',
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontFamily: 'Sora', fontSize: 13),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(reservedFor == null ? '' : _dayLabel(reservedFor),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontFamily: 'Sora', color: Colors.white.withOpacity(0.85), fontSize: 11, fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 4),
+                      Text(reservedFor == null ? '--:--' : DateFormat('HH:mm').format(reservedFor),
+                          style: const TextStyle(fontFamily: 'Sora', color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20, height: 1)),
+                    ],
                   ),
                 ),
-                Row(
-                  children: [
-                    const Text('ID : ', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 11, fontFamily: 'Sora')),
-                    Text('#${res.id}', style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11, fontFamily: 'Sora')),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.people_outline, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${res.guestCount ?? 0} guests',
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Sora', fontSize: 12),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      (res.status ?? '').toUpperCase(),
-                      style: TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 13, color: statusColor),
-                    ),
-                    const SizedBox(width: 6),
-                    CircleAvatar(
-                      radius: 14,
-                      backgroundColor: statusColor,
-                      child: Icon(statusIcon(), color: Colors.white, size: 14),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                const Icon(Icons.event_outlined, size: 13, color: Colors.grey),
-                const SizedBox(width: 4),
-                Text(
-                  'For: ${reservedFor != null ? DateFormat('dd MMM yyyy, HH:mm').format(reservedFor) : '-'}',
-                  style: const TextStyle(fontSize: 11, fontFamily: 'Sora', fontWeight: FontWeight.w600),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(name.isEmpty ? '-' : name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w700, fontSize: 15, color: AppTheme.accentDark)),
+                          ),
+                          _statusChip(res.status),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(res.customerPhone ?? '',
+                          style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black54)),
+                      if (storeName.isNotEmpty)
+                        Text(storeName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontFamily: 'Sora', fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black45)),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.group_rounded, size: 16, color: AppTheme.accent),
+                          const SizedBox(width: 4),
+                          Text('${res.guestCount ?? '-'}',
+                              style: const TextStyle(fontFamily: 'Sora', fontWeight: FontWeight.w800, fontSize: 13, color: AppTheme.accentDark)),
+                          const SizedBox(width: 14),
+                          const Icon(Icons.tag_rounded, size: 15, color: Colors.black38),
+                          Text('${res.id}', style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.black54)),
+                          const Spacer(),
+                          const Icon(Icons.schedule_rounded, size: 14, color: Colors.black38),
+                          const SizedBox(width: 4),
+                          Text(createdAt == null ? '--:--' : DateFormat('HH:mm').format(createdAt),
+                              style: const TextStyle(fontFamily: 'Sora', fontSize: 11, color: Colors.black45)),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
             if (_isVorbestellen(reservedFor))
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.orange,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Text(
-                      'Vorbestellen',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Sora',
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(6)),
+                  child: const Text('Vorbestellen',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontFamily: 'Sora', fontSize: 11)),
                 ),
               ),
-            if (res.note != null && res.note!.trim().isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.notes_outlined, size: 13, color: Colors.grey),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      res.note!,
-                      style: const TextStyle(fontSize: 11, fontFamily: 'Sora', color: Colors.black54, fontStyle: FontStyle.italic),
+            if (res.note != null && res.note!.trim().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.notes_outlined, size: 13, color: Colors.black38),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(res.note!,
+                          style: const TextStyle(fontSize: 11, fontFamily: 'Sora', color: Colors.black54, fontStyle: FontStyle.italic)),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ],
           ],
         ),
       ),
@@ -717,7 +586,7 @@ class _SingleDatePickerDialogState extends State<_SingleDatePickerDialog> {
               ),
               calendarStyle: CalendarStyle(
                 selectedDecoration: const BoxDecoration(
-                  color: Colors.green,
+                  color: AppTheme.accent,
                   shape: BoxShape.circle,
                 ),
                 selectedTextStyle: const TextStyle(fontFamily: 'Sora', 
@@ -725,7 +594,7 @@ class _SingleDatePickerDialogState extends State<_SingleDatePickerDialog> {
                   fontWeight: FontWeight.w700,
                 ),
                 todayDecoration: BoxDecoration(
-                  color: Colors.green.shade200,
+                  color: AppTheme.accentLight,
                   shape: BoxShape.circle,
                 ),
                 todayTextStyle: const TextStyle(fontFamily: 'Sora', 

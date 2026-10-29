@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
+import 'package:food_receiver/customView/payment_icon.dart';
+import 'package:food_receiver/constants/app_theme.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:food_receiver/api/repository/api_repository.dart';
 import 'package:food_receiver/models/all_admin_order_response_model.dart';
@@ -131,8 +134,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
     try {
       int previousOffset = currentOffset - limit;
       if (previousOffset < 0) previousOffset = 0;
-      List<AllOrderAdminResponseModel> previousOrders =
-          await CallService().getAllAdminOrder(
+      List<AllOrderAdminResponseModel> previousOrders = await CallService().getAllAdminOrder(
         limit: limit,
         offset: previousOffset,
         startDate: DateFormat('yyyy-MM-dd').format(_startDate),
@@ -449,720 +451,529 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Container(
-            color: Colors.white,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+  // ── Same look as the Super Admin screen ───────────────────────────────
+  static const _kViolet = Color(0xFFA42BF0);
+  static const _kPurple = Color(0xFF7B52F0);
+  static const _kIndigo = Color(0xFF5B4FE8);
+  static const _kBrandGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [_kViolet, _kPurple, _kIndigo],
+  );
+  static const _kHeaderGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF6D3DF0), Color(0xFF4F6DF7), Color(0xFFE5486F)],
+  );
+  static const _kPageGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFFF6EEFF), Color(0xFFF0EDFF), Color(0xFFEAEBFF)],
+  );
+
+  // Gradient header slides away while scrolling orders down, comes back on scroll up.
+  bool _headerVisible = true;
+
+  bool _onOrderScroll(UserScrollNotification n) {
+    if (n.metrics.axis != Axis.vertical) return false;
+    final visible = n.direction == ScrollDirection.reverse
+        ? false
+        : n.direction == ScrollDirection.forward
+            ? true
+            : _headerVisible;
+    if (visible != _headerVisible) setState(() => _headerVisible = visible);
+    return false;
+  }
+
+  String _greeting() {
+    final h = DateTime.now().hour;
+    if (h >= 5 && h < 12) return 'good_morning'.tr;
+    if (h >= 12 && h < 17) return 'good_afternoon'.tr;
+    if (h >= 17 && h < 21) return 'good_evening'.tr;
+    return 'good_night'.tr;
+  }
+
+  Widget _headerIcon(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+        child: Icon(icon, size: 20, color: _kPurple),
+      ),
+    );
+  }
+
+  Widget _pill({required Widget icon, required String label, required VoidCallback? onTap, Color color = _kPurple, bool filled = false}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          color: filled ? color : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: filled ? color : color.withValues(alpha: 0.55), width: 1.1),
+          boxShadow: [BoxShadow(color: _kPurple.withValues(alpha: 0.08), blurRadius: 6, offset: const Offset(0, 2))],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            icon,
+            const SizedBox(width: 5),
+            Text(label,
+                style: TextStyle(
+                    fontFamily: 'Sora', fontSize: 12, fontWeight: FontWeight.w700, color: filled ? Colors.white : Colors.black87)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _storeCard(Reports store) {
+    final colors = getStoreColors(store.storeId);
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () async {
+        if (Get.isDialogOpen ?? false) {
+          Get.back();
+        }
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString(valueShared_STORE_KEY, store.storeId.toString());
+        await Future.delayed(const Duration(milliseconds: 50));
+        Get.to(() => const HomeScreen(), arguments: {
+          'storeId': store.storeId.toString(),
+          'roleId': 5,
+        });
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.36,
+        padding: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: colors['border']!, width: 1.2),
+          boxShadow: [BoxShadow(color: _kPurple.withValues(alpha: 0.10), blurRadius: 8, offset: const Offset(0, 3))],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+              decoration: BoxDecoration(color: colors['background'], borderRadius: BorderRadius.circular(6)),
+              child: Text('ID : ${store.storeId}',
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, fontFamily: 'Sora', color: colors['nameColor'])),
+            ),
+            Text('${store.storeName}',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, fontFamily: 'Sora', color: colors['nameColor']!)),
+            Text('Orders : ${store.report?.totalOrders ?? 0}',
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Sora')),
+            Text('Sale : ${store.report?.totalSales ?? 0}',
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, fontFamily: 'Sora', color: _kPurple)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _orderCard(AllOrderAdminResponseModel order) {
+    DateTime dateTime = DateTime.parse(order.createdAt.toString());
+    String time = DateFormat('HH:mm').format(dateTime);
+    String guestName = order.guestShippingJson?.customerName?.toString() ?? '';
+    String guestPhone = order.guestShippingJson?.phone?.toString() ?? '';
+    final String source = order.source.toString();
+
+    Color getContainerColor() {
+      switch (order.approvalStatus) {
+        case 2:
+          return const Color(0xffF3EEFF);
+        case 3:
+          return const Color(0xffFFEFEF);
+        default:
+          return Colors.white;
+      }
+    }
+
+    Widget badge(String label, Color color) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(6)),
+          child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Sora', fontSize: 13)),
+        );
+
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => SuperAdminOrderDetail(order));
+      },
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+        decoration: BoxDecoration(
+          color: getContainerColor(),
+          borderRadius: BorderRadius.circular(7),
+          border: Border.all(
+            color: (order.approvalStatus == 2)
+                ? const Color(0xffD9CCFB)
+                : (order.approvalStatus == 3)
+                    ? const Color(0xffFFD0D0)
+                    : Colors.grey.withValues(alpha: 0.2),
+            width: 1,
+          ),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, 2))],
+        ),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 40),
-                // Search + Refresh + Logout
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 45,
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                border:
-                                    Border.all(color: Colors.grey.shade300),
-                              ),
-                              child: TextField(
-                                controller: searchController,
-                                decoration: InputDecoration(
-                                  hintText:
-                                      'Search stores, orders, names, phones...',
-                                  hintStyle: const TextStyle(
-                                      color: Color(0xffAEAEAE),
-                                      fontSize: 12,
-                                      fontFamily: 'Sora',
-                                      fontWeight: FontWeight.w300),
-                                  prefixIcon: Image.asset(
-                                      'assets/images/search.png'),
-                                  suffixIcon: searchController.text.isNotEmpty
-                                      ? IconButton(
-                                          icon: const Icon(Icons.clear,
-                                              size: 18),
-                                          onPressed: () {
-                                            searchController.clear();
-                                          },
-                                        )
-                                      : null,
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 10),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          GestureDetector(
-                            onTap: () {
-                              showLogoutConfirmation(context);
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      color: Colors.lightGreen, width: 1),
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: const Icon(Icons.logout,
-                                  color: Colors.green),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Get.to(() => const StoreOwnerReservation());
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black, width: 1),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Image.asset('assets/images/reservationIcon.png', height: 15, width: 15),
-                                  const SizedBox(width: 5),
-                                  const Text(
-                                    'Reservation',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: 'Sora',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          GestureDetector(
-                            onTap: isRefreshing ? null : refreshAllData,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: isRefreshing
-                                    ? Colors.grey
-                                    : Colors.green,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: isRefreshing
-                                  ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor:
-                                  AlwaysStoppedAnimation<Color>(
-                                      Colors.white),
-                                ),
-                              )
-                                  : const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.refresh,
-                                      color: Colors.white, size: 16),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'Refresh',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: 'Sora',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                Container(
+                  width: 34,
+                  height: 34,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(shape: BoxShape.circle, gradient: _kBrandGradient),
+                  child: SvgPicture.asset(
+                    order.orderType == 1 ? 'assets/images/ic_delivery.svg' : 'assets/images/ic_pickup.svg',
+                    height: 14,
+                    width: 14,
+                    color: Colors.white,
                   ),
                 ),
-
-                // Stores count (search)
-                if (searchController.text.isNotEmpty)
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 5, vertical: 5),
-                    child: Text(
-                      'Found ${filteredStoreList.length} store(s)',
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                          fontFamily: 'Sora'),
-                    ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(order.storeName.toString(),
+                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, fontFamily: 'Sora')),
+                ),
+                if (source == "Mobile User App")
+                  badge("Magskr", _kIndigo)
+                else if (source == "online")
+                  badge("Website", const Color(0xFFFFC107)),
+                const SizedBox(width: 6),
+                const Icon(Icons.access_time, size: 15),
+                Text(time, style: const TextStyle(fontWeight: FontWeight.w500, fontFamily: 'Sora', fontSize: 10)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Text(
+                    '${order.shippingAddress?.customerName ?? guestName} / ${order.shippingAddress?.phone ?? guestPhone}',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontFamily: 'Sora', fontSize: 13),
                   ),
-
-                // Store cards horizontal list
-                filteredStoreList.isEmpty &&
-                        searchController.text.isNotEmpty
-                    ? Container(
-                        margin: const EdgeInsets.only(top: 20, bottom: 20),
-                        child: Column(
-                          children: [
-                            Icon(Icons.search_off,
-                                size: 48, color: Colors.grey.shade400),
-                            const SizedBox(height: 8),
-                            Text(
-                              'No stores found',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade600,
-                                  fontFamily: 'Sora',
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                      )
-                    : RepaintBoundary(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10.0),
-                          child: SizedBox(
-                            height: 150,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              padding: EdgeInsets.zero,
-                              itemCount: filteredStoreList.length,
-                              itemBuilder: (context, index) {
-                                var store = filteredStoreList[index];
-                                return InkWell(
-                                  onTap: () async {
-                                    if (Get.isDialogOpen ?? false) {
-                                      Get.back();
-                                    }
-                                    SharedPreferences prefs =
-                                        await SharedPreferences
-                                            .getInstance();
-                                    await prefs.setString(
-                                        valueShared_STORE_KEY,
-                                        store.storeId.toString());
-                                    await Future.delayed(const Duration(milliseconds: 50));
-                                    Get.to(() => const HomeScreen(),
-                                        arguments: {
-                                          'storeId': store.storeId.toString(),
-                                          'roleId': 5,
-                                        });
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(12),
-                                    margin: const EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(6),
-                                      border: Border.all(
-                                          width: 1,
-                                          color: getStoreColors(
-                                              store.storeId)['border']!),
-                                      color: getStoreColors(
-                                          store.storeId)['background']!,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'ID : ${store.storeId}',
-                                          style: const TextStyle(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w800,
-                                              fontFamily: 'Sora'),
-                                        ),
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.28,
-                                          child: Text(
-                                            '${store.storeName}',
-                                            style: TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w700,
-                                                fontFamily: 'Sora',
-                                                color: getStoreColors(store
-                                                    .storeId)['nameColor']!),
-                                          ),
-                                        ),
-                                        if (store.report != null) ...[
-                                          Text(
-                                            'Orders : ${store.report!.totalOrders ?? 0}',
-                                            style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
-                                                fontFamily: 'Sora'),
-                                          ),
-                                          Text(
-                                            'Sale : ${store.report!.totalSales ?? 0}',
-                                            style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
-                                                fontFamily: 'Sora'),
-                                          ),
-                                        ],
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-
-                // Orders count (search)
-                if (searchController.text.isNotEmpty)
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 17, vertical: 10),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Found ${filteredOrderList.length} order(s)',
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                              fontFamily: 'Sora'),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                // History / Today date picker row
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 6),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: _pickDateRange,
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: Colors.black38, width: 2)),
-                          child: Row(
-                            children: [
-                              Text(
-                                _isHistoryMode
-                                    ? '${DateFormat('dd MMM').format(_startDate)} – ${DateFormat('dd MMM yy').format(_endDate)}'
-                                    : 'History',
-                                style: TextStyle(
-                                  fontFamily: 'Sora',
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 16,
-                                  color: _isHistoryMode
-                                      ? Colors.orange.shade700
-                                      : const Color(0xff1F1E1E),
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              SvgPicture.asset(
-                                  'assets/images/dropdown.svg',
-                                  height: 5,
-                                  width: 11),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (_isHistoryMode)
-                        GestureDetector(
-                          onTap: _resetToToday,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                                color: Colors.green,
-                                borderRadius: BorderRadius.circular(6)),
-                            child: const Text(
-                              'Today',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700,
-                                  fontFamily: 'Sora',
-                                  fontSize: 12),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+                ),
+                Text(
+                  '${order.orderNumber != null ? 'order_number'.tr : 'Order ID'} : ${order.orderNumber ?? order.id ?? 'N/A'}',
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 11, fontFamily: 'Sora'),
                 ),
               ],
             ),
-          ),
+            if (order.deliveryTime != null && order.deliveryTime!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  children: [
+                    const Icon(Icons.schedule, size: 13, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${'delivery_time'.tr}: ${DateFormat('dd-MM-yyyy  HH:mm').format(DateTime.parse(order.deliveryTime!))}',
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, fontFamily: 'Sora', color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(children: [
+                  Text(
+                    '${'currency'.tr} ${formatAmount(order.payment?.amount ?? 0)}',
+                    style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: 'Sora', fontSize: 16),
+                  ),
+                  if ((order.payment?.paymentMethod ?? '').isNotEmpty) ...[
+                    const SizedBox(width: 6),
+                    paymentIcon(order.payment!.paymentMethod!),
+                  ],
+                ]),
+                if (_isVorbestellen(order.deliveryTime))
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(6)),
+                    child: const Text('Vorbestellen',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontFamily: 'Sora', fontSize: 11)),
+                  ),
+                Row(
+                  children: [
+                    Text(getApprovalStatusText(order.approvalStatus),
+                        style: const TextStyle(fontWeight: FontWeight.w400, fontFamily: 'Sora', fontSize: 13)),
+                    const SizedBox(width: 6),
+                    CircleAvatar(
+                      radius: 14,
+                      backgroundColor: getStatusColor(order.approvalStatus ?? 0),
+                      child: Icon(getStatusIcon(order.approvalStatus ?? 0), color: Colors.white, size: 16),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-          // Orders list (scrollable)
-          Expanded(
-            child: RefreshIndicator(
-              key: _refreshIndicatorKey,
-              onRefresh: refreshAllData,
-              color: Colors.green,
-              backgroundColor: Colors.white,
-              child: Scrollbar(
-                controller: orderScrollController,
-                thumbVisibility: true,
-                thickness: 8,
-                radius: const Radius.circular(10),
-                interactive: true,
-                child: ListView.builder(
-                  controller: orderScrollController,
-                  padding: EdgeInsets.zero,
-                  itemCount: filteredOrderList.length +
-                      (isLoadingMore ? 1 : 0) +
-                      (isLoadingPrevious ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == 0 && isLoadingPrevious) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    }
-                    int adjustedIndex =
-                        isLoadingPrevious ? index - 1 : index;
-
-                    if (adjustedIndex == filteredOrderList.length &&
-                        isLoadingMore) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    }
-
-                    if (filteredOrderList.isEmpty) {
-                      return Container(
-                        margin: const EdgeInsets.only(top: 50),
-                        child: Column(
-                          children: [
-                            Icon(Icons.receipt_long_outlined,
-                                size: 64, color: Colors.grey.shade400),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No orders found',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey.shade600,
-                                  fontFamily: 'Sora',
-                                  fontWeight: FontWeight.w600),
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: _kPageGradient),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Column(
+          children: [
+            // Status-bar strip stays so the pinned section never slides under the status bar.
+            Container(
+              height: MediaQuery.of(context).padding.top,
+              decoration: const BoxDecoration(gradient: _kHeaderGradient),
+            ),
+            // Gradient header: greeting, logout + search
+            ClipRect(
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                alignment: Alignment.bottomCenter,
+                heightFactor: _headerVisible ? 1 : 0,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 16),
+                  decoration: BoxDecoration(
+                    gradient: _kHeaderGradient,
+                    borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
+                    boxShadow: [BoxShadow(color: _kPurple.withValues(alpha: 0.14), blurRadius: 18, offset: const Offset(0, 6))],
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('${_greeting()} 👋',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.white70)),
+                                const SizedBox(height: 2),
+                                const Text('Store Owner',
+                                    style: TextStyle(fontFamily: 'Sora', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    var order = filteredOrderList[adjustedIndex];
-                    DateTime dateTime =
-                        DateTime.parse(order.createdAt.toString());
-                    String time = DateFormat('HH:mm').format(dateTime);
-                    String guestName = order
-                            .guestShippingJson?.customerName
-                            ?.toString() ??
-                        '';
-                    String guestPhone =
-                        order.guestShippingJson?.phone?.toString() ?? '';
-                    final String source = order.source.toString();
-
-                    Color getContainerColor() {
-                      switch (order.approvalStatus) {
-                        case 2:
-                          return const Color(0xffEBFFF4);
-                        case 3:
-                          return const Color(0xffFFEFEF);
-                        default:
-                          return Colors.white;
-                      }
-                    }
-
-                    return GestureDetector(
-                      onTap: () {
-                        Get.to(() => SuperAdminOrderDetail(order));
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.all(8),
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: getContainerColor(),
-                          borderRadius: BorderRadius.circular(7),
-                          border: Border.all(
-                            color: (order.approvalStatus == 2)
-                                ? const Color(0xffC3F2D9)
-                                : (order.approvalStatus == 3)
-                                    ? const Color(0xffFFD0D0)
-                                    : Colors.grey.withValues(alpha: 0.2),
-                            width: 1,
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
-                              spreadRadius: 0,
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 14,
-                                      backgroundColor: Colors.green,
-                                      child: SvgPicture.asset(
-                                        order.orderType == 1
-                                            ? 'assets/images/ic_delivery.svg'
-                                            : 'assets/images/ic_pickup.svg',
-                                        height: 14,
-                                        width: 14,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.4,
-                                          child: Text(
-                                            order.storeName.toString(),
-                                            style: const TextStyle(
-                                                fontWeight:
-                                                    FontWeight.w700,
-                                                fontSize: 13,
-                                                fontFamily: 'Sora'),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                if (source == "Mobile User App")
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 7, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF2E7D32),
-                                      borderRadius:
-                                          BorderRadius.circular(6),
-                                    ),
-                                    child: const Text(
-                                      "Magskr",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Sora',
-                                          fontSize: 13),
-                                    ),
+                          _headerIcon(Icons.logout, () => showLogoutConfirmation(context)),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        height: 44,
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(22)),
+                        child: TextField(
+                          controller: searchController,
+                          style: const TextStyle(fontFamily: 'Sora', fontSize: 13),
+                          decoration: InputDecoration(
+                            hintText: 'Search stores, orders, names, phones...',
+                            hintStyle: const TextStyle(color: Color(0xffAEAEAE), fontSize: 12, fontFamily: 'Sora', fontWeight: FontWeight.w300),
+                            prefixIcon: const Icon(Icons.search, color: _kPurple),
+                            suffixIcon: searchController.text.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear, size: 18),
+                                    onPressed: () {
+                                      searchController.clear();
+                                    },
                                   )
-                                else if (source == "online")
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFFFC107),
-                                      borderRadius:
-                                          BorderRadius.circular(6),
-                                    ),
-                                    child: const Text(
-                                      "Website",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Sora',
-                                          fontSize: 13),
-                                    ),
-                                  ),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.access_time,
-                                        size: 20),
-                                    Text(
-                                      time,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'Sora',
-                                          fontSize: 10),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  width: MediaQuery.of(context)
-                                          .size
-                                          .width *
-                                      0.5,
-                                  child: Text(
-                                    '${order.shippingAddress?.customerName ?? guestName} / ${order.shippingAddress?.phone ?? guestPhone}',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: 'Sora',
-                                        fontSize: 13),
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      '${order.orderNumber != null ? 'order_number'.tr : 'Order ID'} : ',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 11,
-                                          fontFamily: 'Sora'),
-                                    ),
-                                    Text(
-                                      '${order.orderNumber ?? order.id ?? 'N/A'}',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 11,
-                                          fontFamily: 'Sora'),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            if (order.deliveryTime != null &&
-                                order.deliveryTime!.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.schedule,
-                                        size: 13, color: Colors.grey),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '${'delivery_time'.tr}: ${DateFormat('dd-MM-yyyy  HH:mm').format(DateTime.parse(order.deliveryTime!))}',
-                                      style: const TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'Sora',
-                                          color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  order.payment != null
-                                      ? '${'currency'.tr} ${formatAmount(order.payment!.amount ?? 0)}'
-                                      : '${'currency'.tr} ${formatAmount(0)}',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      fontFamily: 'Sora',
-                                      fontSize: 16),
-                                ),
-                                if (_isVorbestellen(order.deliveryTime))
-                                  Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 6),
-                                      child: Container(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 5),
-                                        decoration: BoxDecoration(
-                                            color: Colors.orange,
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                    6)),
-                                        child: const Text(
-                                          'Vorbestellen',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight:
-                                                  FontWeight.w700,
-                                              fontFamily: 'Sora',
-                                              fontSize: 13),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      getApprovalStatusText(
-                                          order.approvalStatus),
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                          fontFamily: 'Sora',
-                                          fontSize: 13),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    CircleAvatar(
-                                      radius: 14,
-                                      backgroundColor: getStatusColor(
-                                          order.approvalStatus ?? 0),
-                                      child: Icon(
-                                        getStatusIcon(
-                                            order.approvalStatus ?? 0),
-                                        color: Colors.white,
-                                        size: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
+                                : null,
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
                         ),
                       ),
-                    );
-                  },
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+            // Quick actions
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
+              child: Row(
+                children: [
+                  _pill(
+                    icon: Image.asset('assets/images/reservationIcon.png', height: 15, width: 15),
+                    label: 'Reservation',
+                    onTap: () => Get.to(() => const StoreOwnerReservation()),
+                  ),
+                  const SizedBox(width: 8),
+                  _pill(
+                    filled: true,
+                    color: isRefreshing ? Colors.grey : _kPurple,
+                    icon: isRefreshing
+                        ? const SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                          )
+                        : const Icon(Icons.refresh, color: Colors.white, size: 16),
+                    label: 'Refresh',
+                    onTap: isRefreshing ? null : refreshAllData,
+                  ),
+                ],
+              ),
+            ),
+            if (searchController.text.isNotEmpty)
+              Container(
+                alignment: Alignment.centerLeft,
+                margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                child: Text('Found ${filteredStoreList.length} store(s)',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontFamily: 'Sora')),
+              ),
+            filteredStoreList.isEmpty && searchController.text.isNotEmpty
+                ? Container(
+                    margin: const EdgeInsets.only(top: 20, bottom: 20),
+                    child: Column(
+                      children: [
+                        Icon(Icons.search_off, size: 48, color: Colors.grey.shade400),
+                        const SizedBox(height: 8),
+                        Text('No stores found',
+                            style: TextStyle(fontSize: 14, color: Colors.grey.shade600, fontFamily: 'Sora', fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  )
+                : RepaintBoundary(
+                    child: SizedBox(
+                      height: 135,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(horizontal: 7),
+                        itemCount: filteredStoreList.length,
+                        itemBuilder: (context, index) => _storeCard(filteredStoreList[index]),
+                      ),
+                    ),
+                  ),
+            if (searchController.text.isNotEmpty)
+              Container(
+                alignment: Alignment.centerLeft,
+                margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                child: Text('Found ${filteredOrderList.length} order(s)',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontFamily: 'Sora')),
+              ),
+            // ── History / Today row ───────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: _pickDateRange,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: _isHistoryMode ? Colors.orange.shade700 : _kPurple.withValues(alpha: 0.55)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.calendar_month, size: 16, color: _isHistoryMode ? Colors.orange.shade700 : _kPurple),
+                          const SizedBox(width: 6),
+                          Text(
+                            _isHistoryMode
+                                ? '${DateFormat('dd MMM').format(_startDate)} – ${DateFormat('dd MMM yy').format(_endDate)}'
+                                : 'History',
+                            style: TextStyle(
+                              fontFamily: 'Sora',
+                              fontWeight: FontWeight.w800,
+                              fontSize: 14,
+                              color: _isHistoryMode ? Colors.orange.shade700 : const Color(0xff1F1E1E),
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          SvgPicture.asset('assets/images/dropdown.svg', height: 5, width: 11),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (_isHistoryMode)
+                    GestureDetector(
+                      onTap: _resetToToday,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        decoration: BoxDecoration(gradient: _kBrandGradient, borderRadius: BorderRadius.circular(20)),
+                        child: const Text('Today',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontFamily: 'Sora', fontSize: 12)),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: NotificationListener<UserScrollNotification>(
+                onNotification: _onOrderScroll,
+                child: RefreshIndicator(
+                  key: _refreshIndicatorKey,
+                  onRefresh: refreshAllData,
+                  color: _kPurple,
+                  backgroundColor: Colors.white,
+                  child: Scrollbar(
+                    controller: orderScrollController,
+                    thumbVisibility: true,
+                    thickness: 8,
+                    radius: const Radius.circular(10),
+                    interactive: true,
+                    child: ListView.builder(
+                      controller: orderScrollController,
+                      padding: EdgeInsets.zero,
+                      itemCount: filteredOrderList.length + (isLoadingMore ? 1 : 0) + (isLoadingPrevious ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == 0 && isLoadingPrevious) {
+                          return const Center(
+                            child: Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator(color: _kPurple)),
+                          );
+                        }
+                        int adjustedIndex = isLoadingPrevious ? index - 1 : index;
+
+                        if (adjustedIndex == filteredOrderList.length && isLoadingMore) {
+                          return const Center(
+                            child: Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator(color: _kPurple)),
+                          );
+                        }
+
+                        if (filteredOrderList.isEmpty) {
+                          return Container(
+                            margin: const EdgeInsets.only(top: 50),
+                            child: Column(
+                              children: [
+                                Icon(Icons.receipt_long_outlined, size: 64, color: Colors.grey.shade400),
+                                const SizedBox(height: 16),
+                                Text('No orders found',
+                                    style: TextStyle(fontSize: 16, color: Colors.grey.shade600, fontFamily: 'Sora', fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                          );
+                        }
+
+                        return _orderCard(filteredOrderList[adjustedIndex]);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1457,7 +1268,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                     ? '${DateFormat('dd MMM yyyy').format(_startDate!)}  →  ${DateFormat('dd MMM yyyy').format(_endDate!)}'
                     : 'Start: ${DateFormat('dd MMM yyyy').format(_startDate!)}',
                 style: TextStyle(
-                    color: Colors.green.shade700,
+                    color: AppTheme.accentDark,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Sora',
                     fontSize: 13),
@@ -1492,19 +1303,19 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
               ),
               calendarStyle: CalendarStyle(
                 rangeStartDecoration: const BoxDecoration(
-                    color: Colors.green, shape: BoxShape.circle),
+                    color: AppTheme.accent, shape: BoxShape.circle),
                 rangeEndDecoration: const BoxDecoration(
-                    color: Colors.green, shape: BoxShape.circle),
+                    color: AppTheme.accent, shape: BoxShape.circle),
                 rangeStartTextStyle: const TextStyle(fontFamily: 'Sora', 
                     color: Colors.white, fontWeight: FontWeight.w700),
                 rangeEndTextStyle: const TextStyle(fontFamily: 'Sora', 
                     color: Colors.white, fontWeight: FontWeight.w700),
                 withinRangeDecoration: BoxDecoration(
-                    color: Colors.green.shade100,
+                    color: AppTheme.accentLight,
                     shape: BoxShape.rectangle),
-                rangeHighlightColor: Colors.green.shade100,
+                rangeHighlightColor: AppTheme.accentLight,
                 todayDecoration: BoxDecoration(
-                    color: Colors.green.shade200,
+                    color: AppTheme.accentLight,
                     shape: BoxShape.circle),
                 todayTextStyle: const TextStyle(fontFamily: 'Sora', 
                     color: Colors.black87, fontWeight: FontWeight.w600),
@@ -1522,7 +1333,7 @@ class _DateRangePickerDialogState extends State<_DateRangePickerDialog> {
                     });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: AppTheme.accent,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
                     padding: const EdgeInsets.symmetric(vertical: 12),
