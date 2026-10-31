@@ -25,6 +25,7 @@ class Store {
   List<Holiday>? holidays;
   double? stripeServiceFee;
   bool? lieferungEnabled;
+  int? storeType;
 
   Store({
     this.name,
@@ -50,6 +51,7 @@ class Store {
     this.holidays,
     this.stripeServiceFee,
     this.lieferungEnabled,
+    this.storeType,
   });
 
   Store.withError({
@@ -64,6 +66,7 @@ class Store {
     country: json["country"],
     isManualOverride: json['is_manual_override'],
     manualStatus: json['manual_status'],
+    storeType: json['store_type'],
 
     // new
     imageUrl: json["image_url"],

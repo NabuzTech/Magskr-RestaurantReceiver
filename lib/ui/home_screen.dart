@@ -64,6 +64,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _storeType;
   int? _roleId;
   bool _reservationV2Enabled = false;
+  // Body moves in the tree on the POS tab (no app bar); the key keeps PageView's page.
+  final _pageViewKey = GlobalKey();
 
   @override
   void initState() {
@@ -153,8 +155,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadInitialData() async {
     SharedPreferences freshPrefs = await SharedPreferences.getInstance();
-    _storeType = freshPrefs.getString(valueShared_STORE_TYPE);
     _roleId = freshPrefs.getInt(valueShared_ROLE_ID);
+    // Owner/admin login has no store_type of its own; take it from the picked store.
+    final bearer = freshPrefs.getString(valueShared_BEARER_KEY);
+    final storeId = freshPrefs.getString(valueShared_STORE_KEY);
+    if ((_roleId == 1 || _roleId == 5) && bearer != null && storeId != null) {
+      final store = await ApiRepo().getStoreData(bearer, storeId);
+      if (store.storeType != null) {
+        await freshPrefs.setString(valueShared_STORE_TYPE, store.storeType.toString());
+      }
+    }
+    _storeType = freshPrefs.getString(valueShared_STORE_TYPE);
 
     await Future.wait([
       getOrdersInBackground(),
@@ -517,6 +528,7 @@ class _HomeScreenState extends State<HomeScreen> {
     print("🔍 reservation_v2_enabled = $_reservationV2Enabled, redirecting to "
         "${isAdmin ? 'SuperAdminReservation' : (_reservationV2Enabled ? 'ReservationDashboardV2' : 'Reservation')}");
     return PageView(
+      key: _pageViewKey,
       controller: _pageController,
       physics: const NeverScrollableScrollPhysics(),
       onPageChanged: (index) {
