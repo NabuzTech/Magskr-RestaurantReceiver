@@ -1,3 +1,4 @@
+import '../../customView/risk_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:food_receiver/customView/payment_icon.dart';
@@ -721,7 +722,8 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                 ),
               ],
             ),
-          ],
+          RiskBadge(risk: order.risk),
+],
         ),
       ),
     );

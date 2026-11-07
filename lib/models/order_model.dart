@@ -8,6 +8,7 @@ import 'OrderUser.dart';
 import 'Payment.dart';
 import 'ShippingAddress.dart';
 import 'TaxSummary.dart';
+import 'risk_model.dart';
 
 class Order {
   String? source;
@@ -40,6 +41,7 @@ class Order {
   List<BruttoSummary>? brutto_netto_summary;
   GuestShippingJson? guestShippingJson;
   bool? isLocalOrder;
+  Risk? risk;
 
   Order({
     this.source,
@@ -70,6 +72,7 @@ class Order {
     this.brutto_netto_summary,
     this.guestShippingJson,
     this.isLocalOrder,
+    this.risk,
   });
 
   Order.withError({
@@ -124,6 +127,7 @@ class Order {
       guestShippingJson:
       json["guest_shipping_json"] != null ? GuestShippingJson.fromJson(json["guest_shipping_json"]) : null,
       isLocalOrder: json["is_local_order"] ?? false,
+      risk: Risk.maybe(json["risk"]),
     );
   }
 

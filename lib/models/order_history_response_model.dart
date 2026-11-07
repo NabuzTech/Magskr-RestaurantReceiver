@@ -1,3 +1,4 @@
+import 'risk_model.dart';
 class orderHistoryResponseModel {
   int? userId;
   int? discountId;
@@ -25,6 +26,7 @@ class orderHistoryResponseModel {
   List<BruttoNettoSummary>? bruttoNettoSummary;
   GuestShippingJson? guestShippingJson;
   String? cancelReason;
+  Risk? risk;
 
   orderHistoryResponseModel({
     this.userId,
@@ -53,9 +55,11 @@ class orderHistoryResponseModel {
     this.bruttoNettoSummary,
     this.guestShippingJson,
     this.cancelReason,
+    this.risk,
   });
 
   orderHistoryResponseModel.fromJson(Map<String, dynamic> json) {
+    risk = Risk.maybe(json['risk']);
     userId = json['user_id'] as int?;
     discountId = json['discount_id'] as int?;
     couponCode = json['coupon_code'] as String?;

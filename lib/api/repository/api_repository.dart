@@ -5154,6 +5154,18 @@ class CallService extends GetConnect {
     }
   }
 
+  // Staff review of a fraud alert: status = confirmed | dismissed | open
+  Future<bool> patchFraudAlert(int alertId, String status) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString(valueShared_BEARER_KEY);
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await patch('fraud-alerts/$alertId', {'status': status}, headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $token",
+    });
+    return res.statusCode == 200;
+  }
+
   //For Updating Active Store In Magskr User App
   Future<UpdateStoreStatusModel> updateStoreActive(dynamic body ,String storeId) async  {
     SharedPreferences prefs = await SharedPreferences.getInstance();

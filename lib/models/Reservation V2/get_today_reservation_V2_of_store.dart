@@ -1,3 +1,4 @@
+import '../risk_model.dart';
 class GetTodayReservationV2OfStore {
   String? date;
   List<int>? storeIds;
@@ -94,6 +95,7 @@ class Reservations {
   String? customerEmail;
   String? note;
   String? createdAt;
+  Risk? risk;
 
   Reservations(
       {this.id,
@@ -109,9 +111,11 @@ class Reservations {
         this.customerPhone,
         this.customerEmail,
         this.note,
-        this.createdAt});
+        this.createdAt,
+      this.risk});
 
   Reservations.fromJson(Map<String, dynamic> json) {
+    risk = Risk.maybe(json['risk']);
     id = json['id'];
     storeId = json['store_id'];
     userId = json['user_id'];
@@ -144,6 +148,7 @@ class Reservations {
     data['customer_email'] = this.customerEmail;
     data['note'] = this.note;
     data['created_at'] = this.createdAt;
+    data['risk'] = this.risk?.toJson();
     return data;
   }
 }

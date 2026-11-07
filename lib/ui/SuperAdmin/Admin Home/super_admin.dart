@@ -1,3 +1,4 @@
+import '../../../customView/risk_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter_svg/svg.dart';
@@ -775,7 +776,8 @@ class _SuperAdminState extends State<SuperAdmin> {
                 ),
               ],
             ),
-          ],
+          RiskBadge(risk: order.risk),
+],
         ),
       ),
     );

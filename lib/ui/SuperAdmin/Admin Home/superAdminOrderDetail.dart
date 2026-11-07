@@ -1,3 +1,4 @@
+import '../../../customView/risk_badge.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -543,7 +544,8 @@ class _SuperAdminOrderDetailState extends State<SuperAdminOrderDetail> {
                 ],
               ),
             ),
-          ],
+          RiskCard(risk: updatedOrder.risk),
+],
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(

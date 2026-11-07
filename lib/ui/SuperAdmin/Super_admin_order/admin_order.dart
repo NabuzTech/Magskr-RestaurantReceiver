@@ -1,3 +1,4 @@
+import '../../../customView/risk_badge.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -804,7 +805,8 @@ class _AdminOrderState extends State<AdminOrder>
                                             ),
                                           ],
                                         ),
-                                      ],
+                                      RiskBadge(risk: order.risk),
+],
                                     ),
                                   ),
                                 ),

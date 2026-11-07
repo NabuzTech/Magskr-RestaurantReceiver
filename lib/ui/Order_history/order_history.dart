@@ -1,3 +1,4 @@
+import '../../customView/risk_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -611,7 +612,8 @@ class _OrderHistoryState extends State<OrderHistory> {
                                 ),
                               ],
                             ),
-                          ],
+                          RiskBadge(risk: order.risk),
+],
                         ),
                       ),
                     ),

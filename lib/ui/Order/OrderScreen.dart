@@ -28,6 +28,7 @@ import '../../utils/my_application.dart';
 import '../Login/LoginScreen.dart';
 import '../Pos/pos_controller.dart';
 import 'OrderDetailEnglish.dart';
+import '../../customView/risk_badge.dart';
 
 // Violet → purple → indigo, like the reference banking-app screen.
 const _kViolet = Color(0xFFA42BF0);
@@ -2372,7 +2373,8 @@ class _OrderScreenState extends State<OrderScreenNew>
                                                   ),
                                                 ],
                                               ),
-                                            ],
+                                            RiskBadge(risk: order.risk),
+],
                                           ),
                                         ),
                                       ),

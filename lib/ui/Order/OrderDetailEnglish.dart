@@ -1,3 +1,4 @@
+import '../../customView/risk_badge.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:food_receiver/utils/my_application.dart';
@@ -826,7 +827,8 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                 ],
               ),
             ),
-          ],
+          RiskCard(risk: updatedOrder.risk),
+],
         ),
         bottomNavigationBar: GestureDetector(
           onLongPress: () {

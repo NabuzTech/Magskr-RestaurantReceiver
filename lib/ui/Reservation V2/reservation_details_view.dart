@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../constants/app_theme.dart';
+import '../../customView/risk_badge.dart';
 import '../../models/Reservation V2/get_today_reservation_V2_of_store.dart';
 
 /// Reservation details body (hero card, stats, reservation/customer/note/created sections).
@@ -240,7 +241,8 @@ class ReservationDetailsView extends StatelessWidget {
             ),
           ]),
         ],
-      ],
+      RiskCard(risk: booking.risk),
+],
     );
   }
 

@@ -1,3 +1,4 @@
+import '../../customView/risk_badge.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -564,7 +565,8 @@ class _OrderHistoryDetailsState extends State<OrderHistoryDetails> {
                 ],
               ),
             ),
-          ],
+          RiskCard(risk: widget.historyOrder.risk),
+],
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(

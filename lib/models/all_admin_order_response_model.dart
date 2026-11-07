@@ -1,3 +1,5 @@
+import 'risk_model.dart';
+
 class AllOrderAdminResponseModel {
   String? source;
   String? couponId;
@@ -26,6 +28,7 @@ class AllOrderAdminResponseModel {
   List<BruttoNettoSummary>? bruttoNettoSummary;
   GuestShippingJson? guestShippingJson;
   String? cancelReason;
+  Risk? risk;
 
   AllOrderAdminResponseModel(
       {this.source,
@@ -54,10 +57,12 @@ class AllOrderAdminResponseModel {
         this.taxSummary,
         this.bruttoNettoSummary,
         this.guestShippingJson,
-        this.cancelReason});
+        this.cancelReason,
+        this.risk});
 
   AllOrderAdminResponseModel.fromJson(Map<String, dynamic> json) {
     try {
+      risk = Risk.maybe(json['risk']);
       source = json['source'];
       couponId = json['coupon_id'];
       couponCode = json['coupon_code'];
