@@ -25,6 +25,7 @@ String valueShared_STORE_NAME = 'STORE_NAME_KEY';
 String valueShared_STORE_LOGO = 'STORE_LOGO_KEY';
 String valueShared_STORE_BRAND_FOR = 'STORE_BRAND_FOR_KEY';
 String valueShared_STORE_TYPE = 'STORE_TYPE_KEY';
+String valueShared_STORE_SUBTYPE = 'STORE_SUBTYPE_KEY';
 String valueShared_ROLE_ID = 'role_id';
 
 /*

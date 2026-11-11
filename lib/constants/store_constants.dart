@@ -16,6 +16,17 @@ class StoreType {
   static const String simple = '2'; // no Toppings/Topping Group/Group/Product Group/Store menu, shows full address
 }
 
+/// `store_subtype` from login (SharedPrefs key: valueShared_STORE_SUBTYPE). Stored as a String.
+class StoreSubtype {
+  static const String orderAndReservation = '0'; // default: orders + reservations
+  static const String orderAndReservationAndBooking = '1'; // orders + reservations + booking
+  static const String orderOnly = '2'; // orders only
+  static const String reservationOnly = '3'; // reservations only
+  static const String reservationAndBookingOnly = '4'; // reservations + booking only
+  static const String orderAndBookingOnly = '5'; // orders + booking only
+  // Booking tab isn't built yet, so it stays hidden for every subtype for now.
+}
+
 /// `order_type` of an order.
 class OrderType {
   static const int delivery = 1;

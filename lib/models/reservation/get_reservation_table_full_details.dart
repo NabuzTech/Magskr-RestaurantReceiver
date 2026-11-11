@@ -1,3 +1,4 @@
+import '../risk_model.dart';
 class GetOrderDetailsResponseModel {
   int? storeId;
   int? userId;
@@ -14,6 +15,7 @@ class GetOrderDetailsResponseModel {
   int? id;
   String? createdAt;
   User? user;
+  Risk? risk;
 
   GetOrderDetailsResponseModel(
       {this.storeId,
@@ -30,9 +32,11 @@ class GetOrderDetailsResponseModel {
         this.isActive,
         this.id,
         this.createdAt,
-        this.user});
+        this.user,
+        this.risk});
 
   GetOrderDetailsResponseModel.fromJson(Map<String, dynamic> json) {
+    risk = Risk.maybe(json['risk']);
     storeId = (json['store_id'] as num?)?.toInt();
     userId = (json['user_id'] as num?)?.toInt();
     guestCount = (json['guest_count'] as num?)?.toInt();

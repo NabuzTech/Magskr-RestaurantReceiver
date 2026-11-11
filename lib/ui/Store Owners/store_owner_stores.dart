@@ -1102,6 +1102,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
       await prefs.remove(valueShared_STORE_BRAND_FOR);
       await prefs.remove(valueShared_ROLE_ID);
       await prefs.remove(valueShared_STORE_TYPE);
+      await prefs.remove(valueShared_STORE_SUBTYPE);
       await prefs.reload();
       await Future.delayed(const Duration(milliseconds: 500));
       if (Get.isDialogOpen ?? false) Get.back();

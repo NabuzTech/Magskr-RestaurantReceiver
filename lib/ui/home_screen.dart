@@ -9,6 +9,7 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api/repository/api_repository.dart';
 import '../constants/constant.dart';
+import '../constants/store_constants.dart';
 import '../constants/item_bottom_bar.dart';
 import '../constants/app_theme.dart';
 import '../customView/CustomAppBar.dart';
@@ -62,6 +63,12 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _fcmInitialized = false;
   int? _lastProcessedOrderId;
   String? _storeType;
+  // Login `store_subtype`: decides which bottom-bar tabs exist. Unknown value = show all (as before).
+  String _storeSubtype = StoreSubtype.orderAndReservation;
+  bool get _showOrderTab =>
+      _storeSubtype != StoreSubtype.reservationOnly && _storeSubtype != StoreSubtype.reservationAndBookingOnly;
+  bool get _showReservationTab =>
+      _storeSubtype != StoreSubtype.orderOnly && _storeSubtype != StoreSubtype.orderAndBookingOnly;
   int? _roleId;
   bool _reservationV2Enabled = false;
   // Body moves in the tree on the POS tab (no app bar); the key keeps PageView's page.
@@ -166,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
     _storeType = freshPrefs.getString(valueShared_STORE_TYPE);
+    _storeSubtype = freshPrefs.getString(valueShared_STORE_SUBTYPE) ?? StoreSubtype.orderAndReservation;
 
     await Future.wait([
       getOrdersInBackground(),
@@ -178,6 +186,11 @@ class _HomeScreenState extends State<HomeScreen> {
         _isDataLoaded = true;
       });
       print("✅ _isDataLoaded set to true");
+      // Landing tab may be hidden for this subtype (e.g. reservation-only): _openTab redirects it.
+      final sel = app.appController.selectedTabIndex;
+      if ((sel == 0 && !_showOrderTab) || (sel == 1 && !_showReservationTab)) {
+        _openTab(sel);
+      }
     }
   }
 
@@ -461,6 +474,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+                if (_showOrderTab)
                 ItemBottomBar(
                   selected: app.appController.selectedTabIndex == 0,
                   icon: "assets/images/ic_order.svg",
@@ -473,6 +487,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     _openTab(0);
                   },
                 ),
+                  if (_showReservationTab)
                   ItemBottomBar(
                     selected: app.appController.selectedTabIndex == 1,
                     icon: "assets/images/reserv.svg",
@@ -544,6 +559,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _openTab(int index) {
+    // Hidden by store_subtype -> go to the first tab that is shown.
+    if (index == 0 && !_showOrderTab) index = 1;
+    if (index == 1 && !_showReservationTab) index = _showOrderTab ? 0 : 2;
     if (index == 3 && _storeType != '1') {
       return;
     }

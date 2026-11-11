@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="shieldBlue" x1="128" y1="74" x2="374" y2="425" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1768F5"/>
+      <stop offset="1" stop-color="#0648C8"/>
+    </linearGradient>
+    <linearGradient id="softBlue" x1="68" y1="355" x2="448" y2="475" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EAF4FF"/>
+      <stop offset="1" stop-color="#D7E9FF"/>
+    </linearGradient>
+    <filter id="shadow" x="80" y="40" width="352" height="430" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded app tile -->
+  <rect x="22" y="22" width="468" height="468" rx="92" fill="#FFFFFF"/>
+  <rect x="22" y="22" width="468" height="468" rx="92" stroke="#6AA8F8" stroke-width="8"/>
+
+  <!-- Soft base accent -->
+  <path d="M43 356C105 325 158 350 215 372C279 397 343 393 469 344V452C469 472 453 488 433 488H79C59 488 43 472 43 452V356Z" fill="url(#softBlue)" opacity=".72"/>
+
+  <!-- Shield shadow -->
+  <path d="M256 75L382 123V245C382 327 328 394 256 431C184 394 130 327 130 245V123L256 75Z" fill="#073EAD" opacity=".16" filter="url(#shadow)"/>
+
+  <!-- Shield -->
+  <path d="M256 66L382 114V236C382 318 328 385 256 422C184 385 130 318 130 236V114L256 66Z"
+        fill="url(#shieldBlue)" stroke="#FFFFFF" stroke-width="10" stroke-linejoin="round"/>
+
+  <!-- IP lettering -->
+  <text x="256" y="253" text-anchor="middle" fill="#FFFFFF"
+        font-family="Arial, Helvetica, sans-serif" font-size="116" font-weight="500"
+        letter-spacing="2">IP</text>
+
+  <!-- Check mark -->
+  <path d="M211 293L244 323L305 268" stroke="#FFFFFF" stroke-width="17"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Small padlock at lower-right -->
+  <g transform="translate(350 292)">
+    <path d="M24 37V25C24 10 35 0 50 0C65 0 76 10 76 25V37"
+          stroke="#FFFFFF" stroke-width="13" stroke-linecap="round"/>
+    <rect x="10" y="34" width="80" height="68" rx="16" fill="#FFFFFF" stroke="#DCEBFF" stroke-width="5"/>
+    <circle cx="50" cy="63" r="8" fill="#1768E8"/>
+    <path d="M50 70V82" stroke="#1768E8" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>

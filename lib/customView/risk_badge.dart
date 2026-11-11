@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,7 +19,10 @@ class RiskBadge extends StatefulWidget {
 
 class _RiskBadgeState extends State<RiskBadge> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => DefaultTextStyle.merge(
+      style: const TextStyle(fontFamily: 'Sora'), child: _build(context));
+
+  Widget _build(BuildContext context) {
     final r = widget.risk;
     if (r == null) return const SizedBox.shrink();
     final loc = r.location;
@@ -35,14 +39,14 @@ class _RiskBadgeState extends State<RiskBadge> {
           border: Border.all(color: r.accent.withOpacity(0.25)),
         ),
         child: Row(children: [
-          Icon(Icons.shield_outlined, size: 18, color: r.accent),
+          _svg('security', r.accent, 18),
           const SizedBox(width: 6),
           Text('${r.labelKey.tr} • ${'risk_score'.tr} ${r.score ?? 0}',
               style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w700, color: r.accent)),
+                  fontSize: 12, fontWeight: FontWeight.w700,fontFamily: 'Sora' ,color: r.accent)),
           const Spacer(),
           if (loc != null) ...[
-            const Icon(Icons.location_on_outlined, size: 16),
+            _svg('risk_location', Colors.black87, 16),
             const SizedBox(width: 2),
             Flexible(
                 child: Text(loc,
@@ -83,108 +87,220 @@ class _RiskBadgeState extends State<RiskBadge> {
 }
 
 class _DbIpCredit extends StatelessWidget {
-  const _DbIpCredit();
+  final String? ip;
+  const _DbIpCredit({this.ip});
+
   @override
-  Widget build(BuildContext context) => GestureDetector(
-        onTap: () => launchUrl(Uri.parse('https://db-ip.com'),
-            mode: LaunchMode.externalApplication),
-        child: const Row(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.info_outline, size: 13, color: Colors.black54),
-          SizedBox(width: 4),
-          Text('IP geolocation by DB-IP • ', style: TextStyle(fontSize: 11)),
-          Text('db-ip.com',
+  Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
+        const _InfoDot(),
+        const SizedBox(width: 4),
+        GestureDetector(
+          // iplocation.net reads ?query= and prefills the lookup field.
+          onTap: () => launchUrl(
+              Uri.https('www.iplocation.net', '/ip-lookup',
+                  {if (ip != null && ip!.isNotEmpty) 'query': ip!}),
+              mode: LaunchMode.externalApplication),
+          child: const Text('iplocation.net',
               style: TextStyle(
                   fontSize: 11,
                   color: Colors.blue,
                   decoration: TextDecoration.underline)),
-          SizedBox(width: 3),
-          Icon(Icons.open_in_new, size: 12, color: Colors.blue),
-        ]),
-      );
+        ),
+      ]);
 }
 
-/// "Risk Assessment" card for detail screens (place last).
+Widget _svg(String name, Color c, [double size = 20]) => SvgPicture.asset(
+      'assets/images/$name.svg',
+      width: size,
+      height: size,
+      // security.svg is a full-colour illustration: don't tint it.
+      colorFilter: name == 'security' ? null : ColorFilter.mode(c, BlendMode.srcIn),
+    );
+
+/// Flag emoji from ISO country code ("DE" -> flag). Empty when unknown.
+String _flag(String? cc) {
+  if (cc == null || cc.length != 2) return '';
+  return String.fromCharCodes(
+      cc.toUpperCase().codeUnits.map((c) => 0x1F1E6 + c - 65));
+}
+
+/// "IP security" card for detail screens (place last).
 class RiskCard extends StatelessWidget {
   final Risk? risk;
   final VoidCallback? onChanged;
   const RiskCard({super.key, required this.risk, this.onChanged});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => DefaultTextStyle.merge(
+      style: const TextStyle(fontFamily: 'Sora'), child: _build(context));
+
+  Widget _build(BuildContext context) {
     final r = risk;
     if (r == null) return const SizedBox.shrink();
-    Widget col(String t, String v) => Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(t, style: const TextStyle(fontSize: 11, color: Colors.black54)),
-            const SizedBox(height: 2),
-            Text(v,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+    final a = r.accent;
+    final flag = _flag(r.countryCode);
+
+    Widget row(String icon, String label, Widget value) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 9),
+          child: Row(children: [
+            _svg(icon, Colors.black87, 20),
+            const SizedBox(width: 12),
+            Expanded(
+                flex: 4,
+                child: Text(label, style: const TextStyle(fontSize: 13))),
+            Expanded(flex: 6, child: value),
           ]),
         );
+    const bold = TextStyle(fontSize: 13, fontWeight: FontWeight.w800);
+    const divider = Divider(height: 1, color: Color(0x14000000));
+
     return Container(
       margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: r.color,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: r.accent.withOpacity(0.3)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: a.withOpacity(0.45), width: 1.2),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Icon(Icons.shield_outlined, color: r.accent),
-          const SizedBox(width: 6),
-          Text('risk_assessment'.tr,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-            decoration: BoxDecoration(
-                color: r.accent, borderRadius: BorderRadius.circular(12)),
-            child: Text(r.labelKey.tr,
-                style: const TextStyle(
-                    color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
-          ),
-        ]),
-        const SizedBox(height: 12),
-        Row(children: [
-          col('risk_score'.tr, '${r.score ?? 0} / 100'),
-          col('risk_alert_status'.tr, r.alertStatus ?? '—'),
-          col('risk_location'.tr, r.location ?? '—'),
-        ]),
-        if (r.ipAddress != null) ...[
-          const SizedBox(height: 10),
-          Row(children: [
-            const Text('IP', style: TextStyle(fontSize: 12)),
-            const Spacer(),
-            Text(r.ipAddress!,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
-          ]),
-        ],
-        ...r.reasons.map((e) => Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: Text('• ${e.detail ?? e.rule ?? ''}',
-                style: const TextStyle(fontSize: 12)))),
-        if (r.location != null) ...[
-          const SizedBox(height: 10),
-          const _DbIpCredit(),
-        ],
-        if (r.alertId != null) ...[
-          const Divider(),
-          Wrap(spacing: 8, children: [
-            for (final s in const ['confirmed', 'dismissed', 'open'])
-              OutlinedButton(
-                onPressed: r.alertStatus == s
-                    ? null
-                    : () async {
-                        final ok = await CallService().patchFraudAlert(r.alertId!, s);
-                        Get.snackbar('', ok ? 'risk_$s'.tr : 'error'.tr);
-                        if (ok) onChanged?.call();
-                      },
-                child: Text('risk_$s'.tr),
+        // Header
+        Container(
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          color: r.color,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              _svg('security', a, 34),
+              const SizedBox(width: 10),
+              Expanded(
+                  child: Text('risk_title'.tr,
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: a))),
+            ]),
+            const SizedBox(height: 10),
+            Row(children: [
+              if (r.level == 'green')
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                      color: const Color(0xFF2F6FED),
+                      borderRadius: BorderRadius.circular(14)),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    _svg('risk_check', Colors.white, 13),
+                    const SizedBox(width: 5),
+                    Text('risk_verified'.tr,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700)),
+                  ]),
+                ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                    color: a, borderRadius: BorderRadius.circular(14)),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  _svg('security', Colors.white, 14),
+                  const SizedBox(width: 5),
+                  Text(r.labelKey.tr,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700)),
+                ]),
               ),
+            ]),
           ]),
-        ],
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(14, 4, 14, 4),
+          child: Column(children: [
+            row(
+                'risk_location',
+                'risk_location'.tr,
+                Row(children: [
+                  Expanded(
+                      child: Text(r.location ?? '—',
+                          style: bold, overflow: TextOverflow.ellipsis)),
+                  if (flag.isNotEmpty)
+                    Text(flag, style: const TextStyle(fontSize: 22)),
+                ])),
+            divider,
+            row('risk_wifi', 'risk_ip'.tr, Text(r.ipAddress ?? '—', style: bold)),
+            divider,
+            row(
+                'security',
+                'risk_status'.tr,
+                Text(
+                    '${r.labelKey.tr} – ${'${r.labelKey}_desc'.tr} (${r.score ?? 0}/100)',
+                    style: TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w800, color: a))),
+            if (r.alertStatus != null) ...[
+              divider,
+              row('risk_info', 'risk_alert_status'.tr,
+                  Text(r.alertStatus!, style: bold)),
+            ],
+          ]),
+        ),
+        if (r.reasons.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: r.reasons
+                    .map((e) => Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text('• ${e.detail ?? e.rule ?? ''}',
+                            style: const TextStyle(fontSize: 12))))
+                    .toList()),
+          ),
+        // Info box
+        Container(
+          margin: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+              color: const Color(0xFFE8F0FE),
+              borderRadius: BorderRadius.circular(12)),
+          child: Row(children: [
+            _svg('risk_info', const Color(0xFF2F6FED), 22),
+            const SizedBox(width: 10),
+            Expanded(
+                child: Text('risk_info_text'.tr,
+                    style: const TextStyle(fontSize: 12))),
+          ]),
+        ),
+        if (r.location != null)
+          Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+              child: _DbIpCredit(ip: r.ipAddress)),
+        if (r.alertId != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+            child: Wrap(spacing: 8, children: [
+              for (final s in const ['confirmed', 'dismissed', 'open'])
+                OutlinedButton(
+                  onPressed: r.alertStatus == s
+                      ? null
+                      : () async {
+                          final ok =
+                              await CallService().patchFraudAlert(r.alertId!, s);
+                          Get.snackbar('', ok ? 'risk_$s'.tr : 'error'.tr);
+                          if (ok) onChanged?.call();
+                        },
+                  child: Text('risk_$s'.tr),
+                ),
+            ]),
+          ),
       ]),
     );
   }
+}
+
+class _InfoDot extends StatelessWidget {
+  const _InfoDot();
+  @override
+  Widget build(BuildContext context) => _svg('risk_info', Colors.black54, 13);
 }

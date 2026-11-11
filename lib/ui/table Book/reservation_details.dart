@@ -14,6 +14,8 @@ import '../../models/reservation/accept_decline_reservation_response_model.dart'
 import '../../models/reservation/edit_reservation_details_response_model.dart';
 import '../../models/reservation/get_reservation_table_full_details.dart';
 import '../../utils/contact_launcher.dart';
+import '../../customView/risk_badge.dart';
+import '../../models/risk_model.dart';
 
 class ReservationDetails extends StatefulWidget {
   final String id;
@@ -26,6 +28,7 @@ class ReservationDetails extends StatefulWidget {
 class _ReservationDetailsState extends State<ReservationDetails> {
   bool isLoading = false;
   bool _isSuperAdmin = false;
+  Risk? _risk;
   String orderId = '',
       date = '',
       customerName = '',
@@ -289,7 +292,8 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                         ],
                       ),
                     ),
-                ],
+                RiskCard(risk: _risk),
+],
               ),
         bottomNavigationBar: isLoading
             ? null
@@ -587,6 +591,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
 
     try {
       GetOrderDetailsResponseModel model = await CallService().getReservationFullDetails(reservationId);
+      _risk = model.risk;
       orderId = model.id.toString();
       date = model.createdAt.toString();
       customerName = model.customerName.toString();

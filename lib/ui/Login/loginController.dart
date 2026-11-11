@@ -241,6 +241,7 @@ class LoginController extends GetxController {
       // Clear other session data
       await prefs.remove(valueShared_BEARER_KEY);
       await prefs.remove(valueShared_STORE_TYPE);
+      await prefs.remove(valueShared_STORE_SUBTYPE);
       await prefs.remove(valueShared_ROLE_ID);
       await prefs.remove(valueShared_STORE_KEY);
       await prefs.remove(valueShared_STORE_NAME);
@@ -346,6 +347,7 @@ class LoginController extends GetxController {
   Future<void> _saveCredentials(dynamic result) async {
     await prefs.setString(valueShared_BEARER_KEY, result.access_token!);
     await prefs.setString(valueShared_STORE_TYPE, result.storeType?.toString() ?? '');
+    await prefs.setString(valueShared_STORE_SUBTYPE, (result.storeSubtype ?? 0).toString());
     if (result.storeId != null) {
       await prefs.setString(valueShared_STORE_KEY, result.storeId.toString());
     }

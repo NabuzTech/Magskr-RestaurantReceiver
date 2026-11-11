@@ -17,8 +17,9 @@ class UserLoginH extends HiveObject {
   @HiveField(6)
   int? storeType;
   int? storeId;
+  int? storeSubtype; // login `store_subtype`, see StoreSubtype
 
-  UserLoginH({this.access_token, this.token_type, this.role_id , this.storeType, this.storeId});
+  UserLoginH({this.access_token, this.token_type, this.role_id , this.storeType, this.storeId, this.storeSubtype});
 
   UserLoginH.withError({
     int? code,
@@ -36,6 +37,7 @@ class UserLoginH extends HiveObject {
         role_id: json["role_id"],
         storeType: json["store_type"],
         storeId: json["store_id"],
+        storeSubtype: json["store_subtype"],
 
       );
 
@@ -44,6 +46,7 @@ class UserLoginH extends HiveObject {
         "token_type": token_type,
         "role_id": role_id,
         "store_type": storeType,
-        "store_id": storeId
+        "store_id": storeId,
+        "store_subtype": storeSubtype
       };
 }

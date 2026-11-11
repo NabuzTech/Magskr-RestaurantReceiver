@@ -1306,6 +1306,7 @@ class _SuperAdminState extends State<SuperAdmin> {
       await prefs.remove(valueShared_STORE_BRAND_FOR);
       await prefs.remove(valueShared_ROLE_ID);
       await prefs.remove(valueShared_STORE_TYPE);
+      await prefs.remove(valueShared_STORE_SUBTYPE);
       await prefs.remove('auto_order_accept');
       await prefs.remove('auto_order_print');
       await prefs.remove('auto_order_remote_accept');
