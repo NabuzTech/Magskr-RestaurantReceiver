@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../api/repository/api_repository.dart';
 import '../models/risk_model.dart';
 
 /// Risk strip coloured by server `level`. Tap / long-press for reasons and
@@ -313,24 +312,6 @@ class RiskCard extends StatelessWidget {
           Padding(
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
               child: _DbIpCredit(ip: r.ipAddress)),
-        if (r.alertId != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
-            child: Wrap(spacing: 8, children: [
-              for (final s in const ['confirmed', 'dismissed', 'open'])
-                OutlinedButton(
-                  onPressed: r.alertStatus == s
-                      ? null
-                      : () async {
-                          final ok =
-                              await CallService().patchFraudAlert(r.alertId!, s);
-                          Get.snackbar('', ok ? 'risk_$s'.tr : 'error'.tr);
-                          if (ok) onChanged?.call();
-                        },
-                  child: Text('risk_$s'.tr),
-                ),
-            ]),
-          ),
       ]),
     );
   }
