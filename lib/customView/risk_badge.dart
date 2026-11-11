@@ -25,35 +25,18 @@ class _RiskBadgeState extends State<RiskBadge> {
   Widget _build(BuildContext context) {
     final r = widget.risk;
     if (r == null) return const SizedBox.shrink();
-    final loc = r.location;
     return GestureDetector(
       onTap: () => _openSheet(r),
       onLongPress: () => _openSheet(r),
       child: Container(
         width: double.infinity,
         margin: const EdgeInsets.fromLTRB(6, 8, 6, 0),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: r.color,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: r.accent.withOpacity(0.25)),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: r.accent.withOpacity(0.45), width: 1.2),
         ),
-        child: Row(children: [
-          _svg('security', r.accent, 18),
-          const SizedBox(width: 6),
-          Text('${r.labelKey.tr} • ${'risk_score'.tr} ${r.score ?? 0}',
-              style: TextStyle(
-                  fontSize: 12, fontWeight: FontWeight.w700,fontFamily: 'Sora' ,color: r.accent)),
-          const Spacer(),
-          if (loc != null) ...[
-            _svg('risk_location', Colors.black87, 16),
-            const SizedBox(width: 2),
-            Flexible(
-                child: Text(loc,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12))),
-          ],
-        ]),
+        clipBehavior: Clip.antiAlias,
+        child: _RiskListBox(r),
       ),
     );
   }
@@ -124,47 +107,58 @@ String _flag(String? cc) {
       cc.toUpperCase().codeUnits.map((c) => 0x1F1E6 + c - 65));
 }
 
-/// "IP security" card for detail screens (place last).
-class RiskCard extends StatelessWidget {
-  final Risk? risk;
-  final VoidCallback? onChanged;
-  const RiskCard({super.key, required this.risk, this.onChanged});
+/// Compact box for order lists: [icon + "IP Security"] on the left,
+/// [level badge] on the right.
+class _RiskListBox extends StatelessWidget {
+  final Risk r;
+  const _RiskListBox(this.r);
+
+  Widget _chip(Color bg, Widget icon, String text) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+        decoration:
+            BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          icon,
+          const SizedBox(width: 5),
+          Text(text,
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
+        ]),
+      );
 
   @override
-  Widget build(BuildContext context) => DefaultTextStyle.merge(
-      style: const TextStyle(fontFamily: 'Sora'), child: _build(context));
+  Widget build(BuildContext context) => Container(
+        color: r.color,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: Row(children: [
+          _svg('security', r.accent, 28),
+          const SizedBox(width: 8),
+          Expanded(
+              child: Text('risk_title_short'.tr,
+                  style: TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w800, color: r.accent))),
+          // IntrinsicWidth: stretch inside a Row would get infinite width.
+          IntrinsicWidth(
+              child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _chip(r.accent, _svg('security', Colors.white, 13), r.labelKey.tr),
+              ])),
+        ]),
+      );
+}
 
-  Widget _build(BuildContext context) {
-    final r = risk;
-    if (r == null) return const SizedBox.shrink();
+/// Header of the IP-security card (icon, title, verified chip, level badge).
+/// Used by [RiskCard] and by the compact strip in order lists.
+class _RiskHeader extends StatelessWidget {
+  final Risk r;
+  const _RiskHeader(this.r);
+
+  @override
+  Widget build(BuildContext context) {
     final a = r.accent;
-    final flag = _flag(r.countryCode);
-
-    Widget row(String icon, String label, Widget value) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 9),
-          child: Row(children: [
-            _svg(icon, Colors.black87, 20),
-            const SizedBox(width: 12),
-            Expanded(
-                flex: 4,
-                child: Text(label, style: const TextStyle(fontSize: 13))),
-            Expanded(flex: 6, child: value),
-          ]),
-        );
-    const bold = TextStyle(fontSize: 13, fontWeight: FontWeight.w800);
-    const divider = Divider(height: 1, color: Color(0x14000000));
-
     return Container(
-      margin: const EdgeInsets.only(top: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: a.withOpacity(0.45), width: 1.2),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // Header
-        Container(
           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
           color: r.color,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -214,7 +208,50 @@ class RiskCard extends StatelessWidget {
               ),
             ]),
           ]),
-        ),
+        );
+  }
+}
+
+/// "IP security" card for detail screens (place last).
+class RiskCard extends StatelessWidget {
+  final Risk? risk;
+  final VoidCallback? onChanged;
+  const RiskCard({super.key, required this.risk, this.onChanged});
+
+  @override
+  Widget build(BuildContext context) => DefaultTextStyle.merge(
+      style: const TextStyle(fontFamily: 'Sora'), child: _build(context));
+
+  Widget _build(BuildContext context) {
+    final r = risk;
+    if (r == null) return const SizedBox.shrink();
+    final a = r.accent;
+    final flag = _flag(r.countryCode);
+
+    Widget row(String icon, String label, Widget value) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 9),
+          child: Row(children: [
+            _svg(icon, Colors.black87, 20),
+            const SizedBox(width: 12),
+            Expanded(
+                flex: 4,
+                child: Text(label, style: const TextStyle(fontSize: 13))),
+            Expanded(flex: 6, child: value),
+          ]),
+        );
+    const bold = TextStyle(fontSize: 13, fontWeight: FontWeight.w800);
+    const divider = Divider(height: 1, color: Color(0x14000000));
+
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: a.withOpacity(0.45), width: 1.2),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        _RiskHeader(r),
         Padding(
           padding: const EdgeInsets.fromLTRB(14, 4, 14, 4),
           child: Column(children: [
