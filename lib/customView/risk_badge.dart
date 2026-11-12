@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+// import '../api/repository/api_repository.dart'; // needed only if the fraud-alert buttons below are re-enabled
 import '../models/risk_model.dart';
 
 /// Risk strip coloured by server `level`. Tap / long-press for reasons and
@@ -312,6 +313,33 @@ class RiskCard extends StatelessWidget {
           Padding(
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
               child: _DbIpCredit(ip: r.ipAddress)),
+        // ── DISABLED: fraud-alert review buttons (staff) ──────────────────────
+        // For AI / future dev: to bring them back, (1) uncomment this block,
+        // (2) uncomment the api_repository import at the top of this file.
+        // Backend: PATCH /fraud-alerts/{alert_id}  body {"status": confirmed|dismissed|open}
+        //   confirmed = fake order (remembered), dismissed = real customer (level -> green),
+        //   open = undo. API method: CallService().patchFraudAlert(alertId, status).
+        // Strings: 'risk_confirmed', 'risk_dismissed', 'risk_open' (AppTranslations).
+        // Refresh: the colour only updates on the next GET, so call `onChanged` to re-fetch.
+        //
+        // if (r.alertId != null)
+        //   Padding(
+        //     padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+        //     child: Wrap(spacing: 8, children: [
+        //       for (final s in const ['confirmed', 'dismissed', 'open'])
+        //         OutlinedButton(
+        //           onPressed: r.alertStatus == s
+        //               ? null
+        //               : () async {
+        //                   final ok =
+        //                       await CallService().patchFraudAlert(r.alertId!, s);
+        //                   Get.snackbar('', ok ? 'risk_$s'.tr : 'error'.tr);
+        //                   if (ok) onChanged?.call();
+        //                 },
+        //           child: Text('risk_$s'.tr),
+        //         ),
+        //     ]),
+        //   ),
       ]),
     );
   }

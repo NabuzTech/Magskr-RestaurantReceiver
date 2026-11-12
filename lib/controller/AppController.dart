@@ -19,6 +19,19 @@ class AppController extends GetxController {
   bool get isLoading => _isLoading.value;
   final _selectedTabIndex = 0.obs;
 
+  // Booking V2: fired with the booking id whenever a booking changes, so the
+  // Booking screen can fetch that one record and splice it in.
+  final _newBookingV2Event = 0.obs;
+  int? lastNewBookingV2Id;
+
+  RxInt get newBookingV2Event => _newBookingV2Event;
+
+  void notifyNewBookingV2(int bookingId) {
+    lastNewBookingV2Id = bookingId;
+    _newBookingV2Event.value++;
+    print("New Booking V2 notified: $bookingId");
+  }
+
   int get selectedTabIndex => _selectedTabIndex.value;
 
   RxInt get selectedTabIndexRx => _selectedTabIndex;
@@ -312,6 +325,8 @@ class AppController extends GetxController {
 
   void clearOnLogout() {
     ordersList.clear();
+    _newBookingV2Event.value = 0;
+    lastNewBookingV2Id = null;
     searchResultOrder.clear();
     _pendingOrders.value = 0;
     _selectedTabIndex.value = 0;

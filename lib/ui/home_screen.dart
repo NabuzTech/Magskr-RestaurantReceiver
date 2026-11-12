@@ -20,6 +20,7 @@ import '../utils/global.dart';
 import '../utils/keep_alive_page.dart';
 import '../utils/my_application.dart';
 import 'Order/OrderScreen.dart';
+import 'Booking/bookings.dart';
 import 'Reservation V2/reservation_dashboard_v2.dart';
 import 'Reservation V2/add_reservation_v2_screen.dart';
 import 'Pos/pos.dart';
@@ -67,6 +68,10 @@ class _HomeScreenState extends State<HomeScreen> {
   String _storeSubtype = StoreSubtype.orderAndReservation;
   bool get _showOrderTab =>
       _storeSubtype != StoreSubtype.reservationOnly && _storeSubtype != StoreSubtype.reservationAndBookingOnly;
+  bool get _showBookingTab =>
+      _storeSubtype == StoreSubtype.orderAndReservationAndBooking ||
+      _storeSubtype == StoreSubtype.reservationAndBookingOnly ||
+      _storeSubtype == StoreSubtype.orderAndBookingOnly;
   bool get _showReservationTab =>
       _storeSubtype != StoreSubtype.orderOnly && _storeSubtype != StoreSubtype.orderAndBookingOnly;
   int? _roleId;
@@ -500,6 +505,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       _openTab(1);
                     },
                   ),
+                if (_showBookingTab)
+                  ItemBottomBar(
+                    selected: app.appController.selectedTabIndex == 4,
+                    icon: "assets/images/booking.svg",
+                    iconHeight: 20,
+                    iconWidth: 20,
+                    name: 'booking'.tr,
+                    onPressed: () {
+                      _openTab(4);
+                    },
+                  ),
                 ItemBottomBar(
                   selected: app.appController.selectedTabIndex == 2,
                   icon: "assets/images/reports-icon.svg",
@@ -553,7 +569,11 @@ class _HomeScreenState extends State<HomeScreen> {
         KeepAlivePage(child: isAdmin ? const SuperAdminReservation() : (_reservationV2Enabled ? const ReservationDashboardV2() : const Reservation()),),
         KeepAlivePage(child: isAdmin ? const SuperAdminReport() : const ReportScreen()),
         if (_storeType == '1')
-          KeepAlivePage(child: PosPortrait(onNavigateToTab: _openTab)),
+          KeepAlivePage(child: PosPortrait(onNavigateToTab: _openTab))
+        else
+          const SizedBox.shrink(), // keeps Booking at index 4 when there is no POS tab
+        // index 4: Booking (only built when store_subtype includes booking)
+        _showBookingTab ? const KeepAlivePage(child: BookingsScreen()) : const SizedBox.shrink(),
       ],
     );
   }
@@ -562,6 +582,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Hidden by store_subtype -> go to the first tab that is shown.
     if (index == 0 && !_showOrderTab) index = 1;
     if (index == 1 && !_showReservationTab) index = _showOrderTab ? 0 : 2;
+    if (index == 4 && !_showBookingTab) index = _showOrderTab ? 0 : 1;
     if (index == 3 && _storeType != '1') {
       return;
     }

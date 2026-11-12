@@ -130,6 +130,13 @@ import '../api_params.dart';
 import '../api_utils.dart';
 import '../../models/userLogin_h.dart';
 import 'package:http_parser/http_parser.dart';
+import '../../models/Booking V2/get_today_booking_V2_model.dart' hide FormData; // clashes with dio FormData
+import '../../models/Booking V2/get_today_received_bookingV2_model.dart';
+import '../../models/Booking V2/get_bookingV2_detail_model.dart' hide FormData; // clashes with dio FormData
+import '../../models/Booking V2/check_availability_slot_model.dart';
+import '../../models/Booking V2/get_service_model.dart';
+import '../../models/Booking V2/month_calendar_booking_v2_model.dart';
+import '../../utils/my_application.dart';
 
 const title = "ApiRepo";
 
@@ -5152,6 +5159,184 @@ class CallService extends GetConnect {
       throw Exception(
           'Failed to load Store Status: ${res.statusCode}');
     }
+  }
+
+  ///Booking V2 Apis (copied from Magskr Booking app)
+
+  //1.) Get Today Booking V2 Model
+  Future<GetTodayBookingV2Model> todayBookingV2(String storeId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $accessToken");
+
+    httpClient.baseUrl = Api.baseUrl;
+    print('api call to ${Api.baseUrl}bookings/v2/store/today?store_id=$storeId');
+    var res = await get('bookings/v2/store/today?store_id=$storeId', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $accessToken",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting today  BookingV2 response is :${res.statusCode.toString()}");
+      print("Getting today BookingV2 response BODY is : ${res.body}");
+      return GetTodayBookingV2Model.fromJson(res.body);
+    } else {
+      throw Exception('Failed to today Booking : ${res.statusCode}');
+    }
+  }
+
+  //2.) For Getting Booking Details
+  Future<BookingV2DetailsModel> getBookingV2Details(String bookingId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $accessToken");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('bookings/v2/$bookingId', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $accessToken",
+    });
+    if (res.statusCode == 200) {
+      print("Booking V2 Details response is :${res.statusCode.toString()}");
+      return BookingV2DetailsModel.fromJson(res.body);
+    } else {
+      throw Exception(Error());
+    }
+  }
+
+  //3.) For Updating Booking Details (Accept/Decline/Edit other details)
+  Future<BookingV2DetailsModel> updateBookingV2Details(dynamic body ,String bookingId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $accessToken");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await put('bookings/v2/$bookingId',body,headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $accessToken",
+    });
+    if (res.statusCode == 200) {
+      print("Booking V2 Update Details response is :${res.statusCode.toString()}");
+      final id = int.tryParse(bookingId);
+      // Let every open screen (Home / Bookings / History) splice in the change
+      if (id != null) app.appController.notifyNewBookingV2(id);
+      return BookingV2DetailsModel.fromJson(res.body);
+    } else {
+      throw Exception(Error());
+    }
+  }
+
+  //10.) For Getting Store Service
+  Future<List<GetServiceModel>> getBookingV2StoreServices(String storeID) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('bookings/v2/services?store_id=$storeID&include_inactive=true', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Booking V2 Services response body is :${res.statusCode}");
+      List<dynamic> jsonList = res.body;
+
+      List<GetServiceModel> services = [];
+
+      for (var json in jsonList) {
+        services.add(GetServiceModel.fromJson(json));
+      }
+      return services;
+    } else {
+      throw Exception(
+          'Failed to load Booking V2 Services : ${res.statusCode}');
+    }
+  }
+
+  //11.) For Check Availability Slot
+  Future<CheckAvailabilitySlotModel> checkAvailabilitySlot(int serviceId, String date, int partySize) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $accessToken");
+
+    httpClient.baseUrl = Api.baseUrl;
+    print('api call to ${Api.baseUrl}bookings/v2/availability?service_id=$serviceId&date=$date&party_size=$partySize');
+    var res = await get('bookings/v2/availability?service_id=$serviceId&date=$date&party_size=$partySize', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $accessToken",
+    });
+
+    if (res.statusCode == 200) {
+      print("Check Availability Slot response is :${res.statusCode.toString()}");
+      print("Check Availability Slot response BODY is : ${res.body}");
+      return CheckAvailabilitySlotModel.fromJson(res.body);
+    } else {
+      throw Exception('Failed to Check Availability Slot : ${res.statusCode}');
+    }
+  }
+
+  //18.) For Getting Today Received Booking
+  Future<GetTodayReceivedBookingV2Model> todayReceivedBookingV2(String storeId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $accessToken");
+
+    httpClient.baseUrl = Api.baseUrl;
+    print('api call to ${Api.baseUrl}bookings/v2/store/received-today?store_id=13$storeId');
+    var res = await get('bookings/v2/store/received-today?store_id=$storeId', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $accessToken",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting today Received BookingV2 response is :${res.statusCode.toString()}");
+      print("Getting today Received BookingV2 response BODY is : ${res.body}");
+      return GetTodayReceivedBookingV2Model.fromJson(res.body);
+    } else {
+      throw Exception('Failed to today Received Booking : ${res.statusCode}');
+    }
+  }
+
+  //23.) For Getting a whole month's bookings in one call (Home + History calendar)
+  Future<List<MonthCalendarBookingV2Model>> getMonthCalendarBookingsV2(DateTime month) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    final storeId = int.tryParse(prefs.getString(valueShared_STORE_KEY) ?? '');
+    String ymd(DateTime d) =>
+        '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    final body = {
+      'store_id': storeId,
+      'from_date': ymd(DateTime(month.year, month.month, 1)),
+      'to_date': ymd(DateTime(month.year, month.month + 1, 0)), // day 0 = last day of month
+    };
+    httpClient.baseUrl = Api.baseUrl;
+    print('api call to ${Api.baseUrl}bookings/v2/store/filter body: $body');
+    var res = await post('bookings/v2/store/filter', body, headers: {
+      'accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': "Bearer $accessToken",
+    });
+    print("Month Calendar BookingV2 response is : ${res.statusCode}");
+    print("Month Calendar BookingV2 response BODY is : ${res.body}");
+
+    if (res.statusCode == 200 && res.body is List) {
+      return (res.body as List)
+          .map((e) => MonthCalendarBookingV2Model.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    } else {
+      throw Exception('Failed to load month bookings : ${res.statusCode}');
+    }
+  }
+
+  //24.) Booking count per day of a month (day → count) for calendar badges
+  Future<Map<int, int>> getMonthBookingCountsV2(int year, int month) async {
+    final list = await getMonthCalendarBookingsV2(DateTime(year, month));
+    final counts = <int, int>{};
+    for (final b in list) {
+      final d = DateTime.tryParse(b.startAt ?? '')?.toLocal();
+      if (d != null && d.year == year && d.month == month) {
+        counts[d.day] = (counts[d.day] ?? 0) + 1;
+      }
+    }
+    return counts;
   }
 
   // Staff review of a fraud alert: status = confirmed | dismissed | open

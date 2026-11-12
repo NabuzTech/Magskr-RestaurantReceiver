@@ -332,6 +332,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                 elevation: 1,
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black87,
+                actionsPadding: EdgeInsets.zero,
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -348,7 +349,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                             children: [
                               Text(_todayLabel(),
                                   style: const TextStyle(fontFamily: 'Sora', fontSize: 12, color: Colors.grey)),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: 2),
                               const Icon(Icons.expand_more, size: 14, color: Colors.grey),
                             ],
                           ),
@@ -363,7 +364,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                 ),
                 actions: [
                   Padding(
-                    padding: const EdgeInsets.only(right: 4),
+                    padding: const EdgeInsets.only(right: 2),
                     child: Center(
                       child: GestureDetector(
                         onTap: () => _setShowAll(true),
@@ -377,7 +378,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                           child: Text('all_reservations'.tr,
                               style: TextStyle(
                                   fontFamily: 'Sora',
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w600,
                                   color: _showAll ? Colors.white : AppTheme.accent)),
                         ),
@@ -385,7 +386,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(right: 4),
+                    padding: const EdgeInsets.only(right: 2),
                     child: Center(
                       child: GestureDetector(
                         onTap: () => _showAll ? getAllReservationV2(reset: true) : _loadTodayReservations(),
@@ -394,7 +395,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.only(right: 4),
                     child: Center(
                       child: GestureDetector(
                         onTap: _openReservationSettings,

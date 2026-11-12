@@ -538,7 +538,7 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
           children: [
             // ─── Header: title, date, total, refresh (pinned, does not scroll) ───
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+              padding: const EdgeInsets.fromLTRB(6, 12, 6, 0),
               child: Row(
                 children: [
                   Expanded(
@@ -550,11 +550,8 @@ class _ReservationState extends State<Reservation> with WidgetsBindingObserver {
                                 fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.accentDark)),
                         const SizedBox(height: 2),
                         Text(
-                          dateSeleted.isEmpty
-                              ? DateFormat('d MMMM, y').format(DateTime.now())
-                              : dateSeleted,
-                          style: const TextStyle(fontFamily: 'Sora',
-                              fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black54),
+                          dateSeleted.isEmpty ? DateFormat('d MMMM, y').format(DateTime.now()) : dateSeleted,
+                          style: const TextStyle(fontFamily: 'Sora', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black54),
                         ),
                       ],
                     ),
