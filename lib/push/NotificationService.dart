@@ -60,7 +60,7 @@ class NotificationService {
 
         // Save only Windows App status notifications to history
         // (New Order & Reservation are intentionally excluded)
-        if (!title.contains('New Order') && !title.contains('Reservation')) {
+        if (!title.contains('New Order') && !title.contains('Reservation') && !title.contains('New Booking')) {
           try {
             await DatabaseHelper().saveNotification(title, body, storeId: storeId);
             if (Get.isRegistered<NotificationController>()) {
@@ -122,6 +122,8 @@ class NotificationService {
 
       if (title.contains('New Order')) {
         Get.offAllNamed('/home', arguments: {'initialTab': 0});
+      } else if (title.contains('New Booking')) {
+        Get.offAllNamed('/home', arguments: {'initialTab': 4});
       } else if (title.contains('Reservation')) {
         Get.offAllNamed('/home', arguments: {'initialTab': 1});
       }
@@ -141,6 +143,10 @@ class NotificationService {
         if (title.contains('New Order')) {
           Future.delayed(const Duration(milliseconds: 500), () {
             Get.offAllNamed('/home', arguments: {'initialTab': 0});
+          });
+        } else if (title.contains('New Booking')) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            Get.offAllNamed('/home', arguments: {'initialTab': 4});
           });
         } else if (title.contains('Reservation')) {
           Future.delayed(const Duration(milliseconds: 500), () {
@@ -268,7 +274,7 @@ class NotificationService {
         title,
         body,
         platformDetails,
-        payload: title.contains('New Order') ? '0' : '1',
+        payload: title.contains('New Order') ? '0' : title.contains('New Booking') ? '4' : '1',
       );
 
       print('✅ Local notification shown successfully');

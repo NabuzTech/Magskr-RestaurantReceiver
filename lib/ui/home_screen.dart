@@ -271,6 +271,13 @@ class _HomeScreenState extends State<HomeScreen> {
             // Remove _openTab(0); - no auto navigation
           }
         }
+      } else if (title.contains("New Booking")) {
+        final body = message.notification?.body ?? '';
+        final match = RegExp(r'#(\d+)').firstMatch(body);
+        if (match != null) {
+          // BookingsScreen listens to this and fetches just this booking
+          app.appController.notifyNewBookingV2(int.parse(match.group(1)!));
+        }
       } else
       if (title.contains("New Reservation") || title.contains("Reservation")) {
         final body = message.notification?.body ?? ''; // Add this line
@@ -293,6 +300,10 @@ class _HomeScreenState extends State<HomeScreen> {
       if (title.contains("New Order")) {
         _openTab(0);
         getOrdersInBackground();
+      } else if (title.contains("New Booking")) {
+        _openTab(4);
+        final match = RegExp(r'#(\d+)').firstMatch(message.notification?.body ?? '');
+        if (match != null) app.appController.notifyNewBookingV2(int.parse(match.group(1)!));
       } else if (title.contains("Reservation")) {
         _openTab(1);
         getReservationsInBackground();

@@ -157,7 +157,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // (New Order & Reservation are intentionally excluded)
   final String? notifStoreId = message.data['store_id']?.toString();
   if (title.isNotEmpty && body.isNotEmpty &&
-      !title.contains('New Order') && !title.contains('Reservation')) {
+      !title.contains('New Order') && !title.contains('Reservation') && !title.contains('New Booking')) {
     try {
       await DatabaseHelper().saveNotification(title, body, storeId: notifStoreId);
     } catch (e) {
@@ -1001,6 +1001,8 @@ void _registerForegroundListeners() {
         int targetTab = 0;
         if (title.contains('New Order')) {
           targetTab = 0;
+        } else if (title.contains('New Booking')) {
+          targetTab = 4;
         } else if (title.contains('Reservation')) {
           targetTab = 1;
         }
@@ -1036,6 +1038,8 @@ void _registerForegroundListeners() {
         int targetTab = 0;
         if (title.contains('New Order')) {
           targetTab = 0;
+        } else if (title.contains('New Booking')) {
+          targetTab = 4;
         } else if (title.contains('Reservation')) {
           targetTab = 1;
         }
@@ -1198,7 +1202,7 @@ const String silentChannelId = 'order_channel_silent';
 
 Future<void> _showOrderNotification(String title, String body) async {
   print("📢 Showing notification");
-  String payload = title.contains('New Order') ? '0' : '1';
+  String payload = title.contains('New Order') ? '0' : title.contains('New Booking') ? '4' : '1';
 
   final androidDetails = AndroidNotificationDetails(
     'order_channel',
