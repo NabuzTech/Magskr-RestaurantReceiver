@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../../api/repository/api_repository.dart';
 import '../../models/Booking V2/get_today_booking_V2_model.dart';
@@ -12,7 +13,9 @@ import '../../utils/my_application.dart';
 import '../../constants/constant.dart';
 import '../../constants/common_colors.dart';
 import 'booking_details.dart';
+import 'common_calendar_dialog.dart' show bookingCountBadge;
 import 'edit_booking_sheet.dart';
+import 'Settings/booking_settings_screen.dart';
 
 class BookingsScreen extends StatefulWidget {
   const BookingsScreen({super.key});
@@ -57,6 +60,18 @@ class _BookingsScreenState extends State<BookingsScreen> {
   // button that was actually tapped
   final Set<int> _decliningIds = {};
 
+  // History ("Verlauf"): all upcoming bookings, or the bookings of one calendar day.
+  bool _historyMode = false;
+  bool _showUpcoming = true;
+  bool _calendarOpen = false;
+  bool _hasMore = false;
+  bool _loadingMore = false;
+  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
+  static const int _pageSize = 10;
+  final Map<String, Map<int, int>> _monthCache = {};
+  Map<int, int> _bookingCounts = {}; // day of focused month -> number of bookings
+
   Worker? _bookingRefreshWorker;
 
   @override
@@ -73,6 +88,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   Future<void> _mergeNewBooking(int id) async {
+    if (_historyMode) {
+      if (mounted) _loadHistory();
+      return;
+    }
     try {
       final detail = await CallService().getBookingV2Details('$id');
       final booking = bookingV2ToBookings(detail);
@@ -112,6 +131,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
   // ============================================================
 
   Future<void> _loadBookings() async {
+    if (_historyMode) return _loadHistory();
     setState(() {
       isLoading = true;
       errorMessage = null;
@@ -185,6 +205,114 @@ class _BookingsScreenState extends State<BookingsScreen> {
       currency: b.currency,
       createdAt: b.createdAt,
     );
+  }
+
+  // ============================================================
+  // HISTORY (Verlauf)
+  // ============================================================
+
+  String _apiDate(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  Future<void> _loadHistory({bool more = false}) async {
+    final upcoming = _showUpcoming;
+    setState(() {
+      if (more) {
+        _loadingMore = true;
+      } else {
+        isLoading = true;
+        errorMessage = null;
+      }
+    });
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final storeId = prefs.getString(valueShared_STORE_KEY) ?? '';
+      List<Bookings> data;
+      var hasMore = false;
+      if (upcoming) {
+        final r = await CallService().getUpcomingBookingsV2(storeId, _pageSize, more ? bookings.length : 0);
+        data = r.bookings;
+        hasMore = r.hasMore;
+      } else {
+        data = await CallService().getBookingsOfDayV2(storeId, _apiDate(_selectedDay));
+      }
+
+      if (!mounted || !_historyMode || _showUpcoming != upcoming) return;
+      setState(() {
+        bookings = more ? [...bookings, ...data] : data;
+        _hasMore = hasMore;
+        isLoading = false;
+        _loadingMore = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        if (!more) errorMessage = 'Data not found. Please try again.';
+        isLoading = false;
+        _loadingMore = false;
+      });
+    }
+  }
+
+  Future<void> _loadMonthBookings(int year, int month) async {
+    final key = '$year-$month';
+    final cached = _monthCache[key];
+    if (cached != null) {
+      if (mounted) setState(() => _bookingCounts = cached);
+      return;
+    }
+    final Map<int, int> days;
+    try {
+      days = await CallService().getMonthBookingCountsV2(year, month);
+    } catch (_) {
+      return; // not cached, so the next month switch retries
+    }
+    _monthCache[key] = days;
+    if (mounted && _focusedDay.year == year && _focusedDay.month == month) {
+      setState(() => _bookingCounts = days);
+    }
+  }
+
+  void _openHistory() {
+    setState(() {
+      _historyMode = true;
+      _showUpcoming = true;
+      _calendarOpen = false;
+      selectedStatus = 'All';
+      bookings = [];
+    });
+    _loadHistory();
+    _loadMonthBookings(_focusedDay.year, _focusedDay.month);
+  }
+
+  void _closeHistory() {
+    setState(() {
+      _historyMode = false;
+      _calendarOpen = false;
+      bookings = [];
+    });
+    _loadBookings();
+  }
+
+  void _showAllUpcoming() {
+    setState(() {
+      _showUpcoming = true;
+      _calendarOpen = false;
+    });
+    _loadHistory();
+  }
+
+  void _goToday() {
+    final now = DateTime.now();
+    setState(() {
+      _selectedDay = now;
+      _focusedDay = now;
+      _showUpcoming = false;
+      _calendarOpen = false;
+    });
+    _loadHistory();
+    _loadMonthBookings(now.year, now.month);
   }
 
   void _onSourceChanged(String source) {
@@ -412,7 +540,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
   // ============================================================
 
   List<Bookings> get filteredBookings {
-    return bookings.where((booking) {
+    final list = bookings.where((booking) {
         final displayStatus = _displayStatus(booking.status);
 
         final matchesStatus =
@@ -427,9 +555,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
             (booking.reference ?? '').toLowerCase().contains(query);
 
         return matchesStatus && matchesSearch;
-      }).toList()
-      // Newest (highest id) first
-      ..sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
+      }).toList();
+    // Today views: newest (highest id) first. History keeps the API order (by date).
+    if (!_historyMode) list.sort((a, b) => (b.id ?? 0).compareTo(a.id ?? 0));
+    return list;
   }
 
   // ============================================================
@@ -449,11 +578,41 @@ class _BookingsScreenState extends State<BookingsScreen> {
             Expanded(
               child: Column(
                 children: [
-                  _buildSourceTabs(),
-                  //
-                  // _buildSearchSection(),
-                  SizedBox(height: 12,),
-                  _buildStatusTabs(),
+                  if (_historyMode) ...[
+                    _buildHistoryHeader(),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut,
+                      child: _calendarOpen
+                          ? Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                              child: _buildCalendarCard(),
+                            )
+                          : const SizedBox(width: double.infinity),
+                    ),
+                    const SizedBox(height: 8),
+                  ] else ...[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _pill(Icons.settings_outlined, 'setting'.tr, onTap: () => Navigator.push(
+                                context, MaterialPageRoute(builder: (_) => const BookingSettingsScreen()))),
+                            const SizedBox(width: 8),
+                            _pill(Icons.history_rounded, 'history'.tr, onTap: _openHistory),
+                          ],
+                        ),
+                      ),
+                    ),
+                    _buildSourceTabs(),
+                    //
+                    // _buildSearchSection(),
+                    SizedBox(height: 12,),
+                    _buildStatusTabs(),
+                  ],
 
                   Expanded(
                     child: isLoading
@@ -522,7 +681,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
     final sources = ['Today', 'Today Received'];
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: backgroundColor,
@@ -633,6 +792,166 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   // ============================================================
+  // HISTORY HEADER + CALENDAR
+  // ============================================================
+
+  Widget _pill(IconData icon, String text, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: veryLightGreen,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 15, color: primaryGreen),
+            const SizedBox(width: 5),
+            Text(text,
+                style: const TextStyle(
+                    fontSize: 12, fontWeight: FontWeight.w700, color: primaryGreen)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHistoryHeader() {
+    final isToday = !_showUpcoming && isSameDay(_selectedDay, DateTime.now());
+    final subtitle = _showUpcoming
+        ? 'Upcoming bookings'
+        : (isLoading ? '' : '${bookings.length} booking${bookings.length == 1 ? '' : 's'}');
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: _closeHistory,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _showUpcoming ? 'All Bookings' : _formatDate(_selectedDay.toIso8601String()),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF263238)),
+                ),
+                Text(subtitle, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+              ],
+            ),
+          ),
+          if (!_showUpcoming) ...[
+            _pill(Icons.list_alt_rounded, 'All', onTap: _showAllUpcoming),
+            const SizedBox(width: 6),
+          ],
+          if (!isToday) ...[
+            _pill(Icons.today_rounded, 'Today', onTap: _goToday),
+            const SizedBox(width: 6),
+          ],
+          GestureDetector(
+            onTap: () => setState(() => _calendarOpen = !_calendarOpen),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _calendarOpen ? primaryGreen : veryLightGreen,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.calendar_month_outlined,
+                  size: 18, color: _calendarOpen ? Colors.white : primaryGreen),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCalendarCard() {
+    const style = TextStyle(fontSize: 13, fontFamily: 'Sora', fontWeight: FontWeight.w600);
+    bool inFocusedMonth(DateTime d) => d.month == _focusedDay.month && d.year == _focusedDay.year;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(8, 10, 8, 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.lightBlue),
+      ),
+      child: TableCalendar<void>(
+        firstDay: DateTime.utc(2020, 1, 1),
+        lastDay: DateTime.utc(2035, 12, 31),
+        focusedDay: _focusedDay,
+        selectedDayPredicate: (day) => !_showUpcoming && isSameDay(_selectedDay, day),
+        startingDayOfWeek: StartingDayOfWeek.monday,
+        calendarBuilders: CalendarBuilders(
+          // days that have bookings get a ring; the count shows as a badge
+          defaultBuilder: (context, day, _) {
+            if (!inFocusedMonth(day) || !_bookingCounts.containsKey(day.day)) return null;
+            return Center(
+              child: Container(
+                width: 36,
+                height: 36,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: primaryGreen.withOpacity(.12),
+                  border: Border.all(color: primaryGreen, width: 1.5),
+                  shape: BoxShape.circle,
+                ),
+                child: Text('${day.day}',
+                    style: style.copyWith(fontWeight: FontWeight.w700, color: primaryGreen)),
+              ),
+            );
+          },
+          markerBuilder: (context, day, _) {
+            final count = inFocusedMonth(day) ? (_bookingCounts[day.day] ?? 0) : 0;
+            if (count == 0) return null;
+            return Positioned(top: 0, right: 4, child: bookingCountBadge(count, primaryGreen));
+          },
+        ),
+        headerStyle: const HeaderStyle(
+          titleCentered: true,
+          formatButtonVisible: false,
+          titleTextStyle: TextStyle(
+              fontSize: 16, fontFamily: 'Sora', fontWeight: FontWeight.w800, color: Color(0xFF263238)),
+          leftChevronIcon: Icon(Icons.chevron_left_rounded, color: primaryGreen),
+          rightChevronIcon: Icon(Icons.chevron_right_rounded, color: primaryGreen),
+        ),
+        calendarStyle: CalendarStyle(
+          outsideDaysVisible: false,
+          defaultTextStyle: style,
+          weekendTextStyle: style,
+          todayDecoration: BoxDecoration(color: primaryGreen.withOpacity(.12), shape: BoxShape.circle),
+          todayTextStyle: style.copyWith(color: primaryGreen, fontWeight: FontWeight.w800),
+          selectedDecoration: const BoxDecoration(
+            gradient: LinearGradient(colors: [primaryGreen, secondaryGreen]),
+            shape: BoxShape.circle,
+          ),
+          selectedTextStyle: style.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
+        ),
+        onDaySelected: (selected, focused) {
+          setState(() {
+            _selectedDay = selected;
+            _focusedDay = focused;
+            _showUpcoming = false;
+            _calendarOpen = false;
+          });
+          _loadHistory();
+        },
+        onPageChanged: (focused) {
+          setState(() => _focusedDay = focused);
+          _loadMonthBookings(focused.year, focused.month);
+        },
+      ),
+    );
+  }
+
+  // ============================================================
   // STATUS TABS
   // ============================================================
 
@@ -718,7 +1037,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
       );
     }
 
-    return SlidableAutoCloseBehavior(
+    return NotificationListener<ScrollNotification>(
+      onNotification: (n) {
+        if (_historyMode && _showUpcoming && _hasMore && !isLoading && !_loadingMore &&
+            n.metrics.axis == Axis.vertical && n.metrics.extentAfter < 300) {
+          _loadHistory(more: true);
+        }
+        return false;
+      },
+      child: SlidableAutoCloseBehavior(
       child: ListView.builder(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
 
@@ -726,14 +1053,25 @@ class _BookingsScreenState extends State<BookingsScreen> {
           parent: BouncingScrollPhysics(),
         ),
 
-        itemCount: items.length + 1,
+        itemCount: items.length + 1 + (_loadingMore ? 1 : 0),
 
         itemBuilder: (context, index) {
+          if (index > items.length) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: CircularProgressIndicator(color: primaryGreen),
+              ),
+            );
+          }
           if (index == 0) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: Text(
-                selectedSource.toUpperCase(),
+                (_historyMode
+                        ? (_showUpcoming ? 'All Bookings' : _formatDate(_selectedDay.toIso8601String()))
+                        : selectedSource)
+                    .toUpperCase(),
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
@@ -751,6 +1089,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
             child: _bookingCard(booking),
           );
         },
+      ),
       ),
     );
   }

@@ -329,6 +329,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                 floating: false,
                 snap: false,
                 pinned: true,
+                automaticallyImplyLeading: false, // tab inside HomeScreen: the top bar already has the back button
                 elevation: 1,
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black87,
@@ -354,10 +355,10 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
                             ],
                           ),
                         ),
-                        if (!_isSameDay(_selectedDate, DateTime.now())) ...[
-                          const SizedBox(width: 8),
-                          _todayChip(),
-                        ],
+                        // if (!_isSameDay(_selectedDate, DateTime.now())) ...[
+                        //   const SizedBox(width: 8),
+                        //   _todayChip(),
+                        // ],
                       ],
                     ),
                   ],

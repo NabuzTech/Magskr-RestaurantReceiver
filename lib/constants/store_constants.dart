@@ -24,7 +24,13 @@ class StoreSubtype {
   static const String reservationOnly = '3'; // reservations only
   static const String reservationAndBookingOnly = '4'; // reservations + booking only
   static const String orderAndBookingOnly = '5'; // orders + booking only
-  // Booking tab isn't built yet, so it stays hidden for every subtype for now.
+  // # Store Subtype
+  // STORE_SUBTYPE_ORDER_AND_RESERVATION = 0  # default: orders + reservations
+  // STORE_SUBTYPE_ORDER_AND_RESERVATION_AND_BOOKING = 1 # orders + reservations + Booking
+  // STORE_SUBTYPE_ORDER_ONLY = 2             # orders only
+  // STORE_SUBTYPE_RESERVATION_ONLY = 3       # reservations only
+  // STORE_SUBTYPE_RESERVATION_AND_BOOKING_ONLY = 4    # reservations + Booking only
+  // STORE_SUBTYPE_ORDER_AND_BOOKING_ONLY = 5    # order + Booking only
 }
 
 /// `order_type` of an order.

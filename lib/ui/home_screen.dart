@@ -74,6 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
       _storeSubtype == StoreSubtype.orderAndBookingOnly;
   bool get _showReservationTab =>
       _storeSubtype != StoreSubtype.orderOnly && _storeSubtype != StoreSubtype.orderAndBookingOnly;
+  // Reports are order reports, so they only exist where the Order tab exists.
+  bool get _showReportTab => _showOrderTab;
   int? _roleId;
   bool _reservationV2Enabled = false;
   // Body moves in the tree on the POS tab (no app bar); the key keeps PageView's page.
@@ -121,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
       app.appController.onTabChanged(targetTab);
 
       // ✅ Now load the data
-      await _loadInitialData();
+      targetTab = await _loadInitialData(targetTab);
 
       print("✅ Data loaded, current tab should be: $targetTab");
 
@@ -165,7 +167,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _loadInitialData() async {
+  // Returns the tab to land on (requested tab, or the nearest one this subtype has).
+  Future<int> _loadInitialData(int requestedTab) async {
     SharedPreferences freshPrefs = await SharedPreferences.getInstance();
     _roleId = freshPrefs.getInt(valueShared_ROLE_ID);
     // Owner/admin login has no store_type of its own; take it from the picked store.
@@ -186,17 +189,24 @@ class _HomeScreenState extends State<HomeScreen> {
       //getReservationsInBackground(),
     ]);
 
+    // Subtype is known now. Fix the landing tab BEFORE the PageView is first built,
+    // otherwise page 0 (Order) builds for a moment and fires its API calls.
+    final tab = _resolveTab(requestedTab);
+    app.appController.onTabChanged(tab);
+    if (_pageController.hasClients) {
+      _pageController.jumpToPage(tab);
+    } else {
+      _pageController.dispose();
+      _pageController = PageController(initialPage: tab);
+    }
+
     if (mounted) {
       setState(() {
         _isDataLoaded = true;
       });
       print("✅ _isDataLoaded set to true");
-      // Landing tab may be hidden for this subtype (e.g. reservation-only): _openTab redirects it.
-      final sel = app.appController.selectedTabIndex;
-      if ((sel == 0 && !_showOrderTab) || (sel == 1 && !_showReservationTab)) {
-        _openTab(sel);
-      }
     }
+    return tab;
   }
 
   Future<void> _fetchStoreSettings(SharedPreferences prefs) async {
@@ -527,6 +537,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       _openTab(4);
                     },
                   ),
+                if (_showReportTab)
                 ItemBottomBar(
                   selected: app.appController.selectedTabIndex == 2,
                   icon: "assets/images/reports-icon.svg",
@@ -589,11 +600,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Hidden by store_subtype -> first tab that is shown (Order if present, else Reservation).
+  int _resolveTab(int index) {
+    if (index == 0 && !_showOrderTab) return 1;
+    if (index == 1 && !_showReservationTab) return 0;
+    if (index == 2 && !_showReportTab) return _showReservationTab ? 1 : 4;
+    if (index == 4 && !_showBookingTab) return _showOrderTab ? 0 : 1;
+    return index;
+  }
+
   void _openTab(int index) {
-    // Hidden by store_subtype -> go to the first tab that is shown.
-    if (index == 0 && !_showOrderTab) index = 1;
-    if (index == 1 && !_showReservationTab) index = _showOrderTab ? 0 : 2;
-    if (index == 4 && !_showBookingTab) index = _showOrderTab ? 0 : 1;
+    index = _resolveTab(index);
     if (index == 3 && _storeType != '1') {
       return;
     }

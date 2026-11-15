@@ -19,6 +19,7 @@ import '../Database/databse_helper.dart';
 import '../api/Socket/socket_service.dart';
 import '../api/repository/api_repository.dart';
 import '../constants/constant.dart';
+import '../constants/store_constants.dart';
 import '../ui/Allergy/add_allergy.dart';
 import '../ui/Allergy/item_allergy.dart';
 import '../ui/Category Availability/category_management.dart';
@@ -57,8 +58,15 @@ class _CustomDrawerState extends State<CustomDrawer> {
   bool isAllergyExpanded = false;
   bool isToppingExpanded = false;
   String? _storeType;
+  String _storeSubtype = StoreSubtype.orderAndReservation;
+  // Same rules as HomeScreen: reservation-only subtypes have no order side (menu, delivery, invoices...).
+  bool get _hasOrders =>
+      _storeSubtype != StoreSubtype.reservationOnly && _storeSubtype != StoreSubtype.reservationAndBookingOnly;
+  bool get _hasReservations =>
+      _storeSubtype != StoreSubtype.orderOnly && _storeSubtype != StoreSubtype.orderAndBookingOnly;
   int? _roleId;
   bool _isStoreDataFetched = false;
+  bool _prefsLoaded = false; // menu items wait for this, so they don't change after opening
   @override
   initState() {
     initVar();
@@ -70,48 +78,40 @@ class _CustomDrawerState extends State<CustomDrawer> {
     String? bearerKey = sharedPreferences.getString(valueShared_BEARER_KEY);
     String? storeID = sharedPreferences.getString(valueShared_STORE_KEY);
 
-    // ✅ Check if data already fetched in this session
-    if (_isStoreDataFetched) {
-      print("⏭️ Store data already fetched, skipping API call");
-      return;
-    }
-
-    if (storeID != null && storeID.isNotEmpty) {
-      // ✅ First try to get from SQLite cache
-      String? cachedStoreName = await DatabaseHelper().getStoreName(storeID);
-
-      if (cachedStoreName != null && cachedStoreName.isNotEmpty) {
-        // Show cached data immediately
-        if (mounted) {
-          setState(() {
-            storeName = cachedStoreName;
-            _isStoreDataFetched = true; // ✅ Mark as fetched
-            print("✅ StoreName from SQLite Cache: $storeName");
-          });
-        }
-
-        // ✅ If cache exists, NO API CALL
-        print("🚫 Cache found, skipping API call");
-      } else {
-        // ✅ Only call API if NO cache exists
-        if (bearerKey != null) {
-          print("📡 No cache found, calling API...");
-          await getStoredta(bearerKey);
-        }
-      }
-    }
-
+    // Role/subtype first, so the menu is built once with the right items (no flicker).
     final arguments = Get.arguments;
     int? roleFromArgs = (arguments != null && arguments['roleId'] != null)
         ? arguments['roleId'] as int
         : null;
-    int? roleFromPrefs = sharedPreferences.getInt(valueShared_ROLE_ID);
-
+    // Name already saved by fetchStoreBrand (app bar) for this login + store: no API needed.
+    final brandReady = bearerKey != null &&
+        storeID != null &&
+        sharedPreferences.getString(valueShared_STORE_BRAND_FOR) == '$bearerKey|$storeID';
+    final savedName = brandReady ? sharedPreferences.getString(valueShared_STORE_NAME) : null;
     if (mounted) {
       setState(() {
         _storeType = sharedPreferences.getString(valueShared_STORE_TYPE);
-        _roleId = roleFromArgs ?? roleFromPrefs;
+        _storeSubtype = sharedPreferences.getString(valueShared_STORE_SUBTYPE) ?? StoreSubtype.orderAndReservation;
+        _roleId = roleFromArgs ?? sharedPreferences.getInt(valueShared_ROLE_ID);
+        _prefsLoaded = true;
+        if (savedName != null && savedName.isNotEmpty) {
+          storeName = savedName;
+          _isStoreDataFetched = true;
+        }
       });
+    }
+    if (_isStoreDataFetched || storeID == null || storeID.isEmpty) return;
+
+    final cachedStoreName = await DatabaseHelper().getStoreName(storeID);
+    if (cachedStoreName != null && cachedStoreName.isNotEmpty) {
+      if (mounted) {
+        setState(() {
+          storeName = cachedStoreName;
+          _isStoreDataFetched = true;
+        });
+      }
+    } else if (bearerKey != null) {
+      await getStoredta(bearerKey);
     }
   }
 
@@ -233,14 +233,15 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
+            child: !_prefsLoaded ? const SizedBox.shrink() : SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _drawerItem('order'.tr,'assets/images/order.svg', onTap: () {
-                    _navigateToHomeScreenTab(0);
-                  }),
-                  if (_roleId == 1 || _roleId == 5 || _storeType == '0' || _storeType == null)
+                  if (_hasOrders)
+                    _drawerItem('order'.tr,'assets/images/order.svg', onTap: () {
+                      _navigateToHomeScreenTab(0);
+                    }),
+                  if (_hasReservations && (_roleId == 1 || _roleId == 5 || _storeType == '0' || _storeType == null))
                     _drawerItem('reserv'.tr,'assets/images/reserv.svg',
                         iconHeight: 14,
                         iconWidth: 20,
@@ -248,16 +249,17 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     _navigateToHomeScreenTab(1);
                   }),
 
-                  _drawerItem('reports'.tr,'assets/images/report.svg', onTap: () {
-                    _navigateToHomeScreenTab(2);
-                  }),
+                  if (_hasOrders)
+                    _drawerItem('reports'.tr,'assets/images/report.svg', onTap: () {
+                      _navigateToHomeScreenTab(2);
+                    }),
 
                   _drawerItem('setting'.tr, 'assets/images/settings.svg', onTap: () {
                     Navigator.of(context).pop();
                     Get.to(() => const PrinterSettingsScreen());
                   }),
 
-                  if (_roleId != 5) _expandableProductItem(),
+                  if (_roleId != 5 && _hasOrders) _expandableProductItem(),
 
                   if (_roleId != 5 && _storeType != '2')
                     _drawerItem('store'.tr,'assets/images/store.svg', onTap: () {
@@ -271,19 +273,19 @@ class _CustomDrawerState extends State<CustomDrawer> {
                       Get.to(() => const StoreProfile());
                     }),
 
-                  if (_roleId != 5)
+                  if (_roleId != 5 && _hasOrders)
                     _drawerItem('postcode'.tr,'assets/images/postcode.svg', onTap: () {
                       Navigator.of(context).pop();
                       Get.to(() => const Postcode());
                     }),
 
-                  if (_roleId != 5)
+                  if (_roleId != 5 && _hasOrders)
                     _drawerItem('delivery_zone'.tr,'assets/images/postcode.svg', onTap: () {
                       Navigator.of(context).pop();
                       Get.to(() => const DeliveryZone());
                     }),
 
-                  if (_roleId != 5)
+                  if (_roleId != 5 && _hasOrders)
                     _drawerItem('time_plans'.tr,'assets/images/delivery_time.svg', onTap: () {
                       Navigator.of(context).pop();
                       Get.to(() => const DeliveryPickupTiming());
@@ -305,11 +307,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   //   final sid = sharedPreferences.getString(valueShared_STORE_KEY);
                   //   Get.to(() => NotificationScreen(storeId: sid?.isNotEmpty == true ? sid : null));
                   // }),
+                  if (_hasOrders)
                   _drawerItem('customer'.tr,'assets/images/customer.svg', onTap: () {
                     Navigator.of(context).pop();
                     Get.to(() => const StoreCustomer(),
                         routeName: '/StoreCustomer');
                   }),
+                  if (_hasOrders)
                   _drawerItem('invoices'.tr,'assets/images/invoice.svg', onTap: () {
                     Navigator.of(context).pop();
                     Get.to(() => const Invoices(),
@@ -349,7 +353,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (_roleId != 1 && _roleId != 5)
+                if (_prefsLoaded && _roleId != 1 && _roleId != 5)
                   Container(
                     child: _drawerItem('logout'.tr,'assets/images/logout.svg', onTap: () async {
                       var bearerKey = sharedPreferences.getString(valueShared_BEARER_KEY);
@@ -358,7 +362,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   ),
                 Padding(
                   padding: const EdgeInsets.only(left: 15.0),
-                  child: Text('${'version'.tr}: 6.1(1)', style: const TextStyle(fontFamily: 'Sora',
+                  child: Text('${'version'.tr}: 6.1(2)', style: const TextStyle(fontFamily: 'Sora',
                       fontWeight: FontWeight.w300,
                       fontSize: 15
                   ),),

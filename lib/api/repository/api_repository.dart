@@ -136,6 +136,12 @@ import '../../models/Booking V2/get_bookingV2_detail_model.dart' hide FormData; 
 import '../../models/Booking V2/check_availability_slot_model.dart';
 import '../../models/Booking V2/get_service_model.dart';
 import '../../models/Booking V2/month_calendar_booking_v2_model.dart';
+import '../../models/Booking V2/get_store_config_model.dart';
+import '../../models/Booking V2/get_resource_booking_v2_model.dart';
+import '../../models/Booking V2/blackouts_booking_v2_model.dart';
+import '../../models/Booking V2/create_service_model.dart';
+import '../../models/Booking V2/resopurce_bookingV2_model.dart';
+import '../../models/Booking V2/update_blackout_booking_v2_model.dart';
 import '../../utils/my_application.dart';
 
 const title = "ApiRepo";
@@ -5337,6 +5343,342 @@ class CallService extends GetConnect {
       }
     }
     return counts;
+  }
+
+  //25.) Upcoming bookings of the store (History -> "All Bookings"), paged
+  Future<({List<Bookings> bookings, bool hasMore})> getUpcomingBookingsV2(String storeId, int limit, int offset) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('bookings/v2/store/upcoming?store_id=$storeId&limit=$limit&offset=$offset', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $accessToken",
+    });
+    if (res.statusCode == 200) {
+      final list = (res.body['bookings'] as List? ?? [])
+          .map((e) => Bookings.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+      return (bookings: list, hasMore: res.body['has_more'] == true);
+    }
+    throw Exception('Failed to load upcoming bookings : ${res.statusCode}');
+  }
+
+  //26.) All bookings of one day (History -> calendar day), `date` = yyyy-MM-dd
+  Future<List<Bookings>> getBookingsOfDayV2(String storeId, String date) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await post('bookings/v2/store/filter',
+        {'store_id': storeId, 'target_date': date, 'limit': 100, 'offset': 0},
+        headers: {'accept': 'application/json', 'Authorization': "Bearer $accessToken"});
+    if (res.statusCode == 200 && res.body is List) {
+      return (res.body as List).map((e) => Bookings.fromJson(Map<String, dynamic>.from(e))).toList();
+    }
+    throw Exception('Failed to load bookings of $date : ${res.statusCode}');
+  }
+
+  // ===== Booking settings (ported from Magskr Booking app) =====
+
+  //6.) For Getting Store Config
+  Future<BookingStoreConfigModel> getBookingV2StoreConfig(String storeID) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('bookings/v2/config?store_id=$storeID', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Booking V2 Config response body is :${res.statusCode}");
+      return BookingStoreConfigModel.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to load Booking V2 Config : ${res.statusCode}');
+    }
+  }
+
+  //7.) For Creating Service
+  Future<CreateServiceModel> createService(dynamic body) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $accessToken");
+    httpClient.baseUrl = Api.baseUrl;
+    print("[CreateService] POST ${Api.baseUrl}bookings/v2/services");
+    print("[CreateService] body: ${jsonEncode(body)}");
+    var res = await post('bookings/v2/services',body,headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $accessToken",
+    });
+    print("[CreateService] status: ${res.statusCode}");
+    print("[CreateService] response: ${res.body}");
+    if (res.statusCode == 200 || res.statusCode == 201) {
+      return CreateServiceModel.fromJson(res.body);
+    } else {
+      print("Create Service Error : ${res.statusCode} - ${res.body}");
+      throw Exception('Failed to create service : ${res.statusCode}');
+    }
+  }
+
+  //8.) For Creating Service
+  Future<CreateServiceModel> updateService(dynamic body,String serviceId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $accessToken");
+    httpClient.baseUrl = Api.baseUrl;
+    print("[UpdateService] PUT ${Api.baseUrl}bookings/v2/services/$serviceId");
+    print("[UpdateService] body: ${jsonEncode(body)}");
+    var res = await put('bookings/v2/services/$serviceId',body,headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $accessToken",
+    });
+    print("[UpdateService] status: ${res.statusCode}");
+    print("[UpdateService] response: ${res.body}");
+    if (res.statusCode == 200) {
+      return CreateServiceModel.fromJson(res.body);
+    } else {
+      throw Exception('Failed to update service : ${res.statusCode} - ${res.body}');
+    }
+  }
+
+  // Delete APIs return null on success, else the server's `detail` message
+  // (e.g. 409 "Service has bookings...") so the user knows why it failed.
+  String _errorDetail(dynamic body) {
+    final detail = body is Map ? body['detail'] : null;
+    if (detail is String && detail.isNotEmpty) return detail;
+    if (detail is List && detail.isNotEmpty) {
+      return detail.map((e) => e is Map ? e['msg'] ?? '$e' : '$e').join('\n');
+    }
+    return 'Something went wrong. Please try again.';
+  }
+
+  //9.) For Delete Service
+  Future<String?> deleteService(int serviceID) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+      print("User Access Token Value is : $accessToken");
+      httpClient.baseUrl = Api.baseUrl;
+      var res = await delete(
+        "bookings/v2/services/$serviceID",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer $accessToken",
+        },
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 204) {
+        return null;
+      } else {
+        print('Delete API Error: ${res.statusCode} - ${res.body}');
+        return _errorDetail(res.body);
+      }
+    } catch (e) {
+      print('Delete API Exception: $e');
+      return 'Something went wrong. Please try again.';
+    }
+  }
+
+  //12.) For Update Store Config
+  Future<BookingStoreConfigModel> updateBookingV2StoreConfig(dynamic body ,String storeID) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await put('bookings/v2/config?store_id=$storeID',body, headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Updating Booking V2 Config response body is :${res.statusCode}");
+      return BookingStoreConfigModel.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to update Booking V2 Config : ${res.statusCode}');
+    }
+  }
+
+  //14.) For Getting Resource Booking V2
+  Future<List<GetResourceBookingV2Model>> resourceBookingV2(String storeID) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('bookings/v2/resources?store_id=$storeID', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Booking V2 Resources response is :${res.statusCode}");
+      List<dynamic> jsonList = res.body;
+      return jsonList.map((json) => GetResourceBookingV2Model.fromJson(json)).toList();
+    } else {
+      throw Exception(
+          'Failed to Getting Booking V2 Resources  : ${res.statusCode}');
+    }
+  }
+
+  //15.) For Creating New Resource
+  Future<ResourceBookingV2Model> createResource(dynamic body) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await post('bookings/v2/resources',body, headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200 || res.statusCode == 201) {
+      print("Create Resource response is :${res.statusCode}");
+      return ResourceBookingV2Model.fromJson(res.body);
+    } else {
+      print("Create Resource Error : ${res.statusCode} - ${res.body}");
+      throw Exception(
+          'Failed to Create Resource response is : ${res.statusCode}');
+    }
+  }
+
+  //16.) For updating Resource
+  Future<ResourceBookingV2Model> updateResource(dynamic body ,String resourceID) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await put('bookings/v2/resources/$resourceID',body, headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200 || res.statusCode == 201) {
+      print("update Resource response is :${res.statusCode}");
+      return ResourceBookingV2Model.fromJson(res.body);
+    } else {
+      print("update Resource Error : ${res.statusCode} - ${res.body}");
+      throw Exception(
+          'Failed to update Resource response is : ${res.statusCode}');
+    }
+  }
+
+  //17.) For Deleting Resource
+  Future<String?> deleteResource(int resourceID) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+      print("User Access Token Value is : $accessToken");
+      httpClient.baseUrl = Api.baseUrl;
+      var res = await delete(
+        "bookings/v2/resources/$resourceID",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer $accessToken",
+        },
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 204) {
+        return null;
+      } else {
+        print('Delete API Error: ${res.statusCode} - ${res.body}');
+        return _errorDetail(res.body);
+      }
+    } catch (e) {
+      print('Delete API Exception: $e');
+      return 'Something went wrong. Please try again.';
+    }
+  }
+
+  //19.) For Getting blackouts time
+  Future<List<BlackoutsBookingV2Model>> blackoutsBookingV2(int storeID,int serviceId,int day) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await get('bookings/v2/blackouts?store_id=$storeID&service_id=$serviceId&day_of_week=$day&include_inactive=true', headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("Getting Blackouts V2 Resources response is :${res.statusCode}");
+      List<dynamic> jsonList = res.body;
+      return jsonList.map((json) => BlackoutsBookingV2Model.fromJson(json)).toList();
+    } else {
+      throw Exception(
+          'Failed to Getting Blackouts V2 Resources  : ${res.statusCode}');
+    }
+  }
+
+  //20.) For Creating Blackouts time (supports multiple slots in one call via body['blocks'])
+  Future<List<BlackoutsBookingV2Model>> createBlackouts(dynamic body) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await post('bookings/v2/blackouts',body, headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200 || res.statusCode == 201) {
+      print("Create Blackouts response is :${res.statusCode}");
+      final data = res.body;
+      final List jsonList = data is List ? data : (data['blocks'] ?? data['data'] ?? [data]);
+      return jsonList.map((json) => BlackoutsBookingV2Model.fromJson(json)).toList();
+    } else {
+      throw Exception(
+          'Failed to Create Blackouts response is : ${res.statusCode}');
+    }
+  }
+
+  //21.) For Updating Blackout Time
+  Future<UpdateBlackoutsBookingV2Model> updateBlackout(dynamic body ,String blackoutID) async   {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? Token = prefs.getString(valueShared_BEARER_KEY);
+    print("User Access Token Value is : $Token");
+    httpClient.baseUrl = Api.baseUrl;
+    var res = await put('bookings/v2/blackouts/$blackoutID',body, headers: {
+      'accept': 'application/json',
+      'Authorization': "Bearer $Token",
+    });
+
+    if (res.statusCode == 200) {
+      print("update Blackouts response is :${res.statusCode}");
+      return UpdateBlackoutsBookingV2Model.fromJson(res.body);
+    } else {
+      throw Exception(
+          'Failed to update Blackouts response is : ${res.statusCode}');
+    }
+  }
+
+  //22.) For Deleting Blackout(s) - pass one or many ids to delete in a single call
+  Future<String?> deleteBlackouts(int storeID, List<int> blackoutIds, int serviceId, int day) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString(valueShared_BEARER_KEY);
+      print("User Access Token Value is : $accessToken");
+      httpClient.baseUrl = Api.baseUrl;
+      final idsParam = Uri.encodeQueryComponent(blackoutIds.join(','));
+      var res = await delete(
+        "bookings/v2/blackouts?store_id=$storeID&ids=$idsParam&service_id=$serviceId&day_of_week=$day",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer $accessToken",
+        },
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 204) {
+        return null;
+      } else {
+        print('Delete API Error: ${res.statusCode} - ${res.body}');
+        return _errorDetail(res.body);
+      }
+    } catch (e) {
+      print('Delete API Exception: $e');
+      return 'Something went wrong. Please try again.';
+    }
   }
 
   // Staff review of a fraud alert: status = confirmed | dismissed | open

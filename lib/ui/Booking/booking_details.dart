@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+import 'booking_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -206,6 +208,19 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           child: SafeArea(
           child: Column(
             children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 4, 16, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () => Navigator.pop(context, changed), // same result as the system back
+                    ),
+                    Text('booking'.tr,
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
               Expanded(
                 child: isLoading
                     ? const Center(
@@ -846,8 +861,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     setState(() => isUpdating = true);
 
     try {
-      final result = await CallService()
-          .updateBookingV2Details({'status': 'booked'}, widget.bookingId);
+      final result = await updateBookingWithLoader({'status': 'booked'}, widget.bookingId);
 
       if (!mounted) return;
       setState(() {
@@ -981,7 +995,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     setState(() => isUpdating = true);
 
     try {
-      final result = await CallService().updateBookingV2Details({
+      final result = await updateBookingWithLoader({
         'status': 'cancelled',
         'customer_message': customerMessage.isNotEmpty ? customerMessage : '',
       }, widget.bookingId);
@@ -1558,7 +1572,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
     try {
       final result =
-      await CallService().updateBookingV2Details(body, widget.bookingId);
+      await updateBookingWithLoader(body, widget.bookingId);
 
       if (!mounted) return;
       setState(() {

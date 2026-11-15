@@ -1,3 +1,4 @@
+import 'package:food_receiver/constants/store_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -63,6 +64,7 @@ class _AllStoreReservationState extends State<AllStoreReservation> {
   }
 
   Map<String, Color> _storeColors(int? storeId) {
+    if (storeId != null && storeId > 34) return generatedStoreColors(storeId);
     switch (storeId) {
       case 12:
         return {'border': const Color(0xff029543), 'background': const Color(0xffEBFAF2), 'nameColor': const Color(0xff029543)};

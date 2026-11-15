@@ -1,3 +1,4 @@
+import 'package:food_receiver/constants/store_colors.dart';
 import '../../../customView/risk_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
@@ -387,6 +388,7 @@ class _SuperAdminState extends State<SuperAdmin> {
   }
 
   Map<String, Color> getStoreColors(int? storeId) {
+    if (storeId != null && storeId > 34) return generatedStoreColors(storeId);
     switch (storeId) {
       case 12:
         return {

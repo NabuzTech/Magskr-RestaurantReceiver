@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../api/repository/api_repository.dart';
 import '../../models/Booking V2/check_availability_slot_model.dart';
 import '../../constants/common_colors.dart';
+import 'booking_loader.dart';
 import 'common_calendar_dialog.dart';
 
 // Minimal, model-agnostic view of a booking — Home/Bookings/History each
@@ -527,7 +528,7 @@ class _EditBookingSheetState extends State<_EditBookingSheet> {
     };
 
     try {
-      await CallService().updateBookingV2Details(body, widget.booking.id);
+      await updateBookingWithLoader(body, widget.booking.id);
       if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
@@ -544,7 +545,7 @@ class _EditBookingSheetState extends State<_EditBookingSheet> {
     if (msg == null) return;
     setState(() => isSubmitting = true);
     try {
-      await CallService().updateBookingV2Details({
+      await updateBookingWithLoader({
         'status': 'cancelled',
         'customer_message': msg,
       }, widget.booking.id);

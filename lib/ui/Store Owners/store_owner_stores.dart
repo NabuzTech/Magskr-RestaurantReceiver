@@ -1,3 +1,4 @@
+import 'package:food_receiver/constants/store_colors.dart';
 import '../../customView/risk_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
@@ -7,7 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:food_receiver/api/repository/api_repository.dart';
 import 'package:food_receiver/models/all_admin_order_response_model.dart';
 import 'package:food_receiver/models/get_admin_report_response_model.dart';
-import 'package:food_receiver/ui/Store Owners/store_owner_reservation.dart';
+import 'package:food_receiver/ui/SuperAdmin/Admin Home/V2 Reservation/all_store_reservationV2.dart';
 import 'package:food_receiver/ui/SuperAdmin/Admin%20Home/superAdminOrderDetail.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -310,6 +311,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
   }
 
   Map<String, Color> getStoreColors(int? storeId) {
+    if (storeId != null && storeId > 34) return generatedStoreColors(storeId);
     switch (storeId) {
       case 12:
         return {
@@ -815,7 +817,7 @@ class _StoreOwnerStoresState extends State<StoreOwnerStores> {
                   _pill(
                     icon: Image.asset('assets/images/reservationIcon.png', height: 15, width: 15),
                     label: 'Reservation',
-                    onTap: () => Get.to(() => const StoreOwnerReservation()),
+                    onTap: () => Get.to(() => const AllStoreReservationV2()),
                   ),
                   const SizedBox(width: 8),
                   _pill(
