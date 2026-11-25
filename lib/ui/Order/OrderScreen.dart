@@ -2317,11 +2317,7 @@ class _OrderScreenState extends State<OrderScreenNew>
                                                         return '${'currency'.tr} ${formatAmount(0)}';
                                                       }
                                                       final rawAmount = order.payment!.amount ?? 0;
-                                                      final isStripe = order.payment!.paymentMethod == 'stripe';
-                                                      final displayAmount = isStripe
-                                                          ? rawAmount - (app.appController.stripeServiceFee.value ?? 0)
-                                                          : rawAmount;
-                                                      return '${'currency'.tr} ${formatAmount(displayAmount)}';
+                                                      return '${'currency'.tr} ${formatAmount(rawAmount)}';
                                                     }(),
                                                     style: const TextStyle(
                                                         fontWeight:

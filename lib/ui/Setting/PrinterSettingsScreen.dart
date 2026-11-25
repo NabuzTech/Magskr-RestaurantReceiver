@@ -349,8 +349,8 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
           child: SafeArea(
             child: Column(
               children: [
-                // Manual Override Section
-                _buildSectionContainer(
+                // Manual Override Section (commented out)
+                /* _buildSectionContainer(
                   child: Column(
                     children: [
                       Row(
@@ -449,7 +449,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen>
                       ],
                     ],
                   ),
-                ),
+                ), */
 
                 // Auto Accept Toggle
                 _buildSectionContainer(
