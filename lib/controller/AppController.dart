@@ -663,4 +663,5 @@ class AppController extends GetxController {
   }
 
   final stripeServiceFee = Rxn<double>();
+  final raspPiEn = false.obs;
 }

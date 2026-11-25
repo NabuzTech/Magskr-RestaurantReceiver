@@ -9,6 +9,7 @@ class StoreSetting {
   bool? abholung_enabled;
   bool? tisch_reservierung_enabled;
   bool? reservation_v2_enabled;
+  bool? raspPiEn;
   int? id;
   int? store_id;
   String? msg;
@@ -26,6 +27,7 @@ class StoreSetting {
     this.abholung_enabled,
     this.tisch_reservierung_enabled,
     this.reservation_v2_enabled,
+    this.raspPiEn,
     this.id,
     this.store_id,
     this.msg,
@@ -50,6 +52,7 @@ class StoreSetting {
     abholung_enabled: json["abholung_enabled"],
     tisch_reservierung_enabled: json["tisch_reservierung_enabled"],
     reservation_v2_enabled: json["reservation_v2_enabled"] ?? false,
+    raspPiEn: json["raspPiEn"] ?? false,
     id: json["id"],
     store_id: json["store_id"],
     msg: json["msg"],
@@ -66,6 +69,7 @@ class StoreSetting {
     "abholung_enabled": abholung_enabled,
     "tisch_reservierung_enabled": tisch_reservierung_enabled,
     "reservation_v2_enabled": reservation_v2_enabled,
+    "raspPiEn": raspPiEn,
     "id": id,
     "store_id": store_id,
     "msg": msg,

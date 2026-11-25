@@ -8,6 +8,8 @@ import '../../customView/CustomDrawer.dart';
 import '../../models/get_store_customer_response_model.dart';
 import '../../utils/my_application.dart';
 import '../home_screen.dart';
+import '../Order/order_refresh_notifier.dart';
+import '../Order/today_orders_screen.dart';
 import 'customer_detail.dart';
 
 class StoreCustomer extends StatefulWidget {
@@ -145,6 +147,25 @@ class _StoreCustomerState extends State<StoreCustomer> {
                     ),
                   ),
                 ),
+                Obx(() => app.appController.raspPiEn.value
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: InkWell(
+                          onTap: () async {
+                            await Get.to(() => const TodayOrdersScreen());
+                            OrderRefreshNotifier().notifyRefresh(); // main OrderScreen reloads
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(Icons.settings, size: 24, color: Colors.blue.shade700),
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink()),
               ],
             ),
             const SizedBox(height: 15),

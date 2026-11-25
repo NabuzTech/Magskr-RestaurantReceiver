@@ -238,6 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final result = await ApiRepo().getStoreSetting(bearerKey, storeID);
       if (result.code == null) {
         app.appController.stripeServiceFee.value = result.stripe_service_fee;
+        app.appController.raspPiEn.value = result.raspPiEn ?? false;
         _reservationV2Enabled = result.reservation_v2_enabled ?? false;
         print("🔍 reservation_v2_enabled = $_reservationV2Enabled");
       }

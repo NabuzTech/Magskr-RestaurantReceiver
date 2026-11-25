@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'order_refresh_notifier.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import '../../customView/payment_icon.dart';
@@ -142,6 +143,8 @@ class _OrderScreenState extends State<OrderScreenNew>
     }
   }
 
+  StreamSubscription<bool>? _refreshSub;
+
   @override
   void initState() {
     super.initState();
@@ -164,6 +167,9 @@ class _OrderScreenState extends State<OrderScreenNew>
       CurvedAnimation(parent: _syncRotationController, curve: Curves.linear),
     );
     _startInternetMonitoring();
+    _refreshSub = OrderRefreshNotifier().refreshStream.listen((_) {
+      if (mounted) _handleRefresh();
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initVar();
       _loadAndSyncLocalOrders();
@@ -201,6 +207,7 @@ class _OrderScreenState extends State<OrderScreenNew>
   @override
   void dispose() {
     _isDisposed = true;
+    _refreshSub?.cancel();
     _socketService.disconnect();
 
     WidgetsBinding.instance.removeObserver(this);

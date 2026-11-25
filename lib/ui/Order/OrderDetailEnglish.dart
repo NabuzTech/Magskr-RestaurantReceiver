@@ -770,6 +770,9 @@ class _OrderDetailState extends State<OrderDetailEnglish> {
                     if (delFee != "0.0")
                       _amountRow('delivery_fee'.tr, '+${formatAmount(deliveryFee)}',
                           valueColor: const Color(0xFF16A34A)),
+                    if ((updatedOrder.invoice?.service_fee ?? 0) > 0)
+                      _amountRow('Service Fee', '+${formatAmount(updatedOrder.invoice!.service_fee!)}',
+                          valueColor: const Color(0xFF16A34A)),
                     if (hasCoupon) _amountRow('Coupon', couponCode),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),

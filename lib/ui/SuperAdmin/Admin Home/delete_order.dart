@@ -28,7 +28,8 @@ const _kPageGradient = LinearGradient(
 class DeleteOrder extends StatefulWidget {
   final int storeId;
   final String? storeName;
-  const DeleteOrder({super.key, required this.storeId, this.storeName});
+  final bool todayOnly; // today's orders only: no calendar/history, no multi-select
+  const DeleteOrder({super.key, required this.storeId, this.storeName, this.todayOnly = false});
 
   @override
   State<DeleteOrder> createState() => _DeleteOrderState();
@@ -227,6 +228,7 @@ class _DeleteOrderState extends State<DeleteOrder> {
               ),
               IconButton(icon: const Icon(Icons.delete_outline, color: Color(0xffE25454)), onPressed: _deleteSelected),
             ] else ...[
+              if (!widget.todayOnly)
               IconButton(
                 icon: Icon(showCalendar ? Icons.close : Icons.calendar_month),
                 onPressed: () => setState(() {
@@ -391,7 +393,7 @@ class _DeleteOrderState extends State<DeleteOrder> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => isMultiSelectMode ? _toggleSelection(order) : Get.to(() => OrderHistoryDetails(historyOrder: order)),
-      onLongPress: () => _toggleSelection(order),
+      onLongPress: widget.todayOnly ? null : () => _toggleSelection(order),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
         decoration: BoxDecoration(

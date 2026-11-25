@@ -7,6 +7,7 @@ class Invoice {
   int? orderId;
   double? delivery_fee;
   double? discount_amount;
+  double? service_fee;
 
   Invoice({
     this.invoiceNumber,
@@ -17,6 +18,7 @@ class Invoice {
     this.orderId,
     this.delivery_fee,
     this.discount_amount,
+    this.service_fee,
   });
 
   factory Invoice.fromJson(Map<String, dynamic> json) => Invoice(
@@ -28,6 +30,7 @@ class Invoice {
         orderId: json["order_id"],
         delivery_fee: (json["delivery_fee"] as num?)?.toDouble(),
         discount_amount: (json["discount_amount"] as num?)?.toDouble(),
+        service_fee: (json["service_fee"] as num?)?.toDouble(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -39,5 +42,6 @@ class Invoice {
         "order_id": orderId,
         "delivery_fee": delivery_fee,
         "discount_amount": discount_amount,
+        "service_fee": service_fee,
       };
 }
