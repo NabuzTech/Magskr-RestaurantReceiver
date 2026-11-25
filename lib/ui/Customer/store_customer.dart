@@ -6,6 +6,8 @@ import '../../api/repository/api_repository.dart';
 import '../../customView/CustomAppBar.dart';
 import '../../customView/CustomDrawer.dart';
 import '../../models/get_store_customer_response_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../constants/constant.dart';
 import '../../utils/my_application.dart';
 import '../home_screen.dart';
 import '../Order/order_refresh_notifier.dart';
@@ -50,6 +52,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
     app.appController.customerFilterCallback = _filterCustomers;
 
     getStoreCustomers();
+    _refreshStoreSetting();
 
     // Pagination scroll listener
     _scrollController.addListener(() {
@@ -129,11 +132,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                 const Spacer(),
                 // Refresh Button
                 InkWell(
-                  onTap: () {
-                    currentOffset = 0;
-                    hasMoreCustomers = true;
-                    getStoreCustomers();
-                  },
+                  onTap: _onRefresh,
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -172,8 +171,12 @@ class _StoreCustomerState extends State<StoreCustomer> {
 
             // Customer List
             Expanded(
+              child: RefreshIndicator(
+              onRefresh: _onRefresh,
               child: filteredCustomers == null || filteredCustomers!.isEmpty
-                  ? Center(
+                  ? ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [SizedBox(height: 120), Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -189,8 +192,9 @@ class _StoreCustomerState extends State<StoreCustomer> {
                     ),
                   ],
                 ),
-              )
+              )])
                   : ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
                 controller: _scrollController,
                 itemCount: filteredCustomers!.length + (isLoadingMore ? 1 : 0),  // ✅ Change from customers
                 itemBuilder: (context, index) {
@@ -208,6 +212,7 @@ class _StoreCustomerState extends State<StoreCustomer> {
                   final customer = filteredCustomers![index];  // ✅ Change from customers
                   return _buildCustomerCard(customer);
                 },
+              ),
               ),
             ),
           ],
@@ -499,6 +504,24 @@ class _StoreCustomerState extends State<StoreCustomer> {
     } catch (e) {
       return dateStr;
     }
+  }
+
+  // Re-reads store settings so raspPiEn (settings button) stays current.
+  Future<void> _refreshStoreSetting() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bearer = prefs.getString(valueShared_BEARER_KEY);
+      final storeId = prefs.getString(valueShared_STORE_KEY);
+      if (bearer == null || bearer.isEmpty || storeId == null || storeId.isEmpty) return;
+      final result = await ApiRepo().getStoreSetting(bearer, storeId);
+      if (result.code == null) app.appController.raspPiEn.value = result.raspPiEn ?? false;
+    } catch (_) {}
+  }
+
+  Future<void> _onRefresh() async {
+    currentOffset = 0;
+    hasMoreCustomers = true;
+    await Future.wait([_refreshStoreSetting(), getStoreCustomers()]);
   }
 
   Future<void> getStoreCustomers() async {
