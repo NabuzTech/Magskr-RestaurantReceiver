@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:get/get.dart';
+
 import '../../../constants/common_colors.dart';
+import '../../BlockedDates/blocked_dates_screen.dart';
 import 'resource_screen.dart';
 import 'service_screen.dart';
 import 'settings_header.dart';
@@ -57,6 +60,8 @@ class BookingSettingsScreen extends StatelessWidget {
                           tile(Icons.folder_copy_outlined, 'Resources', const ResourceScreen()),
                           const Divider(height: 1, indent: 62),
                           tile(Icons.schedule_outlined, 'Time Management', const TimeManagementScreen()),
+                          const Divider(height: 1, indent: 62),
+                          tile(Icons.event_busy_outlined, 'bd_title'.tr, const BlockedDatesScreen()),
                         ],
                       ),
                     ),

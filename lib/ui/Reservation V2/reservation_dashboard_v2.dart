@@ -234,7 +234,7 @@ class _ReservationDashboardV2State extends State<ReservationDashboardV2> {
     if (id == null) return;
     final picked = await showDialog<DateTime>(
       context: context,
-      builder: (_) => _ReservationCalendarDialog(initialDate: _selectedDate, storeId: id),
+      builder: (_) => ReservationCalendarDialog(initialDate: _selectedDate, storeId: id),
     );
     if (picked == null) return;
     setState(() => _selectedDate = picked);
@@ -1974,7 +1974,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
   Future<void> _pickDate() async {
     final picked = await showDialog<DateTime>(
       context: context,
-      builder: (_) => _ReservationCalendarDialog(
+      builder: (_) => ReservationCalendarDialog(
         initialDate: _date,
         storeId: widget.booking.storeId?.toString(),
       ),
@@ -2019,7 +2019,7 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${'reserv_update_failed'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
+            content: Text('$e'.contains('blocked_date') ? 'bd_blocked_msg'.tr : '${'reserv_update_failed'.tr}: $e', style: const TextStyle(fontFamily: 'Sora')),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 2),
           ),
@@ -2518,16 +2518,17 @@ class _EditReservationDialogState extends State<_EditReservationDialog> {
 }
 
 // -------------------- CALENDAR DIALOG --------------------
-class _ReservationCalendarDialog extends StatefulWidget {
+class ReservationCalendarDialog extends StatefulWidget {
   final DateTime initialDate;
   final String? storeId;
-  const _ReservationCalendarDialog({required this.initialDate, this.storeId});
+  final DateTime? firstDate; // earlier days are greyed out and not tappable
+  const ReservationCalendarDialog({super.key, required this.initialDate, this.storeId, this.firstDate});
 
   @override
-  State<_ReservationCalendarDialog> createState() => _ReservationCalendarDialogState();
+  State<ReservationCalendarDialog> createState() => _ReservationCalendarDialogState();
 }
 
-class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> {
+class _ReservationCalendarDialogState extends State<ReservationCalendarDialog> {
   late int _month;
   late int _year;
   Set<int> _daysWithBooking = {};
@@ -2659,10 +2660,14 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
                       cellDate.month == today.month &&
                       cellDate.day == today.day;
                   final hasBooking = isCurrentMonth && _daysWithBooking.contains(day);
+                  final first = widget.firstDate;
+                  final disabled = cellDate != null &&
+                      first != null &&
+                      cellDate.isBefore(DateTime(first.year, first.month, first.day));
 
                   return Expanded(
                     child: GestureDetector(
-                      onTap: cellDate == null ? null : () => Navigator.pop(context, cellDate),
+                      onTap: cellDate == null || disabled ? null : () => Navigator.pop(context, cellDate),
                       child: Container(
                         margin: const EdgeInsets.all(2),
                         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -2679,7 +2684,7 @@ class _ReservationCalendarDialogState extends State<_ReservationCalendarDialog> 
                             Text(
                               isCurrentMonth ? '$day' : '',
                               style: TextStyle(fontFamily: 'Sora', 
-                                color: isSelected ? Colors.white : Colors.black87,
+                                color: isSelected ? Colors.white : (disabled ? Colors.black26 : Colors.black87),
                                 fontWeight:
                                     isToday || isSelected ? FontWeight.bold : FontWeight.normal,
                               ),
@@ -2737,6 +2742,7 @@ class _ReservationTimeSlotDialog extends StatefulWidget {
 class _ReservationTimeSlotDialogState extends State<_ReservationTimeSlotDialog> {
   bool _loading = true;
   List<Slots> _slots = [];
+  String? _reason;
 
   @override
   void initState() {
@@ -2757,6 +2763,7 @@ class _ReservationTimeSlotDialogState extends State<_ReservationTimeSlotDialog> 
       if (mounted) {
         setState(() {
           _slots = result.slots ?? [];
+          _reason = result.reason;
           _loading = false;
         });
       }
@@ -2815,7 +2822,7 @@ class _ReservationTimeSlotDialogState extends State<_ReservationTimeSlotDialog> 
                     : _slots.isEmpty
                         ? Padding(
                             padding: const EdgeInsets.symmetric(vertical: 40),
-                            child: Text('no_time_slots_for_date'.tr,
+                            child: Text((_reason == 'blocked_date' ? 'bd_blocked_msg' : 'no_time_slots_for_date').tr,
                                 style: TextStyle(fontFamily: 'Sora', color: Colors.grey.shade600)),
                           )
                         // shrinkWrap:false so the grid sizes to the Flexible's

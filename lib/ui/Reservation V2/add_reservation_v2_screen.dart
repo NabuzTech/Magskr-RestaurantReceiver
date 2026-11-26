@@ -266,7 +266,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
       if (!mounted) return;
       setState(() {
         _submitting = false;
-        _error = 'create_reserv'.tr;
+        _error = ('$e'.contains('blocked_date') ? 'bd_blocked_msg' : 'create_reserv').tr;
       });
     }
   }
@@ -734,7 +734,7 @@ class _AddReservationV2ScreenState extends State<AddReservationV2Screen> {
                 else if (slots.isEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 40),
-                    child: Text('no_time_slots_for_date'.tr,
+                    child: Text((_timeSlotData?.reason == 'blocked_date' ? 'bd_blocked_msg' : 'no_time_slots_for_date').tr,
                         style: TextStyle(fontFamily: 'Sora', color: Colors.grey.shade600)),
                   )
                 else

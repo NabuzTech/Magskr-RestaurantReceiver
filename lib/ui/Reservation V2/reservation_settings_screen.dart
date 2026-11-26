@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/repository/api_repository.dart';
 import '../../constants/constant.dart';
+import '../BlockedDates/blocked_dates_screen.dart';
 import '../../models/Reservation V2/reservation_v2_settings_model.dart';
 
 import 'package:food_receiver/constants/app_theme.dart';
@@ -228,6 +229,19 @@ class _ReservationSettingsScreenState extends State<ReservationSettingsScreen> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Material(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    leading: const Icon(Icons.event_busy_outlined, color: AppTheme.accent),
+                    title: Text('bd_title'.tr,
+                        style: const TextStyle(fontFamily: 'Sora', fontSize: 15, fontWeight: FontWeight.bold)),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.grey),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BlockedDatesScreen())),
                   ),
                 ),
               ],

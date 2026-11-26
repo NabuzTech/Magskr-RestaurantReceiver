@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 import '../../api/repository/api_repository.dart';
 import '../../models/Booking V2/check_availability_slot_model.dart';
@@ -343,7 +344,9 @@ class _TimeSlotsPickerSheetState extends State<_TimeSlotsPickerSheet> {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Text(
-          'No time slots available for this date.',
+          availability?.reason == 'blocked_date'
+              ? 'bd_blocked_msg'.tr
+              : 'No time slots available for this date.',
           style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
         ),
       );
@@ -536,7 +539,7 @@ class _EditBookingSheetState extends State<_EditBookingSheet> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Failed to update booking')));
+      ).showSnackBar(SnackBar(content: Text('$e'.contains('blocked_date') ? 'bd_blocked_msg'.tr : 'Failed to update booking')));
     }
   }
 

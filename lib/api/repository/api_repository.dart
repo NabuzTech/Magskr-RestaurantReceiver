@@ -142,6 +142,7 @@ import '../../models/Booking V2/blackouts_booking_v2_model.dart';
 import '../../models/Booking V2/create_service_model.dart';
 import '../../models/Booking V2/resopurce_bookingV2_model.dart';
 import '../../models/Booking V2/update_blackout_booking_v2_model.dart';
+import '../../models/blocked_date_model.dart';
 import '../../utils/my_application.dart';
 
 const title = "ApiRepo";
@@ -4891,6 +4892,7 @@ class CallService extends GetConnect {
       });
 
       print("Create Reservation V2 RESPONSE (${res.statusCode}) body: ${res.body}");
+      _throwIfBlocked(res);
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         if (res.body == null || res.body.toString().isEmpty) {
@@ -4936,6 +4938,7 @@ class CallService extends GetConnect {
       });
 
       print("Update Reservation V2 RESPONSE (${res.statusCode}) body: ${res.body}");
+      _throwIfBlocked(res);
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         print("Update Reservation V2  Response is : ${res.statusCode.toString()}");
@@ -5219,6 +5222,7 @@ class CallService extends GetConnect {
       'accept': 'application/json',
       'Authorization': "Bearer $accessToken",
     });
+    _throwIfBlocked(res);
     if (res.statusCode == 200) {
       print("Booking V2 Update Details response is :${res.statusCode.toString()}");
       final id = int.tryParse(bookingId);
@@ -5678,6 +5682,62 @@ class CallService extends GetConnect {
     } catch (e) {
       print('Delete API Exception: $e');
       return 'Something went wrong. Please try again.';
+    }
+  }
+
+  // Blocked dates (whole days closed for reservations / bookings).
+  Future<Map<String, String>> _authHeaders() async {
+    final prefs = await SharedPreferences.getInstance();
+    httpClient.baseUrl = Api.baseUrl;
+    return {
+      'accept': 'application/json',
+      'Authorization': "Bearer ${prefs.getString(valueShared_BEARER_KEY)}",
+    };
+  }
+
+  Future<List<BlockedDateModel>> getBlockedDates(int storeId) async {
+    final headers = await _authHeaders();
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    final url = 'booking-blocked-dates?store_id=$storeId&include_inactive=true&from_date=$today';
+    print('[BlockedDates] GET ${Api.baseUrl}$url');
+    final res = await get(url, headers: headers);
+    print('[BlockedDates] GET response (${res.statusCode}): ${res.body}');
+    if (res.statusCode != 200) {
+      throw Exception('Failed to load blocked dates : ${res.statusCode}');
+    }
+    return (res.body as List).map((e) => BlockedDateModel.fromJson(e)).toList();
+  }
+
+  // Writes return null on success, else the message to show.
+  Future<String?> createBlockedDate(Map<String, dynamic> body) async {
+    final headers = await _authHeaders();
+    print('[BlockedDates] POST ${Api.baseUrl}booking-blocked-dates body: ${jsonEncode(body)}');
+    final res = await post('booking-blocked-dates', body, headers: headers);
+    print('[BlockedDates] POST response (${res.statusCode}): ${res.body}');
+    return res.statusCode == 200 || res.statusCode == 201 ? null : _errorDetail(res.body);
+  }
+
+  Future<String?> updateBlockedDate(int id, Map<String, dynamic> body) async {
+    final headers = await _authHeaders();
+    print('[BlockedDates] PUT ${Api.baseUrl}booking-blocked-dates/$id body: ${jsonEncode(body)}');
+    final res = await put('booking-blocked-dates/$id', body, headers: headers);
+    print('[BlockedDates] PUT response (${res.statusCode}): ${res.body}');
+    return res.statusCode == 200 ? null : _errorDetail(res.body);
+  }
+
+  Future<String?> deleteBlockedDate(int id) async {
+    final headers = await _authHeaders();
+    print('[BlockedDates] DELETE ${Api.baseUrl}booking-blocked-dates/$id');
+    final res = await delete('booking-blocked-dates/$id', headers: headers);
+    print('[BlockedDates] DELETE response (${res.statusCode}): ${res.body}');
+    return res.statusCode == 200 || res.statusCode == 204 ? null : _errorDetail(res.body);
+  }
+
+  // Callers match on 'blocked_date' to show a specific message.
+  void _throwIfBlocked(dynamic res) {
+    final body = res.body;
+    if (res.statusCode == 409 && body is Map && body['detail'] is Map && body['detail']['reason'] == 'blocked_date') {
+      throw Exception('blocked_date');
     }
   }
 

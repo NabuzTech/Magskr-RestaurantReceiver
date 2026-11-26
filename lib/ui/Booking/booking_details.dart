@@ -1588,7 +1588,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
       if (!mounted) return;
       setState(() => isUpdating = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update booking')),
+        SnackBar(content: Text('$e'.contains('blocked_date') ? 'bd_blocked_msg'.tr : 'Failed to update booking')),
       );
     }
   }
